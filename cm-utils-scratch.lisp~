@@ -1,0 +1,31 @@
+;;;; cm-utils.lisp
+
+(in-package #:cm-utils)
+
+;;; "cm-utils" goes here. Hacks and glory await!
+
+(defparameter *coroutine* nil)
+
+
+(defmacro mywait (time &optional (yield t))
+  `(list (cm:wait ,time)
+         (yield ,yield)))
+
+(defcoroutine my-process ()
+  (loop
+     for x below 30
+     do (progn
+          (output (new midi :keynum 60 :time 0))
+          (mywait 0.1)))
+  (coexit nil))
+
+(defun make-process (name)
+  (make-coroutine name))
+
+(rt-start)
+(midi-open-default)
+
+(cm::midi-open-default :direction :output)
+(setf *rts-out* (new incudine-stream))
+
+(sprout (make-process 'my-process))
