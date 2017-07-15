@@ -10,6 +10,7 @@ of cl-cont apply to this as well.
 Dependencies:
 
 - [incudine](http://incudine.sourceforge.net/)
+- [fudi-incudine](https://github.com/ormf/fudi-incudine)
 - [cm](https://github.com/ormf/cm)
 - [cm-incudine](https://github.com/ormf/cm-incudine) for realtime output
 - [cl-coroutine](https://github.com/takagi/cl-coroutine)
@@ -24,7 +25,6 @@ subproc: a "blocking" subprocess. In contrast to sprout subproc will finish
 rt-wait: similar to cm's wait.
 
 NOTE: cm's "events" function can also be used with rt-proc! 
-
 
 examples comparing the traditional cm process syntax to cm-util's
 syntax:
