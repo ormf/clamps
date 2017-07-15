@@ -11,7 +11,7 @@ Dependencies:
 
 - [incudine](http://incudine.sourceforge.net/)
 - [cm](https://github.com/ormf/cm)
-- [cm-incudine](https://github.com/ormf/cm) for realtime output
+- [cm-incudine](https://github.com/ormf/cm-incudine) for realtime output
 - [cl-coroutine](https://github.com/takagi/cl-coroutine)
 
 Implemented macros are:
