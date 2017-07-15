@@ -93,5 +93,5 @@ cm-utils:
 
 (sprout (proc-02))
 
-The code is public domain, without any warranties. Use at your own
-risk.
+The code is (c) Orm Finnendahl, released under the GPL (version 2 or
+later), without any warranties. Use at your own risk.
