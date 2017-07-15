@@ -30,7 +30,7 @@ examples comparing the traditional cm process syntax to cm-util's
 syntax:
 
 cm:
-```lisp
+```common-lisp
 (sprout
  (process
    for keynum in '(60 62 64 65)
