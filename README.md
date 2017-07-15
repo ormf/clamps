@@ -9,10 +9,10 @@ of cl-cont apply to this as well.
 
 Dependencies:
 
-- incudine
-- cm
-- cm-incudine (for realtime output)
-- cl-coroutine
+- [incudine](http://incudine.sourceforge.net/)
+- [cm](https://github.com/ormf/cm)
+- [cm-incudine](https://github.com/ormf/cm) for realtime output
+- [cl-coroutine](https://github.com/takagi/cl-coroutine)
 
 Implemented macros are:
 
