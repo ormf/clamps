@@ -10,6 +10,8 @@ of cl-cont apply to this as well.
 Dependencies:
 
 - incudine
+- cm
+- cm-incudine (for realtime output)
 - cl-coroutine
 
 Implemented macros are:
@@ -24,18 +26,19 @@ rt-wait: similar to cm's wait.
 NOTE: cm's "events" function can also be used with rt-proc! 
 
 
-example:
+examples comparing the traditional cm process syntax to cm-util's
+syntax:
 
 cm:
-
+```lisp
 (sprout
  (process
    for keynum in '(60 62 64 65)
    output (new midi :time (now) :keynum keynum :duration 1)
    wait 0.5))
-
+```
 cm-utils:
-
+```
 (sprout
  (rt-proc
    (loop
@@ -92,6 +95,7 @@ cm-utils:
            (rt-wait 0.2)))))
 
 (sprout (proc-02))
+```
 
 The code is (c) Orm Finnendahl, released under the GPL (version 2 or
 later), without any warranties. Use at your own risk.

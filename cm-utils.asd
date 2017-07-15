@@ -26,7 +26,7 @@
                #:orm-utils
                #:cl-ppcre
                #:cl-coroutine
-               #:cm)
+               #:cm-incudine)
   :components ((:file "package")
                (:file "cm-utils")))
 
