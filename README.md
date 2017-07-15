@@ -30,7 +30,7 @@ examples comparing the traditional cm process syntax to cm-util's
 syntax:
 
 cm:
-```common-lisp
+```cl
 (sprout
  (process
    for keynum in '(60 62 64 65)
@@ -38,7 +38,7 @@ cm:
    wait 0.5))
 ```
 cm-utils:
-```
+```cl
 (sprout
  (rt-proc
    (loop
