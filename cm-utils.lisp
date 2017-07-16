@@ -35,7 +35,7 @@
        (defcoroutine ,name () ,@body)
        (make-coroutine ',name))))
 
-(defmacro subproc (&rest rest)
+(defmacro rt-sub (&rest rest)
   (alexandria:with-gensyms (fn)
     `(let ((,fn (apply ,(first rest) ,(cdr rest))))
        (loop

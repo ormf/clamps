@@ -19,10 +19,12 @@ Implemented macros are:
 
 rt-proc: similar to cm's "process" macro, allowing arbitrary lisp forms within its body
 
-subproc: a "blocking" subprocess. In contrast to sprout subproc will finish
-         the subprocess before continuing.
-
 rt-wait: similar to cm's wait.
+
+rt-sprout: a "non-blocking" subprocess, similar to cm's sprout
+
+rt-sub: a "blocking" subprocess. In contrast to sprout subproc will finish
+        the subprocess before continuing.
 
 NOTE: cm's "events" function can also be used with rt-proc! 
 
@@ -90,7 +92,7 @@ cm-utils:
       do (progn
            (output (new midi :time (now) :keynum keynum))
            (rt-wait 0.5)
-           (subproc (proc-01))
+           (rt-sub (proc-01))
            (output (new midi :time (now) :keynum (+ keynum 11)))
            (rt-wait 0.2)))))
 
