@@ -2,7 +2,6 @@
 ;;; (ql:quickload "cm-utils")
 (in-package #:cm-utils)
 
-;;; "cm-utils" goes here. Hacks and glory await!
 (rt-start)
 (midi-open-default :direction :output)
 (setf cm::*rts-out* (new cm::incudine-stream))
@@ -21,15 +20,12 @@
       (output (new midi :keynum 60 :time (now) :duration 0.05))
       (rt-wait 0.2)
       (output (new midi :keynum 60 :time (now) :duration 0.05))
-      (rt-wait 0.1)
-      )))
+      (rt-wait 0.1))))
 
 (sprout (test-proc))
 
-(events (test-proc2)
+(events (test-proc)
         "/tmp/test.midi")
-
-
 
 (defun test-proc ()
   (rt-proc
@@ -39,8 +35,7 @@
             (output (new midi :keynum 60 :time (now) :duration 0.05))
             (rt-wait 0.2)
             (output (new midi :keynum 60 :time (now) :duration 0.05))
-            (rt-wait 0.1)
-            ))))
+            (rt-wait 0.1)))))
 
 (defun test-proc2 ()
   (rt-proc
@@ -50,8 +45,7 @@
             (format t "~&test-proc2-1~%")
             (rt-wait 0.5)
             (format t "~&test-proc2-2~%")
-            (rt-wait 0.5)
-            ))))
+            (rt-wait 0.5)))))
 
 (defun test-proc3 ()
   (rt-proc
@@ -60,18 +54,9 @@
        do (progn
             (format t "~&test-proc3-1~%")
             (rt-wait 0.5)
-            (subproc (test-proc2))
+            (rt-sub (test-proc2))
             (format t "~&test-proc3-2~%")
-            (rt-wait 0.5)
-            ))))
-
-(defun square (x)
-  (* x x))
-
-(loop
-   while t
-   do (format t "Hallo"))
-
+            (rt-wait 0.5)))))
 
 (sprout (test-proc2))
 (sprout (test-proc3))
@@ -155,7 +140,7 @@
        do (progn
             (format t "~&test-proc5-1~%")
             (rt-wait 2)
-            (subproc (test-proc4 num))
+            (rt-sub (test-proc4 num))
             (format t "~&test-proc5-2~%~%~%")
             (rt-wait 1.5)
             ))))
@@ -169,55 +154,59 @@
  (rt-proc
    (dotimes (i 4)
      (progn
-       (output (new midi :time 0 :keynum 63))
+       (output (new midi :time (now) :keynum 63))
        (rt-wait 0.5)
        (if (evenp i)
            (loop
               for i below 3
               do (progn
-                   (output (new midi :time 0 :keynum 61))
+                   (output (new midi :time (now) :keynum 61))
                    (rt-wait 1.3))))
-       (output (new midi :time 0 :keynum 60))
+       (output (new midi :time (now) :keynum 60))
        (rt-wait 1)))))
 
 (sprout
  (rt-proc
    (dotimes (i 4)
-     (output (new midi :time 0 :keynum 63))
+     (output (new midi :time (now) :keynum 63))
      (rt-wait 0.5)
      (if (evenp i)
          (dotimes (n 3)
-           (output (new midi :time 0 :keynum 61))
+           (output (new midi :time (now) :keynum 61))
            (rt-wait 1.3)))
-     (output (new midi :time 0 :keynum 60))
+     (output (new midi :time (now) :keynum 60))
      (rt-wait 1))))
 
 (defun 4-notes ()
   (rt-proc
     (dotimes (i 4)
-      (output (new midi :time 0 :keynum 61))
+      (output (new midi :time (now) :keynum 61))
       (rt-wait 0.125))))
+
+(sprout (4-notes))
 
 (sprout
  (rt-proc
    (dotimes (i 4)
-     (output (new midi :time 0 :keynum 63))
+     (output (new midi :time (now) :keynum 63))
      (rt-wait 0.5)
      (if (evenp i)
-         (subproc (3-notes))
-         (sprout (3-notes) :at (now)))
-     (output (new midi :time 0 :keynum 60))
+         (rt-sub (4-notes))
+         (rt-sprout (4-notes)))
+     (output (new midi :time (now) :keynum 60))
      (rt-wait 1))))
+
+(rt-sprout (4-notes))
 
 (events
  (rt-proc
    (dotimes (i 4)
-     (output (new midi :time 0 :keynum 63))
+     (output (new midi :time (now) :keynum 63))
      (rt-wait 0.5)
      (if (evenp i)
-         (subproc (3-notes))
-         (sprout (3-notes) :at (now)))
-     (output (new midi :time 0 :keynum 60))
+         (rt-sub (4-notes))
+         (rt-sprout (4-notes)))
+     (output (new midi :time (now) :keynum 60))
      (rt-wait 1)))
  "/tmp/test.midi")
 
@@ -229,7 +218,7 @@
            (up (sort chd #'<))
            (t (sort chd #'>)))
        do (progn
-            (output (new midi :time 0 :keynum pitch))
+            (output (new midi :time (now) :keynum pitch))
             (rt-wait 0.09)))))
 
 
@@ -264,5 +253,5 @@
     (loop
        for pitch in chd
        do (progn
-            (output (new midi :time 0 :keynum pitch))
+            (output (new midi :time (now) :keynum pitch))
             (rt-wait 0.05))))

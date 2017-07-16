@@ -37,7 +37,7 @@
 
 (defmacro rt-sub (&rest rest)
   (alexandria:with-gensyms (fn)
-    `(let ((,fn (apply ,(first rest) ,(cdr rest))))
+    `(let ((,fn (eval ,@rest)))
        (loop
           while (funcall ,fn) 
           do (yield t)))))

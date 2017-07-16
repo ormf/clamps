@@ -83,7 +83,7 @@ cm-utils:
 
 (sprout (proc-01))
 
-;;; using recursive synchronous processes:
+;;; using a synchronous subprocess:
 
 (defun proc-02 ()
   (rt-proc
@@ -97,6 +97,10 @@ cm-utils:
            (rt-wait 0.2)))))
 
 (sprout (proc-02))
+
+;;; events also works:
+
+(events (proc-02) "/tmp/test.midi")
 ```
 
 The code is (c) Orm Finnendahl, released under the GPL (version 2 or
