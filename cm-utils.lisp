@@ -42,9 +42,3 @@
           while (funcall ,fn) 
           do (yield t)))))
 
-(defmacro subproc (&rest rest)
-  (alexandria:with-gensyms (fn)
-    `(let ((,fn (eval ,@rest)))
-       (loop
-          while (funcall ,fn) 
-          do (yield t)))))
