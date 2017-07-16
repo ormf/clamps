@@ -18,12 +18,12 @@
 
 (in-package #:cm-utils)
 
-(defparameter *local-time* 0)
+;;(defparameter *local-time* 0)
 
 (defmacro rt-wait (time &optional (yield t))
   `(progn
      (cm:wait ,time)
-     (incf *local-time* ,time)
+;;     (incf *local-time* ,time)
      (yield ,yield)))
 
 (defmacro rt-sprout (s-expr &key (at))

@@ -212,31 +212,33 @@
 
 (defun arpeggio (chd dir)
   (rt-proc
-    (loop
-       for pitch in
-         (case dir
-           (up (sort chd #'<))
-           (t (sort chd #'>)))
-       do (progn
-            (output (new midi :time (now) :keynum pitch))
-            (rt-wait 0.09)))))
+    (let ((*local-time* 0))
+      (loop
+         for pitch in
+           (case dir
+             (up (sort (copy-list chd) #'<))
+             (t (sort (copy-list chd) #'>)))
+         do (progn
+              (output (new midi :time (now) :keynum pitch))
+              (rt-wait 0.09))))))
 
-
-(sprout (arpeggio '(60 64 71) 'up))
-(sprout (arpeggio '(60 64 71) 'down))
-
-
+(setf *local-time* 0)
+(let ((*local-time* 0))
+  (sprout (arpeggio '(60 62 65 71) 'up)))
+(sprout (arpeggio '(60 62 65 71) 'down))
 
 (defun rasgueado (chd dirs dur)
   (let ((*local-time* 0))
     (rt-proc
       (loop
-         with res = nil
-         until res
-         do (loop
-               for dir in dirs
-               until (setf res (>= *local-time* dur))
-               do (subproc (arpeggio chd dir)))))))
+         until (>= *local-time* dur)
+         do (progn
+              (format t "~a~%" *local-time*)
+              (loop
+                 for dir in dirs
+                 until (>= *local-time* dur)
+                 do (rt-sub (arpeggio chd dir)))
+              (format t "~&local-time-b: ~a" *local-time*))))))
 
 (sprout
  (rt-proc
@@ -244,14 +246,12 @@
          (dirs '(up up up down)))
      (loop
         for dir in dirs
-        do (subproc (arpeggio chd dir))))))
+        do (rt-sub (arpeggio chd dir))))))
 
 (sprout (rasgueado '(60 62 65 71) '(up up up down) 3))
-(case 3)
 
-(rt-proc
-    (loop
-       for pitch in chd
-       do (progn
-            (output (new midi :time (now) :keynum pitch))
-            (rt-wait 0.05))))
+(setf *local-time* 0)
+
+(now)
+
+
