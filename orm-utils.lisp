@@ -9,9 +9,42 @@
 ;;; (defun filter (fn list)
 ;;;  (reverse (reduce (lambda (l v) (if (funcall fn v) (cons v l) l)) list :initial-value '())))
 
+(defun reducing (fn seq &key key from-end (start 0) end (initial-value nil ivp))
+  (reverse
+   (reduce
+    (lambda (x y)
+      (cons (funcall fn y (first x)) x))
+    (rest seq)
+    :key key
+    :from-end from-end
+    :start start
+    :end end
+    :initial-value (if ivp (list (funcall fn (first seq) initial-value))
+                       (list (first seq))))))
+
+(defmacro while (test &body body)
+  (let ((gtop (gensym))
+        (gend (gensym)))
+    `(tagbody
+       ,gtop
+       (if (not ,test)
+           (go ,gend))
+       ,@body
+       (go ,gtop)
+       ,gend)))
+
 (defun filter (pred seq)
   "return a list of all elements of seq satisfying pred."
   (remove-if-not pred seq))
+
+(defun every-nth (l n)
+  (loop
+     for x in l
+     for idx from 0
+     if (zerop (mod idx n)) collect x))
+
+;;; (every-nth '(1 2 3 4 5 6 7 8 9 10 11) 3)
+
 
 (defun str-concat (&rest args)
   (apply #'concatenate 'string args))
@@ -37,14 +70,20 @@
   "return first n elems of seq"
   (subseq seq 0 n))
 
-(defun sort-nth (list fn)
-  (sort list #'(lambda (x y) (< (funcall fn x) (funcall fn y)))))
+(defun sort-by (list &key (test #'<) (key #'identity))
+  (sort list #'(lambda (x y) (funcall test (funcall key x) (funcall key y)))))
 
 (defun rfind (item tree &key (test #'eql))
   (if (atom tree)
       (if (funcall test item tree) tree)
       (or (rfind item (first tree) :test test)
           (rfind item (rest tree) :test test))))
+
+(defmacro default (expr default)
+  "(if expr expr default) without calculating expr twice."
+  (let ((myvar (gensym)))
+    `(let ((,myvar ,expr))
+       (if ,myvar ,myvar ,default))))
 
 (defmacro with-output-to-file ((stream fname &key (if-exists :supersede)) &rest body)
   `(with-open-file (,stream ,fname :direction :output :if-exists ,if-exists)
@@ -58,6 +97,10 @@
   `(let ((,string (make-array '(0) :adjustable t :fill-pointer 0 :element-type 'character)))
     (with-output-to-string (,stream ,string)
       ,@body)))
+
+(defun make-adjustable-string ()
+  (make-array '(0) :element-type 'character
+              :fill-pointer 0 :adjustable t))
 
 (defun last-n (n)
   "returns a function which will retrieve last n elements of a given
@@ -140,19 +183,21 @@ satisfying test. Return the modified tree."
 ;;; (mlist '(1 2 3 4 5) 2) -> ((1 2) (3 4) (5 NIL))
 
 #|
-;;; falsch!!!!
-(defun integrate (seq &key (modifier #'+))
-  (cons (first seq)
-	(mapcar modifier (cdr seq) seq)))
+
+(defun integrate (seq)
+  (reducing #'+ seq))
+
 
 (integrate '(0 1 2 3 4))
 |#
 
-(defun integrate (liste)
-  (let ((j 0))
-    (loop
-       for i in liste
-       collect (incf j i))))
+(defun integrate (seq &key (modifier #'+) (start (first seq)))
+  "return a running sum (or any other modifier fn) of a seq."
+  (loop
+     for i in seq
+     for j = start then (funcall modifier j i)
+     collect j))
+
 
 ;; (defun differentiate (liste)
 ;;   (cons (car liste)
@@ -161,8 +206,9 @@ satisfying test. Return the modified tree."
 ;;            for j in (cdr liste)
 ;;            collect (- j i))))
 
-(defun differentiate (seq &key (modifier #'-))
-  (cons (first seq)
+(defun differentiate (seq &key (modifier #'-) (start (first seq)))
+  "return differences between subsequent elements of seq."
+  (cons start
 	(mapcar modifier (cdr seq) seq)))
 
 #|
@@ -170,7 +216,14 @@ satisfying test. Return the modified tree."
  (differentiate '((1 3) (2 -1) (-2 2) (4 -5) (6 -2) (1 4)) 
  	       :modifier #'(lambda (curr last) (list (first curr) (- (second curr) (second last)))))
 
+ (let ((seq '((:time 0 :keynum 60) (:time 4 :keynum 62) (:time 6 :keynum 65))))
+   (differentiate seq
+    :modifier (lambda (x y) (append (list :dtime (- (second x) (second y)))
+                               (cddr x)))
+    :start (cons :dtime (cdr (first seq)))))
+
 |#
+
 ;;; remove-brackets in classic style:
 
 (defun remove-brackets (liste)
@@ -182,14 +235,27 @@ satisfying test. Return the modified tree."
 ;;; (remove-brackets '(1 2 (a b (c) d (e ((f) 5 6)))))
 
 ;;; the same procedure in loop style (in a way better readable):
-
+#|
 (defun flatten (list)
   "remove all brackets except the outmost in list."
   (loop for i in list
      append (if (consp i) (flatten i) (list i))))
+|#
 
-(defun flatten-fn (list &key (fn #'car))
-  "remove all brackets except the outmost in list."
+(defun flatten (list &key (fn #'car))
+  "remove all brackets except the outmost in list. Use fn to determine
+   where to stop removing brackets.
+
+   Example:
+
+   (flatten '((a b) (((c d) (e f)) (g h)) (i k)))
+   -> (a b c d e f g h i k)
+
+   keep one level of brackets:
+
+   (flatten '((a b) (((c d) (e f)) (g h)) (i k)) :fn #'caar)
+   -> ((a b) (c d) (e f) (g h) (i k))
+   "
   (cond ((null list) nil)
         ((consp (funcall fn list))
          (append (flatten-fn (first list) :fn fn)
@@ -197,9 +263,37 @@ satisfying test. Return the modified tree."
         (t (cons (first list)
                  (flatten-fn (rest list) :fn fn)))))
 
+;;; kept for backwards compatibility:
+
+(defun flatten-fn (list &key (fn #'car))
+  "remove all brackets except the outmost in list. Use fn for
+   determining the minimum depth of the final list.
+   Example:
+
+   (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)))
+   -> (a b c d e f g h i k)
+
+   (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)) :fn #'caar)
+   -> ((a b) (c d) (e f) (g h) (i k))
+   "
+  (cond ((null list) nil)
+        ((consp (funcall fn list))
+         (append (flatten-fn (first list) :fn fn)
+                 (flatten-fn (rest list) :fn fn)))
+        (t (cons (first list)
+                 (flatten-fn (rest list) :fn fn)))))
+
+#|
+ (flatten-fn '((a b)(((c d) (e f)) (g h)) (i k)))
+ -> (a b c d e f g h i k)
+
+ (flatten-fn '((a b)(((c d) (e f)) (g h)) (i k)) :fn #'caar)
+ -> ((a b) (c d) (e f) (g h) (i k))
+|#
+
 ;;; calc fibonacci number directly:
 
-(defun calcfibo (n)
+(defun fibonacci (n)
   (declare (integer n))
   (let ((sr5 (sqrt 5)))
     (round (* (/ 1 sr5) 
@@ -267,10 +361,10 @@ satisfying test. Return the modified tree."
 ;; (defun cl1 (n) (funcall (ip-lin 0.01 1000 10) n))
 ;; (loop for x from 0 below 10 collect (funcall cl1 x))
 
-(defun fv2ct (fv)
+(defun fv->ct (fv)
   (* 1200 (log fv 2)))
 
-(defun ct2fv (ct)
+(defun ct->fv (ct)
   (expt 2 (/ ct 1200)))
 
 ;; helper function for rotate: It destructively modifies its argument
@@ -345,7 +439,7 @@ satisfying test. Return the modified tree."
 
 (defun group-by-key (source &key (test #'=) (key #'car))
   "group elems of source into sublists depending on test and key. Source has
-to be sorted according to test."
+to be sorted according to test!"
   (let ((res nil))
     (labels ((rec (source last acc)
                (let ((k (funcall key (car source))))
@@ -678,6 +772,14 @@ the function will blow the stack!"
 
 ;;; (combinations '(1 2 3 4 5) 3)
 
+(defun reverse-all (list)
+  "recursively reverse list."
+  (let ((result nil))
+    (dolist (element list result)
+      (push
+       (if (listp element) (reverse-all element) element)
+       result))))
+
 #|
 (defun range (a1 &optional (a2 nil))
   "like clojure's range (except it's not lazy!)"
@@ -774,6 +876,8 @@ the function will blow the stack!"
 
 ;;; (range 1 10 2)
 
+(defun sum-x (n)
+ (* n (+ n 1) 1/2))
 (defun map-indexed (fn &rest seqs)
   (let ((idx -1))
     (apply #'mapcar
@@ -803,3 +907,24 @@ the function will blow the stack!"
   (let ((h (gensym)))
     `(let ((,h ,test))
        (setf ,sym (if ,h ,h ,default)))))
+
+(defun spit (seq &key (outfile "/tmp/test.lisp"))
+  (with-open-file (out outfile
+                       :direction :output
+                       :if-exists :supersede)
+    (dolist (line seq)
+      (format out "~a~%" line))))
+
+
+(defun slurp (filename)
+  (with-open-file (stream filename)
+    (loop for line = (read-line stream nil)
+          while line
+       collect (read-from-string line))))
+
+(defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
+
+(defun map-all-pairs (fn seq)
+  (loop
+     for (b1 . rest) on seq
+     append (loop for b2 in rest do (funcall fn b1 b2))))
