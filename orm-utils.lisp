@@ -925,6 +925,7 @@ the function will blow the stack!"
 (defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
 
 (defun map-all-pairs (fn seq)
+  "Execute fn on all possible pairs of seq (excluding pairs of identical elements)."
   (loop
      for (b1 . rest) on seq
      append (loop for b2 in rest do (funcall fn b1 b2))))
