@@ -52,7 +52,8 @@
                        :keynum (second event)
                        :amplitude 0.3
                        :duration (* tscale 1 (third event))))
-       wait (* tscale (first event))))))
+       wait (* tscale (first event)))))
+  (output (new midi-program-change :program 1)))
 
 ;;; extension for a more general process type than in cm
 
