@@ -23,6 +23,9 @@
 (defun testmidi () (output (new midi)))
 
 (defun jbmf ()
+  "midi-rwendering of \"Jasu bleibet meine Freude of J.S.Bach (Hommage
+  to the Video Series of \"Structures and Interpretation of Computer
+  Programs\")"
   (output (new midi-program-change :program 24))
   (sprout
    (let ((tscale 0.3))
