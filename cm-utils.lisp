@@ -104,7 +104,7 @@ of neighboring elements."
   (cond ((null seq) nil)
         ((null (cdr seq)) seq)
         (:else (if (< (random 1.0) weight)
-                   (cons (first seq) (drunk-traverse (rest seq) :weight 0.5))
+                   (cons (first seq) (drunk-traverse (rest seq) :weight weight))
                    (cons (second seq) (drunk-traverse
                                        (cons (first seq)
                                              (nthcdr 2 seq)) :weight 0.5))))))
