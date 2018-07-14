@@ -23,7 +23,7 @@
 (defun testmidi () (output (new midi)))
 
 (defun jbmf ()
-  "midi-rwendering of \"Jasu bleibet meine Freude of J.S.Bach (Hommage
+  "midi-rendering of \"Jesu bleibet meine Freude of J.S.Bach (Hommage
   to the Video Series of \"Structures and Interpretation of Computer
   Programs\")"
   (output (new midi-program-change :program 24))
@@ -104,11 +104,29 @@ of neighboring elements."
   (cond ((null seq) nil)
         ((null (cdr seq)) seq)
         (:else (if (< (random 1.0) weight)
-                   (cons (first seq) (drunk-traverse (rest seq) :weight weight))
                    (cons (second seq) (drunk-traverse
                                        (cons (first seq)
-                                             (nthcdr 2 seq)) :weight 0.5))))))
+                                             (nthcdr 2 seq)) :weight weight))
+                   (cons (first seq) (drunk-traverse (rest seq) :weight weight))))))
 
 
-;;; (drunk-traverse '(1 2 3 4 5 6 7))
+;;; (drunk-traverse '(1 2 3 4 5 6 7) :weight 0.5)
 
+(defmacro new-permutation (&key of permutation)
+  `(if (/= (length ,of) (length ,permutation))
+       (error "seq length (~a) and permutation length (~a) not identical"
+              (length ,of) (length ,permutation))
+       (new rewrite :of `,(loop 
+                             for x in ,of
+                             for y in ,permutation 
+                             collect (list x :-> (elt ,of y)))
+            :initially ,of)))
+
+;; (defparameter pat1 nil)
+;; (setf pat1 (new-permutation :of '(A B C D E) :permutation '(3 4 1 2 0)))
+;; (next pat1 #t) -> (A B C D E)
+;; (next pat1 #t) -> (D E B C A)
+;; (next pat1 #t) -> (C A E B D)
+;; (next pat1 #t) -> (B D A E C)
+;; (next pat1 #t) -> (E C D A B)
+;; (next pat1 #t) -> (A B C D E)
