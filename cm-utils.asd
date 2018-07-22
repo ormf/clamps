@@ -28,5 +28,6 @@
                #:cl-coroutine
                #:cm-incudine)
   :components ((:file "package")
-               (:file "cm-utils")))
+               (:file "cm-utils")
+               (:file "patterns")))
 

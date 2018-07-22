@@ -58,7 +58,6 @@ Examples:
 
 |#
 
-
 (progn
   (defclass permutation (cycle)
     ((idxs :initform 0 :initarg :idxs :accessor idxs)
@@ -89,12 +88,12 @@ Examples:
                 for i = 0 then (incf i)
                 while (< i len)
                 do (progn
-                     (loop
+                     (loop ;;; skip already accessed elems of perm
                         while (< (elt perm i) 0) ;;; is elem lready done/accessed?
                         do (progn
                              (incf i)
                              (if (= i len) (return-from main))))
-                     (loop ;;; do a full cycle of replacements starting with the ith element of perm
+                     (loop ;;; do a full cycle of replacements starting with the i-th element of perm
                         for from = i then to
                         for to = (elt perm from)
                         until (= to i)
@@ -106,7 +105,7 @@ Examples:
            (loop for i below len do (setf (elt perm i) (* -1 (+ 1 (elt perm i))))) ;;; restore all elements of permutation.
            lis))
          (let ((cyc (pattern-data obj)))
-           (if (null (cycl-tail cyc))
+           (if (null (cycl-tail cyc)) ;;; end of period after next element?
                (cycl-tail-set! cyc
                 (perm-in-place (cycl-data cyc) (pattern-length obj) (idxs obj))))
            (pop-cycl cyc))))
