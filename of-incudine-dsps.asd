@@ -7,5 +7,6 @@
   :serial t
   :depends-on (:orm-utils :cm-incudine)
   :components ((:file "package")
+               (:file "utils")
                (:file "buffer-stretch-play")))
 
