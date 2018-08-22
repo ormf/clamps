@@ -761,7 +761,7 @@ the function will blow the stack!"
 (all-pairs '(1 2 3 4))
 |#
 
-(defun combinations (seq n)
+(defun combinations (seq &optional (n 2))
   "get all n combinations of seq."
   (cond
     ((zerop n) '(()))              ; one combination of zero elements.
@@ -770,7 +770,7 @@ the function will blow the stack!"
                       (combinations (rest seq) (1- n)))
               (combinations (rest seq) n)))))
 
-;;; (combinations '(1 2 3 4 5) 3)
+;;; (combinations '(1 2 3 4 5) 2)
 
 (defun reverse-all (list)
   "recursively reverse list."
@@ -922,10 +922,56 @@ the function will blow the stack!"
           while line
        collect (read-from-string line))))
 
+(defun file-string (path)
+  (with-open-file (stream path)
+    (let ((data (make-string (file-length stream))))
+      (read-sequence data stream)
+      data)))
+
+(defun slurp-string (filename)
+  (with-open-file (stream filename)
+    (with-output-to-string (str)
+      (loop for line = (read-line stream nil)
+         while line
+         do (format str "~a" line)))))
+
 (defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
 
 (defun map-all-pairs (fn seq)
-  "Execute fn on all possible pairs of seq (excluding pairs of identical elements)."
+  "Execute fn on all possible pairs of two different elements of seq."
   (loop
      for (b1 . rest) on seq
-     append (loop for b2 in rest do (funcall fn b1 b2))))
+     do (loop for b2 in rest do (funcall fn b1 b2))))
+
+(defmacro with-curr-dir ((dir) &body body)
+  "set the cwd to dir in the body, return the result of body after
+resetting the cwd."
+  (let ((cwd (gensym "cwd"))
+        (res (gensym "res")))
+    `(let ((,cwd ,(sb-posix:getcwd))
+           ,res)
+       (sb-posix:chdir ,dir)
+       (setf ,res (progn ,@body))
+       (sb-posix:chdir ,cwd)
+       ,res)))
+
+(defun date-string ()
+  "return a string of the current time formatted
+  \"yyyy-mm-dd-hr-min-sec\""
+  (multiple-value-bind
+	(second minute hour date month year day-of-week dst-p tz)
+      (get-decoded-time)
+    (declare (ignore day-of-week dst-p tz))
+    (format nil "~d-~2,'0d-~2,'0d-~2,'0d-~2,'0d-~2,'0d"
+	    year
+	    month
+	    date
+	    hour
+	    minute
+	    second)))
+
+(defmacro push-if (form list)
+  "push form to list if form evaluates to non-nil."
+  (let ((result (gensym "result")))
+    `(let ((,result ,form))
+       (if ,result (push ,result ,list)))))

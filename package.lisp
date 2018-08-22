@@ -47,4 +47,8 @@
    #:SPIT
    #:MAKE-KEYWORD
    #:MAP-ALL-PAIRS
+   #:FILE-STRING
+   #:WITH-CURR-DIR
+   #:DATE-STRING
+   #:PUSH-IF
    ))
