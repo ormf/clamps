@@ -20,6 +20,6 @@
   (:shadowing-import-from #:cm
                           :at :now :tuning :*tempo* :play :rescale-envelope :quantize :stop :group :range)
   (:use #:cl #:incudine #:cm #:orm-utils #:cl-coroutine)
-  (:export #:rt-proc #:rt-sub #:rt-wait #:rt-sprout
-           #:make-mt-stream #:drunk-traverse))
+;;;   (:export #:rt-proc #:rt-sub #:rt-wait #:rt-sprout #:make-mt-stream #:drunk-traverse)
+  )
 

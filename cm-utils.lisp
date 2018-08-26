@@ -122,6 +122,9 @@ of neighboring elements."
                              collect (list x :-> (elt ,of y)))
             :initially ,of)))
 
+(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc) 'cm)
+
+
 ;; (defparameter pat1 nil)
 ;; (setf pat1 (new-permutation :of '(A B C D E) :permutation '(3 4 1 2 0)))
 ;; (next pat1 #t) -> (A B C D E)
