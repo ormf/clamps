@@ -209,7 +209,7 @@ satisfying test. Return the modified tree."
 (defun differentiate (seq &key (modifier #'-) (start (first seq)))
   "return differences between subsequent elements of seq."
   (cons start
-	(mapcar modifier (cdr seq) seq)))
+	(mapcar (lambda (x y) (funcall modifier x y)) (cdr seq) seq)))
 
 #|
  (differentiate '(1 3 2 5 6 4))
@@ -975,3 +975,142 @@ resetting the cwd."
   (let ((result (gensym "result")))
     `(let ((,result ,form))
        (if ,result (push ,result ,list)))))
+
+(defparameter *last-random-state* nil)
+
+(defun memorize-random-state ()
+  (setf *last-random-state* (make-random-state *random-state*)))
+
+(defun recall-random-state ()
+  (setf *random-state* *last-state*))
+
+(defun count-elements-generic-test (list &key (test #'eql))
+  "count the number of occurences of all different elems in
+list. Return the results as list with sublists of the form (elem
+count) for each elem. :test can be any test function of 2 args."
+  (loop with all-numbers = t
+     with result = '()
+     with found = '()
+     for e in list do
+     (unless (member e found :test test)
+       ;; MDE Thu Jan  3 16:16:30 2013 
+       (unless (numberp e) (setf all-numbers nil))
+       (push e found)
+       (push (list e (count e list :test test)) result))
+     finally (return
+               (if all-numbers
+                   ;; sort by element
+                   (sort result #'(lambda (x y) (< (first x) (first y))))
+                   ;; sort by number of elements
+                   (sort result #'(lambda (x y) (> (second x) (second y))))))))
+
+;;; (count-elements '(1 3 (2 3) 7 (2 3) 2) :test #'equal)
+
+(defun count-elements (list &key (test #'eql) (key #'identity))
+  "count the number of occurences of all different elems in list
+extracted from the list items according to the :key function. Return
+the results as list with sublists of the form (elem count) for each
+elem. :test has to be a test function accepted by #'make-hash-table,
+:key defaults to #'identity."
+  (let ((hash (make-hash-table :test test))
+        (result '())
+        (all-numbers t))
+    (dolist (item list)
+      (let ((elem (funcall key item)))
+        (unless (gethash elem hash)
+          (let ((num (count elem list :test test :key key)))
+            (unless (numberp elem) (setf all-numbers nil))
+            (setf (gethash elem hash) num)
+            (push (list elem num) result)))))
+    (if all-numbers
+        (sort result #'< :key #'first)
+        (sort result #'> :key #'second))))
+
+
+(defun count-elements (seq &key (test #'eql) (key #'identity) (sort t))
+  "count the number of occurences of all mutually different elems in
+seq extracted from the list items according to the :key function. 
+
+Return the results as list with sublists of the form (elem count) for
+each elem.
+
+:test has to be a test function accepted by #'make-hash-table
+:key defaults to #'identity
+
+If :sort is nil the items in the result are in the order of their
+first occurence, if :sort is :from-end they are in reverse order of
+occurence, if :sort is t they are either sorted by their value if all
+elems are numbers or by the number of occurences otherwise.
+
+Works on all sequence types."
+  (let* ((hash (make-hash-table :test test))
+         (all-numbers t)
+         (result '()))
+    (map nil
+         (lambda (item)
+           (let ((elem (funcall key item)))
+             (unless (gethash elem hash)
+               (let ((num (count elem seq :test test :key key)))
+                 (unless (numberp elem) (setf all-numbers nil))
+                 (setf (gethash elem hash) num)
+                 (push (list elem num) result)))))
+         seq)
+    (cond ((not sort) (nreverse result))
+          ((eq sort :from-end) result)
+          (all-numbers (sort result #'< :key #'first))
+          (:else (sort result #'> :key #'second)))))
+
+
+
+#|
+
+
+(count-elements '(1 3 2 4 3 2 1 5 4 3 6 5 7 "hallo" 5 "hallo" 6 "peng" 7 4 6 5 7 2 3) :test #'equal)
+
+(count-elements #(1 3 2 4 3 2 1 5 4 3 6 5 7 "hallo" 5 "hallo" 6 "peng" 7 4 6 5 7 2 3) :test #'equal)
+
+(count-elements
+ (loop for x below 100 collect (cm:new cm:midi :keynum (cm:between 60 73)))
+ :key #'cm::midi-keynum)
+
+|#
+
+(defmacro with-props (vars proplist &body body)
+  `(let ,(mapcar (lambda (a)
+                   (list a `(getf ,proplist ,(intern (symbol-name a) :keyword))))
+                vars)
+    ,@body))
+
+(defun n-exp (x min max)
+  (* min (expt (/ max min) x)))
+
+;;; (n-exp 0 10 1000) -> 10
+;;; (n-exp 0.5 10 1000) -> 100.0
+;;; (n-exp 1 10 1000) -> 1000
+
+(defun n-lin (x min max)
+  (+ min (* (- max min) x)))
+
+;;; (n-lin 0 10 1000) -> 10
+;;; (n-lin 0.5 10 1000) -> 505.0
+;;; (n-lin 1 10 1000) -> 1000
+
+(defun m-exp (x min max)
+  (* min (expt (/ max min) (/ x 127))))
+
+;;; (n-exp 0 10 1000) -> 10
+;;; (n-exp 0.5 10 1000) -> 100.0
+;;; (n-exp 1 10 1000) -> 1000
+
+(defun m-lin (x min max)
+  (+ min (* (- max min) (/ x 127))))
+
+;;; (n-lin 0 10 1000) -> 10
+;;; (n-lin 0.5 10 1000) -> 505.0
+;;; (n-lin 1 10 1000) -> 1000
+
+(defun r-exp (min max)
+  (* min (expt (/ max min) (random 1.0))))
+
+(defun r-lin (min max)
+  (+ min (* (- max min) (random 1.0))))

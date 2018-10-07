@@ -51,4 +51,14 @@
    #:WITH-CURR-DIR
    #:DATE-STRING
    #:PUSH-IF
+   #:MEMORIZE-RANDOM-STATE
+   #:RECALL-RANDOM-STATE
+   #:COUNT-ELEMENTS
+   #:WITH-PROPS
+   #:N-EXP
+   #:N-LIN
+   #:M-EXP
+   #:M-LIN
+   #:R-EXP
+   #:R-LIN
    ))
