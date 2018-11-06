@@ -25,11 +25,14 @@
   :depends-on (#:uiop
                #:incudine
                #:orm-utils
+               #:fomus
+               #:cm-fomus
                #:cl-ppcre
                #:cl-coroutine
-               #:cm-incudine)
+               #:cm-incudine
+               #:cl-plot
+               #:incudine-plot)
   :components ((:file "package")
                (:file "cm-utils")
-               (:file "patterns")
-               (:file "plot")))
+               (:file "patterns")))
 

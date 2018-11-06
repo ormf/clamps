@@ -133,3 +133,9 @@ of neighboring elements."
 ;; (next pat1 #t) -> (B D A E C)
 ;; (next pat1 #t) -> (E C D A B)
 ;; (next pat1 #t) -> (A B C D E)
+
+(defun incudine.scratch::node-free-unprotected ()
+  (incudine:free (incudine:node 0))
+  (dotimes (chan 4)
+    (output (new midi-control-change :controller +all-notes-off+ :value 0 :channel chan)))
+  :interrupted)

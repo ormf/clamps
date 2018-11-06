@@ -88,6 +88,63 @@ pairs.
         (loop for idx from (round start) to (round end)
            do (format out "~a ~a~%" idx (float (aref obj idx) 1.0)))))))
 
+(defmethod plot ((obj incudine::envelope) &rest args &key region (header *gnuplot-header*) (options *gnuplot-options*) (grid t))
+  "Plot input data given as an incudine envelope."
+  (declare (ignore header options grid))
+    (let* ((gnuplot-instance
+          (uiop:launch-program
+           (list *gnuplot-program*  "-p" "-e"
+                 (apply #'construct-plot-command :region region args))
+           :input :stream)))
+    (with-open-stream (out (uiop:process-info-input gnuplot-instance))
+      (let* ((env-dur (incudine::envelope-duration obj))
+             (env-buffer (incudine::make-buffer 100)))
+        (incudine::bounce-to-buffer (env-buffer :frames 100 :sample-rate 100)
+          (play-envelope obj (/ env-dur)))
+        (loop for idx below 100
+           do (format out "~a ~a~%"
+                      (/ (* env-dur idx) 100)
+                      (float (incudine::buffer-value env-buffer idx) 1.0)))))))
+
+(plot (incudine::make-envelope '(0.01 1 1 0.01) '(1 2 1) :curve '(:exp :lin :exp)))
+(plot (incudine::make-envelope '(0 1 1 0) '(1 2 1)))
+
+(defparameter *buffer* (incudine::make-buffer 100))
+
+(let ((env-buffer (incudine::bounce-to-buffer (*buffer* :frames 100)
+                    (incudine.vug::envelope (make-envelope '(0 1 1 0) (0 1 2 3)) :time-scale 1))))
+  (loop for idx below 100 collect (incudine::buffer-value env-buffer idx)))
+
+(let ((env-buffer (incudine::bounce-to-buffer (*buffer* :frames 100)
+                    (make-envelope '(0 1 1 0) (1 2 1)))))
+  (loop for idx below 100 collect (incudine::buffer-value env-buffer idx)))
+
+
+(incudine::envelope-duration (incudine::make-envelope '(0 1 1 0) '(0 1 2 3)))
+
+                    (incudine.vug::envelope  :time-scale 1)
+
+(incudine::dsp! simple (freq amp phase)
+  (incudine::out (incudine::sine freq amp phase)))
+
+(incudine::dsp! play-envelope ((env incudine::envelope) timescale)
+  (incudine::out (incudine.vug::envelope env :time-scale timescale)))
+
+(let ((env-buffer (incudine::bounce-to-buffer (*buffer* :frames 100 :sample-rate 99)
+                    (simple 1 1 0))))
+  (loop for idx below 100 collect (incudine::buffer-value env-buffer idx)))
+
+
+
+(let* ((envelope (incudine::make-envelope '(0 1 1 0) '(1 2 1)))
+       (env-dur (incudine::envelope-duration envelope))
+       (env-buffer (incudine::make-buffer 100)))
+  (incudine::bounce-to-buffer (env-buffer :frames 100 :sample-rate 99)
+    (incudine::out (incudine.vug::envelope envelope :time-scale (/ env-dur))))
+  (loop for idx below 100 collect (incudine::buffer-value env-buffer idx)))
+
+
+
 (export 'plot 'cm)
 
 #|
