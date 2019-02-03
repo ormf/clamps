@@ -80,7 +80,7 @@
     `(let ((,fn (eval ,@rest)))
        (loop
           while (funcall ,fn) 
-          do (cl-coroutineyield t)))))
+          do (cl-coroutine:yield t)))))
 
 ;;; channel-tuning utility
 
