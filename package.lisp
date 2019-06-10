@@ -5,6 +5,10 @@
   (:nicknames #:oid)
   (:shadowing-import-from #:incudine #:GROUP)
   (:export #:BUFFER-STRETCH-PLAY
+           #:PLAY-BUFFER-STRETCH
+           #:PLAY-BUFFER-STRETCH-OUT
+           #:PLAY-BUFFER-STRETCH-ENV-OUT
            #:*HANNING1024*
+           #:MAKE-OASR
            #:*ENV1*))
 
