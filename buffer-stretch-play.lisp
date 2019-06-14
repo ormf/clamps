@@ -40,7 +40,7 @@
   (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
                                            8.175798915643707d0)))
-                 (ampl (db->lin amp)))
+                 (ampl (db->linear amp)))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) *sample-rate*)
                              end)))
@@ -53,7 +53,7 @@
   (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
                                            8.175798915643707d0)))
-                 (ampl (db->lin amp)))
+                 (ampl (db->linear amp)))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) *sample-rate*)
                              end))
@@ -66,7 +66,7 @@
   (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
                                            8.175798915643707d0)))
-                 (ampl (db->lin amp)))
+                 (ampl (db->linear amp)))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) *sample-rate*)
                              end))
@@ -100,7 +100,7 @@ The curvature CURVE defaults to -4."
 
 (declaim (inline make-fasr))
 (defun make-fasr (attack-time sustain-level release-time dur
-                  &key (curve (list 3 0 -3)) base restart-level
+                  &key (curve (list 1 0 -1)) base restart-level
                  (real-time-p (allow-rt-memory-p)))
   "Create and return a new ENVELOPE structure with ATTACK-TIME, SUSTAIN-LEVEL
 and RELEASE-TIME.
@@ -114,15 +114,32 @@ The curvature CURVE defaults to -4."
   (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
                                            8.175798915643707d0)))
-                 (ampl (db->lin amp)))
+                 (ampl (db->linear amp)))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) *sample-rate*)
                              (min (/ (buffer-frames buffer) *sample-rate*) end)))
-                   (sig (* (envelope (reduce-warnings (progn
-                                                        (format t "~a , ~a ~a ~a ~a ~a ~a~%"
-                                                                (* stretch (- ende start)) buffer rate wwidth start ende stretch)
-                                                        (make-fasr attack ampl release 1)))
-                                     1 (* stretch (- ende start)) #'free)
+                   (sig (* (envelope (reduce-warnings (make-fasr attack ampl release (* stretch (- ende start))))
+                                     1 1 #'free)
                            (buffer-stretch-play buffer rate wwidth start ende stretch))))
-          (incf (audio-out out) sig))))
+      (incf (audio-out out) sig))))
+
+;;; (format t "~a , ~a ~a ~a ~a ~a ~a~%" (* stretch (- ende start)) buffer rate wwidth start ende stretch)
+
+
+(dsp! play-buffer-stretch-env-pan-out ((buffer buffer) amp transp start end stretch wwidth attack release pan (out integer))
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0 0)
+  (with-samples ((alpha (* +half-pi+ pan))
+                 (left (cos alpha))
+                 (right (sin alpha))
+                 (rate (reduce-warnings (/ (keynum->hz transp)
+                                           8.175798915643707d0)))
+                 (ampl (db->linear amp))
+                 (ende (if (zerop end)
+                           (/ (buffer-frames buffer) *sample-rate*)
+                           (min (/ (buffer-frames buffer) *sample-rate*) end)))
+                 (sig (* (envelope (reduce-warnings (make-fasr attack ampl release (* stretch (- ende start))))
+                                   1 1 #'free)
+                         (buffer-stretch-play buffer rate wwidth start ende stretch))))
+    (incf (audio-out out) (* sig left))
+    (incf (audio-out (mod (+ 1 out) 8)) (* sig right))))
 
