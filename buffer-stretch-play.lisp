@@ -126,8 +126,8 @@ The curvature CURVE defaults to -4."
 ;;; (format t "~a , ~a ~a ~a ~a ~a ~a~%" (* stretch (- ende start)) buffer rate wwidth start ende stretch)
 
 
-(dsp! play-buffer-stretch-env-pan-out ((buffer buffer) amp transp start end stretch wwidth attack release pan (out integer))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0 0)
+(dsp! play-buffer-stretch-env-pan-out ((buffer buffer) amp transp start end stretch wwidth attack release pan (out1 integer) (out2 integer))
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0 0 1)
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha))
@@ -140,6 +140,6 @@ The curvature CURVE defaults to -4."
                  (sig (* (envelope (reduce-warnings (make-fasr attack ampl release (* stretch (- ende start))))
                                    1 1 #'free)
                          (buffer-stretch-play buffer rate wwidth start ende stretch))))
-    (incf (audio-out out) (* sig left))
-    (incf (audio-out (mod (+ 1 out) 8)) (* sig right))))
+    (incf (audio-out out1) (* sig left))
+    (incf (audio-out out2) (* sig right))))
 
