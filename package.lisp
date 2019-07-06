@@ -1,7 +1,8 @@
 ;;;; package.lisp
 
 (defpackage #:orm-utils
-  (:use #:cl)
+  (:shadowing-import-from :closer-mop :defmethod :standard-generic-function :defgeneric)
+  (:use #:cl #:closer-mop)
   (:nicknames #:ou)
   (:export 
    #:FILTER
@@ -58,7 +59,12 @@
    #:N-EXP
    #:N-LIN
    #:M-EXP
+   #:M-EXP-ZERO
    #:M-LIN
    #:R-EXP
    #:R-LIN
+   #:N-EXP-DEV
+   #:COPY-INSTANCE
+   #:UCOPY
+   #:MULTF
    ))

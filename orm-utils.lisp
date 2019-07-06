@@ -354,7 +354,7 @@ satisfying test. Return the modified tree."
 (defun ip-lin (min max &optional (steps 2))
   (let ((slope (/ (- max min) (- steps 1))))
     (lambda (n)
-      (* slope n))))
+      (+ min (* slope n)))))
 
 ;; usage: (defparameter cl1 nil)
 ;; (setf cl1 (ip-lin 0 1000 10))
@@ -1098,6 +1098,10 @@ Works on all sequence types."
 (defun m-exp (x min max)
   (* min (expt (/ max min) (/ x 127))))
 
+(defun m-exp-zero (x min max)
+  (if (zerop x) 0
+      (* min (expt (/ max min) (/ x 127)))))
+
 ;;; (n-exp 0 10 1000) -> 10
 ;;; (n-exp 0.5 10 1000) -> 100.0
 ;;; (n-exp 1 10 1000) -> 1000
@@ -1114,3 +1118,36 @@ Works on all sequence types."
 
 (defun r-lin (min max)
   (+ min (* (- max min) (random 1.0))))
+
+(defun n-exp-dev (x max)
+  (if (zerop x)
+      1
+      (expt max (- x (* 2 (random (float x)))))))
+
+(defgeneric copy-instance (object &rest initargs &key &allow-other-keys)
+  (:documentation "Makes and returns a shallow copy of OBJECT.
+
+  An uninitialized object of the same class as OBJECT is allocated by
+  calling ALLOCATE-INSTANCE.  For all slots returned by
+  CLASS-SLOTS, the returned object has the
+  same slot values and slot-unbound status as OBJECT.
+
+  REINITIALIZE-INSTANCE is called to update the copy with INITARGS.")
+  (:method ((object standard-object) &rest initargs &key &allow-other-keys)
+    (let* ((class (class-of object))
+           (copy (allocate-instance class)))
+      (dolist (slot-name (mapcar #'sb-mop:slot-definition-name (sb-mop:class-slots class)))
+        (when (slot-boundp object slot-name)
+          (setf (slot-value copy slot-name)
+            (slot-value object slot-name))))
+      (apply #'reinitialize-instance copy initargs))))
+
+(defmacro dovector ((var vector &optional (result nil)) &body body)
+  `(loop
+     for ,var across ,vector
+     do (progn
+          ,@body)
+     finally (return ,result)))
+
+(define-modify-macro multf (&optional (number 1)) *
+  "like incf but multiplying instead of adding.")
