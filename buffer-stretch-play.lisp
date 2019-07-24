@@ -11,6 +11,110 @@
 
 (define-vug stereo (in) (out in in))
 
+(define-ugen envelope* frame ((env envelope) gate time-scale (done-action function))
+  (with ((frm (make-frame (block-size))))
+    (foreach-frame
+      (setf (frame-ref frm current-frame)
+            (envelope env gate time-scale done-action)))
+    frm))
+
+(define-ugen line* frame (start end duration (done-action function))
+  (with ((frm (make-frame (block-size))))
+    (foreach-frame
+      (setf (frame-ref frm current-frame)
+            (line start end duration done-action)))
+    frm))
+
+(define-ugen phasor* frame (freq init)
+  (with ((frm (make-frame (block-size))))
+    (foreach-frame
+      (setf (frame-ref frm current-frame)
+            (phasor freq init)))
+    frm))
+
+(define-ugen buffer-stretch-play* frame
+    ((buffer buffer) rate wwidth start end stretch)
+  
+    (with-samples ((myrate (/ rate))
+                   (wsamps (* wwidth *sample-rate* 0.001d0))
+                   (phfreq (/ 1000.0d0 myrate wwidth)))    
+      (with ((frm (make-frame (block-size)))
+             (ph1 (phasor* phfreq 0))
+             (ph2 (phasor* phfreq 0.5))
+             (mainpt (line* (* start *sample-rate*)
+                            (*  end *sample-rate*)
+                            (* stretch (- end start))
+                            #'free)))
+        (maybe-expand ph1)
+        (maybe-expand ph2)
+        (maybe-expand mainpt)
+        (foreach-frame
+          (let ((p1 (frame-ref ph1 current-frame))
+                (p2 (frame-ref ph2 current-frame))
+                (mpt (frame-ref mainpt current-frame)))
+            (setf (frame-ref frm current-frame)
+                  (+
+                   (* (buffer-read *hanning1024* (* p1 1024))
+                      (buffer-read buffer (+ (samphold mpt p1) (* p1 wsamps))))
+                   (* (buffer-read *hanning1024* (* p2 1024))
+                      (buffer-read buffer
+                                   (max 0.0d0
+                                        (+
+                                         (samphold mpt p2 (* -0.5 wsamps) -1)
+                                         (* p2 wsamps)))))))))
+        frm)))
+
+#|
+
+(foreach-frame
+          (let ((p1 (frame-ref ph1 current-frame))
+                (p2 (frame-ref ph2 current-frame))
+                (mpt (frame-ref mainpt current-frame)))
+            (setf (frame-ref frm current-frame)
+                  (+
+                   (* (buffer-read *hanning1024* (* p1 1024))
+                      (buffer-read buffer (+ (samphold mpt p1) (* p1 wsamps))))
+                   (* (buffer-read *hanning1024* (* p2 1024))
+                      (buffer-read buffer
+                                   (max 0.0d0
+                                        (+
+                                         (samphold mpt p2 (* -0.5 wsamps) -1)
+                                         (* p2 wsamps)))))))))
+
+|#
+
+(dsp! play-buffer-stretch* ((buffer buffer) amp transp start end stretch wwidth)
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137)
+  (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
+                                           8.175798915643707d0)))
+                 (ampl (db->linear amp)))
+    (with-samples ((ende (if (zerop end)
+                             (/ (buffer-frames buffer) *sample-rate*)
+                             end)))
+      (with (
+             (frm1 (envelope* *env1* 1 (* stretch (- ende start)) #'free))
+             (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch))
+             )
+        (maybe-expand frm1)
+        (maybe-expand frm2)
+        (foreach-frame
+          (stereo (* ampl (frame-ref frm1 current-frame)
+                     (frame-ref frm2 current-frame))))))))
+
+#|
+
+(defparameter *buf* (incudine:buffer-load
+ "~/work/kompositionen/big-orchestra/snd/bo-samples/aitken-mallet/einzeln-gsp/T03_1-239.wav"))
+
+(rt-start)
+(at (+ (now) (* *sample-rate* 1)) #'play-buffer-stretch* :buffer *buf* :end 0.2)
+(play-buffer-stretch :buffer *buf* :end 0.2)
+(incudine::node-free-all)
+
+|#
+
+
+
 (define-vug buffer-stretch-play ((buffer buffer) rate wwidth start end stretch)
   (with-samples ((myrate (/ rate))
                  (wsamps (* wwidth *sample-rate* 0.001d0))
@@ -20,18 +124,16 @@
                  (mainpt (line (* start *sample-rate*)
                                (*  end *sample-rate*)
                                (* stretch (- end start))
-                               #'free)))
-    (progn
-      mainpt
-      (+
-       (* (buffer-read *hanning1024* (* ph1 1024))
-          (buffer-read buffer (+ (samphold mainpt ph1) (* ph1 wsamps))))
-       (* (buffer-read *hanning1024* (* ph2 1024))
-          (buffer-read buffer
-                       (max 0.0d0
-                            (+
-                             (samphold mainpt ph2 (* -0.5 wsamps) -1)
-                             (* ph2 wsamps)))))))))
+                               #'free)))    
+    (+
+     (* (buffer-read *hanning1024* (* ph1 1024))
+        (buffer-read buffer (+ (samphold mainpt ph1) (* ph1 wsamps))))
+     (* (buffer-read *hanning1024* (* ph2 1024))
+        (buffer-read buffer
+                     (max 0.0d0
+                          (+
+                           (samphold mainpt ph2 (* -0.5 wsamps) -1)
+                           (* ph2 wsamps))))))))
 
 ;;; (play-sol-sample-preset-stretch 59 1 0 0 5 0.5 137)
 
@@ -49,6 +151,8 @@
                  (buffer-stretch-play buffer rate wwidth start ende stretch))))))
 |#
 
+
+
 (dsp! play-buffer-stretch ((buffer buffer) amp transp start end stretch wwidth)
   (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
@@ -61,6 +165,7 @@
                            (envelope *env1* 1 (* stretch (- ende start)) #'free)
                            (buffer-stretch-play buffer rate wwidth start ende stretch))))
       (stereo sig))))
+
 
 (dsp! play-buffer-stretch-out ((buffer buffer) amp transp start end stretch wwidth (out integer))
   (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0)
@@ -125,8 +230,8 @@ The curvature CURVE defaults to -4."
 
 ;;; (format t "~a , ~a ~a ~a ~a ~a ~a~%" (* stretch (- ende start)) buffer rate wwidth start ende stretch)
 
-
-(dsp! play-buffer-stretch-env-pan-out ((buffer buffer) amp transp start end stretch wwidth attack release pan (out1 integer) (out2 integer))
+(dsp! play-buffer-stretch-env-pan-out*
+    ((buffer buffer) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum))
   (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0 0 1)
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))
@@ -140,6 +245,37 @@ The curvature CURVE defaults to -4."
                  (sig (* (envelope (reduce-warnings (make-fasr attack ampl release (* stretch (- ende start))))
                                    1 1 #'free)
                          (buffer-stretch-play buffer rate wwidth start ende stretch))))
-    (incf (audio-out out1) (* sig left))
-    (incf (audio-out out2) (* sig right))))
+    (with (
+             (frm1 (envelope* *env1* 1 (* stretch (- ende start)) #'free))
+             (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch))
+             )
+        (maybe-expand frm1)
+        (maybe-expand frm2)
+        (foreach-frame
+          (let ((sig (* ampl
+                     (frame-ref frm1 current-frame)
+                     (frame-ref frm2 current-frame))))
+            (incf (audio-out out2) (* sig right))
+            (incf (audio-out out1) (* sig left)))))))          
+
+;;; (play-buffer-stretch-env-pan-out *buf*)
+
+(dsp! play-buffer-stretch-env-pan-out ((buffer buffer) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum))
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0 0 1)
+  (with-samples ((alpha (* +half-pi+ pan))
+                 (left (cos alpha))
+                 (right (sin alpha))
+                 (rate (reduce-warnings (/ (keynum->hz transp)
+                                           8.175798915643707d0)))
+                 (ampl (db->linear amp))
+                 (ende (if (zerop end)
+                           (/ (buffer-frames buffer) *sample-rate*)
+                           (min (/ (buffer-frames buffer) *sample-rate*) end)))
+                 (sig (* (envelope (reduce-warnings (make-fasr attack ampl release (* stretch (- ende start))))
+                                   1 1 #'free)
+                         (buffer-stretch-play buffer rate wwidth start ende stretch))))
+    (foreach-frame
+      (incf (audio-out out2) (* sig right)))
+    (foreach-frame
+      (incf (audio-out out1) (* sig left)))))
 
