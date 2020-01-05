@@ -122,7 +122,12 @@ of neighboring elements."
                              collect (list x :-> (elt ,of y)))
             :initially ,of)))
 
-(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc) 'cm)
+(defun r-interpl (min max &key (base 1))
+  "random value between [min..max] with variable base. Default is
+linear (base=1)."
+  (interpl (random 1.0) (list 0 min 1 max) :base base))
+
+(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl) 'cm)
 
 
 ;; (defparameter pat1 nil)
