@@ -49,6 +49,9 @@
 (defun str-concat (&rest args)
   (apply #'concatenate 'string args))
 
+(defmacro repeat-format (stream expr num)
+  `(format ,stream "~v@{~A~:*~}" ,num ,expr))
+
 #|
 (defun filter (pred l)
   "return a list of all elements of l satisfying pred."
@@ -130,9 +133,11 @@ list when applied."
              (map-tree fn (rest tree))))))
 |#
 
-(defun map-tree (fn tree &key (test (lambda (elem) (numberp (first elem)))))
-  "map function recursively on all nodes of given tree (represented as a nested list) 
-satisfying test. Return the modified tree."
+(defun map-tree (fn tree &key (test (lambda (elem) (not (consp (first elem))))))
+  "map function recursively on all leaf nodes of given
+tree (represented as a nested list). leaf nodes are determind by
+applying #'test on the list containing them. If the call doesn't
+return a cons cell, it is a leaf node. Return the modified tree."
   (cond
     ((null tree) nil)
     ((funcall test (first tree))
@@ -242,46 +247,38 @@ satisfying test. Return the modified tree."
      append (if (consp i) (flatten i) (list i))))
 |#
 
-(defun flatten (list &key (fn #'car))
-  "remove all brackets except the outmost in list. Use fn to determine
-   where to stop removing brackets.
-
-   Example:
-
-   (flatten '((a b) (((c d) (e f)) (g h)) (i k)))
-   -> (a b c d e f g h i k)
-
-   keep one level of brackets:
-
-   (flatten '((a b) (((c d) (e f)) (g h)) (i k)) :fn #'caar)
-   -> ((a b) (c d) (e f) (g h) (i k))
-   "
-  (cond ((null list) nil)
-        ((consp (funcall fn list))
-         (append (flatten-fn (first list) :fn fn)
-                 (flatten-fn (rest list) :fn fn)))
-        (t (cons (first list)
-                 (flatten-fn (rest list) :fn fn)))))
-
 ;;; kept for backwards compatibility:
 
-(defun flatten-fn (list &key (fn #'car))
-  "remove all brackets except the outmost in list. Use fn for
-   determining the minimum depth of the final list.
+(declaim (inline not-consp))
+(defun not-consp (elem)
+  (not (consp elem)))
+
+(defun flatten-fn (seq &key (test #'atom) (key #'identity))
+;;;  (break "~a" seq)
+  "remove all brackets except the outmost in seq. Use test and key to
+   determine where to stop removing brackets.
+
    Example:
 
    (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)))
    -> (a b c d e f g h i k)
 
-   (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)) :fn #'caar)
+   keep one level of brackets:
+
+   (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)) :key #'car)
    -> ((a b) (c d) (e f) (g h) (i k))
    "
-  (cond ((null list) nil)
-        ((consp (funcall fn list))
-         (append (flatten-fn (first list) :fn fn)
-                 (flatten-fn (rest list) :fn fn)))
-        (t (cons (first list)
-                 (flatten-fn (rest list) :fn fn)))))
+  (cond ((null seq) nil)
+        ((funcall test (funcall key (first seq)))
+         (cons (first seq)
+               (flatten-fn (rest seq) :test test :key key)))
+        ((consp (first seq))
+         (append (flatten-fn (first seq) :test test :key key)
+                 (flatten-fn (rest seq) :test test :key key)))
+        (t (append (flatten-fn (first seq) :test test :key key)
+                   (flatten-fn (rest seq) :test test :key key)))))
+
+
 
 #|
  (flatten-fn '((a b)(((c d) (e f)) (g h)) (i k)))
@@ -289,7 +286,12 @@ satisfying test. Return the modified tree."
 
  (flatten-fn '((a b)(((c d) (e f)) (g h)) (i k)) :fn #'caar)
  -> ((a b) (c d) (e f) (g h) (i k))
+
 |#
+
+(defun flatten (seq &key (test #'consp) (key #'car))
+  "remove all brackets except the outmost in seq."
+  (flatten-fn seq :test test :key key))
 
 ;;; calc fibonacci number directly:
 
@@ -398,7 +400,8 @@ satisfying test. Return the modified tree."
           (setf (cdr newlast) nil) ;; set the cdr of the new last element to nil
           newfirst))))) ;; return the new first element (listhead)
 
-
+(defun transpose-list (list-of-lists)
+  (apply #'mapcar #'list list-of-lists))
 ;; (rotate '(0 1 2 3 4 5) 3)
 ;;
 ;; (defparameter test '(0 1 2 3 4 5))
@@ -878,12 +881,15 @@ the function will blow the stack!"
 
 (defun sum-x (n)
  (* n (+ n 1) 1/2))
-(defun map-indexed (fn &rest seqs)
-  (let ((idx -1))
-    (apply #'mapcar
-           (lambda (&rest args)
-             (apply fn (incf idx) args))
-           seqs)))
+
+(defun map-indexed (result-type fn &rest seqs)
+  "map fn over seqs with incrementing idx. The idx will get supplied
+as first arg to fn and is reset for each seq."
+  (map result-type
+       (lambda (seq)
+         (let ((idx -1))
+           (map result-type (lambda (elem) (funcall fn (incf idx) elem)) seq)))
+       seqs))
 
 (defmacro case-ext (keyform test &rest body)
   "case with compare function as second element."
@@ -922,18 +928,12 @@ the function will blow the stack!"
           while line
        collect (read-from-string line))))
 
-(defun file-string (path)
-  (with-open-file (stream path)
-    (let ((data (make-string (file-length stream))))
-      (read-sequence data stream)
-      data)))
-
 (defun slurp-string (filename)
   (with-open-file (stream filename)
     (with-output-to-string (str)
       (loop for line = (read-line stream nil)
          while line
-         do (format str "~a" line)))))
+         do (format str "~a~%" line)))))
 
 (defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
 
@@ -982,7 +982,7 @@ resetting the cwd."
   (setf *last-random-state* (make-random-state *random-state*)))
 
 (defun recall-random-state ()
-  (setf *random-state* *last-state*))
+  (setf *random-state* *last-random-state*))
 
 (defun count-elements-generic-test (list &key (test #'eql))
   "count the number of occurences of all different elems in
@@ -1005,7 +1005,7 @@ count) for each elem. :test can be any test function of 2 args."
                    (sort result #'(lambda (x y) (> (second x) (second y))))))))
 
 ;;; (count-elements '(1 3 (2 3) 7 (2 3) 2) :test #'equal)
-
+#|
 (defun count-elements (list &key (test #'eql) (key #'identity))
   "count the number of occurences of all different elems in list
 extracted from the list items according to the :key function. Return
@@ -1025,7 +1025,7 @@ elem. :test has to be a test function accepted by #'make-hash-table,
     (if all-numbers
         (sort result #'< :key #'first)
         (sort result #'> :key #'second))))
-
+|#
 
 (defun count-elements (seq &key (test #'eql) (key #'identity) (sort t))
   "count the number of occurences of all mutually different elems in
@@ -1082,6 +1082,7 @@ Works on all sequence types."
     ,@body))
 
 (defun n-exp (x min max)
+  "linear interpolation for normalized x."
   (* min (expt (/ max min) x)))
 
 ;;; (n-exp 0 10 1000) -> 10
@@ -1089,6 +1090,7 @@ Works on all sequence types."
 ;;; (n-exp 1 10 1000) -> 1000
 
 (defun n-lin (x min max)
+  "linear interpolation for normalized x."
   (+ min (* (- max min) x)))
 
 ;;; (n-lin 0 10 1000) -> 10
@@ -1096,9 +1098,11 @@ Works on all sequence types."
 ;;; (n-lin 1 10 1000) -> 1000
 
 (defun m-exp (x min max)
-  (* min (expt (/ max min) (/ x 127))))
+  "exp interpolation for midivalues (x = [0..127])"
+  (float (* min (expt (/ max min) (/ x 127)))))
 
 (defun m-exp-zero (x min max)
+  "exp interpolation for midivalues (x = [0..127]) with 0 for x = 0"
   (if (zerop x) 0
       (* min (expt (/ max min) (/ x 127)))))
 
@@ -1107,22 +1111,98 @@ Works on all sequence types."
 ;;; (n-exp 1 10 1000) -> 1000
 
 (defun m-lin (x min max)
+  "linear interpolation for midivalues (x = [0..127])"
   (+ min (* (- max min) (/ x 127))))
 
 ;;; (n-lin 0 10 1000) -> 10
 ;;; (n-lin 0.5 10 1000) -> 505.0
 ;;; (n-lin 1 10 1000) -> 1000
 
+(defun mcn-lin (x min max)
+  "linear interpolation for midivalues (x = [0..127])"
+  (+ min (* (- max min) (/ x 127))))
+
+(defun mcn-exp (x min max)
+  "exponential interpolation for midivalues (x = [0..127])"
+  (* min (expt (* max min) (/ x 127))))
+
 (defun r-exp (min max)
+  "random value between [min..max] with exponential distribution."
   (* min (expt (/ max min) (random 1.0))))
 
 (defun r-lin (min max)
+  "random value between [min..max] with linear distribution."
   (+ min (* (- max min) (random 1.0))))
 
 (defun n-exp-dev (x max)
+  "return a random deviation factor, the deviation being exponentially
+interpolated between 1 for x=0 and [1/max..max] for x=1."
   (if (zerop x)
       1
-      (expt max (- x (* 2 (random (float x)))))))
+      (expt max (- x (random (* 2.0 x))))))
+
+(defun n-lin-dev (x max)
+  "return a random deviation offset, the deviation being linearly
+interpolated between 0 for x=0 and [-max..max] for x=1."
+  (if (zerop x)
+      0
+      (* max (- x (random (* 2.0 x))))))
+
+(defun m-exp-dev (x max)
+  "return a random deviation factor, the deviation being exponentially
+interpolated between 1 for x=0 and [1/max..max] for x=127."
+  (n-exp-dev (/ x 127) max))
+
+(defun m-lin-dev (x max)
+  "return a random deviation offset, the deviation being linearly
+interpolated between 0 for x=0 and [-max..max] for x=127."
+  (n-lin-dev (/ x 127) max))
+
+(defun m-exp-fn (min max)
+  "exp interpolation for midivalues (x = [0..127])"
+  (lambda (x) (m-exp x min max)))
+
+(defun m-exp-rd-fn (min max)
+  "rounded exp interpolation for midivalues (x = [0..127])"
+  (lambda (x) (round (m-exp x min max))))
+
+(defun m-lin-fn (min max)
+  "linear interpolation for midivalues (x = [0..127])"
+  (lambda (x) (m-lin x min max)))
+
+(defun m-lin-rd-fn (min max)
+  "rounded linear interpolation for midivalues (x = [0..127])"
+  (lambda (x) (round (m-lin x min max))))
+
+(defun m-exp-rev-fn (min max)
+  (lambda (x) (round (* 127 (log (/ x min) (/ max min))))))
+
+(defun m-exp-rd-rev-fn (min max)
+  (lambda (x) (round (* 127 (log (/ x min) (/ max min))))))
+
+(defun m-lin-rev-fn (min max)
+  (lambda (x) (round (* 127 (/ (- x min) (- max min))))))
+
+(defun m-lin-rd-rev-fn (min max)
+  (lambda (x) (round (* 127 (/ (- x min) (- max min))))))
+
+
+(defmacro with-lin-midi-fn ((min max) &body body)
+  "return closure with ipfn bound to a linear interpolation of the
+input range 0..127 between min and max."
+  `(let ((ipfn (ou:ip-lin ,min ,max 128)))
+     (lambda (d2)
+       (when (numberp d2)
+         ,@body))))
+
+(defmacro with-exp-midi-fn ((min max) &body body)
+  "return closure with ipfn bound to an exponential interpolation of
+the input range 0..127 between min and max."
+  `(let ((ipfn (ou:ip-exp ,min ,max 128)))
+     (lambda (d2)
+       (when (numberp d2)
+         ,@body))))
+
 
 (defgeneric copy-instance (object &rest initargs &key &allow-other-keys)
   (:documentation "Makes and returns a shallow copy of OBJECT.
@@ -1143,11 +1223,73 @@ Works on all sequence types."
       (apply #'reinitialize-instance copy initargs))))
 
 (defmacro dovector ((var vector &optional (result nil)) &body body)
+  "dolist for vectors. The optional result parameter can be
+modified in the body to enable returning a value."
   `(loop
      for ,var across ,vector
+     with result = ,result
      do (progn
           ,@body)
-     finally (return ,result)))
+     finally (return result)))
+
+#|
+(dovector (x #(1 2 3 4 5) '())          ;
+  (push x result))
+
+(dovector (x #(1 2 3 4 5) 0)
+  (incf result x))
+
+|#
 
 (define-modify-macro multf (&optional (number 1)) *
   "like incf but multiplying instead of adding.")
+
+#|
+(defmacro rmprop (plist key &optional default)
+  "like getf, but removing the property from the plist."
+  `(prog1
+       (getf ,plist ,key ,default)
+     (remf ,plist ,key)))
+|#
+
+(defun array-slice (arr row)
+    (make-array (array-dimension arr 1) 
+      :displaced-to arr 
+      :displaced-index-offset (* row (array-dimension arr 1))))
+
+;;; from cm:
+
+(defun cd (&optional (dirarg (user-homedir-pathname )))
+  (let ((dir (if (stringp dirarg)
+                 (string-right-trim '(#\/) dirarg)
+                 dirarg)))
+    (sb-posix:chdir dir)
+    (let ((host (pathname-host dir))
+          (name (pathname-name dir))
+          (path (pathname-directory dir)))
+      ;; allow dirs without ending delim "/tmp"
+      (when name
+        (setq path (append path (list name))))
+      (setq *default-pathname-defaults*
+            (make-pathname :host host :directory path))
+      (namestring *default-pathname-defaults*))))
+
+(defun pwd ()
+  (namestring
+   (make-pathname :host (pathname-host *default-pathname-defaults*)
+                  :directory (pathname-directory
+                              *default-pathname-defaults*))))
+
+
+(defun parse-props (props seq)
+  (loop for prop in props
+        collect (list
+                 prop
+                 `(getf ,seq ,(intern (string-upcase (symbol-name prop)) 'keyword)))))
+
+;;; (parse-props '(x1 x2 y1 y2 color) 'test)
+
+(defmacro with-props (props seq &body body)
+  `(let ,(parse-props `,props `,seq)
+     ,@body))
+

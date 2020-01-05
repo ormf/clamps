@@ -34,7 +34,7 @@
    #:GET-DUPLICATES
    #:ALL-PERMUTATIONS
    #:COMBINATIONS
-   #:REVERSE_ALL
+   #:REVERSE-ALL
    #:PARAM-EXP-FUNC
    #:REPEAT
    #:RANGE
@@ -45,6 +45,7 @@
    #:SETF-DEFAULT
    #:STR-CONCAT
    #:SLURP
+   #:SLURP-STRING
    #:SPIT
    #:MAKE-KEYWORD
    #:MAP-ALL-PAIRS
@@ -64,7 +65,22 @@
    #:R-EXP
    #:R-LIN
    #:N-EXP-DEV
+   #:N-LIN-DEV
+   #:M-EXP-DEV
+   #:M-LIN-FN
+   #:M-LIN-REV-FN
+   #:M-LIN-RD-FN
+   #:M-LIN-RD-REV-FN
+   #:M-EXP-FN
+   #:M-EXP-REV-FN
    #:COPY-INSTANCE
    #:UCOPY
    #:MULTF
-   ))
+   #:RMPROP
+   #:ARRAY-SLICE
+   #:REPEAT-FORMAT
+   #:CD
+   #:PWD
+   #:WITH-PROPS
+   #:WITH-LIN-MIDI-FN
+   #:WITH-EXP-MIDI-FN))
