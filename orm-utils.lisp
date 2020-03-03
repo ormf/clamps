@@ -857,9 +857,8 @@ the function will blow the stack!"
 |#
 
 (defun repeat (n elem)
-  "return a list with n elems."
-  (if (= n 0) ()
-      (cons elem (repeat (- n 1) elem))))
+  "return a list with n occurences of elem."
+  (if (> n 0) (cons elem (repeat (- n 1) elem))))
 
 (defun range (&rest args)
   "like clojure's range.
@@ -868,8 +867,9 @@ the function will blow the stack!"
    (range start end) 
    (range start end step) 
 
-   Return a list of nums from start (inclusive) to
-   end (exclusive) by step. Start and step are optional args."
+   Return a list of nums from start (inclusive) to end (exclusive) by
+   step. Start and step are optional args defaulting to 0 and 1
+   respectively."
   (destructuring-bind (start end step)
       (cond
         ((third args) args)
@@ -879,6 +879,23 @@ the function will blow the stack!"
 
 ;;; (range 1 10 2)
 
+#|
+
+;;; recursive definition
+
+(defun range (&rest args)
+  (destructuring-bind (start end step)
+      (cond
+        ((third args) args)
+        ((second args) (list (first args) (second args) 1))
+        (t (list 0 (first args) 1)))
+    (labels ((inner (i) (if (< i end) (cons i (inner (+ i step))))))
+      (inner start))))
+
+
+|#
+
+;;; (range 0 10 1)
 (defun sum-x (n)
  (* n (+ n 1) 1/2))
 
@@ -1134,6 +1151,11 @@ Works on all sequence types."
   "random value between [min..max] with linear distribution."
   (+ min (* (- max min) (random 1.0))))
 
+(defun rand (max)
+  "random value between [min..max] with linear distribution."
+  (r-lin 0 max))
+
+
 (defun n-exp-dev (x max)
   "return a random deviation factor, the deviation being exponentially
 interpolated between 1 for x=0 and [1/max..max] for x=1."
@@ -1147,6 +1169,22 @@ interpolated between 0 for x=0 and [-max..max] for x=1."
   (if (zerop x)
       0
       (* max (- x (random (* 2.0 x))))))
+
+(defun n-lin-fn (min max)
+  "linear interpolation for normalized x."
+  (lambda (x) (n-lin x min max)))
+
+(defun n-exp-fn (min max)
+  "exponential interpolation for normalized x."
+  (lambda (x) (n-exp x min max)))
+
+(defun n-lin-rev-fn (min max)
+  "reverse of linear interpolation for normalized x."
+  (lambda (x) (/ (- x min) (- max min))))
+
+(defun n-exp-rev-fn (min max)
+  "reverse of exponential interpolation for normalized x."
+  (lambda (x) (log (/ x min) (/ max min))))
 
 (defun m-exp-dev (x max)
   "return a random deviation factor, the deviation being exponentially
@@ -1162,6 +1200,10 @@ interpolated between 0 for x=0 and [-max..max] for x=127."
   "exp interpolation for midivalues (x = [0..127])"
   (lambda (x) (m-exp x min max)))
 
+(defun m-exp-zero-fn (min max)
+  "exp interpolation for midivalues (x = [0..127])"
+  (lambda (x) (m-exp-zero x min max)))
+
 (defun m-exp-rd-fn (min max)
   "rounded exp interpolation for midivalues (x = [0..127])"
   (lambda (x) (round (m-exp x min max))))
@@ -1175,7 +1217,13 @@ interpolated between 0 for x=0 and [-max..max] for x=127."
   (lambda (x) (round (m-lin x min max))))
 
 (defun m-exp-rev-fn (min max)
+  "exp reverse interpolation fn for midivalues (x = [0..127])"
   (lambda (x) (round (* 127 (log (/ x min) (/ max min))))))
+
+(defun m-exp-zero-rev-fn (min max)
+  "exp reverse interpolation fn returning midivalues [0..127]"
+  (lambda (x) (if (zerop x) 0
+             (round (* 127 (log (/ x min) (/ max min)))))))
 
 (defun m-exp-rd-rev-fn (min max)
   (lambda (x) (round (* 127 (log (/ x min) (/ max min))))))
@@ -1293,3 +1341,30 @@ modified in the body to enable returning a value."
   `(let ,(parse-props `,props `,seq)
      ,@body))
 
+(defmacro defconst (symbol value)
+ `(defconstant ,symbol 
+    (or (and (boundp ',symbol) 
+             (symbol-value ',symbol))
+        ,value)))
+
+(defun r-elt (seq &rest idxs)
+  "retrieve element from seq applying the #'elt function recursively
+with idxs taken from the rest arg."
+  (reduce #'elt idxs :initial-value seq))
+
+(defun r-getf (seq &rest props)
+  "recursively traverse nested seq using props as idx. The values for
+props can be either numbers using #'elt or keywords/symbols (using
+getf)."
+  (reduce #'getf-or-elt props :initial-value seq))
+
+(defun getf-or-elt (seq id)
+  "depending on the type of id retrieve the element with the #'elt
+function or with getf."
+  (cond
+    ((numberp id) (elt seq id))
+    (t (getf seq id))))
+
+(defun index-seq (seq &optional (n 0))
+  (cond ((null seq) nil)
+        (t (cons (cons n (first seq)) (index-seq (rest seq) (1+ n))))))

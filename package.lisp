@@ -59,11 +59,16 @@
    #:WITH-PROPS
    #:N-EXP
    #:N-LIN
+   #:N-LIN-FN
+   #:N-EXP-FN
+   #:N-LIN-REV-FN
+   #:N-EXP-REV-FN
    #:M-EXP
    #:M-EXP-ZERO
    #:M-LIN
    #:R-EXP
    #:R-LIN
+   #:RAND
    #:N-EXP-DEV
    #:N-LIN-DEV
    #:M-EXP-DEV
@@ -73,6 +78,10 @@
    #:M-LIN-RD-REV-FN
    #:M-EXP-FN
    #:M-EXP-REV-FN
+   #:M-EXP-ZERO-FN
+   #:M-EXP-ZERO-REV-FN
+   #:M-EXP-RD-FN
+   #:M-EXP-RD-REV-FN
    #:COPY-INSTANCE
    #:UCOPY
    #:MULTF
@@ -83,4 +92,9 @@
    #:PWD
    #:WITH-PROPS
    #:WITH-LIN-MIDI-FN
-   #:WITH-EXP-MIDI-FN))
+   #:WITH-EXP-MIDI-FN
+   #:DEFCONST
+   #:R-ELT
+   #:R-GETF
+   #:INDEX-SEQ
+   ))
