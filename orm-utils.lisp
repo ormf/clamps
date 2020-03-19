@@ -1131,6 +1131,12 @@ Works on all sequence types."
   "linear interpolation for midivalues (x = [0..127])"
   (+ min (* (- max min) (/ x 127))))
 
+(defun ntom (n)
+  (round (* n 127)))
+
+(defun mton (m)
+  (float (/ m 127)))
+
 ;;; (n-lin 0 10 1000) -> 10
 ;;; (n-lin 0.5 10 1000) -> 505.0
 ;;; (n-lin 1 10 1000) -> 1000

@@ -57,6 +57,8 @@
    #:RECALL-RANDOM-STATE
    #:COUNT-ELEMENTS
    #:WITH-PROPS
+   #:MTON
+   #:NTOM
    #:N-EXP
    #:N-LIN
    #:N-LIN-FN
