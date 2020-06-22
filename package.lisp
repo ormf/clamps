@@ -70,7 +70,7 @@
    #:M-LIN
    #:R-EXP
    #:R-LIN
-   #:RAND
+   #:RANDM
    #:N-EXP-DEV
    #:N-LIN-DEV
    #:M-EXP-DEV

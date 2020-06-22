@@ -133,7 +133,7 @@ list when applied."
              (map-tree fn (rest tree))))))
 |#
 
-(defun map-tree (fn tree &key (test (lambda (elem) (not (consp (first elem))))))
+(defun map-tree (fn tree &key (test (lambda (elem) (not (consp elem)))))
   "map function recursively on all leaf nodes of given
 tree (represented as a nested list). leaf nodes are determind by
 applying #'test on the list containing them. If the call doesn't
@@ -1157,10 +1157,13 @@ Works on all sequence types."
   "random value between [min..max] with linear distribution."
   (+ min (* (- max min) (random 1.0))))
 
-(defun rand (max)
+(defun randm (max)
   "random value between [min..max] with linear distribution."
   (r-lin 0 max))
 
+(defun rand (max)
+  "random value between [min..max] with linear distribution."
+  (r-lin 0 max))
 
 (defun n-exp-dev (x max)
   "return a random deviation factor, the deviation being exponentially
