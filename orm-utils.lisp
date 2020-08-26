@@ -281,7 +281,7 @@ return a cons cell, it is a leaf node. Return the modified tree."
 
 
 #|
- (flatten-fn '((a b)(((c d) (e f)) (g h)) (i k)))
+ (flatten-fn '(1 2 3 (a b)(((c d) (e f)) (g h)) (i k)))
  -> (a b c d e f g h i k)
 
  (flatten-fn '((a b)(((c d) (e f)) (g h)) (i k)) :fn #'caar)
@@ -289,7 +289,7 @@ return a cons cell, it is a leaf node. Return the modified tree."
 
 |#
 
-(defun flatten (seq &key (test #'consp) (key #'car))
+(defun flatten (seq &key (test #'atom) (key #'identity))
   "remove all brackets except the outmost in seq."
   (flatten-fn seq :test test :key key))
 

@@ -71,9 +71,11 @@
    #:R-EXP
    #:R-LIN
    #:RANDM
+   #:RAND
    #:N-EXP-DEV
    #:N-LIN-DEV
    #:M-EXP-DEV
+   #:M-LIN-DEV
    #:M-LIN-FN
    #:M-LIN-REV-FN
    #:M-LIN-RD-FN
