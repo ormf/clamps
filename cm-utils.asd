@@ -27,6 +27,7 @@
                #:orm-utils
                #:fomus
                #:cm-fomus
+               #:cm-svg
                #:cl-ppcre
                #:cl-coroutine
                #:cm-incudine

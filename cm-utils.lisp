@@ -139,6 +139,37 @@ linear (base=1)."
 ;; (next pat1 #t) -> (E C D A B)
 ;; (next pat1 #t) -> (A B C D E)
 
+(defun chord-derive (seq &key (level '(1)))
+  "rotation of seq transposed to the first note of the original seq
+developed/used by Boulez."
+  (let ((seq (mapcar #'keynum seq)))
+    (loop
+      for l in level
+      for transposition = (- (first seq) (elt seq l))
+      collect (mapcar (lambda (pitch) (note (+ pitch transposition)))
+                      (ou:rotate seq l)))))
+
+;;; (chord-derive '(gs3 c5 f5 ef4 bf2 cs5) :level '(1 2))
+
+(defun display (seqs &key (file "/tmp/test.ly"))
+  "display a (seq of) seq of notes in lilypond."
+  (let ((offs 0))
+    (events
+     (loop
+       for seq in seqs
+       append (loop
+                for evt in seq
+                collect (new midi :time offs :keynum (keynum evt))
+                do (incf offs 0.5)))
+     file
+     :global (loop
+               for offs = 0 then (+ offs (length seq))
+               for seq in seqs
+               collect (new fomus:timesig :off offs :time (list (length seq) 8))))))
+
+;;; (display (chord-derive '(gs3 c5 f5 ef4 bf2 cs5) :level '(1 2)))
+
+
 (defun incudine.scratch::node-free-unprotected ()
   (incudine:free (incudine:node 0))
   (dotimes (chan 4)
