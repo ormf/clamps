@@ -163,11 +163,25 @@ developed/used by Boulez."
                 do (incf offs 0.5)))
      file
      :global (loop
-               for offs = 0 then (+ offs (length seq))
+               for offs = 0 then (+ offs (/ (length seq) 2))
                for seq in seqs
-               collect (new fomus:timesig :off offs :time (list (length seq) 8))))))
+               collect (let ((tsig (/ (length seq) 8)))
+                         (new fomus:timesig :off offs :time (list (numerator tsig)
+                                                                  (denominator tsig))))))))
 
 ;;; (display (chord-derive '(gs3 c5 f5 ef4 bf2 cs5) :level '(1 2)))
+
+(defun play-midi (seqs &key (tempo 60))
+  "display a (seq of) seq of notes in lilypond."
+  (let ((offs 0)
+        (dtime (float (/ 60 tempo))))
+    (sprout
+     (loop
+       for seq in seqs
+       append (loop
+                for evt in seq
+                collect (new midi :time offs :keynum (keynum evt) :duration dtime)
+                do (incf offs dtime))))))
 
 
 (defun incudine.scratch::node-free-unprotected ()
