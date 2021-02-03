@@ -127,7 +127,7 @@ of neighboring elements."
 linear (base=1)."
   (interpl (random 1.0) (list 0 min 1 max) :base base))
 
-(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl) 'cm)
+
 
 
 ;; (defparameter pat1 nil)
@@ -182,10 +182,57 @@ developed/used by Boulez."
                 for evt in seq
                 collect (new midi :time offs :keynum (keynum evt) :duration dtime)
                 do (incf offs dtime))))))
-
+(defun play-svg (file &key (region '(0 nil)) (tscale 0.25))
+  (sprout
+   (destructuring-bind (start end) region
+     (loop for evt in (subobjects (import-events file :x-scale 1/8))
+           append (if (and (>= (sv evt :time) (* 4 start))
+                           (or (null end) (< (sv evt :time) (* 4 end))))
+                      (list (progn
+                              (setf (sv evt :time) (* tscale (+ (sv evt :time) (* -4 start))))
+                              (setf (sv evt :duration) (* tscale (+ (sv evt :duration))))
+                              evt)))))
+   :to *rts-out*))
 
 (defun incudine.scratch::node-free-unprotected ()
   (incudine:free (incudine:node 0))
   (dotimes (chan 4)
     (output (new midi-control-change :controller +all-notes-off+ :value 0 :channel chan)))
   :interrupted)
+
+(defun calc-dur (min max orig-dur)
+  "calculate effective duration of exponential function from minspeed,
+maxspeed and original duration."
+  (/ (* orig-dur (log (/ max min)))
+     (- max min)))
+
+(defun vstime->time (min max bufflen)
+  "return a function calculating the sample-pos in a buffer at a given
+time with given minspeed, maxspeed and bufflength"
+  (let* ((a (/ max min))
+	 (b (/ bufflen (- a 1)))
+	 (dur (calc-dur min max bufflen)))
+    (format t "f(x) = ~a * (~a^x - 1)~%" b a)
+    (lambda (time) (- (* b (expt a (/ time dur))) b))))
+
+;;; (calc-dur 0.11552454 1.8483926 5000) -> 8000
+
+;;; (calc-dur 1 8 10000)
+
+
+
+;;; (calc-dur 1 8 10000)
+
+;;; (funcall (get-sample-of-time-fn 0.11552454 1.8483926 5000) 8000) => 5000.002
+
+
+
+(defun time->vstime (min max bufflen)
+  "return a function calculating the real time of a sample in the buffer with varispeed
+applied. This is the inverse function of the varispeed function."
+  (let* ((dur (calc-dur min max bufflen))
+	 (a (/ max min)))
+    (lambda (buff-pos)
+      (* dur (log (+ (* (/ buff-pos bufflen) (- a 1)) 1) a)))))
+
+(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime vstime->time calc-dur chord-derive display play-midi play-svg) 'cm)
