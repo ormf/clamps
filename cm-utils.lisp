@@ -206,12 +206,12 @@ maxspeed and original duration."
   (/ (* orig-dur (log (/ max min)))
      (- max min)))
 
-(defun vstime->time (min max bufflen)
-  "return a function calculating the sample-pos in a buffer at a given
-time with given minspeed, maxspeed and bufflength"
+(defun vstime->time-fn (min max end-time)
+  "return a function calculating e.g. the sample-pos in a buffer at a
+given time with given minspeed, maxspeed and end-time (= bufferlength)."
   (let* ((a (/ max min))
-	 (b (/ bufflen (- a 1)))
-	 (dur (calc-dur min max bufflen)))
+	 (b (/ end-time (- a 1)))
+	 (dur (calc-dur min max end-time)))
     (format t "f(x) = ~a * (~a^x - 1)~%" b a)
     (lambda (time) (- (* b (expt a (/ time dur))) b))))
 
@@ -219,20 +219,48 @@ time with given minspeed, maxspeed and bufflength"
 
 ;;; (calc-dur 1 8 10000)
 
+;;; (funcall (vstime->time-fn 0.11552454 1.8483926 5000) 8000) => 5000.002
 
-
-;;; (calc-dur 1 8 10000)
-
-;;; (funcall (get-sample-of-time-fn 0.11552454 1.8483926 5000) 8000) => 5000.002
-
-
-
-(defun time->vstime (min max bufflen)
+(defun time->vstime-fn (min max end-time)
   "return a function calculating the real time of a sample in the buffer with varispeed
 applied. This is the inverse function of the varispeed function."
-  (let* ((dur (calc-dur min max bufflen))
+  (let* ((dur (calc-dur min max end-time))
 	 (a (/ max min)))
     (lambda (buff-pos)
-      (* dur (log (+ (* (/ buff-pos bufflen) (- a 1)) 1) a)))))
+      (* dur (log (+ (* (/ buff-pos end-time) (- a 1)) 1) a)))))
 
-(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime vstime->time calc-dur chord-derive display play-midi play-svg) 'cm)
+(defun vstime->speed-fn (min max end-time)
+  (let* ((a (/ max min)))
+    (if (< (abs (log a)) 0.01)
+	;; linear case:
+	(let* ((avg-speed (/ (+ min max) 2))
+	       (dur (/ end-time avg-speed))
+	       (fac (/ (- max min) dur)))
+	  (lambda (time)
+	    (+ min (* time fac))))
+	;; exponential case:
+	(let* ((dur (calc-dur min max end-time))
+	       (b (/ end-time (- a 1))))
+	  (lambda (time)
+	    (* b (/ (log a) dur) (expt a (/ time dur))))))))
+
+(defun time->speed-fn (min max end-time)
+  (let* ((a (/ max min)))
+    (if (< (abs (log a)) 0.01)
+	;; linear case:
+	(let* ((avg-speed (/ (+ min max) 2))
+	       (dur (/ end-time avg-speed))
+	       (fac (/ (- max min) dur)))
+	  (lambda (time)
+	    (+ min (* time fac))))
+	;; exponential case:
+	(let* ((dur (calc-dur min max end-time))
+	       (b (/ end-time (- a 1))))
+	  (lambda (time)
+	    (* b (/ (log a) dur) (expt a (/ time dur))))))))
+
+(defun time->speed-fn (min max end-time)
+  (lambda (time)
+    (+ min (* (/ time end-time) (- max min)))))
+
+(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime-fn vstime->time-fn time->speed-fn vstime->speed-fn calc-dur chord-derive display play-midi play-svg) 'cm)
