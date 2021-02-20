@@ -391,14 +391,16 @@ return a cons cell, it is a leaf node. Return the modified tree."
 ;; uses a local copy of list instead of the original.
 
 (defun rotate (list &optional (num 1))
+  "rotate a list by n elems. n can be negative. If n is larger than
+the list size it will wrap around as if the rotation was called
+recursively n times."
   (let* ((new-list (copy-tree list))
          (num-normalized (mod num (nconc-get-size new-list)))) ;; innermost function nconcs new-list to an endless list and gets size in one step
     (if (zerop num-normalized) list
       (let* ((newlast (nthcdr (- num-normalized 1) new-list)) ;; determine the new last element of the list (wraps around for nums > (length list) or < 0) and store into variable
              (newfirst (cdr newlast))) ;; the new listhead is the cdr of the last element; also stored in variable
-        (progn
-          (setf (cdr newlast) nil) ;; set the cdr of the new last element to nil
-          newfirst))))) ;; return the new first element (listhead)
+        (setf (cdr newlast) nil) ;; set the cdr of the new last element to nil
+        (values newfirst))))) ;; return the new first element (listhead)
 
 (defun transpose-list (list-of-lists)
   (apply #'mapcar #'list list-of-lists))
@@ -1092,11 +1094,29 @@ Works on all sequence types."
 
 |#
 
+(defun parse-props (props seq)
+  (loop for prop in props
+        collect (list
+                 prop
+                 `(getf ,seq ,(intern (string-upcase (symbol-name prop)) 'keyword)))))
+
+
+
+;;; (parse-props '(x1 x2 y1 y2 color) 'test)
+
+#|
+(defmacro with-props (props seq &body body)
+  `(let ,(parse-props `,props `,seq)
+     ,@body))
+|#
+
 (defmacro with-props (vars proplist &body body)
   `(let ,(mapcar (lambda (a)
                    (list a `(getf ,proplist ,(intern (symbol-name a) :keyword))))
                 vars)
-    ,@body))
+     ,@body))
+
+
 
 (defun n-exp (x min max)
   "linear interpolation for normalized x."
@@ -1162,15 +1182,18 @@ Works on all sequence types."
   (r-lin 0 max))
 
 (defun rand (max)
-  "random value between [min..max] with linear distribution."
+  "random value between [0..max-1] with linear distribution."
   (r-lin 0 max))
 
 (defun n-exp-dev (x max)
+  "return a deviation factor, the deviation being exponentially
+interpolated between 1 for x=0 and [1/max..max] for x=1."
+  (expt max (- 1 (* 2.0 x))))
+
+(defun r-exp-dev (max)
   "return a random deviation factor, the deviation being exponentially
 interpolated between 1 for x=0 and [1/max..max] for x=1."
-  (if (zerop x)
-      1
-      (expt max (- x (random (* 2.0 x))))))
+  (n-exp-dev (random 1.0) max))
 
 (defun n-lin-dev (x max)
   "return a random deviation offset, the deviation being linearly
@@ -1336,19 +1359,6 @@ modified in the body to enable returning a value."
    (make-pathname :host (pathname-host *default-pathname-defaults*)
                   :directory (pathname-directory
                               *default-pathname-defaults*))))
-
-
-(defun parse-props (props seq)
-  (loop for prop in props
-        collect (list
-                 prop
-                 `(getf ,seq ,(intern (string-upcase (symbol-name prop)) 'keyword)))))
-
-;;; (parse-props '(x1 x2 y1 y2 color) 'test)
-
-(defmacro with-props (props seq &body body)
-  `(let ,(parse-props `,props `,seq)
-     ,@body))
 
 (defmacro defconst (symbol value)
  `(defconstant ,symbol 

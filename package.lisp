@@ -7,7 +7,7 @@
   (:export 
    #:FILTER
    #:REDUCING
-   #:WHILE
+;;   #:WHILE
    #:EVERY-NTH
    #:FIRSTN
    #:SORT-BY
@@ -74,6 +74,7 @@
 ;;   #:RAND
    #:N-EXP-DEV
    #:N-LIN-DEV
+   #:R-EXP-DEV
    #:M-EXP-DEV
    #:M-LIN-DEV
    #:M-LIN-FN
