@@ -29,13 +29,6 @@
   "halfsteps to ratio"
   (expt 2 (/ steps 12)))
 
-(defun skip-to-next-region (in)
-  (loop
-    for line = (read-line in nil nil)
-    while line
-    until (string= line "<region>")
-    finally (return line)))
-
 (defun line->plist (line)
   "convert all key=val pairs in line into a plist with alternating :key val entries.
 sample paths and key names are converted to linux/cl
@@ -50,6 +43,13 @@ conventions. Returns the plist."
                      (t (list (intern (string-upcase (regex-replace "_" key "-")) 'keyword)
                               (read-from-string value))))))))
 
+(defun skip-to-next-region (in)
+  (loop
+    for line = (read-line in nil nil)
+    while line
+    until (string= line "<region>")
+    finally (return line)))
+
 (defun parse-region (in)
     (loop
       for line = (read-line in nil nil)
@@ -62,12 +62,10 @@ conventions. Returns the plist."
   (with-open-file (in file)
     (loop
       while (skip-to-next-region in)
-      for region = (parse-region in)
-      collect region into result
+      collect (parse-region in) into result
       finally (return result))))
 
 ;;; (parse-sfz "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz")
-
 
 (defun random-elem (seq)
   "return a random element of seq."
@@ -98,11 +96,13 @@ all applicable sample-defs at the keynum's array-index."
                    (/ (or (getf sample-data :tune) 0) 100.0)))
              12)))
 
-(defun load-sfz (file name)
+(defun load-sfz (file name &key force)
   "load sfz file into a preset with the id name. In case this preset
-already exists, the old one will be overwritten."
-  (setf (gethash name *sf-tables*)
-        (get-keynum-array file))
+already exists, the old one will only be overwritten if :force is set
+to t."
+  (if (or force (not (gethash name *sf-tables*)))
+      (setf (gethash name *sf-tables*)
+            (get-keynum-array file)))
   name)
 
 ;;; (load-sfz "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv)
@@ -110,14 +110,14 @@ already exists, the old one will be overwritten."
 (defun db->amp (db)
   (expt 10 (/ db 20)))
 
-(defun play-lsample (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*))
+(defun play-lsample (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
   (let* ((map (gethash preset sf-tables))
          (sample (random-elem (aref map (round pitch))))
          (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
          (buffer (incudine::lsample-buffer sample))
          (loopstart (incudine::lsample-loopstart sample))
          (loopend (incudine::lsample-loopend sample)))
-    (incudine::lsample-play buffer dur (db->amp db) rate pan loopstart loopend)))
+    (incudine::lsample-play buffer dur (db->amp db) rate pan loopstart loopend startpos)))
 
 ;;; (play-lsample 73.3 -6 1 :pan 0.5)
 
@@ -139,9 +139,6 @@ already exists, the old one will be overwritten."
 
 (defun abs-path (sample-path sfz-file-path)
   (merge-pathnames sample-path sfz-file-path))
-
-(defun load-sample (entry dir)
-  (buffer-load (abs-path (getf entry :sample) dir)))
 
 (defun get-keynum (entry)
   (sample (+ (getf entry :pitch-keycenter) (/ (or (getf entry :tune) 0) 100))))
@@ -224,16 +221,15 @@ contains a slot for the sample buffer data."
   (buffer-read buffer (phasor-loop rate start-pos loopstart loopend)
                :interpolation :cubic))
 
-(dsp! lsample-play ((buffer buffer) dur amp rate pan loopstart loopend)
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 1 1 0.5 0 44100)
+(dsp! lsample-play ((buffer buffer) dur amp rate pan loopstart loopend startpos)
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 1 1 0.5 0 44100 0)
   (foreach-channel
     (cout
      (pan2
       (* amp 
 	 (envelope *env1* 1 dur #'free)
-	 (buffer-loop-play buffer rate 0 loopstart loopend))
+	 (buffer-loop-play buffer rate (* startpos *sample-rate*) loopstart loopend))
       pan))))
-
 
 #|
 ;; examples: 
