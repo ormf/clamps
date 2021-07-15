@@ -20,88 +20,13 @@
 
 (in-package :cl-poolplayer)
 
-(cd "/home/orm/work/kompositionen/big-orchestra/lisp/big-orchestra")
 (setf *print-case* :downcase)
+
+(defparameter *sound-type-dirs* nil)
 
 (rts :rt-wait 5)
 
 ;;; (setf *buffers* (load-sounds "../../snd/*.wav"))
-
-
-
-(defparameter *sound-type-dirs*
-  '(:aitken-chimes "aitken-mallet/chimes"
-    :aitken-gsp "aitken-mallet/einzeln-gsp"
-    :aitken-mallet "aitken-mallet/einzeln-mallet"
-    :atoui-feder "atoui/feder"
-    :okarina "okarina"
-    :stahl-res-m1 "stahlskulptur/resonanz-mallet1"
-    :stahl-res-m2 "stahlskulptur/resonanz-mallet2"
-    :stahl-res-02 "stahlskulptur/resonanz02"
-    :stahl-res-spitz "stahlskulptur/resonanz-spitz"
-    :stahl-res-stick "stahlskulptur/resonanz-stick"
-    :stahl-trocken "stahlskulptur/trocken"
-    :stahl-schrapp "stahlskulptur/schrapp"
-    :teppich-git-perk "teppich-gitarre/perkussiv"
-    :teppich-git-ton "teppich-gitarre/ton"
-    :teppich-git-bogen-dist "teppich-gitarre/bogen-dist"
-    :teppich-git-bogen-rausch "teppich-gitarre/bogen-rausch"
-    :wohnzimmer-becken "wohnzimmer/becken"
-    :wohnzimmer-felltrommel "wohnzimmer/felltrommel"
-    :wohnzimmer-holzstick "wohnzimmer/holzstick"
-    :wohnzimmer-holzstick-spitz "wohnzimmer/holzstick-spitz"
-    :wohnzimmer-stuhlgit "wohnzimmer/stuhlgitarre"
-    :wohnzimmer-stuhlharfe "wohnzimmer/stuhlharfe"
-    :wohnzimmer-stuhlharfe-bogen "wohnzimmer/stuhlharfe-bogen"
-    :zink-yi "perkussion/generell"))
-
-
-(progn
-  (load-bo-sounds "../../snd/bo-samples")
-
-  (defparameter *pool0* (collect-pool :wohnzimmer-holzstick))
-  (defparameter *pool1* (collect-pool :aitken-gsp))
-  (defparameter *pool2* (collect-pool :aitken-mallet))
-  (defparameter *pool3* (collect-pool :stahl-trocken))
-  (defparameter *pool4* (collect-pool :atoui-feder))
-  (defparameter *pool5* (collect-pool :stahl-res-m1))
-  (defparameter *pool6* (collect-pool :stahl-res-m2))
-  (defparameter *pool7* (collect-pool :stahl-res-02))
-  (defparameter *pool8* (collect-pool :stahl-res-spitz))
-  (defparameter *pool9* (collect-pool :stahl-res-stick))
-  (defparameter *pool10* (collect-pool :stahl-schrapp))
-  (defparameter *pool11* (collect-pool :stahl-res-02))
-  (defparameter *pool12* (collect-pool :teppich-git-perk))
-  (defparameter *pool13* (collect-pool :teppich-git-ton))
-  (defparameter *pool14* (collect-pool :wohnzimmer-becken))
-  (defparameter *pool15* (collect-pool :wohnzimmer-felltrommel))
-  (defparameter *pool16* (collect-pool :wohnzimmer-holzstick))
-  (defparameter *pool17* (collect-pool :wohnzimmer-stuhlgit))
-  (defparameter *pool18* (collect-pool :wohnzimmer-stuhlharfe))
-  (defparameter *pool19* (collect-pool :wohnzimmer-holzstick-spitz))
-  (defparameter *pool20* (collect-pool :wohnzimmer-stuhlharfe-bogen))
-  (defparameter *pool21* (collect-pool :teppich-git-bogen-dist))
-  (defparameter *pool22* (collect-pool :teppich-git-bogen-rausch))
-  (defparameter *pool30* (collect-pool
-                          :wohnzimmer-holzstick
-                          :wohnzimmer-holzstick-spitz
-                          :aitken-mallet
-                          :stahl-trocken
-                          :atoui-feder
-                          :stahl-res-m1
-                          :stahl-res-m2
-                          :stahl-res-02
-                          :stahl-res-stick
-                          :stahl-res-spitz
-                          :wohnzimmer-stuhlharfe
-                          :teppich-git-ton
-                          :teppich-git-perk))
-  (defparameter *pool31* (collect-pool :zink-yi)))
-
-(defparameter *pool0-idxs* (mapcar #'buf-idx (coerce *pool0* 'list)))
-(defparameter *pool1-idxs* (mapcar #'buf-idx (coerce *pool1* 'list)))
-(defparameter *pool2-idxs* (mapcar #'buf-idx (coerce *pool2* 'list)))
-(defparameter *pool31-idxs* (mapcar #'buf-idx (coerce *pool31* 'list)))
 
 (setf *players* (make-array 16
                             :element-type 'eventplayer
@@ -117,17 +42,17 @@
 
 ;;; (start-seq #'main-seq-02)
 
-(defun init-bo (time)
-  time
-  (load-presets)
-  (init-netsend)
+;;; (cd "/home/orm/work/programmieren/lisp/cl-poolplayer")
+(defun init-poolplayer ()
+  (load-presets "presets/cl-poolplayer-01.lisp")
+;;;  (init-netsend)
   (init-midi)
   (def-sequences)
   (stop-all-seqs)
   ;;  (audio-test 13)
   )
 ;;; (incudine:rt-start)
-(init-bo 5)
+;;; (init-poolplayer)
 ;; (start-bo-seqs (+ (now) 10))
 
 #|

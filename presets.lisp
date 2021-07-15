@@ -98,7 +98,7 @@
                      ,val))))
 
 
-(defmacro digest-bo-preset (ref args)
+(defmacro digest-poolplayer-preset (ref args)
   (let ((preset (gensym "preset")))
     `(let ((,preset (aref *presets* ,ref)))
        (progn
@@ -205,10 +205,10 @@
 
 ;;; (save-presets :file "presets/test02.lisp")
 
-(defun load-presets (&key (file *presets-file*))
+(defun load-presets (file)
   (load file))
 
-;;; (load-presets)
+;;; (load-presets "presets/big-orchestra01.lisp")
 
 (defparameter *curr-preset-no* 0)
 (defparameter *curr-audio-preset-no* 0)

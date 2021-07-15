@@ -27,6 +27,13 @@
    (time :accessor :time :initform 0 :initarg :time)
    (preset :accessor :preset :initarg :preset)))
 
+(defclass eventplotter ()
+  ((playing :accessor :playing :initform t :initarg :playing)
+   (dur :accessor :dur :initform 3 :initarg :dur)
+   (end :accessor :end :initform 0 :initarg :end)
+   (time :accessor :time :initform 0 :initarg :time)
+   (preset :accessor :preset :initarg :preset)))
+
 (defgeneric stop (p))
 
 (defmethod stop ((p eventplayer))
@@ -37,7 +44,15 @@
 (defmethod preset-play ((p eventplayer) preset dur &rest args)
   (sv p
       :playing t
-      :end (if dur (+ (now) dur))
-      :dur dur
-      :preset preset)
+    :end (if dur (+ (now) dur))
+    :dur dur
+    :preset preset)
   (funcall #'perform p (now) args))
+
+(defmethod preset-play ((p eventplotter) preset dur &rest args)
+  (sv p
+      :playing t
+    :end (if dur (+ (getf args :time) dur))
+    :dur dur
+    :preset preset)
+  (funcall #'perform p (getf args :time) args))

@@ -19,5 +19,6 @@
                (:file "cl-poolplayer")
                (:file "sequencer")
                (:file "midictl")
-;;               (:file "init")
+               (:file "cm-poolplayer")
+               (:file "init")
                )) 

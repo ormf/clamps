@@ -35,7 +35,7 @@ of the number of files and return the array."
 
 ;;; (cl-plot:plot (aref *buffers* 2))
 
-(defun gen-bo-buf-idxs (bufs)
+(defun gen-poolplayer-buf-idxs (bufs)
   (loop
     with idx-hash = (make-hash-table)
     for idx from 0
@@ -43,9 +43,9 @@ of the number of files and return the array."
     do (setf (gethash buf idx-hash) idx)
     finally (return idx-hash)))
 
-(defun load-bo-sounds (dir)
+(defun load-poolplayer-sounds (dir sound-type-dirs)
   (setf *buffers* #())
-  (loop for (type subdir) on *sound-type-dirs* by #'cddr
+  (loop for (type subdir) on sound-type-dirs by #'cddr
         with idx = 0
         do (progn
              (vector-extend *buffers* (load-sounds (format nil "~a/~a/*.wav" dir subdir)))
@@ -53,7 +53,7 @@ of the number of files and return the array."
                (setf (gethash type *snd-type-hash*)
                      (loop for n from idx below curr-idx collect n))
                (setf idx curr-idx))))
-  (setf *buffer-idxs* (gen-bo-buf-idxs *buffers*)))
+  (setf *buffer-idxs* (gen-poolplayer-buf-idxs *buffers*)))
 
 (defun collect-pool (&rest keys)
   (coerce

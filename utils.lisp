@@ -127,3 +127,6 @@ num at limit."
   seq)
 
 |#
+
+(defun buffer-idx (buffer)
+  (gethash buffer *buffer-idxs*))

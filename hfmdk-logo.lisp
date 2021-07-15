@@ -18,7 +18,7 @@
 ;;;
 ;;; **********************************************************************
 
-(in-package :big-orchestra)
+(in-package :cl-poolplayer)
 
 (defparameter *sequences* nil)
 
@@ -210,6 +210,20 @@ removing it from *sequences*."
    :durfn (lambda () 0.5)
    :afterfn (lambda () (r-exp 2 5))))
 
+(defparameter teppichtrampeln
+  (make-song
+   :name "teppichtrampeln"
+   :afterfn (lambda () (r-exp 2 5))                                                
+   :playfn                                                                    
+   (playfn 15                                                                 
+           (list                                                              
+            :bufferfn (lambda (x) x (r-elt *pool12*)) 
+            :outfn (fig12-out (random 9) *circle-cw*)
+            :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -50))
+            :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) (- -6 (random 12) ) -32))
+            :dtimefn (lambda (x) (n-exp (interp x 0 0 1 1) (+ 0.02 (random 0.02)) (+ 1.5 (random 2.0))))))))
+
+#|
 (collect-argvals)
 
 (get-preset-fn hfmdk-01 :g1)
@@ -217,6 +231,7 @@ removing it from *sequences*."
 (play-song hfmdk-01)
 
 (play-song hfmdk-logo-01)
+|#
 
 (defun def-sequences ()
   (defparameter holz-01
@@ -236,37 +251,26 @@ removing it from *sequences*."
      :durfn (lambda () (r-exp 10 25))
      :afterfn (lambda () (r-exp 2 5))))
 
-  (defparameter teppichtrampeln                                                 
-    (make-song
-     :name "teppichtrampeln"
-     :afterfn (lambda () (r-exp 2 5))                                                
-     :playfn                                                                    
-     (playfn 15                                                                 
-             (list                                                              
-             :bufferfn (lambda (x) x (r-elt *pool12*)) 
-             :outfn (fig12-out (random 9) *circle-cw*)
-             :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -50))
-             :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) (- -6 (random 12) ) -32))
-             :dtimefn (lambda (x) (n-exp (interp x 0 0 1 1) (+ 0.02 (random 0.02)) (+ 1.5 (random 2.0))))))))
+
  
 ;;;  (setf *net-debug* t)
-    (defparameter teppich-dicht
-      (make-song
-       :name "teppich-dicht"
-       :afterfn (lambda () (r-exp 2 5))
-       :durfn (lambda () (r-exp 22 40))
-       :playfn (lambda (dur)
-                 (let ((start (now))
-                       (mindur 1.0))
-                   (labels ((durfn () (r-exp 4 9))
-                            (recurse-fn (time dur end)
-                              (funcall (song-playfn teppichtrampeln) dur)
-                              (let* ((next (+ time (r-exp 0.5 (- (max 4 dur) 2))))
-                                     (nextdur (marginclip (durfn) (- end next) mindur)))
-                                (if (and (< next end)
-                                         (> nextdur mindur))
-                                    (at next #'recurse-fn next nextdur end)))))
-                     (recurse-fn start (durfn) (+ start dur)))))))
+  (defparameter teppich-dicht
+    (make-song
+     :name "teppich-dicht"
+     :afterfn (lambda () (r-exp 2 5))
+     :durfn (lambda () (r-exp 22 40))
+     :playfn (lambda (dur)
+               (let ((start (now))
+                     (mindur 1.0))
+                 (labels ((durfn () (r-exp 4 9))
+                          (recurse-fn (time dur end)
+                            (funcall (song-playfn teppichtrampeln) dur)
+                            (let* ((next (+ time (r-exp 0.5 (- (max 4 dur) 2))))
+                                   (nextdur (marginclip (durfn) (- end next) mindur)))
+                              (if (and (< next end)
+                                       (> nextdur mindur))
+                                  (at next #'recurse-fn next nextdur end)))))
+                   (recurse-fn start (durfn) (+ start dur)))))))
 
   (defparameter teppich-dicht
     (make-song
@@ -1065,3 +1069,4 @@ removing it from *sequences*."
 |#
 
 
+(def-sequences)

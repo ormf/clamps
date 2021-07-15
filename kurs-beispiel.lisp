@@ -25,7 +25,7 @@
   (apply #'play-buffer-stretch-env-pan-out* params)
 ;;;  (apply #'send-to-remote params)
   )
-(init-bo 0)
+(init-poolplayer)
 
 (defun my-out (x)
   x

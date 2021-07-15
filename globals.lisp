@@ -19,8 +19,8 @@
 ;;; **********************************************************************
 
 (in-package :cl-poolplayer)
-
-(defparameter *snd-type-hash* (make-hash-table))
+;;; Thomas S. Kuhn: Die Struktur wissenschaftlicher Revolutionen
+(defparameter *snd-type-hash* (make-hash-table)) ;;; snd-type-key -> seq of buffer-idxs
 (defparameter *buffers* nil)
 (defparameter *buffer-idxs* nil)
 (defparameter *players* nil)
