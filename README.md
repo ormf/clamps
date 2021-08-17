@@ -1,9 +1,9 @@
 # cl-sfz
-### _Your Name <your.name@example.com>_
+### Orm Finnendahl
 
-sfz-loader and player for incudine
+code to load sfz files into incudine.
 
 ## License
 
-gpl2 or later
+GPL 2.0 or later
 
