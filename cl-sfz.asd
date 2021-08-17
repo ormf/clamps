@@ -1,11 +1,12 @@
 ;;;; cl-sfz.asd
 
 (asdf:defsystem #:cl-sfz
-  :description "Describe cl-sfz here"
+  :description "simple player for sfz soundfonts"
   :author "Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>"
   :license  "gnu public license 2.0 or later"
   :version "0.0.1"
   :serial t
-  :depends-on (#:incudine #:cl-ppcre)
+  :depends-on (#:incudine #:incudine-bufs #:of-incudine-dsps #:cl-ppcre)
   :components ((:file "package")
+               (:file "sfz-lsample")
                (:file "cl-sfz")))

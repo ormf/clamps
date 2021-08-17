@@ -1,5 +1,5 @@
 ;;; 
-;;; sfz.lisp
+;;; cl-sfz.lisp
 ;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2021 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
@@ -24,6 +24,26 @@
 
 (defparameter *sf-tables* (make-hash-table))
 
+(defparameter keynames '("C" "C#" "D" "D#" "E" "F" "F#" "G" "G#" "A" "A#" "B"))
+
+(defun current-date ()
+  (multiple-value-bind
+	(second minute hour date month year day-of-week dst-p tz)
+	(get-decoded-time)
+    (declare (ignorable second minute hour date month year day-of-week dst-p tz))
+    (format nil "~2,'0d.~2,'0d.~4,'0d" date month year)))
+
+(defparameter *sfz-header*
+  "//  ***** ~a.sfz *****
+//
+//  Created ~a
+//  By Orm Finnendahl
+//  Flute played by Jaume Darbra Fa
+
+")
+
+;;; (import '(lsample-play sample-play) 'incudine)
+
 ;;; (declaim (inline ct->fv))
 (defun ct->fv (steps)
   "halfsteps to ratio"
@@ -38,24 +58,54 @@ conventions. Returns the plist."
           append (destructuring-bind (key value)
                      (split "\\s+" (regex-replace "=" keyval " "))
                    (cond
+                     ((member key '("lokey" "hikey" "pitch_keycenter") :test #'string=)
+                      (list (intern (string-upcase (regex-replace "_" key "-")) 'keyword)
+                            (val->keynum value)))
                      ((string= key "sample")
                       (list :sample (regex-replace "\\" value "/")))
                      (t (list (intern (string-upcase (regex-replace "_" key "-")) 'keyword)
                               (read-from-string value))))))))
 
+(defun val->keynum (str)
+  (let ((value (read-from-string str)))
+    (cond
+      ((symbolp value) (+ (position (read-from-string (string-upcase (subseq str 0 (1- (length str))))) keynames :test #'string=)
+                          (* 12 (1+ (read-from-string (subseq str (1- (length str))))))))
+      (:else value))))
+
 (defun skip-to-next-region (in)
   (loop
     for line = (read-line in nil nil)
+;;;    do (break "line: ~S" line)
     while line
-    until (string= line "<region>")
+    until (string= (string-left-trim '(#\SPACE #\TAB) line)  "<region>")
     finally (return line)))
 
 (defun parse-region (in)
     (loop
       for line = (read-line in nil nil)
+;;;      do (break "line: ~S" line)
       while line
-      until (string= line "")
-      append (line->plist line)))
+      until (string= (string-left-trim '(#\SPACE #\TAB) line) "")
+      append (if line (line->plist line))))
+
+(defun keynum->pitch2 (keynum)
+  (multiple-value-bind (oct pc) (floor keynum 12)
+    (format nil "~a~d"
+            (aref #("C" "C#" "D" "D#" "E" "F" "F#" "G" "G#" "A" "A#" "B") pc)
+            (1- oct))))
+
+(defun sfz-region (name keynum lo hi tune volume)
+  (format nil
+    "<region>~%sample=~a~%volume=~a~%lokey=~d~%hikey=~d~%tune=~d~%pitch_keycenter=~a~%"
+    name volume lo hi tune (keynum->pitch2 keynum)))
+
+(defun get-sfz-attributes (entry &rest keys)
+  (mapcar (lambda (key) (getf entry key))
+          keys))
+
+(defun entry->region (entry)
+  (apply #'sfz-region (get-sfz-attributes entry :sample :pitch-keycenter :lokey :hikey :tune :volume)))
 
 (defun parse-sfz (file)
   "parse all regions in file to plists and return them in a list."
@@ -74,20 +124,32 @@ conventions. Returns the plist."
 (defun push-keynums (sample-def keynum-array)
   "push the sample-def onto the keynum-array's elements at all indexes
 from lokey to hikey of the sample def."
-  (loop for keynum from (getf sample-def :lokey) to (getf sample-def :hikey)
+  (loop for keynum from (or (getf sample-def :lokey) 0) to (or (getf sample-def :hikey) 127)
         do (push (getf sample-def :lsample) (aref keynum-array keynum))))
 
-(defun get-keynum-array (file)
+(defun get-keynum-array (file &key play-fn)
   "push all sample-defs in file to a new array. Its 128
 elems (representing keynums) contain the sample-defs for the
 respective keynum. Overlapping key-ranges are represented by a list of
 all applicable sample-defs at the keynum's array-index."
   (let ((keynum-array (make-array 128 :adjustable nil :element-type 'list :initial-element nil))
         (sfz-file-path (pathname file)))
-    (dolist (entry (parse-sfz file))
-      (setf (getf entry :lsample) (incudine::sfz->lsample entry sfz-file-path))
+    (dolist (entry (reverse (parse-sfz file)))
+      (setf (getf entry :lsample) (incudine::sfz->lsample entry sfz-file-path :play-fn play-fn))
       (push-keynums entry keynum-array))
     keynum-array))
+
+(defun sfz-get-range (file)
+  (let ((keynums (mapcar #'incudine::get-keynum (parse-sfz file))))
+    (list (round (apply #'min keynums)) (round (apply #'max keynums)))))
+
+(defun sf-table-get-range (preset)
+  (if (gethash preset *sf-tables*)
+      (let ((keynums (loop for slist across (gethash preset *sf-tables*)
+                           append (mapcar (lambda (x) (round (incudine::lsample-keynum x))) slist))))
+        (list (apply #'min keynums) (apply #'max keynums)))))
+
+;;; (sf-table-get-range :altoflute-k)
 
 (defun get-scale (keynum sample-data)
   "calc time scaling factor from target pitch and sample-data."
@@ -96,159 +158,95 @@ all applicable sample-defs at the keynum's array-index."
                    (/ (or (getf sample-data :tune) 0) 100.0)))
              12)))
 
-(defun load-sfz (file name &key force)
+(defun load-sfz-preset (file name &key force (play-fn #'play-sfz-loop))
   "load sfz file into a preset with the id name. In case this preset
 already exists, the old one will only be overwritten if :force is set
 to t."
   (if (or force (not (gethash name *sf-tables*)))
       (setf (gethash name *sf-tables*)
-            (get-keynum-array file)))
+            (get-keynum-array file :play-fn play-fn)))
   name)
 
 ;;; (load-sfz "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv)
 
+(defun show-sfz-presets ()
+  (sort (loop for k being each hash-key of *sf-tables* collect k) #'string<))
+
+(defun remove-sfz-preset (name)
+  (remhash name *sf-tables*))
+
 (defun db->amp (db)
   (expt 10 (/ db 20)))
 
-(defun play-lsample (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
+(defun sfz->lsample (sfz-entry dir &key (play-fn #'incudine::lsample-play))
+  (let* ((abs-filepath (abs-path (getf sfz-entry :sample) dir))
+         (buffer (of-buffer-load abs-filepath)))
+    (make-lsample
+     :filename abs-filepath
+     :buffer buffer
+     :play-fn play-fn
+     :keynum (get-keynum sfz-entry)
+     :amp (incudine::db->linear (getf sfz-entry :volume 0))
+     :loopstart (sample (or (getf sfz-entry :loop-start) 0))
+     :loopend (sample (or (getf sfz-entry :loop-end) (buffer-frames buffer))))))
+
+#|
+(defun play-sample (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
+  (let* ((map (gethash preset sf-tables))
+         (sample (random-elem (aref map (round pitch))))
+         (amp (incudine::lsample-amp sample))
+         (play-fn (incudine::lsample-play-fn sample))
+         (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
+         (buffer (incudine::lsample-buffer sample)))
+;;    (break "~a" (eql play-fn #'sample-play))
+    (cond
+      ((eql play-fn #'lsample-play)
+       (incudine::lsample-play buffer dur (db->amp db) rate pan
+                               (incudine::lsample-loopstart sample)
+                               (incudine::lsample-loopend sample)
+                               startpos))
+      ((eql play-fn #'sample-play)
+       (incudine::sample-play buffer dur (* amp (db->amp db)) rate pan
+                              startpos))
+      (t
+       (error "play-fn not found: ~a" play-fn)))))
+|#
+
+(defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
+  "general function: Plays sample looping or one-shot depending on the
+'play-fn slot in the lsample definition."
+  (let* ((map (gethash preset sf-tables))
+         (sample (random-elem (aref map (round pitch))))
+         (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
+         (play-fn (incudine::lsample-play-fn sample))
+         (buffer (incudine::lsample-buffer sample))
+         (amp (incudine::lsample-amp sample)))
+    (cond
+      ((eql play-fn #'play-sfz-loop)
+       (lsample-play buffer dur (* amp (db->amp db)) rate pan (lsample-loopstart sample) (lsample-loopend sample)))
+      ((eql play-fn #'play-sfz-one-shot)
+       (sample-play buffer dur (* amp (db->amp db)) rate pan startpos)))))
+
+;;; (play-sfz 73.3 -6 1 :pan 0.5)
+
+(defun play-sfz-loop (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
+  "Plays sample looping independent of the 'play-fn slot in the lsample definition."
   (let* ((map (gethash preset sf-tables))
          (sample (random-elem (aref map (round pitch))))
          (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
          (buffer (incudine::lsample-buffer sample))
+         (amp (incudine::lsample-amp sample))
          (loopstart (incudine::lsample-loopstart sample))
          (loopend (incudine::lsample-loopend sample)))
-    (incudine::lsample-play buffer dur (db->amp db) rate pan loopstart loopend startpos)))
+    (lsample-play buffer dur (* amp (db->amp db)) rate pan loopstart loopend startpos)))
 
-;;; (play-lsample 73.3 -6 1 :pan 0.5)
+(defun play-sfz-one-shot (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
+  "Plays sample once independent of the 'play-fn slot in the lsample definition."
+  (let* ((map (gethash preset sf-tables))
+         (sample (random-elem (aref map (round pitch))))
+         (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
+         (buffer (incudine::lsample-buffer sample))
+         (amp (incudine::lsample-amp sample)))
+;;;    (break "rate: ~a" rate)
+    (sample-play buffer dur (* amp (db->amp db)) rate pan startpos)))
 
-(in-package :incudine)
-
-(define-vug phasor-loop (rate start-pos loopstart loopend)
-  (with-samples ((pos start-pos)
-                 (loopsize (- loopend loopstart)))
-    (prog1 pos
-      (incf pos rate)
-      (if (> pos loopend)
-          (decf pos loopsize)))))
-
-(define-vug buffer-loop-play ((buffer buffer) rate start-pos
-                              loopstart loopend)
-  (buffer-read buffer (phasor-loop rate start-pos loopstart loopend)
-               :interpolation :cubic))
-
-
-(defun abs-path (sample-path sfz-file-path)
-  (merge-pathnames sample-path sfz-file-path))
-
-(defun get-keynum (entry)
-  (sample (+ (getf entry :pitch-keycenter) (/ (or (getf entry :tune) 0) 100))))
-
-#|
-(get-keynum '(:sample "samples/97-Flute.nv.ff.Db7.wav" :volume 3 :lokey 97 :hikey 127
-  :pitch-keycenter 97 :tune -39 :offset 0 :end 118825 :loop-start 94748
-  :loop-end 95657))
-|#
-
-(defstruct lsample
-  "structure for a sample with two loop-points. The structure also
-contains a slot for the sample buffer data."
-  filename
-  buffer
-  (keynum +sample-zero+ :type sample)
-  (loopstart +sample-zero+ :type sample)
-  (loopend +sample-zero+ :type sample))
-
-(defun sfz->lsample (sfz-entry dir)
-  (let ((abs-filepath (abs-path (getf sfz-entry :sample) dir)))
-    (make-lsample
-     :filename abs-filepath
-     :buffer (buffer-load abs-filepath)
-     :keynum (get-keynum sfz-entry)
-     :loopstart (sample (getf sfz-entry :loop-start))
-     :loopend (sample (getf sfz-entry :loop-end)))))
-
-(declaim (inline keynum->hz))
-(defun keynum->hz (keynum)
-  "Convert VALUE dB to linear value."
-  (* (sample 440.0d0) (expt 2 (/ (- keynum 69.0d0) 12.0d0))))
-
-(defparameter *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
-
-(defun collect-props (names plist)
-  (loop for name in names
-        collect `(,name (getf ,plist ,(alexandria:make-keyword name)))))
-
-(defmacro with-props ((&rest names) plist &rest body)
-  `(let ,(collect-props names plist)
-     ,@body))
-
-#|
-(defun make-keyword (symbol)
-  (intern (string-upcase (symbol-name symbol)) 'keyword))
-
-(let ((entry '(:lsample "a" :lokey 4)))
-  (with-props (lsample lokey) entry
-
-              (list lsample lokey)
-              ))
-|#
-
-(defparameter *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
-
-(declaim (inline get-lsample))
-(defun get-lsample (keynum map)
-  (aref map (min (round keynum) 127)))
-
-#|
-(define-ugen phasor* frame (freq init)
-  (with ((frm (make-frame (block-size))))
-    (foreach-frame
-      (setf (frame-ref frm current-frame)
-            (phasor freq init)))
-    frm))
-|#
-
-(define-vug phasor-loop (rate start-pos loopstart loopend)
-  (with-samples ((pos start-pos)
-                 (loopsize (- loopend loopstart)))
-    (prog1 pos
-      (incf pos rate)
-      (if (> pos loopend)
-          (decf pos loopsize)))))
-
-(define-vug buffer-loop-play ((buffer buffer) rate start-pos
-                              loopstart loopend)
-  (buffer-read buffer (phasor-loop rate start-pos loopstart loopend)
-               :interpolation :cubic))
-
-(dsp! lsample-play ((buffer buffer) dur amp rate pan loopstart loopend startpos)
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 1 1 0.5 0 44100 0)
-  (foreach-channel
-    (cout
-     (pan2
-      (* amp 
-	 (envelope *env1* 1 dur #'free)
-	 (buffer-loop-play buffer rate (* startpos *sample-rate*) loopstart loopend))
-      pan))))
-
-#|
-;; examples: 
-
- (cl-sfz:play-lsample (+ 50 (random 30)) 3 0.5)
-
-
- (loop
-   for x from 1 to 200
-   for time = (now) then (+ time (* *sample-rate* (random 0.05)))
-   for amp = (+ 0.2 (random 0.2)) then (+ 0.2 (random 0.2))
-   do (at time #'cl-sfz:play-lsample (+ 70 (random 20.0)) 2 amp))
-
-bouncing to disk:
-
- (bounce-to-disk ("/tmp/test.wav" :pad 2)
-  (loop
-     for x from 1 to 200
-     for time = (now) then (+ time (* *sample-rate* (random 0.05)))
-     for amp = (+ 0.2 (random 0.2)) then (+ 0.2 (random 0.2))
-     do (at time #'play-lsample (+ 70 (random 20.0)) 2 amp)))
-|#
