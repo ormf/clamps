@@ -153,7 +153,7 @@ svg-file."
                       :opacity opacity
                       :stroke-color color 
                       ;; :fill-color color
-                      :attributes (format nil ":type poolevt :lsample ~a :keynum ~a :dy ~a :amp ~a :start ~a :end ~a :stretch ~a :wwidth ~a :attack ~a :release ~a :pan ~a :out1 ~a :out2 ~a :play-fn ~a :loopstart ~a :loopend ~a :sample-amp ~a snd-id: ~a"
+                      :attributes (format nil ":type poolevt :lsample ~a :keynum ~a :dy ~a :amp ~a :start ~a :end ~a :stretch ~a :wwidth ~a :attack ~a :release ~a :pan ~a :out1 ~a :out2 ~a :play-fn ~a :loopstart ~a :loopend ~a :sample-amp ~a :snd-id ~a"
                                           incudine::filename
                                           incudine::keynum
                                           dy
