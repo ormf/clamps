@@ -8,5 +8,6 @@
   :depends-on (:orm-utils :cm-incudine)
   :components ((:file "package")
                (:file "utils")
-               (:file "buffer-stretch-play")))
+               (:file "buffer-stretch-play")
+               (:file "lsample")))
 

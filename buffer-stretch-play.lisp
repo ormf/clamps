@@ -265,8 +265,9 @@ The curvature CURVE defaults to -4."
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha))
-                 (rate (reduce-warnings (/ (keynum->hz transp)
-                                           8.175798915643707d0)))
+                 (rate (reduce-warnings
+                         (/ (keynum->hz transp)
+                            8.175798915643707d0)))
                  (ampl (db->linear amp))
                  (ende (if (zerop end)
                            (/ (buffer-frames buffer) *sample-rate*)
