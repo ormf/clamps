@@ -84,7 +84,6 @@ contains a slot for the sample buffer data."
 
 (dsp! sample-play ((buffer buffer) dur amp rate pan startpos)
   (:defaults (incudine:incudine-missing-arg "BUFFER") 1 1 1 0.5 0)
-  (format t "~a" dur)
   (with-samples ((start (* startpos *sample-rate*))
                  (myrate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
                  (duration (/ dur myrate))
