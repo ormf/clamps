@@ -1,7 +1,7 @@
 # cm-poolplayer
 ### Orm Finnendahl
 
-code to integrate cl-poolplayer into common music (version 2.0) for
+code to integrate cl-poolplayer into common music (version 2.12) for
 playing and svg ex/import.
 
 ## License

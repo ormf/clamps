@@ -28,6 +28,7 @@
      (keynum :initform nil :accessor poolevt-keynum)
      (amp :initform 0.0 :accessor poolevt-amp)
      (transp :initform 0.0 :accessor poolevt-transp)
+     (dy :initform 0 :accessor poolevt-dy)
      (start :initform 0 :accessor poolevt-start)
      (end :initform 0 :accessor poolevt-end)
      (stretch :initform 1.0 :accessor poolevt-stretch)
@@ -35,9 +36,10 @@
      (attack :initform 0 :accessor poolevt-attack)
      (release :initform 0.01 :accessor poolevt-release)
      (pan :initform 0.5 :accessor poolevt-pan)
+     (snd-id :initform nil :accessor poolevt-snd-id)
      (out1 :initform 0 :accessor poolevt-out1)
      (out2 :initform 1 :accessor poolevt-out2))
-  (:parameters time lsample keynum amp transp start end stretch wwidth attack release pan out1 out2)
+  (:parameters time lsample keynum amp transp dy start end stretch wwidth attack release pan snd-id out1 out2)
   (:event-streams))
 
 (eval-when (:compile-toplevel :load-toplevel)
@@ -46,6 +48,7 @@
        (keynum :initform nil :accessor poolevt-keynum)
        (amp :initform 0.0 :accessor poolevt-amp)
        (transp :initform 0.0 :accessor poolevt-transp)
+       (dy :initform 0 :accessor poolevt-dy)
        (start :initform 0 :accessor poolevt-start)
        (end :initform 0 :accessor poolevt-end)
        (stretch :initform 1.0 :accessor poolevt-stretch)
@@ -53,9 +56,10 @@
        (attack :initform 0 :accessor poolevt-attack)
        (release :initform 0.01 :accessor poolevt-release)
        (pan :initform 0.5 :accessor poolevt-pan)
+       (snd-id :initform nil :accessor poolevt-snd-id)
        (out1 :initform 0 :accessor poolevt-out1)
        (out2 :initform 1 :accessor poolevt-out2))
-    (:parameters time lsample keynum amp transp start end stretch wwidth attack release pan out1 out2)
+    (:parameters time lsample keynum amp transp dy start end stretch wwidth attack release pan snd-id out1 out2)
     (:event-streams)))
 
 (declaim (inline get-lsample))
@@ -106,7 +110,7 @@ the svg element."
              (list* :lsample new-lsample :transp transp
                     :stretch (* stretch (expt 2 (/ transp -12)))
                     :amp (ou:amp->db (* sample-amp amplitude))
-                    (ou:get-props-list args '(:time :keynum :start :end :wwidth :attack :release :pan :out1 :out2)))))))
+                    (ou:get-props-list args '(:time :keynum :dy :snd-id :start :end :wwidth :attack :release :pan :out1 :out2)))))))
 
 ;;; (mapc #'remove-svg-assoc-fn '(poolevt play-sfz-one-shot play-sfz-loop))
 ;;; (mapcar #'remove-svg-assoc-fn '(midi))
@@ -122,41 +126,43 @@ the svg element."
   "convert a poolevt object into a freshly allocated svg-line object and
 insert it at the appropriate position into the events slot of
 svg-file."
-  (with-slots (lsample amp transp start end stretch wwidth attack release pan out1 out2) obj
+  (with-slots (lsample amp transp dy start end stretch wwidth attack release pan snd-id out1 out2) obj
     (with-slots (incudine::filename incudine::buffer incudine::play-fn incudine::keynum incudine::loopstart incudine::loopend) lsample
       (let* ((myid (incudine:buffer-id incudine::buffer))
              (x-scale (x-scale fil))
              (stroke-width 0.5)
-             (color (chan->color (if (numberp myid) myid 2)))
+             (color (chan->color (or snd-id (if (numberp myid) myid) 2)))
+             (dur (float (/ (incudine::buffer-frames incudine::buffer)
+                            (incudine:buffer-sample-rate incudine::buffer))
+                         1.0))
              (line (let ((x1 (* x-scale scoretime))
                          (y1 (+ incudine::keynum transp))
                          (width
                            (* x-scale
                               stretch
                               (- (if (zerop end)
-                                     (float (/ (incudine::buffer-size incudine::buffer)
-                                               (incudine:buffer-sample-rate incudine::buffer))
-                                            1.0)
+                                     dur
                                      end)
                                  start)))
                          (opacity (ou:db->amp amp) 1.0))
                      (make-instance
                       'svg-ie::svg-line
                       :x1 (float x1 1.0) :y1 (float y1 1.0)
-                      :x2 (float (+ x1 width) 1.0) :y2 (float y1 1.0)
+                      :x2 (float (+ x1 width) 1.0) :y2 (float (+ y1 dy) 1.0)
                       :stroke-width stroke-width
                       :opacity opacity
                       :stroke-color color 
                       ;; :fill-color color
-                      :attributes (format nil ":type poolevt :lsample ~a :keynum ~a :amp ~a :start ~a :end ~a :stretch ~a :wwidth ~a :attack ~a :release ~a :pan ~a :out1 ~a :out2 ~a :play-fn ~a :loopstart ~a :loopend ~a :sample-amp ~a
-"
+                      :attributes (format nil ":type poolevt :lsample ~a :keynum ~a :dy ~a :amp ~a :start ~a :end ~a :stretch ~a :wwidth ~a :attack ~a :release ~a :pan ~a :out1 ~a :out2 ~a :play-fn ~a :loopstart ~a :loopend ~a :sample-amp ~a snd-id: ~a"
                                           incudine::filename
                                           incudine::keynum
+                                          dy
                                           amp
                                           start end (* stretch (expt 2 (/ transp 12))) wwidth attack release pan out1 out2
                                           (function-name incudine::play-fn)
                                           incudine::loopstart incudine::loopend
-                                          (incudine:lsample-amp lsample))
+                                          (incudine:lsample-amp lsample)
+                                          snd-id)
                       :id (new-id fil 'line-ids)))))
 ;;;      (break "line: ~a, obj: ~a ~a ~a" line buffer-file cl-poolplayer:*pool-hash* (gethash buffer-file cl-poolplayer:*pool-hash*))
         (if *debug* (format t "~&obj: ~a~%" obj))
