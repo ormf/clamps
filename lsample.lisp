@@ -31,7 +31,8 @@ contains a slot for the sample buffer data."
   (keynum +sample-zero+ :type sample)
   (loopstart +sample-zero+ :type sample)
   (amp (sample 1.0) :type sample)
-  (loopend +sample-zero+ :type sample))
+  (loopend +sample-zero+ :type sample)
+  (id nil :type (or NULL fixnum)))
 
 #|
 (declaim (inline keynum->hz))
@@ -60,44 +61,45 @@ contains a slot for the sample buffer data."
       (if (> pos loopend)
           (decf pos loopsize)))))
 
-(define-vug buffer-loop-play ((buffer buffer) rate start-pos
+(define-vug buffer-loop-play* ((buffer buffer) rate start-pos
                               loopstart loopend)
   (buffer-read buffer (phasor-loop rate start-pos loopstart loopend)
                :interpolation :cubic))
 
 
-(define-vug buffer-play ((buffer buffer) start-pos end-pos dur)
+(define-vug buffer-play* ((buffer buffer) start-pos end-pos dur)
   (buffer-read buffer (line start-pos end-pos dur)
                :interpolation :cubic))
 
 (dsp! lsample-play ((buffer buffer) dur amp rate pan loopstart loopend startpos)
   (:defaults (incudine:incudine-missing-arg "BUFFER") 1 1 1 0.5 0 44100 0)
   (with-samples ((rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
-                 (start (* startpos *sample-rate*)))
+                 (start (* startpos (buffer-sample-rate buffer))))
     (foreach-channel
       (cout
        (pan2
         (* amp 
 	   (envelope *env1* 1 dur #'free)
-	   (buffer-loop-play buffer rate start loopstart loopend))
+	   (buffer-loop-play* buffer rate start loopstart loopend))
         pan)))))
 
 (dsp! sample-play ((buffer buffer) dur amp rate pan startpos)
   (:defaults (incudine:incudine-missing-arg "BUFFER") 1 1 1 0.5 0)
-  (with-samples ((start (* startpos *sample-rate*))
-                 (myrate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
-                 (duration (/ dur myrate))
-                 (end (* *sample-rate* (+ startpos dur))))
+  (with-samples ((bsr (buffer-sample-rate buffer))
+                 (start (* startpos (buffer-sample-rate buffer)))
+                 (rate (/ (* rate (buffer-sample-rate buffer)) *sample-rate*))
+                 (end (min (- (buffer-frames buffer) 1.0d0)
+                           (/ (+ start (* *sample-rate* dur)) rate)))
+                 (duration (/ (- end start) (* rate *sample-rate*))))
     (foreach-channel
       (cout
        (pan2
         (* amp 
 	   (envelope *env1* 1 duration #'free)
-	   (buffer-play buffer start end duration))
+	   (buffer-play* buffer start end duration))
         pan)))))
 
 (export '(lsample sample-play lsample-play lsample-filename lsample-buffer
           lsample-play-fn lsample-keynum lsample-loopstart
           lsample-amp lsample-loopend play-lsample play-sample)
         'incudine)
-
