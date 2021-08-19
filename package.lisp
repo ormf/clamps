@@ -102,4 +102,7 @@
    #:R-ELT
    #:R-GETF
    #:INDEX-SEQ
+   #:MYSUBSEQ
+   #:DELETE-PROPS
+   #:GET-PROPS-LIST
    ))

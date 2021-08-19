@@ -901,6 +901,7 @@ the function will blow the stack!"
 (defun sum-x (n)
  (* n (+ n 1) 1/2))
 
+#|
 (defun map-indexed (result-type fn &rest seqs)
   "map fn over seqs with incrementing idx. The idx will get supplied
 as first arg to fn and is reset for each seq."
@@ -909,6 +910,18 @@ as first arg to fn and is reset for each seq."
          (let ((idx -1))
            (map result-type (lambda (elem) (funcall fn (incf idx) elem)) seq)))
        seqs))
+|#
+
+(defmacro map-indexed (result-type fn &rest seqs)
+  "map fn over seqs with incrementing idx. The idx will get supplied
+as first arg to fn and is reset for each seq."
+  (let ((i (gensym)))
+    `(let ((,i -1))
+       (map ,result-type
+        (lambda (&rest args)
+          (apply ,fn (incf ,i) args))
+        ,@seqs))))
+
 
 (defmacro case-ext (keyform test &rest body)
   "case with compare function as second element."
@@ -1116,7 +1129,7 @@ Works on all sequence types."
                 vars)
      ,@body))
 
-
+;;; (ou:with-props (amp keynum) '(:amp 1 :keynum 60) (list amp keynum))
 
 (defun n-exp (x min max)
   "linear interpolation for normalized x."
@@ -1387,3 +1400,26 @@ function or with getf."
 (defun index-seq (seq &optional (n 0))
   (cond ((null seq) nil)
         (t (cons (cons n (first seq)) (index-seq (rest seq) (1+ n))))))
+
+(defun mysubseq (seq start &optional end)
+  "like subseq, but allow negative values for end, indicating the
+number of elems before the end."
+  (let ((end (and end (if (< end 0) (+ end (length seq)) end))))
+    (subseq seq start end)))
+
+(defun delete-props (proplist &rest props)
+  "destructively remove props from proplist and return it."
+  (mapc (lambda (prop) (remf proplist prop)) props)
+  proplist)
+
+(defun get-props-list (proplist props &key (force-all nil))
+  "create a new proplist by extracting props and their values from
+proplist. Props not present in proplist are ignored."
+  (reduce (lambda (seq prop) (let ((val (getf proplist prop :not-supplied)))
+                          (if (eql val :not-supplied)
+                              (if force-all
+                                  (list* prop nil seq)
+                                  seq)
+                              (list* prop val seq))))
+          (reverse props)
+          :initial-value nil))
