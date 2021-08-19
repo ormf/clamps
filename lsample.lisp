@@ -89,7 +89,7 @@ contains a slot for the sample buffer data."
                  (start (* startpos (buffer-sample-rate buffer)))
                  (rate (/ (* rate (buffer-sample-rate buffer)) *sample-rate*))
                  (end (min (- (buffer-frames buffer) 1.0d0)
-                           (/ (+ start (* *sample-rate* dur)) rate)))
+                           (* (+ start (* *sample-rate* dur)) rate)))
                  (duration (/ (- end start) (* rate *sample-rate*))))
     (foreach-channel
       (cout
