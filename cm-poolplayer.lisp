@@ -23,6 +23,7 @@
 
 (defparameter *debug* nil)
 
+#|
 (defobject poolevt (event)
       ((lsample :initform nil :accessor poolevt-lsample)
        (keynum :initform nil :accessor poolevt-keynum)
@@ -42,6 +43,7 @@
        (out2 :initform 1 :accessor poolevt-out2))
     (:parameters time lsample keynum amp dy start end stretch wwidth attack release pan snd-id adjust-stretch out1 out2)
     (:event-streams))
+|#
 
 (eval-when (:compile-toplevel :load-toplevel)
   (defobject poolevt (event)
@@ -92,7 +94,7 @@ an external package, a leading <package-name>: has to be provided."
         (string-upcase
          (cl-ppcre:regex-replace "^\([^>]\+\)" str "\\\1"))))))
 
-(defun lsample->poolevt (lsample pitch &key time (startpos 0) (dur 1) (ampdb 0))
+(defun cm::lsample->poolevt (lsample pitch &key time (startpos 0) (dur 1) (ampdb 0))
   (let* ((transp (- pitch (incudine:lsample-keynum lsample)))
          (rate (ou:ct->fv transp))
          (bsr (incudine:buffer-sample-rate (incudine:lsample-buffer lsample)))
@@ -108,11 +110,6 @@ an external package, a leading <package-name>: has to be provided."
       :start start
       :end end
       :stretch (/ rate))))
-
-;;; transp geändert?
-;;; stretch geändert?
-
-;;; gespeicherte duration: (/ (- (if (zerop end) bufdur end) start) stretch)
 
 (defun svg->poolevt (&rest args)
   "recreate a poolevt from the :attributes property of the svg element."
@@ -134,7 +131,7 @@ an external package, a leading <package-name>: has to be provided."
            (bufdur (- (/ (incudine:buffer-frames buffer)
                          (incudine:buffer-sample-rate buffer))
                       start))
-           (saved-dur (/ (- (if (zerop end) bufdur end) start) stretch))
+           (saved-dur (* (- (if (zerop end) bufdur end) start) stretch))
            (new-stretch (* stretch (/ duration saved-dur)
                            (if adjust-stretch
                                (expt 2 (/ (- keynum saved-keynum) -12))
@@ -145,6 +142,10 @@ an external package, a leading <package-name>: has to be provided."
                     (ou:delete-props args :lsample :lsample-keynum :lsample-amp :lsample-play-fn
                                           :loopstart :loopend
                                           :saved-keynum :amplitude :duration :channel))))))
+
+#|
+
+|#
 
 (add-svg-assoc-fns
  `((poolevt . ,#'svg->poolevt)))
@@ -254,37 +255,4 @@ svg-file."
                                                        :release release :pan pan :out1 out1 :out2 out2)))))
 ;;; (aref cl-poolplayer::*buffer-idxs*
 
-(export '(poolevt poolevt-buffer-idx poolevt-amp poolevt-start poolevt-end poolevt-stretch poolevt-wwidth poolevt-attack poolevt-release poolevt-pan poolevt-out1 poolevt-out2  lsample->poolevt) 'cm)
-
-(in-package :cl-poolplayer)
-
-
-(defun cm-collect-song (song)
-  (let ((*events* '())
-        (time (now)))
-    (funcall (song-playfn song)
-             (funcall (song-durfn song))
-             :player-type 'eventplotter)
-    (sort
-     (mapcar #'(lambda (x) (apply #'make-instance 'cm::poolevt
-                             :time (float (- (first x) time) 1.0)
-                             (cdr x)
-                             ;; :lsample (getf (cdr x) :lsample)
-                             ;; (progn (remf (cdr x) :buffer)
-                             ;;        (cdr x))
-                             ))
-             *events*)
-     #'< :key (lambda (x) (sv x cm::time)))))
-
-(defmacro collecting-cm (&rest body)
-  `(let ((*events* '())
-         (time (now)))
-     ,@body
-     (sort
-      (mapcar #'(lambda (x) (apply #'make-instance 'cm::poolevt
-                             :time (float (- (first x) time) 1.0)
-                             (cdr x)))
-              *events*)
-      #'< :key (lambda (x) (sv x cm::time)))))
-
-(export '(cm-collect-song collecting-cm) 'cl-poolplayer)
+(export '(poolevt poolevt-buffer-idx poolevt-amp poolevt-start poolevt-end poolevt-stretch poolevt-wwidth poolevt-attack poolevt-release poolevt-pan poolevt-out1 poolevt-out2 lsample->poolevt) 'cm)
