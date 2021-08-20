@@ -24,31 +24,11 @@
 (defparameter *debug* nil)
 
 (defobject poolevt (event)
-    ((lsample :initform nil :accessor poolevt-lsample)
-     (keynum :initform nil :accessor poolevt-keynum)
-     (amp :initform 0.0 :accessor poolevt-amp)
-     (transp :initform 0.0 :accessor poolevt-transp)
-     (dy :initform 0 :accessor poolevt-dy)
-     (start :initform 0 :accessor poolevt-start)
-     (end :initform 0 :accessor poolevt-end)
-     (stretch :initform 1.0 :accessor poolevt-stretch)
-     (wwidth :initform 123 :accessor poolevt-wwidth)
-     (attack :initform 0 :accessor poolevt-attack)
-     (release :initform 0.01 :accessor poolevt-release)
-     (pan :initform 0.5 :accessor poolevt-pan)
-     (snd-id :initform nil :accessor poolevt-snd-id)
-     (out1 :initform 0 :accessor poolevt-out1)
-     (out2 :initform 1 :accessor poolevt-out2))
-  (:parameters time lsample keynum amp transp dy start end stretch wwidth attack release pan snd-id out1 out2)
-  (:event-streams))
-
-(eval-when (:compile-toplevel :load-toplevel)
-  (defobject poolevt (event)
       ((lsample :initform nil :accessor poolevt-lsample)
        (keynum :initform nil :accessor poolevt-keynum)
        (amp :initform 0.0 :accessor poolevt-amp)
-       (transp :initform 0.0 :accessor poolevt-transp)
-       (dy :initform 0 :accessor poolevt-dy)
+;;;       (transp :initform 0.0 :accessor poolevt-transp)
+       (dy :initform 0.0 :accessor poolevt-dy)
        (start :initform 0 :accessor poolevt-start)
        (end :initform 0 :accessor poolevt-end)
        (stretch :initform 1.0 :accessor poolevt-stretch)
@@ -57,9 +37,31 @@
        (release :initform 0.01 :accessor poolevt-release)
        (pan :initform 0.5 :accessor poolevt-pan)
        (snd-id :initform nil :accessor poolevt-snd-id)
+       (adjust-stretch :initform nil :accessor poolevt-adjust-stretch)
        (out1 :initform 0 :accessor poolevt-out1)
        (out2 :initform 1 :accessor poolevt-out2))
-    (:parameters time lsample keynum amp transp dy start end stretch wwidth attack release pan snd-id out1 out2)
+    (:parameters time lsample keynum amp dy start end stretch wwidth attack release pan snd-id adjust-stretch out1 out2)
+    (:event-streams))
+
+(eval-when (:compile-toplevel :load-toplevel)
+  (defobject poolevt (event)
+      ((lsample :initform nil :accessor poolevt-lsample)
+       (keynum :initform nil :accessor poolevt-keynum)
+       (amp :initform 0.0 :accessor poolevt-amp)
+;;;       (transp :initform 0.0 :accessor poolevt-transp)
+       (dy :initform 0.0 :accessor poolevt-dy)
+       (start :initform 0 :accessor poolevt-start)
+       (end :initform 0 :accessor poolevt-end)
+       (stretch :initform 1.0 :accessor poolevt-stretch)
+       (wwidth :initform 123 :accessor poolevt-wwidth)
+       (attack :initform 0 :accessor poolevt-attack)
+       (release :initform 0.01 :accessor poolevt-release)
+       (pan :initform 0.5 :accessor poolevt-pan)
+       (snd-id :initform nil :accessor poolevt-snd-id)
+       (adjust-stretch :initform nil :accessor poolevt-adjust-stretch)
+       (out1 :initform 0 :accessor poolevt-out1)
+       (out2 :initform 1 :accessor poolevt-out2))
+    (:parameters time lsample keynum amp dy start end stretch wwidth attack release pan snd-id adjust-stretch out1 out2)
     (:event-streams)))
 
 (declaim (inline get-lsample))
@@ -74,7 +76,6 @@
 
 ;;; (function-name #'cl-sfz:play-sfz-one-shot)
 
-#|
 (defun get-fn-from-string (str)
   "return function object from name given as string. For functions in
 an external package, a leading <package-name>: has to be provided."
@@ -90,60 +91,122 @@ an external package, a leading <package-name>: has to be provided."
        (intern
         (string-upcase
          (cl-ppcre:regex-replace "^\([^>]\+\)" str "\\\1"))))))
-|#
+
+(defun lsample->poolevt (lsample pitch &key time (startpos 0) (dur 1) (ampdb 0))
+  (let* ((transp (- pitch (incudine:lsample-keynum lsample)))
+         (rate (ou:ct->fv transp))
+         (bsr (incudine:buffer-sample-rate (incudine:lsample-buffer lsample)))
+         (start (/ (* bsr startpos) incudine::*sample-rate*))
+         (end (* (+ start dur) rate)))
+    ;;    (break "~a" (eql play-fn #'sample-play))
+    ;;            (format t "~a~%" (incudine::buffer-file buffer))
+    (new poolevt
+      :time time
+      :lsample lsample
+      :amp ampdb
+      :keynum pitch
+      :start start
+      :end end
+      :stretch (/ rate))))
+
+;;; transp geändert?
+;;; stretch geändert?
+
+;;; gespeicherte duration: (/ (- (if (zerop end) bufdur end) start) stretch)
 
 (defun svg->poolevt (&rest args)
-  "recreate a poolevt from the :attributes property and the coordinates of
-the svg element."
+  "recreate a poolevt from the :attributes property of the svg element."
   (if *debug* (format t "~&svg->poolevent: ~a~%" args))
-  (ou:with-props (lsample play-fn keynum amplitude sample-amp stretch pitch) args
-    (let ((new-lsample (let ((file (format nil "~a" lsample)))
-                         (apply #'incudine::make-lsample
-                                (list* :buffer (incudine:find-buffer file)
-                                       :filename file
-                                       :amp sample-amp
-                                       :play-fn (svg-symbol->fn play-fn)
-                                       :keynum (float pitch 1.0d0)
-                                       (ou:get-props-list args '(:loopstart :loopend))))))
-          (transp (- keynum pitch)))
+;;;  (break "svg->poolevt: args: ~S" args)
+  (ou:with-props (lsample lsample-keynum lsample-amp lsample-play-fn saved-keynum keynum
+                          duration start end stretch loopstart loopend adjust-stretch)
+      args
+    (let* ((file (format nil "~a" lsample))
+           (buffer (incudine:find-buffer file))
+           (new-lsample (incudine::make-lsample
+                         :buffer buffer
+                         :filename file
+                         :keynum (float lsample-keynum 1.0d0)
+                         :amp lsample-amp
+                         :loopstart loopstart
+                         :loopend loopend
+                         :play-fn (svg-symbol->fn lsample-play-fn)))
+           (bufdur (- (/ (incudine:buffer-frames buffer)
+                         (incudine:buffer-sample-rate buffer))
+                      start))
+           (saved-dur (/ (- (if (zerop end) bufdur end) start) stretch))
+           (new-stretch (* stretch (/ duration saved-dur)
+                           (if adjust-stretch
+                               (expt 2 (/ (- keynum saved-keynum) -12))
+                               1))))
       (apply #'make-instance 'poolevt
-             (list* :lsample new-lsample :transp transp
-                    :stretch (* stretch (expt 2 (/ transp -12)))
-                    :amp (ou:amp->db (* sample-amp amplitude))
-                    (ou:get-props-list args '(:time :keynum :dy :snd-id :start :end :wwidth :attack :release :pan :out1 :out2)))))))
-
-;;; (mapc #'remove-svg-assoc-fn '(poolevt play-sfz-one-shot play-sfz-loop))
-;;; (mapcar #'remove-svg-assoc-fn '(midi))
+             (list* :lsample new-lsample
+                    :stretch new-stretch
+                    (ou:delete-props args :lsample :lsample-keynum :lsample-amp :lsample-play-fn
+                                          :loopstart :loopend
+                                          :saved-keynum :amplitude :duration :channel))))))
 
 (add-svg-assoc-fns
- `((poolevt . ,(symbol-function 'svg->poolevt))
-   (play-sfz-one-shot . ,(symbol-function 'cl-sfz:play-sfz-one-shot))
-   (play-sfz-loop . ,(symbol-function 'cl-sfz:play-sfz-loop))))
+ `((poolevt . ,#'svg->poolevt)))
 
-(svg-ie:add-svg-attr-props-to-quote :lsample)
+#|
+
+(defun svg->cm (file layer x-scale &key colormap start end)
+  (let* ((x-offs (if start (* -1 (/ start x-scale)) 0))
+         (ende (if end (+ x-offs (/ end x-scale)) most-positive-fixnum)))
+;;;    (break "x-offs: ~a ende: ~a" x-offs ende)
+    (mapcar
+     (lambda (line) (ou:with-props (x1 y1 x2 color opacity attributes) line
+                 (if (getf attributes :lsample)
+                     (new poolevt
+                       :time
+                       :buffer-file (getf attributes :lsample)
+                       :amp
+                       :transp
+                       :start
+                       :end
+                       :buffer-length
+                       :stretch
+                       :wwidth
+                       :attack
+                       :release
+                       :pan
+                       :out1
+                       :out2
+                       
+                       )
+                        (new midi
+                          :time (float (* x-scale x1))
+                          :keynum y1
+                          :duration (float (* x-scale (- x2 x1)))
+                          :amplitude opacity
+                          :channel (color->chan color colormap)))))
+     (remove-if-not (lambda (line) (<= 0 (getf line :x1) ende))
+                    (svg-ie::svg->lines :infile file :layer layer :xquantize nil :yquantize nil :x-offset x-offs)))))
+|#
 
 (defmethod write-event ((obj poolevt) (fil svg-file) scoretime)
   "convert a poolevt object into a freshly allocated svg-line object and
-insert it at the appropriate position into the events slot of
+insert it at the appropriate position into the elements slot of the
 svg-file."
-  (with-slots (lsample amp transp dy start end stretch wwidth attack release pan snd-id out1 out2) obj
+  (with-slots (lsample amp keynum dy start end stretch wwidth attack release pan snd-id adjust-stretch out1 out2) obj
     (with-slots (incudine::filename incudine::buffer incudine::play-fn incudine::keynum incudine::loopstart incudine::loopend) lsample
       (let* ((myid (incudine:buffer-id incudine::buffer))
              (x-scale (x-scale fil))
              (stroke-width 0.5)
-             (color (chan->color (or snd-id (if (numberp myid) myid) 2)))
-             (dur (float (/ (incudine::buffer-frames incudine::buffer)
-                            (incudine:buffer-sample-rate incudine::buffer))
-                         1.0))
+             (id (or snd-id (if (numberp myid) myid) 2))
+             (color (chan->color id))
+             (bufdur (float (/ (incudine::buffer-frames incudine::buffer)
+                               (incudine:buffer-sample-rate incudine::buffer))
+                            1.0))
+             (region-end (if (zerop end) bufdur (min end bufdur)))
+             (sample-region (- region-end start))
              (line (let ((x1 (* x-scale scoretime))
-                         (y1 (+ incudine::keynum transp))
+                         (y1 keynum)
                          (width
                            (* x-scale
                               stretch
-                              (- (if (zerop end)
-                                     dur
-                                     end)
-                                 start)))
+                              sample-region))
                          (opacity (ou:db->amp amp) 1.0))
                      (make-instance
                       'svg-ie::svg-line
@@ -153,18 +216,21 @@ svg-file."
                       :opacity opacity
                       :stroke-color color 
                       ;; :fill-color color
-                      :attributes (format nil ":type poolevt :lsample ~a :keynum ~a :dy ~a :amp ~a :start ~a :end ~a :stretch ~a :wwidth ~a :attack ~a :release ~a :pan ~a :out1 ~a :out2 ~a :play-fn ~a :loopstart ~a :loopend ~a :sample-amp ~a :snd-id ~a"
+                      :attributes (format nil ":type poolevt :lsample ~a :lsample-keynum ~a :lsample-amp ~a :lsample-play-fn ~a :keynum ~a :amp ~a :start ~a :end ~a :stretch ~a :wwidth ~a :attack ~a :release ~a :pan ~a :out1 ~a :out2 ~a :loopstart ~a :loopend ~a :dy ~a :snd-id ~a :adjust-stretch ~a"
                                           incudine::filename
                                           incudine::keynum
-                                          dy
-                                          amp
-                                          start end (* stretch (expt 2 (/ transp 12))) wwidth attack release pan out1 out2
-                                          (function-name incudine::play-fn)
-                                          incudine::loopstart incudine::loopend
                                           (incudine:lsample-amp lsample)
-                                          snd-id)
+                                          (function-name incudine::play-fn)
+                                          keynum
+                                          amp
+                                          start (if (= region-end bufdur) 0 region-end)
+                                          stretch wwidth attack release pan out1 out2
+                                          incudine::loopstart incudine::loopend
+                                          dy
+                                          id
+                                          adjust-stretch)
                       :id (new-id fil 'line-ids)))))
-;;;      (break "line: ~a, obj: ~a ~a ~a" line buffer-file cl-poolplayer:*pool-hash* (gethash buffer-file cl-poolplayer:*pool-hash*))
+;;;      (break "line: ~a ~a ~a ~a" line incudine::buffer dur stretch)
         (if *debug* (format t "~&obj: ~a~%" obj))
         (svg-file-insert-line line (if (numberp myid) myid 2) fil)))))
 
@@ -172,25 +238,26 @@ svg-file."
   "convert a poolevt object into a freshly allocated svg-line object and
 insert it at the appropriate position into the events slot of
 svg-file."
-  (with-slots (lsample amp transp start end
+  (with-slots (lsample amp keynum start end
                stretch wwidth attack release pan out1 out2)
       obj
     (let* ((buffer (incudine:lsample-buffer lsample))
            (time (+ (rts-now) (* *rt-scale* scoretime)))
-           (amplitude (+ (ou:amp->db (incudine:lsample-amp lsample)) amp)))
+           (transp (- keynum (incudine:lsample-keynum lsample))))
       (if *debug* (format t "~&line: ~S~%" (list :buffer buffer :amp amp
                                                        :transp transp :start start :end end
                                                        :stretch stretch :wwidth wwidth :attack attack
                                                        :release release :pan pan :out1 out1 :out2 out2)))
-      (at time #'cl-poolplayer::distributed-play (list :buffer buffer :amp amplitude
+      (at time #'cl-poolplayer::distributed-play (list :buffer buffer :amp amp
                                                        :transp transp :start start :end end
                                                        :stretch stretch :wwidth wwidth :attack attack
                                                        :release release :pan pan :out1 out1 :out2 out2)))))
 ;;; (aref cl-poolplayer::*buffer-idxs*
 
-(export '(poolevt poolevt-buffer-idx poolevt-amp poolevt-start poolevt-end poolevt-stretch poolevt-wwidth poolevt-attack poolevt-release poolevt-pan poolevt-out1 poolevt-out2) 'cm)
+(export '(poolevt poolevt-buffer-idx poolevt-amp poolevt-start poolevt-end poolevt-stretch poolevt-wwidth poolevt-attack poolevt-release poolevt-pan poolevt-out1 poolevt-out2  lsample->poolevt) 'cm)
 
 (in-package :cl-poolplayer)
+
 
 (defun cm-collect-song (song)
   (let ((*events* '())
@@ -219,7 +286,5 @@ svg-file."
                              (cdr x)))
               *events*)
       #'< :key (lambda (x) (sv x cm::time)))))
-
-
 
 (export '(cm-collect-song collecting-cm) 'cl-poolplayer)
