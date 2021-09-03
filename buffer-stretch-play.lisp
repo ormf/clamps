@@ -33,8 +33,7 @@
     frm))
 
 (define-ugen buffer-stretch-play* frame
-    ((buffer buffer) rate wwidth start end stretch)
-  
+    ((buffer buffer) rate wwidth start end stretch)  
     (with-samples ((myrate (/ rate))
                    (wsamps (* wwidth *sample-rate* 0.001d0))
                    (phfreq (/ 1000.0d0 myrate wwidth)))    
@@ -242,14 +241,9 @@ The curvature CURVE defaults to -4."
                  (ampl (db->linear amp))
                  (ende (if (zerop end)
                            (/ (buffer-frames buffer) *sample-rate*)
-                           (min (/ (buffer-frames buffer) *sample-rate*) end)))
-                 (sig (* (envelope (reduce-warnings (make-fasr attack ampl release (* stretch (- ende start))))
-                                   1 1 #'free)
-                         (buffer-stretch-play buffer rate wwidth start ende stretch))))
-    (with (
-             (frm1 (envelope* *env1* 1 (* stretch (- ende start)) #'free))
-             (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch))
-             )
+                           (min (/ (buffer-frames buffer) *sample-rate*) end))))
+    (with ((frm1 (envelope* *env1* 1 (* stretch (- ende start)) #'free))
+           (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch)))
         (maybe-expand frm1)
         (maybe-expand frm2)
         (foreach-frame
@@ -257,9 +251,7 @@ The curvature CURVE defaults to -4."
                      (frame-ref frm1 current-frame)
                      (frame-ref frm2 current-frame))))
             (incf (audio-out out2) (* sig right))
-            (incf (audio-out out1) (* sig left)))))))          
-
-;;; (play-buffer-stretch-env-pan-out *buf*)
+            (incf (audio-out out1) (* sig left)))))))
 
 (dsp! play-buffer-stretch-env-pan-out ((buffer buffer) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum))
   (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0 0 1)
