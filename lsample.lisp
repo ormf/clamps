@@ -44,20 +44,17 @@ contains a slot for the sample buffer data."
   "Convert VALUE dB to linear value."
   (* (sample 440.0d0) (expt 2 (/ (- keynum 69.0d0) 12.0d0))))
 
-
-
 (defun play-lsample (lsample pitch db dur &key (pan 0.5) (startpos 0))
   "play lsample with given pitch, amp and duration with loop."
   (with-slots (buffer amp keynum loopstart loopend) lsample
     (let ((rate (incudine::sample (ou:ct->fv (- pitch keynum)))))
-      (lsample-play buffer dur (ou:db->amp (+ amp db)) rate pan loopstart loopend startpos))))
+      (play-lsample* buffer dur (ou:db->amp (+ amp db)) rate pan loopstart loopend startpos))))
 
 (defun play-sample (lsample pitch db dur &key (pan 0.5) (startpos 0))
   "play lsample once with given pitch, amp and duration."
   (with-slots (buffer amp keynum) lsample
     (let ((rate (incudine::sample (ou:ct->fv (- pitch keynum)))))
-      (sample-play buffer dur (ou:db->amp (+ amp db)) rate pan startpos))))
-
+      (play-sample* buffer dur (ou:db->amp (+ amp db)) rate pan startpos))))
 
 (define-vug phasor-loop (rate start-pos loopstart loopend)
   (with-samples ((pos start-pos)
@@ -72,8 +69,7 @@ contains a slot for the sample buffer data."
   (buffer-read buffer (phasor-loop rate start-pos loopstart loopend)
                :interpolation :cubic))
 
-
-(define-vug buffer-play* ((buffer buffer) start-pos end-pos dur)
+(define-vug buffer-play ((buffer buffer) start-pos end-pos dur)
   (buffer-read buffer (line start-pos end-pos dur)
                :interpolation :cubic))
 
@@ -144,7 +140,28 @@ contains a slot for the sample buffer data."
             (incf (audio-out out2) (* sig right))
             (incf (audio-out out1) (* sig left)))))))
 
-(define-ugen buffer-play2* frame ((buffer buffer) start end dur)
+(dsp! play-lsample-oneshot* ((buffer buffer) dur amp rate pan loopstart loopend startpos (out1 fixnum) (out2 fixnum))
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 0 1 0 0 0 0 0 1)
+  (with-samples ((rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
+                 (start (* startpos (buffer-sample-rate buffer)))
+                 (ampl (db->linear amp))
+                 (loopend (if (zerop loopend) (incudine::sample (buffer-frames buffer)) (incudine::sample loopend)))
+                 (ende (/ (buffer-frames buffer) *sample-rate*))
+                 (alpha (* +half-pi+ pan))
+                 (left (cos alpha))
+                 (right (sin alpha)))
+    (with ((frm1 (envelope* *env1* 1 (max dur ende) #'free))
+           (frm2 (buffer-loop-play* buffer rate start loopstart loopend)))
+        (maybe-expand frm1)
+        (maybe-expand frm2)
+        (foreach-frame
+          (let ((sig (* ampl
+                     (frame-ref frm1 current-frame)
+                     (frame-ref frm2 current-frame))))
+            (incf (audio-out out2) (* sig right))
+            (incf (audio-out out1) (* sig left)))))))
+
+(define-ugen buffer-play* frame ((buffer buffer) start end dur)
   (with ((frm (make-frame (block-size)))
          (ph1 (line* start end dur #'free)))
     (maybe-expand ph1)
@@ -166,9 +183,7 @@ contains a slot for the sample buffer data."
                            (* (+ start (* *sample-rate* dur)) rate)))
                  (duration (/ (- end start) (* rate *sample-rate*))))
   (with ((frm1 (envelope* *env1* 1 dur #'free))
-         (frm2 (buffer-play2* buffer start end duration))
-         ;;           (frm2 (buffer-stretch-play* buffer rate 137 0 ende 1))
-         )
+         (frm2 (buffer-play* buffer start end duration)))
     (maybe-expand frm1)
     (maybe-expand frm2)
     (foreach-frame
@@ -177,7 +192,6 @@ contains a slot for the sample buffer data."
                     (frame-ref frm2 current-frame))))
         (incf (audio-out out2) (* sig right))
         (incf (audio-out out1) (* sig left)))))))
-
 
 (define-ugen buffer-stretch-play* frame
     ((buffer buffer) rate wwidth start end stretch)  
