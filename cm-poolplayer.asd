@@ -7,4 +7,5 @@
   :version "0.0.1"
   :serial t
   :depends-on (#:cl-poolplayer #:cm-utils  #:cm-svg)
-  :components ((:file "cm-poolplayer")))
+  :components ((:file "cm-poolplayer")
+               (:file "cm-sampleevt")))
