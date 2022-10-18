@@ -46,9 +46,9 @@ contains a slot for the sample buffer data."
 
 (defun play-lsample (lsample pitch db dur &key (pan 0.5) (startpos 0))
   "play lsample with given pitch, amp and duration with loop."
-  (with-slots (buffer amp keynum loopstart loopend) lsample
-    (let ((rate (incudine::sample (ou:ct->fv (- pitch keynum)))))
-      (play-lsample* buffer dur (ou:db->amp (+ amp db)) rate pan loopstart loopend startpos))))
+  (with-slots (buffer amp keynum loopstart loopend play-fn) lsample
+    (let ((rate (if pitch (incudine::sample (ou:ct->fv (- pitch keynum))) 1)))
+      (funcall (or play-fn #'play-lsample-oneshot*) buffer dur (+ amp db) rate pan loopstart loopend startpos))))
 
 (defun play-sample (lsample pitch db dur &key (pan 0.5) (startpos 0))
   "play lsample once with given pitch, amp and duration."
@@ -120,7 +120,7 @@ contains a slot for the sample buffer data."
     frm))
 
 (dsp! play-lsample* ((buffer buffer) dur amp rate pan loopstart loopend startpos (out1 fixnum) (out2 fixnum))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 0 1 0 0 0 0 0 1)
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 0 1 0.5 0 0 0 0 1)
   (with-samples ((rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
                  (start (* startpos (buffer-sample-rate buffer)))
                  (ampl (db->linear amp))
@@ -141,16 +141,16 @@ contains a slot for the sample buffer data."
             (incf (audio-out out1) (* sig left)))))))
 
 (dsp! play-lsample-oneshot* ((buffer buffer) dur amp rate pan loopstart loopend startpos (out1 fixnum) (out2 fixnum))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 0 1 0 0 0 0 0 1)
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 0 1 0.5 0 0 0 0 1)
   (with-samples ((rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
                  (start (* startpos (buffer-sample-rate buffer)))
                  (ampl (db->linear amp))
                  (loopend (if (zerop loopend) (incudine::sample (buffer-frames buffer)) (incudine::sample loopend)))
-                 (ende (/ (buffer-frames buffer) *sample-rate*))
+                 (ende (/ (buffer-frames buffer) (buffer-sample-rate buffer)))
                  (alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha)))
-    (with ((frm1 (envelope* *env1* 1 (max dur ende) #'free))
+    (with ((frm1 (envelope* *env1* 1 (min dur ende) #'free))
            (frm2 (buffer-loop-play* buffer rate start loopstart loopend)))
         (maybe-expand frm1)
         (maybe-expand frm2)

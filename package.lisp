@@ -11,6 +11,7 @@
            #:PLAY-BUFFER-STRETCH-ENV-OUT
            #:PLAY-BUFFER-STRETCH-ENV-PAN-OUT
            #:PLAY-BUFFER-STRETCH-ENV-PAN-OUT*
+           #:PLAY-BUFFER*
            #:*HANNING1024*
            #:MAKE-OASR
            #:*ENV1*))

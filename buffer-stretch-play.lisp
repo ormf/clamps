@@ -63,6 +63,7 @@
                                          (* p2 wsamps)))))))))
         frm)))
 
+
 #|
 
 (foreach-frame
@@ -107,12 +108,10 @@
 
 (rt-start)
 (at (+ (now) (* *sample-rate* 1)) #'play-buffer-stretch* :buffer *buf* :end 0.2)
-(play-buffer-stretch :buffer *buf* :end 0.2)
+(play-buffer-stretch* :buffer *buf* :end 0.2)
 (incudine::node-free-all)
 
 |#
-
-
 
 (define-vug buffer-stretch-play ((buffer buffer) rate wwidth start end stretch)
   (with-samples ((myrate (/ rate))
@@ -184,7 +183,7 @@
 
 ;;; (defparameter *my-buf* (buffer-load "/home/orm/work/kompositionen/letzte-worte/snd/fl-s01-line01.wav"))
 
-;; (play-buffer-stretch :buffer *my-buf* :amp 0 :transp 0 :start 0 :end 0 :stretch 1 :wwidth 137 :out 1)
+;; (play-buffer-stretch-out :buffer *my-buf* :amp 0 :transp 0 :start 0 :end 0 :stretch 1 :wwidth 137 :out 1)
 ;; (play-buffer-stretch :buffer *my-buf* :amp 0 :transp -12 :start 0 :end 0 :stretch 1 :wwidth 137)
 
 
@@ -272,4 +271,36 @@ The curvature CURVE defaults to -4."
       (incf (audio-out out2) (* sig right)))
     (foreach-frame
       (incf (audio-out out1) (* sig left)))))
+
+(define-ugen buffer-play* frame
+    ((buffer buffer) rate start end)  
+  (with-samples ((buf-rate (buffer-sample-rate buffer)))    
+      (with ((frm (make-frame (block-size)))
+             (mainpt (line* (* start buf-rate)
+                            (*  end buf-rate)
+                            (/ (- end start) rate)
+                            #'free)))
+        (maybe-expand mainpt)
+        (foreach-frame
+          (setf (frame-ref frm current-frame)
+                (buffer-read buffer (frame-ref mainpt current-frame))))
+        frm)))
+
+
+(dsp! play-buffer* ((buffer buffer) amp rate start end)
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 1 0 0)
+  (with-samples ((ampl (db->linear amp)))
+    (with-samples ((ende (if (zerop end)
+                             (/ (buffer-frames buffer) (buffer-sample-rate buffer))
+                             end)))
+      (with (
+             (frm1 (envelope* *env1* 1 (- ende start) #'free))
+             (frm2 (buffer-play* buffer rate start ende))
+             )
+        (maybe-expand frm1)
+        (maybe-expand frm2)
+        (foreach-frame
+          (incf (audio-out 0)
+                (* ampl (frame-ref frm1 current-frame)
+                   (frame-ref frm2 current-frame))))))))
 
