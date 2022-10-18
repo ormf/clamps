@@ -2,8 +2,6 @@
 
 (in-package #:cm)
 
-;; (cd "/home/orm/work/kompositionen/ordonarequin/lisp/")
-
 (defmacro make-mt-stream (symbol-name midi-out-stream chan-tuning)
   "Define, open and initialize a microtonal midistream. The name of
 the stream and an already initialized midi-port-stream has to be
@@ -13,8 +11,8 @@ supplied and gets interned as a parameter."
        (new incudine-stream
          :name (string-trim '(#\*) (format nil "~a" ',symbol-name))
          :output ,midi-out-stream))
-     (open-io (apply #'init-io ,symbol-name
-                     `(:channel-tuning ,,chan-tuning)) :output ,midi-out-stream)
+     (open-io (apply #'init-io ,symbol-name `(:channel-tuning ,,chan-tuning))
+              :output ,midi-out-stream)
      (initialize-io ,symbol-name)
      (values ',symbol-name)))
 
@@ -22,11 +20,13 @@ supplied and gets interned as a parameter."
 
 (defun reinit-midi ()
   (cm::initialize-io *mt-out01*)
+  (write-event (new midi-program-change :program 73) *mt-out01* 0)
   (events
    (loop for idx below 8
          collect (new midi :time (* idx 0.05) :keynum (float (+ 60 (* idx 1/4)))))
    *mt-out01*))
 
+#|
 (defun get-qsynth-midi-port-name (&optional (direction :input))
   (let ((result (with-output-to-string (str)
                   (progn
@@ -39,6 +39,7 @@ supplied and gets interned as a parameter."
       (declare (ignore end))
       (if start
           (subseq result (aref reg1 0) (aref reg2 0))))))
+|#
 
 (defun get-qsynth-midi-port-name (&optional (direction :input))
   (let ((result (uiop:run-program "jack_lsp" :output :string)))

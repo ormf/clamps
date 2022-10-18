@@ -6,6 +6,7 @@
   :license  "lgpl"
   :version "0.0.1"
   :serial t
-  :depends-on (#:cm-utils #:cl-ppcre #:of-incudine-dsps #:sol #:cm-sfz #:cm-poolplayer)
+  :depends-on (#:cm-utils #:cl-ppcre #:of-incudine-dsps ;;; #:sol
+                          #:cl-sfz #:cm-sfz #:cm-poolplayer)
   :components ((:file "package")
                (:file "cm-all")))
