@@ -21,6 +21,8 @@
 
 (in-package :cm)
 
+(export '(svg->poolevt poolevt poolevt-lsample poolevt-buffer-idx poolevt-amp poolevt-start poolevt-end poolevt-stretch poolevt-wwidth poolevt-attack poolevt-release poolevt-pan poolevt-out1 poolevt-out2 lsample->poolevt) 'cm)
+
 (defparameter *debug* nil)
 #|
 (defobject poolevt (event)
@@ -281,4 +283,4 @@ svg-file."
       ;;                                                  :release release :pan pan :out1 out :out2 (1+ out)))
       )))
 
-(export '(svg->poolevt poolevt poolevt-lsample poolevt-buffer-idx poolevt-amp poolevt-start poolevt-end poolevt-stretch poolevt-wwidth poolevt-attack poolevt-release poolevt-pan poolevt-out1 poolevt-out2 lsample->poolevt) 'cm)
+
