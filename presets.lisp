@@ -48,6 +48,7 @@
 ;;; of the preset (which are also defined as envelopes and thus can
 ;;; change over the course of an event).
 
+#|
 (defstruct preset
   (dtime (make-env :start 0.1 :delta 1 :type :exp))
   (dtime-dev (make-env :start 1.2 :delta 1 :type :exp))
@@ -67,36 +68,46 @@
   (inner-release-dev (make-env :start 1 :delta 1 :type :exp))
   (chan 0)
   (chan-dev (make-env)))
+|#
 
-(defparameter *default-audio-preset* '(nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil))
+(defparameter *default-audio-preset* '(nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil))
 
 (defparameter *audio-fn-id-lookup*
   (let ((hash (make-hash-table)))
-    (loop for key in '(:preset-form :p1 :p2 :p3 :p4 :bufferfn :ampfn :transpfn :startfn :endfn :stretchfn
-                       :wwidthfn :attackfn :releasefn :outfn)
+    (loop for key in '(:preset-form :p1 :p2 :p3 :p4 :dtimefn :lsamplefn :ampfn :transpfn :startfn :endfn :stretchfn
+                       :wwidthfn :attackfn :releasefn :panfn :outfn)
        for id from 0
        do (setf (gethash key hash) id))
     hash))
 
 (defun new-audio-preset ()
-  (make-array 16 :initial-contents *default-audio-preset*))
+  (make-array 17 :initial-contents *default-audio-preset*))
 
 ;;; (new-audio-preset)
-
+;;; *presets*
 (defun get-fn-idx (key)
   (gethash key *audio-fn-id-lookup*))
 
 (defun expand-args (preset args)
 ;;;  (format t "~&args: ~a" args)
   (loop
-    for (key val) on args by #'cddr
+    for (key val) on (canonisize-arg-list args) by #'cddr
     for idx = (get-fn-idx key)
-
+    for n from 3
     collect `(setf (aref ,preset ,idx)
-                   (lambda (&optional x dur p1 p2 p3 p4 args)
-                     (declare (ignorable x dur p1 p2 p3 p4 args))
+                   (lambda ,(append (subseq '(&optional x dur p1 p2 p3 p4) 0 (min n 7)) '(args))
+                     (declare (ignorable ,@(append (subseq '(&optional x dur p1 p2 p3 p4) 1 (min n 7)) '(args))))
                      ,val))))
 
+(defun canonisize-arg-list (args)
+  "make sure the args property list begins with the properties :p1 to
+:p4 in order."
+  (append (ou:get-props-list args '(:p1 :p2 :p3 :p4) :force-all t)
+          (ou:delete-props args :p1 :p2 :p3 :p4)))
+
+;;; (let ((n 5)) (append (subseq '(&optional x dur p1 p2 p3 p4) 0 (min n 7)) '(args)))
+
+;;; (canonisize-arg-list '(:p3 13 :p2 1 :transpfn (lambda (x) x) :p4 22))
 
 (defmacro digest-poolplayer-preset (ref args)
   (let ((preset (gensym "preset")))
@@ -105,6 +116,8 @@
          ,@(expand-args preset args))
        (setf (aref ,preset 0) ',args)
        ,preset)))
+
+;;; (get-fn-idx :ampfn)
 
 #|
 ;;; implementation as function. The args have to get quoted.
@@ -147,7 +160,7 @@
          :p3 0
          :p4 0
          :dtimefn 0.5
-         :bufferfn (r-elt *buffers*)
+         :lsamplefn (r-elt *buffers*)
          :ampfn (n-exp 0 1 2)
          :transpfn (r-exp 1 2)
          :startfn 0

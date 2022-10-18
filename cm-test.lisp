@@ -26,7 +26,7 @@
 
 (big-orchestra::preset-play
          (make-instance 'big-orchestra::eventplayer) 15 (+ 10 (random 8))
-                     :bufferfn (lambda (x) x (big-orchestra::r-elt big-orchestra::*pool12*)) 
+                     :lsamplefn (lambda (x) x (big-orchestra::r-elt big-orchestra::*pool12*)) 
                      :outfn (big-orchestra::fig12-out (random 9) big-orchestra::*circle-cw*)
                      :transpfn (lambda (x) x (ou:r-lin (+ (random 5.0) 10) -50))
                      :ampfn (lambda (x) (ou:n-lin (interp x 0 1 0.1 0 1 1) (- -6 (random 12) ) -32))
@@ -40,7 +40,7 @@
      do (progn
           (preset-play
            (make-instance 'eventplayer) 15 dur
-           :bufferfn (lambda (x) x (r-elt big-orchestra::*pool12*)) 
+           :lsamplefn (lambda (x) x (r-elt big-orchestra::*pool12*)) 
            :outfn (fig12-out (random 9) big-orchestra::*circle-cw*)
            :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -50))
            :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) (- -6 (random 12) ) -32))
@@ -58,7 +58,7 @@
 
 (defun teppichtrampeln (dur)
   (let ((params
-          (list :bufferfn (lambda (x) x (r-elt big-orchestra::*pool12*)) 
+          (list :lsamplefn (lambda (x) x (r-elt big-orchestra::*pool12*)) 
                 :outfn (fig12-out (random 9) big-orchestra::*circle-cw*)
                 :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -20))
                 :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) (- -6 (random 12) ) -32))

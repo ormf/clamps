@@ -23,10 +23,9 @@
 ;;; fallback fn
 
 (defun stereo-out (x)
-  "default output function returning the idx 0 and 1 and a random pan
-value."
+  "default output function returning the idx 0 and 1."
   (declare (ignore x))
-  (values 0 1 (random 1.0)))
+  (values 0 1))
 
 #|
 9-channel distribution of speakers:

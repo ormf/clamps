@@ -165,7 +165,7 @@
  10)
 
 ((:dtime :dtimefn)
- (:buffer :bufferfn)
+ (:lsample :lsamplefn)
  (:amp :ampfn)
  (:transp :transpfn)
  (:start :startfn)

@@ -100,7 +100,7 @@
   (dotimes (n 16)
     (setf (aref *note-fns* n) #'identity)))
 
-(defparameter *midi-debug* nil)
+;;; (defparameter *midi-debug* nil)
 
 ;;; (setf *midi-debug* t)
 

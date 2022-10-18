@@ -173,7 +173,7 @@ removing it from *sequences*."
      :playfn                                                                    
      (playfn 15                                                                 
              (list                                                              
-             :bufferfn (lambda (x) x (r-elt *pool12*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool12*)) 
              :outfn (fig12-out (random 9) *circle-cw*)
              :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -50))
              :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) (- -6 (random 12) ) -32))
@@ -222,7 +222,7 @@ removing it from *sequences*."
      :playfn
      (playfn 15
              (list
-              :bufferfn (lambda (x) x (r-elt *pool5*)) 
+              :lsamplefn (lambda (x) x (r-elt *pool5*)) 
               :outfn (fig12-out 0 (pick *rline* *line*))
               :transpfn (lambda (x) x (r-lin (+ (random 5.0) -50) 0))
               :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) -16 -32))
@@ -237,7 +237,7 @@ removing it from *sequences*."
 
              
              (list
-              :bufferfn (lambda (x) x (r-elt *pool9*)) 
+              :lsamplefn (lambda (x) x (r-elt *pool9*)) 
               :outfn (fig-out (random 9) (pick *line* *rline* *circle-cw* *circle-ccw*))
               :transpfn (lambda (x) x 0)
               :endfn (lambda (x) (n-exp x 0.3 1))
@@ -256,7 +256,7 @@ removing it from *sequences*."
      :playfn
      (playfn 15
              (list
-              :bufferfn (lambda (x) x (r-elt *pool9*)) 
+              :lsamplefn (lambda (x) x (r-elt *pool9*)) 
               :outfn (fig-out (random 13) (pick *circle-cw* *circle-ccw*))
               :transpfn (lambda (x) x 0)
               :endfn (lambda (x) (n-exp x 0.3 1))
@@ -288,7 +288,7 @@ removing it from *sequences*."
      :playfn
      (playfn 15
              (list
-              :bufferfn (lambda (x) x (r-elt *pool5*)) 
+              :lsamplefn (lambda (x) x (r-elt *pool5*)) 
               :outfn #'global-out
               :transpfn (lambda (x) x (r-lin (+ (random 5.0) 50) 0))
               :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) -6 -22))
@@ -303,7 +303,7 @@ removing it from *sequences*."
      :playfn
      (playfn 15
              (list
-              :bufferfn (lambda (x) x (r-elt *pool14*)) 
+              :lsamplefn (lambda (x) x (r-elt *pool14*)) 
               :outfn #'global-out
               :transpfn (lambda (x) x (pick 0 4 7 12 -12))
               :stretchfn (lambda (x) x (r-exp 1 1))
@@ -733,7 +733,7 @@ removing it from *sequences*."
 (song-playfn teppichtrampeln)                                      ;
 (make-song :durfn
               (rmprop
-               '(:afterfn (lambda () (r-exp 2 5)) :bufferfn
+               '(:afterfn (lambda () (r-exp 2 5)) :lsamplefn
                  (lambda (x) x (r-elt *pool12*)) :outfn
                  (fig12-out (random 9) (pick *circle-ccw* *circle-cw*))
                  :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -20))
@@ -747,7 +747,7 @@ removing it from *sequences*."
                :durfn (lambda () (r-exp 10 15)))
               :beforefn
               (rmprop
-               '(:afterfn (lambda () (r-exp 2 5)) :bufferfn
+               '(:afterfn (lambda () (r-exp 2 5)) :lsamplefn
                  (lambda (x) x (r-elt *pool12*)) :outfn
                  (fig12-out (random 9) (pick *circle-ccw* *circle-cw*))
                  :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -20))
@@ -761,7 +761,7 @@ removing it from *sequences*."
                :beforefn (lambda () 0))
               :afterfn
               (rmprop
-               '(:afterfn (lambda () (r-exp 2 5)) :bufferfn
+               '(:afterfn (lambda () (r-exp 2 5)) :lsamplefn
                  (lambda (x) x (r-elt *pool12*)) :outfn
                  (fig12-out (random 9) (pick *circle-ccw* *circle-cw*))
                  :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -20))
@@ -775,7 +775,7 @@ removing it from *sequences*."
                :afterfn (lambda () 0)))
 
 
-(let ((plist (list :afterfn (lambda () (r-exp 2 5)) :bufferfn
+(let ((plist (list :afterfn (lambda () (r-exp 2 5)) :lsamplefn
    (lambda (x) x (r-elt *pool12*)) :outfn
    (fig12-out (random 9) (pick *circle-ccw* *circle-cw*))
    :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -20))
@@ -798,7 +798,7 @@ removing it from *sequences*."
  (defparameter teppichtrampeln
    (make-song :durfn
               (rmprop
-               '(:afterfn (lambda () (r-exp 2 5)) :bufferfn
+               '(:afterfn (lambda () (r-exp 2 5)) :lsamplefn
                  (lambda (x) x (r-elt *pool12*)) :outfn
                  (fig12-out (random 9) (pick *circle-ccw* *circle-cw*))
                  :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -20))
@@ -812,7 +812,7 @@ removing it from *sequences*."
                :durfn (lambda () (r-exp 10 15)))
               :beforefn
               (rmprop
-               '(:afterfn (lambda () (r-exp 2 5)) :bufferfn
+               '(:afterfn (lambda () (r-exp 2 5)) :lsamplefn
                  (lambda (x) x (r-elt *pool12*)) :outfn
                  (fig12-out (random 9) (pick *circle-ccw* *circle-cw*))
                  :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -20))
@@ -826,7 +826,7 @@ removing it from *sequences*."
                :beforefn (lambda () 0))
               :afterfn
               (rmprop
-               '(:afterfn (lambda () (r-exp 2 5)) :bufferfn
+               '(:afterfn (lambda () (r-exp 2 5)) :lsamplefn
                  (lambda (x) x (r-elt *pool12*)) :outfn
                  (fig12-out (random 9) (pick *circle-ccw* *circle-cw*))
                  :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -20))
@@ -840,7 +840,7 @@ removing it from *sequences*."
                :afterfn (lambda () 0))))
  (defun teppichtrampeln (#:|dur1747|) 
    (apply #'preset-play (make-instance 'eventplayer) 0 #:|dur1747|
-          '(:afterfn (lambda () (r-exp 2 5)) :bufferfn
+          '(:afterfn (lambda () (r-exp 2 5)) :lsamplefn
             (lambda (x) x (r-elt *pool12*)) :outfn
             (fig12-out (random 9) (pick *circle-ccw* *circle-cw*)) :transpfn
             (lambda (x) x (r-lin (+ (random 5.0) 10) -20)) :ampfn
@@ -859,7 +859,7 @@ removing it from *sequences*."
 
 (defun teppichtrampeln (dur)
   (let ((params
-          (list :bufferfn (lambda (x) x (r-elt *pool12*)) 
+          (list :lsamplefn (lambda (x) x (r-elt *pool12*)) 
                 :outfn (fig12-out (random 9) (pick *circle-ccw* *circle-cw*))
                 :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -20))
                 :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) (- -6 (random 12) ) -32))

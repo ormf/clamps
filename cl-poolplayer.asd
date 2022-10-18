@@ -6,7 +6,7 @@
   :license  "Specify license here"
   :version "0.0.1"
   :serial t
-  :depends-on (:cm-utils :of-incudine-dsps :orm-utils)
+  :depends-on (#:incudine-bufs #:of-incudine-dsps #:cl-sfz #:orm-utils)
   :components ((:file "package")
                (:file "globals")
                (:file "classes")
@@ -18,7 +18,8 @@
                (:file "network")
                (:file "cl-poolplayer")
                (:file "sequencer")
-               (:file "midictl")
-               (:file "cm-poolplayer")
+;;;               (:file "midictl")
+;;;               (:file "cm-poolplayer")
+;;;               (:file "cl-poolplayer-default-presets")
                (:file "init")
                )) 

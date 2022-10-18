@@ -30,7 +30,11 @@ of the number of files and return the array."
                                :initial-element (incudine:make-buffer 1))
     for idx from 0
     for filename in snds
-    do (setf (aref buffers idx) (incudine:buffer-load filename))
+    do (setf (aref buffers idx)
+             (make-instance 'incudine:lsample
+                            :filename filename
+                            :buffer (incudine:of-buffer-load filename)
+                            :play-fn #'incudine:play-sample*))
     finally (return buffers)))
 
 ;;; (cl-plot:plot (aref *buffers* 2))
@@ -44,16 +48,16 @@ of the number of files and return the array."
     finally (return idx-hash)))
 
 (defun load-poolplayer-sounds (dir sound-type-dirs)
-  (setf *buffers* #())
+  (setf *pool-buffers* #())
   (loop for (type subdir) on sound-type-dirs by #'cddr
         with idx = 0
         do (progn
-             (vector-extend *buffers* (load-sounds (format nil "~a/~a/*.wav" dir subdir)))
-             (let ((curr-idx (length *buffers*)))
+             (vector-extend *pool-buffers* (load-sounds (format nil "~a/~a/*.wav" dir subdir)))
+             (let ((curr-idx (length *pool-buffers*)))
                (setf (gethash type *snd-type-hash*)
                      (loop for n from idx below curr-idx collect n))
                (setf idx curr-idx))))
-  (setf *buffer-idxs* (gen-poolplayer-buf-idxs *buffers*)))
+  (setf *pool-buffer-idxs* (gen-poolplayer-buf-idxs *pool-buffers*)))
 
 (defun collect-pool (&rest keys)
   (coerce
@@ -65,4 +69,3 @@ of the number of files and return the array."
 
 (defun buf-idx (buffer)
   (gethash buffer *buffer-idxs*))
-

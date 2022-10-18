@@ -34,25 +34,3 @@
    (time :accessor :time :initform 0 :initarg :time)
    (preset :accessor :preset :initarg :preset)))
 
-(defgeneric stop (p))
-
-(defmethod stop ((p eventplayer))
-  (sv p :playing nil))
-
-(defgeneric preset-play (player preset dur &rest args))
-
-(defmethod preset-play ((p eventplayer) preset dur &rest args)
-  (sv p
-      :playing t
-    :end (if dur (+ (now) dur))
-    :dur dur
-    :preset preset)
-  (funcall #'perform p (now) args))
-
-(defmethod preset-play ((p eventplotter) preset dur &rest args)
-  (sv p
-      :playing t
-    :end (if dur (+ (getf args :time) dur))
-    :dur dur
-    :preset preset)
-  (funcall #'perform p (getf args :time) args))

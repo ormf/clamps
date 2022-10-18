@@ -32,7 +32,7 @@
   :p3 0
   :p4 0
   :dtimefn (funcall (or (getf args :dtimefn) (lambda (x) (n-exp x 0.05 0.2))) x)
-  :bufferfn (r-elt (getf args :g1))
+  :lsamplefn (r-elt (getf args :g1))
   :ampfn (funcall
           (or (getf args :ampfn)
               (lambda (x) x (+ (or (getf args :amp 0)) (random 12) -6)))
@@ -351,7 +351,7 @@
 
 ;;; mallet accelerando-ritardando
 (preset-play (aref *players* 0) 13 (+ 50 (random 5.0))
-             :bufferfn (lambda () (r-elt *pool1*)))
+             :lsamplefn (lambda () (r-elt *pool1*)))
 
 (preset-play (aref *players* 0) 1 2
              :g1 *pool0*
@@ -409,7 +409,7 @@
 ;;; test loudspeakers:
 
 (preset-play (aref *players* 0) 15 24
-             :bufferfn (lambda (x) x (aref *buffers* 4))
+             :lsamplefn (lambda (x) x (aref *buffers* 4))
              :outfn (fig12-out 0 *line*)
              :g3 (lambda (x) (interp x 0 2 1 -5))
              :g2 (lambda (x) (interp x 0 -30 0.3 -20 1.1 -30)))
@@ -632,7 +632,7 @@
 
 (let ((dur 10))
   (preset-play (make-instance 'eventplayer) 15 dur
-               :bufferfn (lambda (x) x (r-elt *pool5*)) 
+               :lsamplefn (lambda (x) x (r-elt *pool5*)) 
                :outfn #'global-out
                :transpfn (lambda (x) x (r-lin (+ (random 5.0) 50) 0))
                :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) -6 -22))
@@ -640,7 +640,7 @@
 
 (let ((dur 50))
   (preset-play (make-instance 'eventplayer) 15 dur
-               :bufferfn (lambda (x) x (aref *pool1* 0)) 
+               :lsamplefn (lambda (x) x (aref *pool1* 0)) 
                :outfn #'global-out
                :transpfn (lambda (x) (let ((time (* x dur)))
                                    (+ (mod (floor (/ time 0.4)) 2) 13)))
@@ -650,7 +650,7 @@
 ;;; "Donnerblech" ritardando:
 
 (preset-play (make-instance 'eventplayer) 15 15
-             :bufferfn (lambda (x) x (r-elt *pool5*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool5*)) 
              :outfn (fig12-out 0 (pick *rline* *line*))
              :transpfn (lambda (x) x (r-lin (+ (random 5.0) -50) 0))
              :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) -16 -32))
@@ -659,14 +659,14 @@
 ;;; teppichtrampeln
 
 (preset-play (make-instance 'eventplayer) 15 (+ 10 (random 8))
-             :bufferfn (lambda (x) x (r-elt *pool12*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool12*)) 
              :outfn (fig12-out (random 9) *circle-cw*)
              :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -50))
              :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) (- -6 (random 12) ) -32))
              :dtimefn (lambda (x) (n-exp (interp x 0 0 1 1) (+ 0.02 (random 0.02)) (+ 1.5 (random 2.0)))))
 
 (preset-play (make-instance 'eventplayer) 15 (+ 10 (random 8))
-             :bufferfn (lambda (x) x (r-elt *pool12*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool12*)) 
              :outfn (fig12-out (random 9) *circle-cw*)
              :transpfn (lambda (x) x (r-lin (+ (random 5.0) 10) -50))
              :ampfn (lambda (x) (n-lin (interp x 0 1 0.1 0 1 1) (- -6 (random 12) ) -32))
@@ -675,7 +675,7 @@
 ;;; flageolettteppich selten
 
 (preset-play (make-instance 'eventplayer) 15 (+ 40 (random 8))
-             :bufferfn (lambda (x) x (r-elt *pool13*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool13*)) 
              :outfn #'global-out
              :transpfn (lambda (x) x (r-lin (+ (random 5.0) 0) 10.0))
              :stretchfn (lambda (x) x (r-exp 0.2 0.1))
@@ -685,7 +685,7 @@
 ;;; Blech 01
 
 (preset-play (make-instance 'eventplayer) 15 10
-             :bufferfn (lambda (x) x (aref *pool14* 0)) 
+             :lsamplefn (lambda (x) x (aref *pool14* 0)) 
              :outfn #'global-out
              :transpfn (lambda (x) (n-lin x 0 12))
              :stretchfn (lambda (x) x (r-exp 1 1))
@@ -694,7 +694,7 @@
              :dtimefn (lambda (x) (n-exp (interp x 0 0 0.1 0.5 0.3 0 1 1) (+ 0.02 (random 0.02)) (+ 1.5 (random 2.0)))))
 
 (preset-play (make-instance 'eventplayer) 15 (+ 40 (random 8))
-             :bufferfn (lambda (x) x (r-elt *pool14*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool14*)) 
              :outfn #'global-out
              :transpfn (lambda (x) x (pick 0 4 7 12 -12))
              :stretchfn (lambda (x) x (r-exp 1 1))
@@ -705,7 +705,7 @@
 ;;; drone
 
 (preset-play (make-instance 'eventplayer) 15 (+ 10 (random 8))
-             :bufferfn (lambda (x) x (r-elt *pool9*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool9*)) 
              :outfn (fig-out (random 9) (pick *line* *rline* *circle-cw* *circle-ccw*))
              :transpfn (lambda (x) x 0)
              :stretchfn (lambda (x) x 10)
@@ -717,7 +717,7 @@
                                     (+ 0.1 (random 2.0)))))
 
 (preset-play (make-instance 'eventplayer) 15 25
-             :bufferfn (lambda (x) x (r-elt *pool9*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool9*)) 
              :outfn (fig-out (random 9) (pick *line* *rline* *circle-cw* *circle-ccw*))
              :transpfn (lambda (x) x 0)
              :endfn (lambda (x) (n-exp x 0.3 1))
@@ -732,7 +732,7 @@
 ;;; Partialtonakkord leise
 
 (preset-play (make-instance 'eventplayer) 16 0.2
-             :bufferfn (lambda (x) x (r-elt *pool9*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool9*)) 
              :outfn (fig-out (random 9) (pick *circle-cw* *circle-ccw*))
              :transpfn (lambda (x) x 0)
              :stretchfn (lambda (x) x (r-exp 300 300))
@@ -747,7 +747,7 @@
 ;;; drone hoch!!!
 
 (preset-play (make-instance 'eventplayer) 15 (+ 10 (random 8))
-             :bufferfn (lambda (x) x (r-elt *pool9*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool9*)) 
              :outfn (fig-out (random 13) (pick *circle-cw* *circle-ccw*))
              :transpfn (lambda (x) x 0)
              :stretchfn (lambda (x) x (r-exp 10 10))
@@ -757,7 +757,7 @@
              :dtimefn (lambda (x) (n-exp (interp x 0 0 1 1) (+ 0.03 (random 0.03)) (+ 0.1 (random 0.2)))))
 
 (preset-play (make-instance 'eventplayer) 15 (+ 10 (random 8))
-             :bufferfn (lambda (x) x (r-elt *pool9*)) 
+             :lsamplefn (lambda (x) x (r-elt *pool9*)) 
              :outfn (fig-out (random 13) (pick *circle-cw* *circle-ccw*))
              :transpfn (lambda (x) x 0)
              :stretchfn (lambda (x) x (r-exp 10 10))
@@ -780,13 +780,13 @@
 
 
 (preset-play (make-instance 'eventplayer) 99 (+ 1 (random 5))
-             :bufferfn (r-elt *pool11*)
+             :lsamplefn (r-elt *pool11*)
              :dtimefn (r-exp 0.08 0.3)
              :outfn (fig12-out 0 *rline*))
 
 
 (preset-play (aref *players* 0) 99 (+ 1 (random 5))
-             :bufferfn (r-elt *pool11*)
+             :lsamplefn (r-elt *pool11*)
              :dtimefn (r-exp 0.08 0.3)
              :outfn (fig12-out 0 *rline*))
 
@@ -798,7 +798,7 @@
        (pool *pool13*)
        (len (length pool)))
   (preset-play (aref *players* 0) 98 (/ len 2)
-               :bufferfn (lambda () (prog1
+               :lsamplefn (lambda () (prog1
                                    (elt pool (mod (incf buf-id) len))
                                  (format t "~a~%" (get-buffer-file (elt pool (mod buf-id len))))))
                :dtimefn 0.5
@@ -931,7 +931,7 @@
                  :p2 0
                  :p3 0
                  :p4 0
-                 :bufferfn (r-elt *buffers*)
+                 :lsamplefn (r-elt *buffers*)
                  :ampfn (n-exp 0 1 2)
                  :transpfn (r-exp 1 2)
                  :startfn 0

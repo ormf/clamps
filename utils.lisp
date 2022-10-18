@@ -45,21 +45,45 @@
 (defmacro toggle (p)
   `(setf ,p (if ,p nil t)))
 
-(defun get-dtime-fn (mina maxa minb maxb &key (distribution '(1 1 1 1 2 3 4)))
+(defun get-dtime-fn (mina maxa minb maxb &key (distribution '(0 0 0 0 1 2 3)) (thresh 0.5))
   "return a function calculating a delta-time on each call. The
 distribution specifies a random distribution (using cm's weighting) to
 determine the number of dtimes returned between [mina..maxa] before
-returning a number between [minb..maxb]."
+returning a number between [minb..maxb]. An :thresh keyword determines
+a threshold for [minb..maxb], below which no [mina..maxa] values are
+returned."
   (let* ((rep-stream (new weighting :of distribution))
-         (curr-rep (next rep-stream)))
+         (curr-rep (next rep-stream))
+         (bmax (max minb maxb)))
     (lambda (x)
       x
       (decf curr-rep)
-      (if (zerop curr-rep)
+      (if (or (<= bmax thresh) (minusp curr-rep))
           (progn
             (setf curr-rep (next rep-stream))
             (r-exp minb maxb))
           (r-exp mina maxa)))))
+
+(defun get-dtime-fn (mina maxa minbfn maxbfn &key (distribution '((0 :weight 9) (1 :weight 3) 2 3 4)) (thresh 0.5))
+  "return a function calculating a delta-time on each call. The
+distribution specifies a random distribution (using cm's weighting) to
+determine the number of dtimes returned between [mina..maxa] before
+returning a number between calling [minbfn..maxbfn] on x. A :thresh
+keyword determines a threshold for [minb..maxb], below which no
+[mina..maxa] values are returned."
+  (let* ((rep-stream (new weighting :of distribution))
+         (curr-rep (next rep-stream)))
+    (lambda (x)
+      (let* ((minb (funcall minbfn x))
+             (maxb (funcall maxbfn x)))
+        (decf curr-rep)
+        (if (or (<= (max minb maxb) thresh) (minusp curr-rep))
+            (progn
+              (setf curr-rep (next rep-stream))
+              (r-exp minb maxb))
+            (r-exp mina maxa))))))
+
+
 
 (defun get-dtime-fn-no-x (mina maxa minb maxb &key (distribution '(1 1 1 1 2 3 4)))
   "return a function calculating a delta-time on each call. The
@@ -88,11 +112,7 @@ returning a number between [minb..maxb]."
     (declare (ignore x))
     val))
 
-(defun get-buffer-file (buffer)
-  (ppcre:regex-replace
-   "^.*/([^/]+)$"
-   (format nil "~a" (incudine::buffer-file buffer))
-   "\\\1"))
+
 
 (defun rek-traverse (seq num)
   (if (> num 0) (append seq (rek-traverse (drunk-traverse seq) (1- num)))))
@@ -128,5 +148,5 @@ num at limit."
 
 |#
 
-(defun buffer-idx (buffer)
-  (gethash buffer *buffer-idxs*))
+
+

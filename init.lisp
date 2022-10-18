@@ -24,7 +24,7 @@
 
 (defparameter *sound-type-dirs* nil)
 
-(rts :rt-wait 5)
+;;; (unless (cm::rts?) (rts))
 
 ;;; (setf *buffers* (load-sounds "../../snd/*.wav"))
 
@@ -46,12 +46,14 @@
 (defun init-poolplayer ()
   (load-presets "presets/cl-poolplayer-01.lisp")
 ;;;  (init-netsend)
-  (init-midi)
+;;;  (init-midi)
   (def-sequences)
   (stop-all-seqs)
   ;;  (audio-test 13)
   )
-;;; (incudine:rt-start)
+
+(incudine:rt-start)
+
 ;;; (init-poolplayer)
 ;; (start-bo-seqs (+ (now) 10))
 

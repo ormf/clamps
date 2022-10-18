@@ -103,7 +103,6 @@
 (init-poolplayer)
 
 (play-buffer-stretch-env-pan-out* (elt *pool0* 0) :amp -6 :pan 0.5)
-
 (defparameter holz-ex-01
   (make-song
    :name "holz-ex-01"
@@ -133,6 +132,7 @@
                                 #'recurse-fn next (incf idx) (cdr p)))))))
          (recurse-fn (now) 0 players))))))
 
+#|
 (defun plot-song (song)
   (let ((*events* '())
         (time (now)))
@@ -163,25 +163,7 @@
                                   (progn (remf (cdr x) :buffer)
                                          (cdr x)))) *events*) #'< :key cm::time)))
 
-(in-package :cm)
 
-(defobject poolevt (event)
-    ((buffer-idx :initform 0 :accessor poolevt-buffer-idx)
-     (amp :initform -9.0 :accessor poolevt-amp)
-     (transp :initform -13.0 :accessor poolevt-transp)
-     (start :initform 0 :accessor poolevt-start)
-     (end :initform 0 :accessor poolevt-end)
-     (stretch :initform 1.0 :accessor poolevt-stretch)
-     (wwidth :initform 123 :accessor poolevt-wwidth)
-     (attack :initform 0 :accessor poolevt-attack)
-     (release :initform 0.01 :accessor poolevt-release)
-     (pan :initform 0.5 :accessor poolevt-pan)
-     (out1 :initform 0 :accessor poolevt-out1)
-     (out2 :initform 1 :accessor poolevt-out2))
-  (:parameters time buffer-idx amp transp start end stretch wwidth attack release pan out1 out2)
-  (:event-streams))
-
-(export '(poolevt poolevt-buffer-idx poolevt-amp poolevt-start poolevt-end poolevt-stretch poolevt-wwidth poolevt-attack poolevt-release poolevt-pan poolevt-out1 poolevt-out2) 'cm)
 
 (in-package :cl-poolplayer)
 
@@ -199,18 +181,35 @@
                                     (cdr x))))
              *events*)
      #'< :key (lambda (x) (sv x cm::time)))))
-
-(sv (make-instance 'cm:poolevt :time 0) cm::time)
+|#
 
 (play-song holz-ex-01)
-
+(perform)
 (make-instance 'cm:poolevt)
 
-(length )
 
-(defmethod cm::events)
+(cl-poolplayer::distributed-play (:buffer #<incudine:buffer :frames 1728 :channels 1 :sr 48000.0> :amp -11.5 :transp -13.137001 :start 0 :end 0 :stretch 1.0 :wwidth 123 :attack 0 :release 0.01 :pan 0.33991754 :out1 0 :out2 1))
 
-(cm-collect holz-ex-01)
+
+(sprout (cm-collect holz-ex-01))
+
+(sprout
+ holz-ex-01)
+(events
+ (cm-collect holz-ex-01)
+ *rts-out*)
+
+(write-event)
+
+(events
+ (cm-collect holz-ex-01)
+ "/tmp/test.svg"
+ :piano-roll-vis nil
+ :staff-system-vis nil
+ :bar-lines-vis nil
+ :showgrid nil)
+
+(cm::close-io)
 
 (apply #'make-instance 'cm:poolevt :time 0.0 :buffer-idx 363 '(:amp -9.0 :transp -13.0 :start 0 :end 0 :stretch
         1.0 :wwidth 123 :attack 0 :release 0.01 :pan 0.75942147 :out1 0 :out2
@@ -2793,26 +2792,3 @@
   (:time 8.757102 :buffer-idx 363 :amp -20.0 :transp 26.098146 :start 0 :end 0
    :stretch 1.0 :wwidth 123 :attack 0 :release 0.01 :pan 0.053688765 :out1
    0 :out2 1))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

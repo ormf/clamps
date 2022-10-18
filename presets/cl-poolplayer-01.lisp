@@ -8,7 +8,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (or (getf args :dtimefn) (lambda (x) (n-exp x 0.05 0.2))) x)
-    :bufferfn (r-elt (getf args :g1))
+    :lsamplefn (r-elt (getf args :g1))
     :ampfn (funcall
             (or (getf args :ampfn)
                 (lambda (x) x (+ (or (getf args :amp 0)) (random 12) -6)))
@@ -22,6 +22,7 @@
     :stretchfn (r-exp 1 1)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -31,7 +32,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn (lambda (x) (n-exp x 0.01 0.5))) x)
-    :bufferfn (r-elt (getf args :g1))
+    :lsamplefn (r-elt (getf args :g1))
     :ampfn (funcall (getf args :g2) x)
     :transpfn (funcall (getf args :g3) x)
     :startfn 0
@@ -39,6 +40,7 @@
     :stretchfn (r-exp 10 10)
     :wwidthfn (/ (r-exp 40.0 42) (expt p2 0.99))
     :attackfn 0
+    :panfn 0.5
     :releasefn (funcall (getf args :ampfn (lambda (x) x 0.1)) x)
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -48,7 +50,7 @@
     :p3 0
     :p4 0
     :dtimefn (r-exp 0.01 0.02)
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ (r-lin -14 -14))
     :transpfn (r-lin -20.0 0)
     :startfn 0
@@ -56,6 +58,7 @@
     :stretchfn (r-exp 2 3)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.1
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -65,7 +68,7 @@
     :p3 0
     :p4 0
     :dtimefn (r-exp 0.01 0.03)
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ (r-lin -50 -50) (* 1 (- p1 p2)))
     :transpfn (r-lin -20 -20)
     :startfn 0.05
@@ -82,7 +85,7 @@
     :p3 0
     :p4 0
     :dtimefn (r-exp 0.01 10)
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ (r-lin -44 -44) (* 3 (- p1 p2)))
     :transpfn (r-lin -20 -20)
     :startfn 0.006
@@ -90,6 +93,7 @@
     :stretchfn (r-exp 600 600)
     :wwidthfn (/ (r-exp 40.0 42) (expt p2 0.96))
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -99,7 +103,7 @@
     :p3 0
     :p4 0
     :dtimefn (* (/ dur 5) (expt (/ 0.1 dur) x))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (n-exp 0 1 2)
     :transpfn (r-exp 1 2)
     :startfn 0
@@ -107,6 +111,7 @@
     :stretchfn (r-exp 1 1)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -116,7 +121,7 @@
     :p3 0
     :p4 0
     :dtimefn (* (/ dur 3) (expt (/ 0.1 dur) x))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ -12 (expt 12 x))
     :transpfn (r-exp 1 2)
     :startfn 0
@@ -124,6 +129,7 @@
     :stretchfn (r-exp 1 1)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -133,7 +139,7 @@
     :p3 0
     :p4 0
     :dtimefn (* (/ dur 5) (expt (/ 0.1 dur) x))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ -12 (expt 12 x))
     :transpfn (+ (expt 24 x) (r-lin -11.0 -10))
     :startfn 0
@@ -141,6 +147,7 @@
     :stretchfn (r-exp 1 1)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -150,7 +157,7 @@
     :p3 0
     :p4 0
     :dtimefn (* (/ dur 5) (expt (/ 0.1 dur) x))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ -12 (expt 12 x))
     :transpfn (+ (expt 24 x) (r-lin -11.0 -10))
     :startfn 0
@@ -158,6 +165,7 @@
     :stretchfn (r-exp 1 1)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -167,7 +175,7 @@
     :p3 0
     :p4 0
     :dtimefn (* (/ dur 5) (expt (/ 0.05 dur) (- 1 x)))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ 0 (* -12 x))
     :transpfn (+ (expt 24 (- 1 x)) (r-lin -11.0 -10))
     :startfn 0
@@ -175,6 +183,7 @@
     :stretchfn (r-exp 1 1)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -184,7 +193,7 @@
     :p3 0
     :p4 0
     :dtimefn (* (/ dur 5) (expt (/ 0.05 dur) p1))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ 0 (* -12 p1))
     :transpfn (+ (expt 24 (- 1 p1)) (r-lin -11.0 -10))
     :startfn 0
@@ -192,6 +201,7 @@
     :stretchfn (r-exp 1 1)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -201,7 +211,7 @@
     :p3 (+ 0.1 (random 0.9))
     :p4 0
     :dtimefn (* (/ dur 5) (expt (/ 0.05 dur) p1))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ 0 (* -12 p1))
     :transpfn (+ (expt p2 (- 1 p1)) (r-lin (- 1 (/ p2 2)) (- (/ p2 2))))
     :startfn 0
@@ -209,6 +219,7 @@
     :stretchfn (expt p3 x)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -218,7 +229,7 @@
     :p3 (+ 0.1 (random 0.9))
     :p4 0
     :dtimefn (* (/ dur 5) (expt (/ 0.05 dur) p1))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (+ 0 (* -12 p1))
     :transpfn (+ (expt p2 (- 1 p1)) (r-lin (- 1 (/ p2 2)) (- (/ p2 2))))
     :startfn 0
@@ -226,6 +237,7 @@
     :stretchfn (expt p3 x)
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -235,7 +247,7 @@
     :p3 0
     :p4 0
     :dtimefn (n-exp p1 0.1 1)
-    :bufferfn (funcall (getf args :bufferfn (lambda () (r-elt *buffers*))))
+    :lsamplefn (funcall (getf args :lsamplefn (lambda () (r-elt *buffers*))))
     :ampfn (n-lin x 0 -24)
     :transpfn -10
     :startfn 0
@@ -243,6 +255,7 @@
     :stretchfn (r-exp 1 1)
     :wwidthfn (r-exp 123 123)
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -252,7 +265,7 @@
     :p3 0
     :p4 0
     :dtimefn (r-exp 0.01 0.02)
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn (r-lin -12 0)
     :transpfn (r-exp 1 1)
     :startfn 0
@@ -269,7 +282,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn (valuefn 0.5)) x)
-    :bufferfn (funcall (getf args :bufferfn (lambda (x) x (r-elt *buffers*))) x)
+    :lsamplefn (funcall (getf args :lsamplefn (lambda (x) x (r-elt *buffers*))) x)
     :ampfn (funcall (getf args :ampfn (valuefn 0)) x)
     :transpfn (funcall (getf args :transpfn (valuefn 0)) x)
     :startfn (funcall (getf args :startfn (valuefn 0)) x)
@@ -286,7 +299,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn (valuefn 0.5)) x)
-    :bufferfn (funcall (getf args :bufferfn (lambda (x) x (r-elt *buffers*))) x)
+    :lsamplefn (funcall (getf args :lsamplefn (lambda (x) x (r-elt *buffers*))) x)
     :ampfn (+ (* -1 p1) (funcall (getf args :ampfn (valuefn 0)) x))
     :transpfn (funcall (getf args :transpfn (valuefn 0)) x)
     :startfn (funcall (getf args :startfn (valuefn 0)) x)
@@ -303,7 +316,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -311,6 +324,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -320,7 +334,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -328,6 +342,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -337,7 +352,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -345,6 +360,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -354,7 +370,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -362,6 +378,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -371,7 +388,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -379,6 +396,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -388,7 +406,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -396,6 +414,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -405,7 +424,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -413,6 +432,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -422,7 +442,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -430,6 +450,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -439,7 +460,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -447,6 +468,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -456,7 +478,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -464,6 +486,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -473,7 +496,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -481,6 +504,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -490,7 +514,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -498,6 +522,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -507,7 +532,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -515,6 +540,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -524,7 +550,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -532,6 +558,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -541,7 +568,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -549,6 +576,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -558,7 +586,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -566,6 +594,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -575,7 +604,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -583,6 +612,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -592,7 +622,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -600,6 +630,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -609,7 +640,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -617,6 +648,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -626,7 +658,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -634,6 +666,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -643,7 +676,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -651,6 +684,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -660,7 +694,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -668,6 +702,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -677,7 +712,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -685,6 +720,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -694,7 +730,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -702,6 +738,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -711,7 +748,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -719,6 +756,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -728,7 +766,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -736,6 +774,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -745,7 +784,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -753,6 +792,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -762,7 +802,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -770,6 +810,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -779,7 +820,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -787,6 +828,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -796,7 +838,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -804,6 +846,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -813,7 +856,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -821,6 +864,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -830,7 +874,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -838,6 +882,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -847,7 +892,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -855,6 +900,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -864,7 +910,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -872,6 +918,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -881,7 +928,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -889,6 +936,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -898,7 +946,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -906,6 +954,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -915,7 +964,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -923,6 +972,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -932,7 +982,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -940,6 +990,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -949,7 +1000,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -957,6 +1008,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -966,7 +1018,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -974,6 +1026,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -983,7 +1036,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -991,6 +1044,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1000,7 +1054,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1008,6 +1062,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1017,7 +1072,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1025,6 +1080,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1034,7 +1090,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1042,6 +1098,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1051,7 +1108,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1059,6 +1116,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1068,7 +1126,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1076,6 +1134,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1085,7 +1144,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1093,6 +1152,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1102,7 +1162,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1110,6 +1170,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1119,7 +1180,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1127,6 +1188,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1136,7 +1198,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1144,6 +1206,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1153,7 +1216,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1161,6 +1224,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1170,7 +1234,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1178,6 +1242,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1187,7 +1252,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1195,6 +1260,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1204,7 +1270,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1212,6 +1278,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1221,7 +1288,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1229,6 +1296,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1238,7 +1306,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1246,6 +1314,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1255,7 +1324,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1263,6 +1332,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1272,7 +1342,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1280,6 +1350,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1289,7 +1360,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1297,6 +1368,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1306,7 +1378,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1314,6 +1386,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1323,7 +1396,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1331,6 +1404,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1340,7 +1414,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1348,6 +1422,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1357,7 +1432,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1365,6 +1440,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1374,7 +1450,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn (lambda (x) (n-exp x 0.03 0.5))) x)
-    :bufferfn (r-elt (getf args :g1))
+    :lsamplefn (r-elt (getf args :g1))
     :ampfn (funcall (getf args :g2) x)
     :transpfn (funcall (getf args :g3) x)
     :startfn 0
@@ -1382,6 +1458,7 @@
     :stretchfn (r-exp 1 1)
     :wwidthfn (/ (r-exp 40.0 42) (expt p2 0.99))
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.1
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1391,7 +1468,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1399,6 +1476,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1408,7 +1486,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1416,6 +1494,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1425,7 +1504,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1433,6 +1512,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1442,7 +1522,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1450,6 +1530,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1459,7 +1540,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1467,6 +1548,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1476,7 +1558,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1484,6 +1566,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1493,7 +1576,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1501,6 +1584,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1510,7 +1594,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1518,6 +1602,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1527,7 +1612,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1535,6 +1620,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1544,7 +1630,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1552,6 +1638,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1561,7 +1648,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1569,6 +1656,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1578,7 +1666,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1586,6 +1674,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1595,7 +1684,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1603,6 +1692,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1612,7 +1702,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1620,6 +1710,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1629,7 +1720,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1637,6 +1728,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1646,7 +1738,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1654,6 +1746,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1663,7 +1756,7 @@
     :p3 0
     :p4 0
     :dtimefn (funcall (getf args :dtimefn 0.5))
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1671,6 +1764,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1680,7 +1774,7 @@
     :p3 0
     :p4 0
     :dtimefn (getf args :dtimefn 0.1)
-    :bufferfn (funcall (getf args :bufferfn))
+    :lsamplefn (funcall (getf args :lsamplefn))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1688,6 +1782,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   (digest-poolplayer-preset
@@ -1697,7 +1792,7 @@
     :p3 0
     :p4 0
     :dtimefn (getf args :dtimefn 0.1)
-    :bufferfn (getf args :bufferfn (r-elt *buffers*))
+    :lsamplefn (getf args :lsamplefn (r-elt *buffers*))
     :ampfn 0
     :transpfn 0
     :startfn 0
@@ -1705,6 +1800,7 @@
     :stretchfn 1
     :wwidthfn 123
     :attackfn 0
+    :panfn 0.5
     :releasefn 0.01
     :outfn (funcall (getf args :outfn #'stereo-out) x)))
   )
