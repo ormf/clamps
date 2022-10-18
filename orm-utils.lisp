@@ -174,16 +174,32 @@ return a cons cell, it is a leaf node. Return the modified tree."
                               (string (char formstring i))))))
     result))
 
-(defun calcsndbytes (time &optional (samplerate 44100))
-  (let ((ttime (+ (* 60 (car time)) (cadr time))))
-    (* ttime samplerate 2)))
 
-;;; (calcsndbytes '(120 0))
+(defun get-time (secs)
+  (multiple-value-bind (hr mins)
+      (floor secs 3600)
+      (multiple-value-bind (min secs)
+          (floor mins 60)
+        (list hr min secs))))
 
+(defun calcsndbytes (hr min sec &optional (samplerate 44100))
+  "calc num of bytes (not samples!) from hr min and sec."
+  (let ((ttime (+ (* 3600 hr) (* 60 min) sec)))
+    (floor (* ttime samplerate 2))))
+
+;;; (apply #'calcsndbytes (get-time 120.3))
+;;; (calcsndbytes 0 0 120.3)
+
+(defun format-time (hr min sec)
+  (format nil "~2,'0d:~2,'0d:~:[0~,3f~;~,3f~]" hr min (>= sec 10) sec))
+
+;;; (apply #'format-time (get-time 728.3))
 
 (defun mlist (list count)
+  "divide list into sublists of length count. Last element is padded
+with nil if list-length is not a multiple of count."
   (loop for i from 0 below (length list) by count
-     collect (loop for n from 0 below count collect (nth (+ n i) list))))
+     collect (loop for n from 0 below count collect (elt list (+ n i)))))
 
 ;;; (mlist '(1 2 3 4 5) 2) -> ((1 2) (3 4) (5 NIL))
 
@@ -624,7 +640,7 @@ to be sorted according to test!"
 
 ;;; (db->amp 0) -> 1
 ;;; (db->amp -6) -> 0.5
-;;; (db->amp 6) -> 2
+;;; (db->amp 6) -> 1.9952623
 ;;; (db->amp -60) -> 1/100
 
 ;;; (dolis   q(x (sv evt elems))
@@ -672,6 +688,25 @@ to be sorted according to test!"
 (defmacro with-shadowed-variable ((var) &rest body)
   `(let ((,var ,var))
      ,@body))
+
+(defun make-quantlist (vals)
+  "given a list of divisions per beat, return the sorted list of
+quantization points in fractions of a beat [0..1]"
+  (sort
+   (remove-duplicates
+    (reduce
+     (lambda (acc x) (append acc (loop for n from 1 below x collect (/ n x))))
+     vals :initial-value '(0 1)))
+   #'<))
+
+(defun quantize-time (val &key (quantlist (make-quantlist '(3 4 5))))
+  "quantize the fractional part of val to a quantization list of
+possible quantization points in the range [0..1]."
+  (multiple-value-bind (int frac) (floor val)
+    (loop for (last curr) on quantlist until (<= last frac curr)
+          finally (return (+ int (if (<= (- frac last) (- curr frac)) last curr))))))
+
+;;; (quantize 14.71) -> 59/4 (14.75)
 
 
 (defun insert (elem result &key (key #'first) (test #'eq))
