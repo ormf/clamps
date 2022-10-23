@@ -34,15 +34,17 @@
                             (loop
                               for x below 16
                               collect (make-instance 'eventplayer))))
-
+#|
 (defun start-bo-seqs (time) 
   (start-seq #'main-seq-01)
   (at (+ time (+ 30 (random 30))) #'start-seq #'main-seq-02)
   (at (+ time (+ 10 (random 20))) #'start-seq #'main-seq-03))
-
 ;;; (start-seq #'main-seq-02)
+|#
 
 ;;; (cd "/home/orm/work/programmieren/lisp/cl-poolplayer")
+
+#|
 (defun init-poolplayer ()
   (load-presets "presets/cl-poolplayer-01.lisp")
 ;;;  (init-netsend)
@@ -53,6 +55,7 @@
   )
 
 (incudine:rt-start)
+|#
 
 ;;; (init-poolplayer)
 ;; (start-bo-seqs (+ (now) 10))
