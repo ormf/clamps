@@ -23,7 +23,7 @@ supplied and gets interned as a parameter."
 
 (defun reinit-midi ()
   (cm::initialize-io *mt-out01*)
-  (write-event (new midi-program-change :program 73) *mt-out01* 0)
+  (write-event (new midi-program-change :program 1) *mt-out01* 0)
   (events
    (loop for idx below 8
          collect (new midi :time (* idx 0.05) :keynum (float (+ 60 (* idx 1/4)))))
