@@ -112,11 +112,11 @@ pairs.
 (defparameter *buffer* (incudine::make-buffer 100))
 
 (let ((env-buffer (incudine::bounce-to-buffer (*buffer* :frames 100)
-                    (incudine.vug::envelope (make-envelope '(0 1 1 0) (0 1 2 3)) :time-scale 1))))
+                    (incudine.vug::envelope (incudine::make-envelope '(0 1 1 0) '(0 1 2 3)) :time-scale 1))))
   (loop for idx below 100 collect (incudine::buffer-value env-buffer idx)))
 
 (let ((env-buffer (incudine::bounce-to-buffer (*buffer* :frames 100)
-                    (make-envelope '(0 1 1 0) (1 2 1)))))
+                    (incudine::make-envelope '(0 1 1 0) '(1 2 1)))))
   (loop for idx below 100 collect (incudine::buffer-value env-buffer idx)))
 
 

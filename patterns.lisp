@@ -52,7 +52,7 @@ Examples:
 
 
 (let ((seq (new permutation :of '(a b c d e) :idxs '(4 3 0 2 1) :immediately t)))
-  (loop for x below 6 collect (next seq t))) 
+  (loop for x below 6 collect (next seq t)))
 
 -> ((E D A C B) (B C E A D) (D A B E C) (C E D B A) (A B C D E) (E D A C B))
 
@@ -69,10 +69,8 @@ Examples:
 (defmethod pattern-external-inits ((obj permutation))
   (let ((inits (call-next-method)))
     (append inits
-            (if (equal (permutation obj) 0)
-                (list)
-                (list ':idxs (expand-pattern-value (idxs obj))
-                      ':immediately (immediately obj))))))
+            (list ':idxs (expand-pattern-value (idxs obj))
+                  ':immediately (immediately obj)))))
 
 (defmethod initialize-instance :after ((obj permutation) &rest args)
   args
