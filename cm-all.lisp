@@ -2,8 +2,6 @@
 
 (in-package #:cm)
 (defparameter *mt-out01* nil)
-(midi-open-default :direction :input)
-(midi-open-default :direction :output)
 
 (defmacro make-mt-stream (symbol-name midi-out-stream chan-tuning)
   "Define, open and initialize a microtonal midistream. The name of
@@ -83,11 +81,6 @@ supplied and gets interned as a parameter."
 (setf *rts-out* *mt-out01*)
 (format t "~&midi initialized!~%")
 (swank:eval-in-emacs `(load ,(namestring (asdf:system-relative-pathname 'cm-all "incudine-hush.el"))))
-
-
-
-
-(cm)
-
+(swank:eval-in-emacs `(slime-repl-eval-string "(cm)"))
 
 (export '(reinit-midi restart-qsynth jack-connect-qsynth *mt-out01* *midi-out1*) 'cm)
