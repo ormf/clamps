@@ -20,6 +20,9 @@
 
 (in-package :cl-poolplayer)
 
+(defparameter *buffers* (make-hash-table :test #'equal))
+(defparameter *buffer-idxs* (make-hash-table :test #'equal))
+
 (defmacro vector-extend (v1 v2)
   `(setf ,v1 (concatenate 'vector ,v1 ,v2)))
 
