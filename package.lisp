@@ -30,4 +30,6 @@
    #:P1 #:P2 #:P3 #:P4
    #:G1 #:G2 #:G3 #:G4
    #:CM-COLLECT
+   #:*circle-cw*
+   #:*outseq13*
    ))
