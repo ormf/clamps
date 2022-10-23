@@ -119,4 +119,4 @@ svg-file."
                  marks)
                 (part-events part)))))
 
-(export '(sfz sfz-keynum sfz-dur sfz-amp sfz-preset sfz-play-fn sfz-play-fn sfz-pan sfz-startpos svg->sfz *debug*) 'cm)
+(export '(sfz sfz-keynum sfz-dur sfz-amp sfz-preset sfz-play-fn sfz-play-fn sfz-pan sfz-startpos svg->sfz) 'cm)
