@@ -182,6 +182,7 @@ developed/used by Boulez."
                 for evt in seq
                 collect (new midi :time offs :keynum (keynum evt) :duration dtime)
                 do (incf offs dtime))))))
+
 (defun play-svg (file &key (region '(0 nil)) (tscale 0.25))
   (sprout
    (destructuring-bind (start end) region
@@ -196,7 +197,7 @@ developed/used by Boulez."
 
 (defun incudine.scratch::node-free-unprotected ()
   (incudine:free (incudine:node 0))
-  (dotimes (chan 4)
+  (dotimes (chan 16)
     (output (new midi-control-change :controller +all-notes-off+ :value 0 :channel chan)))
   :interrupted)
 
@@ -224,10 +225,14 @@ given time with given minspeed, maxspeed and end-time (= bufferlength)."
 (defun time->vstime-fn (min max end-time)
   "return a function calculating the real time of a sample in the buffer with varispeed
 applied. This is the inverse function of the varispeed function."
-  (let* ((dur (calc-dur min max end-time))
-	 (a (/ max min)))
-    (lambda (buff-pos)
-      (* dur (log (+ (* (/ buff-pos end-time) (- a 1)) 1) a)))))
+  (cond ((or (zerop min) (zerop max))
+         (error "time->vstime-fn: speed of zero not allowed, min: ~a, max: ~a" min max))
+        ((= min max)
+         (lambda (time) (/ time min)))
+        (t  (let* ((dur (calc-dur min max end-time))
+	           (a (/ max min)))
+              (lambda (time)
+                (* dur (log (+ (* (/ time end-time) (- a 1)) 1) a)))))))
 
 (defun vstime->speed-fn (min max end-time)
   (let* ((a (/ max min)))
@@ -259,8 +264,81 @@ applied. This is the inverse function of the varispeed function."
 	  (lambda (time)
 	    (* b (/ (log a) dur) (expt a (/ time dur))))))))
 
+(defun cm-store (objs &key (export t) (view t) (play t) (name "curr")(dir "/tmp/"))
+  (let* ((seq-name (format nil "~a-seq" name))
+         (obj (or (find-object seq-name) (new seq :name seq-name))))
+    (sv obj :subobjects objs)
+    (if export (g-export obj :dir dir :view view))
+    (if play (events obj *rts-out*))
+    obj))
+
+(defun abs-path? (name)
+  (char= (elt name 0) #\/))
+
+(defun g-export (obj &key (view t) (dir "/tmp/"))
+  (let* ((name (ou:mysubseq (sv obj cm::name) 0 -4))
+         (svg-file (if (abs-path? name)
+                       (format nil "~a.svg" name)
+                       (format nil "~a/~a.svg" dir name))))
+    (events
+     obj
+     svg-file
+     :piano-roll-vis t
+     :staff-system-vis nil
+     :bar-lines-vis t
+     :showgrid nil)
+    (when view (uiop:run-program (list "firefox" svg-file)))))
+
+(defun play-curr ()
+  (events (find-object "curr-seq") *rts-out*))
+
+(defun zero-shift (seq)
+  "reduce :time of all elements of seq by the :time of the first element."
+  (let ((offs (* -1 (sv (first seq) :time))))
+    (mapcar (lambda (evt) (let ((new (copy-object evt)))
+                       (sv+ new :time offs) new))
+            seq)))
+
+(defun region (obj &optional (start 0) end)
+  "extract region from obj. subobjects need to be sorted."
+  (zero-shift
+   (remove-if-not
+    (lambda (x) (<= start (sv x :time) (or end most-positive-fixnum)))
+    (cond
+      ((consp obj) obj)
+      ((typep obj cm::<container>) (subobjects obj))
+      (t (error "can't extract region from ~a" obj))))))
+
+(defun reverse-obj (obj)
+  "return the reverse of obj as a list. subobjects need to
+be sorted."
+  (let* ((seq (reverse
+               (copy-tree
+                (cond
+                  ((consp obj) obj)
+                  ((typep obj cm::<container>) (subobjects obj))
+                  (t (error "can't extract region from ~a" obj))))))
+         (offset (object-time (first seq))))
+    (mapcar (lambda (evt) (sv evt :time (+ offset (* -1 (object-time evt)))) evt)
+            seq)))
+
+(defun transform-obj (obj &key (scale 1) (shift 0))
+  ""
+  (let* ((seq (copy-tree
+               (cond
+                 ((consp obj) obj)
+                 ((typep obj cm::<container>) (subobjects obj))
+                 (t (error "can't extract region from ~a" obj)))))
+         (offset (* -1 (object-time (first seq)))))
+    (mapcar (lambda (evt) (sv evt :time (+ (- shift offset) (* scale (+ offset (object-time evt))))) evt)
+            seq)))
+
+
+
+#|
 (defun time->speed-fn (min max end-time)
   (lambda (time)
     (+ min (* (/ time end-time) (- max min)))))
+|#
 
-(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime-fn vstime->time-fn time->speed-fn vstime->speed-fn calc-dur chord-derive display play-midi play-svg) 'cm)
+(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime-fn vstime->time-fn time->speed-fn vstime->speed-fn calc-dur chord-derive display play-midi play-svg cm-store g-export play-curr region zero-shift reverse-obj transform-obj) 'cm)
