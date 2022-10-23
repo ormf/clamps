@@ -1,9 +1,10 @@
 ;;;; cm-all.lisp
 
 (in-package #:cm)
+(defparameter *rt-scale*)
 (defparameter *mt-out01* nil)
-(defparameter *midi-in1* (jackmidi:open :direction :input))
-(defparameter *midi-out1* (jackmidi:open :direction :output))
+(midi-open-default :direction :input)
+(midi-open-default :direction :output)
 
 (defmacro make-mt-stream (symbol-name midi-out-stream chan-tuning)
   "Define, open and initialize a microtonal midistream. The name of
@@ -28,6 +29,8 @@ supplied and gets interned as a parameter."
    (loop for idx below 8
          collect (new midi :time (* idx 0.05) :keynum (float (+ 60 (* idx 1/4)))))
    *mt-out01*))
+
+
 
 #|
 (defun get-qsynth-midi-port-name (&optional (direction :input))
