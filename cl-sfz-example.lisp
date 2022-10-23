@@ -25,6 +25,25 @@
 
 (rt-start)
 
+(load-sfz-preset "/home/orm/work/snd/sfz/bassoboe/bassoboe-f.sfz" :bassoboe-f :force t)
+(load-sfz-preset "/home/orm/work/snd/sfz/bassoboe/bassoboe-pp.sfz" :bassoboe-pp :force t)
+
+(play-sfz 60.5 0 1 :preset :bassoboe-f)
+
+(defun play-scale (preset start end &key (dtime 0.5) (ampdb -6) (delta 1))
+  (let ((curr start))
+    (labels ((inner (time)
+               (if (<= curr end)
+                   (let ((next (+ time dtime)))
+                     (play-sfz curr ampdb (* 1.1 dtime) :preset preset)
+                     (incf curr delta)
+                     (cm:at next #'inner next)))))
+      (inner (cm:now))))) 
+
+(cm:now)
+(play-scale :bassoboe-pp 45 84 :ampdb -12 :dtime 1)
+(play-scale :bassoboe-f 45 84 :ampdb -12 :dtime 1)
+
 (progn
   (load-sfz-preset "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv :force t)
   (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-aeol/Fl-aeol.sfz" :flute-aeol :play-fn #'sample-play :force t)

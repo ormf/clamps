@@ -9,4 +9,5 @@
   :depends-on (#:incudine #:incudine-bufs #:of-incudine-dsps #:cl-ppcre)
   :components ((:file "package")
                (:file "sfz-lsample")
-               (:file "cl-sfz")))
+               (:file "cl-sfz")
+               (:file "make-sfz")))

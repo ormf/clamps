@@ -58,7 +58,7 @@ conventions. Returns the plist."
           append (destructuring-bind (key value)
                      (split "\\s+" (regex-replace "=" keyval " "))
                    (cond
-                     ((member key '("lokey" "hikey" "pitch_keycenter") :test #'string=)
+                     ((member (string-upcase key) '("LOKEY" "HIKEY" "PITCH_KEYCENTER") :test #'string=)
                       (list (intern (string-upcase (regex-replace "_" key "-")) 'keyword)
                             (val->keynum value)))
                      ((string= key "sample")
@@ -69,7 +69,8 @@ conventions. Returns the plist."
 (defun val->keynum (str)
   (let ((value (read-from-string str)))
     (cond
-      ((symbolp value) (+ (position (read-from-string (string-upcase (subseq str 0 (1- (length str))))) keynames :test #'string=)
+      ((symbolp value) (+ (position (read-from-string (string-upcase (subseq str 0 (1- (length str)))))
+                                    keynames :test #'string=)
                           (* 12 (1+ (read-from-string (subseq str (1- (length str))))))))
       (:else value))))
 
@@ -134,7 +135,7 @@ respective keynum. Overlapping key-ranges are represented by a list of
 all applicable sample-defs at the keynum's array-index."
   (let ((keynum-array (make-array 128 :adjustable nil :element-type 'list :initial-element nil))
         (sfz-file-path (pathname file)))
-    (dolist (entry (reverse (parse-sfz file)))
+    (dolist (entry (reverse (remove nil (parse-sfz file))))
       (setf (getf entry :lsample) (incudine::sfz->lsample entry sfz-file-path :play-fn play-fn))
       (push-keynums entry keynum-array))
     keynum-array))
@@ -212,41 +213,59 @@ to t."
        (error "play-fn not found: ~a" play-fn)))))
 |#
 
-(defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
+(defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0) (out1 0) out2)
   "general function: Plays sample looping or one-shot depending on the
 'play-fn slot in the lsample definition."
-  (let* ((map (gethash preset sf-tables))
-         (sample (random-elem (aref map (round pitch))))
-         (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
-         (play-fn (incudine::lsample-play-fn sample))
-         (buffer (incudine::lsample-buffer sample))
-         (amp (incudine::lsample-amp sample)))
-    (cond
-      ((eql play-fn #'play-sfz-loop)
-       (lsample-play buffer dur (* amp (db->amp db)) rate pan (lsample-loopstart sample) (lsample-loopend sample)))
-      ((eql play-fn #'play-sfz-one-shot)
-       (sample-play buffer dur (* amp (db->amp db)) rate pan startpos)))))
+  (let ((map (gethash preset sf-tables)))
+    (if map 
+        (let* ((out2 (or out2 (mod (1+ out1) 8)))
+               (sample (random-elem (aref map (round pitch))))
+               (buffer (incudine::lsample-buffer sample))
+               (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
+               (play-fn (incudine::lsample-play-fn sample))
+               (amp (incudine::lsample-amp sample)))
 
-;;; (play-sfz 73.3 -6 1 :pan 0.5)
+          (cond
+            ((eql play-fn #'play-sfz-loop)
+             (play-lsample* buffer dur (+ amp db) rate pan (lsample-loopstart sample) (lsample-loopend sample) startpos out1 out2))
+            (t
+             (play-sample* buffer dur (+ amp db) rate pan startpos out1 out2))))
+        (error "preset ~S not loaded!" preset))))
 
-(defun play-sfz-loop (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
+;;; (play-sfz 60 0 1 :pan 0 :out1 0)
+#|
+(let* ((sample (first (aref (gethash :flute-nv *sf-tables*) 60)))
+       (args (list (lsample-buffer sample) 1 1 1 0.5 (lsample-loopstart sample)
+                   (lsample-loopend sample))))
+  (apply #'lsample-play args)
+  args)
+
+(incudine::play-buffer-stretch* (lsample-buffer (first (aref (gethash :flute-nv *sf-tables*) 60))))
+|#
+
+(defun play-sfz-loop (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0) (out1 0) out2)
   "Plays sample looping independent of the 'play-fn slot in the lsample definition."
   (let* ((map (gethash preset sf-tables))
          (sample (random-elem (aref map (round pitch))))
-         (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
+         (out2 (or out2 (mod (1+ out1) 8)))
          (buffer (incudine::lsample-buffer sample))
+         (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
          (amp (incudine::lsample-amp sample))
          (loopstart (incudine::lsample-loopstart sample))
          (loopend (incudine::lsample-loopend sample)))
-    (lsample-play buffer dur (* amp (db->amp db)) rate pan loopstart loopend startpos)))
+    (play-lsample* buffer dur (+ amp db) rate pan loopstart loopend startpos out1 out2)))
 
-(defun play-sfz-one-shot (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
+;;; (play-sfz-loop 60 0 10 :pan 0 :out1 1)
+
+(defun play-sfz-one-shot (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0) (out1 0) out2)
   "Plays sample once independent of the 'play-fn slot in the lsample definition."
   (let* ((map (gethash preset sf-tables))
          (sample (random-elem (aref map (round pitch))))
-         (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
+         (out2 (or out2 (mod (1+ out1) 8)))
          (buffer (incudine::lsample-buffer sample))
+         (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
          (amp (incudine::lsample-amp sample)))
 ;;;    (break "rate: ~a" rate)
-    (sample-play buffer dur (* amp (db->amp db)) rate pan startpos)))
+    (play-sample* buffer dur (+ amp db) rate pan startpos out1 out2)))
 
+;;; (play-sfz-one-shot 60 0 0.5)

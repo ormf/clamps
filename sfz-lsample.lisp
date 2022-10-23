@@ -24,7 +24,7 @@
   (merge-pathnames sample-path sfz-file-path))
 
 (defun get-keynum (entry)
-  (sample (- (getf entry :pitch-keycenter) (/ (or (getf entry :tune) 0) 100))))
+  (sample (- (or (getf entry :pitch-keycenter) 60) (/ (or (getf entry :tune) 0) 100))))
 
 (defun sfz->lsample (sfz-entry dir &key (play-fn #'cl-sfz:play-sfz-loop))
   (let* ((abs-filepath (abs-path (getf sfz-entry :sample) dir))
@@ -34,7 +34,7 @@
      :buffer buffer
      :play-fn play-fn
      :keynum (get-keynum sfz-entry)
-     :amp (incudine::db->linear (getf sfz-entry :volume 0))
+     :amp (incudine::sample (getf sfz-entry :volume 0))
      :loopstart (sample (or (getf sfz-entry :loop-start) 0))
      :loopend (sample (or (getf sfz-entry :loop-end) (buffer-frames buffer))))))
 
