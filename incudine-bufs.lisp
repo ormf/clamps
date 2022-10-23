@@ -27,8 +27,6 @@
 (defparameter *buffer-max-id* -1)
 (defparameter *buffer-next-id* '())
 
-
-
 (defun buffer-id (buffer)
   "get index of buffer from registry."
   (gethash buffer *buffer-ids*))
