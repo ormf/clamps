@@ -77,4 +77,12 @@ supplied and gets interned as a parameter."
 (restart-qsynth)
 (setf *rts-out* *mt-out01*)
 (format t "~&midi initialized!~%")
+(swank:eval-in-emacs `(load ,(namestring (asdf:system-relative-pathname 'cm-all "incudine-hush.el"))))
+
+
+
+
+(cm)
+
+
 (export '(reinit-midi restart-qsynth jack-connect-qsynth *mt-out01* *midi-out1*) 'cm)
