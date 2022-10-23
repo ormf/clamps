@@ -179,17 +179,17 @@ to t."
 (defun db->amp (db)
   (expt 10 (/ db 20)))
 
-(defun sfz->lsample (sfz-entry dir &key (play-fn #'incudine::lsample-play))
-  (let* ((abs-filepath (abs-path (getf sfz-entry :sample) dir))
+(defun sfz->lsample (sfz-entry dir &key (play-fn #'incudine::play-lsample*))
+  (let* ((abs-filepath (incudine::abs-path (getf sfz-entry :sample) dir))
          (buffer (of-buffer-load abs-filepath)))
-    (make-lsample
+    (incudine::make-lsample
      :filename abs-filepath
      :buffer buffer
      :play-fn play-fn
-     :keynum (get-keynum sfz-entry)
+     :keynum (incudine::get-keynum sfz-entry)
      :amp (incudine::db->linear (getf sfz-entry :volume 0))
-     :loopstart (sample (or (getf sfz-entry :loop-start) 0))
-     :loopend (sample (or (getf sfz-entry :loop-end) (buffer-frames buffer))))))
+     :loopstart (incudine::sample (or (getf sfz-entry :loop-start) 0))
+     :loopend (incudine::sample (or (getf sfz-entry :loop-end) (buffer-frames buffer))))))
 
 #|
 (defun play-sample (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
