@@ -17,7 +17,7 @@
                (:file "load-sounds")
                (:file "network")
                (:file "cl-poolplayer")
-               (:file "sequencer")
+;;;               (:file "sequencer")
 ;;;               (:file "midictl")
 ;;;               (:file "cm-poolplayer")
 ;;;               (:file "cl-poolplayer-default-presets")
