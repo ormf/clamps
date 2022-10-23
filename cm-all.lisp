@@ -1,7 +1,6 @@
 ;;;; cm-all.lisp
 
 (in-package #:cm)
-(defparameter *rt-scale*)
 (defparameter *mt-out01* nil)
 (midi-open-default :direction :input)
 (midi-open-default :direction :output)
