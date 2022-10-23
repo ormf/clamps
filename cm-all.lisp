@@ -1,6 +1,9 @@
 ;;;; cm-all.lisp
 
 (in-package #:cm)
+(defparameter *mt-out01* nil)
+(defparameter *midi-in1* (jackmidi:open :direction :input))
+(defparameter *midi-out1* (jackmidi:open :direction :output))
 
 (defmacro make-mt-stream (symbol-name midi-out-stream chan-tuning)
   "Define, open and initialize a microtonal midistream. The name of
