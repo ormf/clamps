@@ -25,3 +25,7 @@
 (define-key lisp-mode-map (kbd "C-c C-.") 'incudine-rt-stop)
 (define-key lisp-mode-map (kbd "C-c M-.") 'incudine-rt-start)
 (define-key lisp-mode-map (kbd "C-c t") 'test-midi)
+(define-key slime-repl-mode-map (kbd "C-.") 'incudine-hush)
+(define-key slime-repl-mode-map (kbd "C-c C-.") 'incudine-rt-stop)
+(define-key slime-repl-mode-map (kbd "C-c M-.") 'incudine-rt-start)
+(define-key slime-repl-mode-map (kbd "C-c t") 'test-midi)
