@@ -69,7 +69,7 @@ Examples:
 (defmethod pattern-external-inits ((obj permutation))
   (let ((inits (call-next-method)))
     (append inits
-            (if (equal (permutations obj) 0)
+            (if (equal (permutation obj) 0)
                 (list)
                 (list ':idxs (expand-pattern-value (idxs obj))
                       ':immediately (immediately obj))))))
