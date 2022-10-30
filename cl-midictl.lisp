@@ -37,6 +37,53 @@
 ;;; utilities
 (defparameter *midi-debug* nil)
 
+(defconstant +ml-opcode-mask+ #xf0)
+(defconstant +ml-channel-mask+ #x0f)
+(defparameter +ml-note-off-opcode+ 8)
+(defparameter +ml-note-on-opcode+ 9)
+(defparameter +ml-control-change-opcode+ 11)
+(defparameter +ml-channel-pressure-opcode+ 13)
+(defparameter +ml-pitch-bend-opcode+ 14)
+(defparameter +ml-key-pressure-opcode+ 10)
+(defparameter +ml-program-change-opcode+ 12)
+
+#|
+(defparameter +ml-default-note-on-velocity+ 64)
+(defparameter +ml-default-note-off-velocity+ 64)
+(defparameter +ml-msg-sysex-type+ 15)
+(defparameter +ml-msg-mtc-quarter-frame-type+ 31)
+(defparameter +ml-msg-song-position-type+ 47)
+(defparameter +ml-msg-song-select-type+ 63)
+(defparameter +ml-msg-cable-select-type+ 95)
+(defparameter +ml-msg-tune-request-type+ 111)
+(defparameter +ml-msg-eox-type+ 127)
+(defparameter +ml-msg-timing-clock-type+ 143)
+(defparameter +ml-msg-timing-tick-type+ 159)
+(defparameter +ml-msg-start-type+ 175)
+(defparameter +ml-msg-continue-type+ 191)
+(defparameter +ml-msg-stop-type+ 207)
+(defparameter +ml-msg-active-sensing-type+ 239)
+(defparameter +ml-msg-system-reset-type+ 255)
+(defparameter +ml-meta-type+ 0)
+|#
+
+(defparameter *ml-opcodes*
+  `((,+ml-control-change-opcode+ . :cc)
+    (,+ml-note-on-opcode+ . :note-on)
+    (,+ml-note-off-opcode+ . :note-off)
+    (,+ml-program-change-opcode+ . :pgm-change)
+    (,+ml-pitch-bend-opcode+ . :pitch-bend)
+    (,+ml-key-pressure-opcode+ . :key-pressure)
+    (,+ml-channel-pressure-opcode+ . :channel-pressure)))
+
+
+(defun status->opcode (st)
+  (cdr (assoc (ash (logand st +ml-opcode-mask+) -4)
+              *ml-opcodes*)))
+
+(defun status->channel (st)
+  (logand st +ml-channel-mask+))
+
 (declaim (inline rotary->inc))
 (defun rotary->inc (num)
   (if (> num 63)
@@ -53,6 +100,18 @@
                   (rotary->inc ,d2))
                0 127)))
 
+(declaim (inline midi-out))
+(defun midi-out (stream status data1 data2 data-size)
+  "create a closure to defer a call to jm_write_event."
+  (lambda ()
+    (jackmidi:write-short stream (jackmidi:message status data1 data2) data-size)))
+
+(declaim (inline ctl-out))
+(defun ctl-out (stream ccno ccval chan)
+  "wrapper for midi ctl-change messages."
+  (let ((status (+ chan (ash #b1011 4))))
+    (midi-out stream status ccno ccval 3)))
+
 (defparameter *midi-controllers* (make-hash-table :test #'equal)
   "hash-table which stores all currently active midi controllers by id
   and an entry for all used midi-ins of the active controllers by
@@ -68,8 +127,8 @@
    (cc-map :initform (make-array 128 :initial-contents (loop for i below 128 collect i))
            :initarg :cc-map :accessor cc-map)
    (gui :initform nil :initarg :gui :accessor gui)
-   (midi-in :initform *midi-in1* :initarg :midi-in :accessor midi-input)
-   (midi-output :initform *midi-out1* :initarg :midi-out :accessor midi-output)
+   (midi-in :initform nil :initarg :midi-in :accessor midi-input)
+   (midi-output :initform nil :initarg :midi-out :accessor midi-output)
    (last-note-on :initform 0 :initarg :last-note-on :accessor last-note-on)
    (cc-state :initform (make-array 128 :initial-element 0)
              :initarg :cc-state :accessor cc-state)
@@ -99,10 +158,15 @@
    "define midi-handlers by simulating the appropriate mouse/keyboard interaction."))
 
 (defmethod handle-midi-in ((instance midi-controller) opcode d1 d2)
-  (case opcode
-    (:cc (funcall (aref (cc-fns instance) d1) d2))
-    (:note-on (funcall (note-fn instance) d1 d2))
-    (:note-off (funcall (note-fn instance) d1 0))))
+  (with-slots (cc-fns cc-map cc-state note-fn last-note-on) instance
+    (case opcode
+      (:cc (progn
+             (funcall (aref cc-fns d1) d2)
+             (setf (aref cc-state (aref cc-map d1)) d2)))
+      (:note-on (progn
+                  (funcall (note-fn instance) d1 d2)
+                  (setf last-note-on d1)))
+      (:note-off (funcall (note-fn instance) d1 0)))))
 
 ;;; (make-instance 'midi-controller)
 
@@ -123,6 +187,7 @@
     (if (gethash id *midi-controllers*)
         (warn "id already used: ~a" id)
         (progn
+          (format t "adding controller ~a~%" id)
           (push instance (gethash (midi-input instance) *midi-controllers*))
           (setf (gethash id *midi-controllers*) instance)))))
 
@@ -131,13 +196,7 @@
 (defun add-midi-controller (class &rest args)
   "register midi-controller by id and additionally by pushing it onto
 the hash-table entry of its midi-input."
-  (let ((instance (apply #'make-instance class args)))
-    (with-slots (id) instance
-      (if (gethash id *midi-controllers*)
-          (warn "id already used: ~a" id)
-          (progn
-            (push instance (gethash (midi-input instance) *midi-controllers*))
-            (setf (gethash id *midi-controllers*) instance))))))
+  (apply #'make-instance class args))
 
 (defun remove-midi-controller (id)
   (let ((instance (gethash id *midi-controllers*)))
@@ -147,8 +206,9 @@ the hash-table entry of its midi-input."
             (progn
               (setf (gethash (midi-input instance) *midi-controllers*)
                     (delete instance (gethash (midi-input instance) *midi-controllers*)))
-              (remhash id *midi-controllers*))
+              (format t "removing ~a: ~a" id (remhash id *midi-controllers*)))
             (warn "couldn't remove midi-controller ~a" instance)))))
+
 
 (defun find-controller (id)
   (gethash id *midi-controllers*))
@@ -167,16 +227,37 @@ the hash-table entry of its midi-input."
 midi input it scans all elems of *midi-controllers* and calls their
 handle-midi-in method in case the event's midi channel matches the
 controller's channel."
-  (set-receiver!
+  (make-responder input
      (lambda (st d1 d2)
        (if *midi-debug*
            (format t "~&~S ~a ~a ~a~%" (status->opcode st) d1 d2 (status->channel st)))
        (let ((chan (status->channel st)))
          (dolist (controller (gethash input *midi-controllers*))
            (if (= chan (chan controller))
-               (handle-midi-in controller (status->opcode st) d1 d2)))))
-     input
-     :format :raw))
+               (handle-midi-in controller (status->opcode st) d1 d2))))))
+  (recv-start input))
+
+(defun stop-midi-receive (input)
+  "general receiver/dispatcher for all midi input of input arg. On any
+midi input it scans all elems of *midi-controllers* and calls their
+handle-midi-in method in case the event's midi channel matches the
+controller's channel."
+  (remove-all-responders input)
+  (recv-stop input))
+#|
+
+
+(defvar *midi-dump-test*
+           (make-responder *midiin*
+             (lambda (st d1 d2)
+               (cond ((jackmidi:sysex-message-p st)
+                      (msg info "~S"
+                           (jackmidi:input-stream-sysex-octets *midiin*)))
+                     (t (msg info "~D ~D ~D" st d1 d2))))))
+
+(recv-start *midiin*)
+(recv-stop *midiin*)
+
 ;;;
 ;;;
 ;;;; Code für Luftstrom Controllers:
@@ -184,7 +265,8 @@ controller's channel."
 ;;;
 
 ;;; *all-players* bezieht sich auf die Audio-Argumente (16 pro Player)
-#|
+
+
 (defparameter *all-players* #(:auto :player1 :player2 :player3 :player4 :default))
 
 (defparameter *controller-chans* '(:player1 0

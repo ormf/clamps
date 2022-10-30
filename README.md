@@ -1,5 +1,4 @@
 # cl-midictl
-### _Your Name <your.name@example.com>_
 
 cl-midictl is an abstraction layer to implement the handling of
 midi-controllers and their state in real-time audio. It depends on
