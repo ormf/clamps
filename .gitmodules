@@ -1,9 +1,9 @@
 [submodule "submodules/cl-poolplayer"]
 	path = submodules/cl-poolplayer
-	url = git@10.8.0.11:orm.finnendahl/cl-poolplayer.git
+	url = git@github.com:ormf/cl-poolplayer.git
 [submodule "submodules/cl-sfz"]
 	path = submodules/cl-sfz
-	url = git@10.8.0.11:orm.finnendahl/cl-sfz.git
+	url = git@github.com:ormf/cl-sfz.git
 [submodule "submodules/cm-incudine"]
 	path = submodules/cm-incudine
 	url = git@github.com:ormf/cm-incudine.git
@@ -18,7 +18,7 @@
 	url = git@github.com:ormf/cm-svg.git
 [submodule "submodules/of-incudine-dsps"]
 	path = submodules/of-incudine-dsps
-	url = git@10.8.0.11:orm.finnendahl/of-incudine-dsps.git
+	url = git@github.com:ormf/of-incudine-dsps.git
 [submodule "submodules/orm-utils"]
 	path = submodules/orm-utils
 	url = git@github.com:ormf/orm-utils.git
