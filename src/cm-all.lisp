@@ -76,9 +76,9 @@ supplied and gets interned as a parameter."
     (reinit-midi)))
 
 (unless (cm::rts?) (rts))
-(make-mt-stream *mt-out01* *midi-out1* '(4 0))
-(restart-qsynth)
-(setf *rts-out* *mt-out01*)
+;;(make-mt-stream *mt-out01* *midi-out1* '(4 0))
+;;(restart-qsynth)
+;;(setf *rts-out* *mt-out01*)
 (format t "~&midi initialized!~%")
 (swank:eval-in-emacs `(load ,(namestring (asdf:system-relative-pathname 'cm-all "incudine-hush.el"))))
 (swank:eval-in-emacs `(slime-repl-eval-string "(cm)"))
