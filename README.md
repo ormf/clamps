@@ -36,7 +36,7 @@ cm:
 (sprout
  (process
    for keynum in '(60 62 64 65)
-   output (new midi :time (now) :keynum keynum :duration 1)
+   output (new midi :time (now) :keynum keynum)
    wait 0.5))
 ```
 cm-utils:
