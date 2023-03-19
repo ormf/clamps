@@ -77,7 +77,7 @@ supplied and gets interned as a parameter."
 
 (unless (cm::rts?) (rts))
 ;;(make-mt-stream *mt-out01* *midi-out1* '(4 0))
-;;(restart-qsynth)
+(restart-qsynth)
 ;;(setf *rts-out* *mt-out01*)
 (format t "~&midi initialized!~%")
 (swank:eval-in-emacs `(load ,(namestring (asdf:system-relative-pathname 'cm-all "elisp/incudine-hush.el"))))
