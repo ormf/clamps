@@ -45,7 +45,6 @@
 
 ;;; (every-nth '(1 2 3 4 5 6 7 8 9 10 11) 3)
 
-
 (defun str-concat (&rest args)
   (apply #'concatenate 'string args))
 
@@ -407,11 +406,11 @@ with nil if list-length is not a multiple of count."
 ;; uses a local copy of list instead of the original.
 
 (defun rotate (list &optional (num 1))
-  "rotate a list by n elems. n can be negative. If n is larger than
-the list size it will wrap around as if the rotation was called
-recursively n times."
+  "rotate a list by n elems (to the right). n can be negative. If n is
+larger than the list size it will wrap around as if the rotation was
+called recursively n times."
   (let* ((new-list (copy-tree list))
-         (num-normalized (mod num (nconc-get-size new-list)))) ;; innermost function nconcs new-list to an endless list and gets size in one step
+         (num-normalized (mod (* -1 num) (nconc-get-size new-list)))) ;; innermost function nconcs new-list to an endless list and gets size in one step
     (if (zerop num-normalized) list
       (let* ((newlast (nthcdr (- num-normalized 1) new-list)) ;; determine the new last element of the list (wraps around for nums > (length list) or < 0) and store into variable
              (newfirst (cdr newlast))) ;; the new listhead is the cdr of the last element; also stored in variable
@@ -420,7 +419,7 @@ recursively n times."
 
 (defun transpose-list (list-of-lists)
   (apply #'mapcar #'list list-of-lists))
-;; (rotate '(0 1 2 3 4 5) 3)
+;; (rotate '(0 1 2 3 4 5) -3) -> (3 4 5 0 1 2)
 ;;
 ;; (defparameter test '(0 1 2 3 4 5))
 ;;
@@ -893,9 +892,36 @@ the function will blow the stack!"
 
 |#
 
+(defmacro n-get (n form &key (initial-element '()))
+  "return a seq of n elems prepended to initial-element by
+evaluating form n times with the symbol n bound to the iteration
+index in the lexical scope of form."
+  `(labels
+       ((fn (idx &optional seq)
+          (if (< idx ,n)
+              (cons
+               (let ((n idx)) ,form)
+               (fn (+ idx 1) seq))
+              seq)))
+     (fn 0 ,initial-element)))
+
+(defmacro n-collect (n form &key (initial-element '()))
+  "return a seq of n elems prepended to initial-element by
+evaluating form n times with the symbol n bound to the iteration
+index in the lexical scope of form."
+  `(labels
+       ((fn (idx &optional seq)
+          (if (< idx ,n)
+              (cons
+               (let ((n idx)) ,form)
+               (fn (+ idx 1) seq))
+              seq)))
+     (fn 0 ,initial-element)))
+
+;;; (n-get 11 n)
 (defun repeat (n elem)
   "return a list with n occurences of elem."
-  (if (> n 0) (cons elem (repeat (- n 1) elem))))
+  (n-get n elem))
 
 (defun range (&rest args)
   "like clojure's range.
@@ -914,7 +940,7 @@ the function will blow the stack!"
         (t (list 0 (first args) 1)))
     (loop for i from start below end by step collect i)))
 
-;;; (range 1 10 2)
+;;; (range 1 10 2) -> (1 3 5 7 9)
 
 #|
 
@@ -1458,3 +1484,5 @@ proplist. Props not present in proplist are ignored."
                               (list* prop val seq))))
           (reverse props)
           :initial-value nil))
+
+

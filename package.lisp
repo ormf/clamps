@@ -36,6 +36,8 @@
    #:COMBINATIONS
    #:REVERSE-ALL
    #:PARAM-EXP-FUNC
+   #:N-GET
+   #:N-COLLECT
    #:REPEAT
    #:RANGE
    #:SUM_X
