@@ -913,7 +913,9 @@ index in the lexical scope of form."
        ((fn (idx &optional seq)
           (if (< idx ,n)
               (cons
-               (let ((n idx)) ,form)
+               (let ((n idx))
+                 (declare (ignorable n))
+                 ,form)
                (fn (+ idx 1) seq))
               seq)))
      (fn 0 ,initial-element)))
