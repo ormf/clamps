@@ -35,6 +35,8 @@
   (beforefn (lambda () 0))
   (afterfn (lambda () 0)))
 
+;;; (make-song)
+
 (defun play-song (song)
   (funcall (song-playfn song)
            (funcall (song-durfn song))))
@@ -148,6 +150,7 @@ removing it from *sequences*."
 ;;;
 ;;;   ab 1.8.-14.8. nicht, sonst ok bis 23.8.
 
+#|
 (defun def-sequences ()
   (defparameter holz-01
     (make-song
@@ -541,7 +544,7 @@ removing it from *sequences*."
               5 20 300 900
               :distribution '((1 :weight 4) (3 :max 1)))))
 
-
+|#
 
 
 #|
