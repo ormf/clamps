@@ -28,13 +28,16 @@
              (funcall (song-durfn song))
              :player-type 'eventplotter)
     (sort
-     (mapcar #'(lambda (x) (apply #'make-instance 'cm::poolevt
-                             :time (float (- (first x) time) 1.0)
-                             (cdr x)
-                             ;; :lsample (getf (cdr x) :lsample)
-                             ;; (progn (remf (cdr x) :buffer)
-                             ;;        (cdr x))
-                             ))
+     (mapcar #'(lambda (x)
+                  ;;; recalc keynum from :transp and lsample-keynum then remove :transp from args
+                 (let* ((lsample (getf (cdr x) :lsample))
+                        (keynum (+ (incudine:lsample-keynum lsample) (getf (cdr x) :transp)))
+                        (args (cdr x)))
+                   (remf args :transp)
+                   (setf (getf args :keynum) keynum)
+                   (apply #'make-instance 'cm::poolevt
+                          :time (float (- (first x) time) 1.0)
+                          args)))
              *events*)
      #'< :key (lambda (x) (sv x cm::time)))))
 
