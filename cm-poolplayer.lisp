@@ -154,6 +154,7 @@ an external package, a leading <package-name>: has to be provided."
       (apply #'make-instance 'poolevt
              (list* :lsample new-lsample
                     :stretch new-stretch
+                    :keynum keynum
                     :amp (+ amp (opacity->db amplitude))
                     (ou:delete-props args :lsample :lsample-keynum :lsample-amp :lsample-play-fn
                                           :loopstart :loopend :amp
