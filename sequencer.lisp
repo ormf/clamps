@@ -42,6 +42,8 @@
            (funcall (song-durfn song))))
 
 (defun playpattern (idxstream rstream start dur dtime &rest args)
+  "play a pattern of idxs (into *buffers*) given by idxstream with given
+rhythm stream."
   (let ((end (+ start dur))
         (outfn (getf args :outfn #'global-out))
         (amp (getf args :amp 0))
