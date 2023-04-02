@@ -103,9 +103,7 @@ sets the 'playing slot of the player to nil and returns."
                 (setf playing nil)
                 (at next #'perform player next args)))))))
 
-;;; (collect-argvals 0 nil (aref *presets* 15))
-
-(defmethod perform ((player eventplotter) time args)
+(defmethod perform ((player eventplayer) time args)
   "central (tail call) recursive perform routine used by
 #'preset-play: It calculates params according to the preset definition
 used by the player and calls #'play-buffer-stretch-env-out on them. It
@@ -120,13 +118,48 @@ sets the 'playing slot of the player to nil and returns."
       ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
       (if playing
           (let* ((next (+ time (getf params :dtime))))
+            (setf (getf params :buffer) (incudine:lsample-buffer (getf params :lsample)))
             (remf params :dtime)
+            (remf params :lsample)
 ;;            (format t "~&~a" params)
             (incf (getf params :amp) *master-amp-db*)
-            (push (cons time params) *events*)
+;;            (break "params: ~S" params)
+            (if *debug* (format t "~&~S" params))
+            (apply #'play-buffer-stretch-env-pan-out* params)
+;;;            (distributed-play params)
             (if (and dur (> next end))
                 (setf playing nil)
-                (perform player next args)))))))
+                (at next #'perform player next args)))))))
+
+;;; (collect-argvals 0 nil (aref *presets* 15))
+
+(defmethod perform ((player eventplotter) time args)
+  "central perform routine used by #'preset-play: It calculates params
+according to the preset definition used by the player and pushes them
+as property list with prepended time to result. It then reschedules
+itself in case the calculated time for the next event is before the
+end time of the player's life cycle. Otherwise it just sets the
+'playing slot of the player to nil and returns the accumulated
+result."
+  (let ((result '()))
+    (labels ((inner (player time args)
+               (with-slots (playing preset start end dur) player
+                 (let* ((x (normalize-x time end dur))
+                        (prst (aref *presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
+                        (params (collect-argvals x dur prst args)))
+                   ;;        (format t "x: ~a, preset: ~a" x prst)
+                   ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
+                   (if playing
+                       (let* ((next (+ time (getf params :dtime))))
+                         (remf params :dtime)
+                         ;;            (format t "~&~a" params)
+                         (incf (getf params :amp) *master-amp-db*)
+                         (push (cons time params) result)
+                         (if (and dur (> next end))
+                             (setf playing nil)
+                             (inner player next args))))))))
+      (inner player time args)
+      (reverse result))))
 
 (defgeneric nperform (player time args))
 
