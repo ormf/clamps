@@ -22,14 +22,16 @@
 
 
 (defun cm-collect-song (song)
-  (let ((*events* '())
-        (time (now)))
-    (funcall (song-playfn song)
-             (funcall (song-durfn song))
-             :player-type 'eventplotter)
+  "generate a time-sorted seq of cm::poolevt instances by collecting
+param lists of the events using the song-playfn with an 'eventplotter
+player-type and supplying them to make-instance of the poolevt."
+  (let ((time (now))) ;; capture the value of time just to be
+                      ;; sure. The song-playfn should also use (now)
+                      ;; for the time calculation of its first event
     (sort
      (mapcar #'(lambda (x)
-                  ;;; recalc keynum from :transp and lsample-keynum then remove :transp from args
+                  ;;; calc :keynum value from :transp and
+                  ;;; lsample-keynum, then remove :transp from args
                  (let* ((lsample (getf (cdr x) :lsample))
                         (keynum (+ (incudine:lsample-keynum lsample) (getf (cdr x) :transp)))
                         (args (cdr x)))
@@ -38,7 +40,9 @@
                    (apply #'make-instance 'cm::poolevt
                           :time (float (- (first x) time) 1.0)
                           args)))
-             *events*)
+             (funcall (song-playfn song)
+                      (funcall (song-durfn song))
+                      :player-type 'eventplotter))
      #'< :key (lambda (x) (sv x cm::time)))))
 
 (defmacro collecting-cm (&rest body)
