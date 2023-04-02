@@ -51,7 +51,7 @@
       ((lsample :initform nil :accessor poolevt-lsample)
        (keynum :initform nil :accessor poolevt-keynum)
        (amp :initform 0.0 :accessor poolevt-amp)
-;;;       (transp :initform 0.0 :accessor poolevt-transp)
+;;;       (transp :initform 0.0 :accessor poolevt-transp);;; removed in favor of keynum (+ transp lsample-keynum)
        (dy :initform 0.0 :accessor poolevt-dy)
        (start :initform 0 :accessor poolevt-start)
        (end :initform 0 :accessor poolevt-end)
