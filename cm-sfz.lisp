@@ -24,7 +24,7 @@
 
 (defobject sfz (event)
     ((keynum :initform 60 :accessor sfz-keynum)
-     (amplitude :initform 1 :accessor sfz-amplitude)
+     (amplitude :initform -6 :accessor sfz-amplitude)
      (duration :initform 1 :accessor sfz-duration)     
      (preset :initform :flute-nv :accessor sfz-preset)
      (play-fn :initform nil :accessor sfz-play-fn)
