@@ -28,7 +28,7 @@
 contains a slot for the sample buffer data."
   filename
   buffer
-  (play-fn #'play-lsample)
+  (play-fn #'play-lsample-oneshot*)
   (keynum +sample-zero+ :type sample)
   (loopstart +sample-zero+ :type sample)
   (amp (sample 0) :type sample)
@@ -249,7 +249,7 @@ contains a slot for the sample buffer data."
 
 
 
-(export '(lsample play-lsample* play-sample* lsample-filename lsample-buffer
+(export '(make-lsample lsample play-lsample* play-sample* lsample-filename lsample-buffer
           lsample-play-fn lsample-keynum lsample-loopstart
           lsample-amp lsample-loopend play-lsample play-sample)
         'incudine)
