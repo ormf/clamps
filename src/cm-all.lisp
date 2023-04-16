@@ -80,7 +80,20 @@ supplied and gets interned as a parameter."
 (restart-qsynth)
 ;;(setf *rts-out* *mt-out01*)
 (format t "~&midi initialized!~%")
-(swank:eval-in-emacs `(load ,(namestring (asdf:system-relative-pathname 'cm-all "elisp/incudine-hush.el"))))
-(swank:eval-in-emacs `(slime-repl-eval-string "(cm)"))
+
+#+swank
+(progn
+  (swank:eval-in-emacs
+   `(load ,(namestring
+            (asdf:system-relative-pathname :cm-all "elisp/incudine-hush.el"))))
+  (swank:eval-in-emacs `(slime-repl-eval-string "(cm)")))
+
+#+slynk
+(progn
+  (slynk:eval-in-emacs
+   `(load ,(namestring
+            (asdf:system-relative-pathname :cm-all "elisp/incudine-hush-sly.el"))))
+      (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
 
 (export '(reinit-midi restart-qsynth jack-connect-qsynth *mt-out01* *midi-out1*) 'cm)
+(find-package :swank)

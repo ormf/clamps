@@ -1,5 +1,8 @@
 ;;;; cm-all.asd
 
+(if (find-package :slynk) (pushnew :slynk *features*))
+(if (find-package :swank) (pushnew :swank *features*))
+
 (asdf:defsystem #:cm-all
   :description "cm with all additions loaded"
   :author "Orm Finnendahl <ormfinnendahl@selmahfmdk-frankfurt.de"

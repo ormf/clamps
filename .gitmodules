@@ -1,27 +1,27 @@
 [submodule "submodules/cl-poolplayer"]
 	path = submodules/cl-poolplayer
-	url = git@github.com:ormf/cl-poolplayer.git
+	url = https://github.com/ormf/cl-poolplayer.git
 [submodule "submodules/cl-sfz"]
 	path = submodules/cl-sfz
-	url = git@github.com:ormf/cl-sfz.git
+	url = https://github.com/ormf/cl-sfz.git
 [submodule "submodules/cm-incudine"]
 	path = submodules/cm-incudine
-	url = git@github.com:ormf/cm-incudine.git
+	url = https://github.com/ormf/cm-incudine.git
 [submodule "submodules/cm-poolplayer"]
 	path = submodules/cm-poolplayer
-	url = git@github.com:ormf/cm-poolplayer.git
+	url = https://github.com/ormf/cm-poolplayer.git
 [submodule "submodules/cm-sfz"]
 	path = submodules/cm-sfz
-	url = git@github.com:ormf/cm-sfz.git
+	url = https://github.com/ormf/cm-sfz.git
 [submodule "submodules/cm-svg"]
 	path = submodules/cm-svg
-	url = git@github.com:ormf/cm-svg.git
+	url = https://github.com/ormf/cm-svg.git
 [submodule "submodules/of-incudine-dsps"]
 	path = submodules/of-incudine-dsps
-	url = git@github.com:ormf/of-incudine-dsps.git
+	url = https://github.com/ormf/of-incudine-dsps.git
 [submodule "submodules/orm-utils"]
 	path = submodules/orm-utils
-	url = git@github.com:ormf/orm-utils.git
+	url = https://github.com/ormf/orm-utils.git
 [submodule "submodules/svg-import-export"]
 	path = submodules/svg-import-export
-	url = git@github.com:ormf/svg-import-export.git
+	url = https://github.com/ormf/svg-import-export.git
