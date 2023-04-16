@@ -62,6 +62,7 @@ pathname-name of <name>."
     (setf (gethash (or (pop *buffer-next-id*) (incf *buffer-max-id*)) *buffers*) buf)
     (setf (gethash buf *buffer-ids*) *buffer-max-id*)
     (setf (gethash (buffer-file buf) *buffers*) buf)
+    (setf (gethash (pathname-name (buffer-file buf)) *buffers*) buf)
     buf))
 
 (defun remove-buffer (buf)
@@ -75,21 +76,32 @@ pathname-name of <name>."
                  (push id *buffer-next-id*)))
       (warn "Can't remove buffer ~a: buf or id not found in databases!" buf))))
 
+(defun remove-all-buffers ()
+  "remove all buffers from registry."
+  (setf *buffer-ids* (make-hash-table :test #'equal))
+  (setf *buffers* (make-hash-table))
+  (setf *buffer-next-id* '())
+  (setf *buffer-max-id* -1)
+  nil)
+
+;;; (remove-all-buffers)
+
 (defun bufname= (buf file)
-  "compare file with the filename of buf. If buf is a list, compare
+     "compare file with the filename of buf. If buf is a list, compare
 file to the filenames of all elements of list and return buf if any is
 matching."
-  (cond
-    ((null buf) nil)
-    ((consp buf) (or (bufname= (first buf) file) (bufname= (rest buf) file)))
-    (t (and (string= (format nil "~a" (buffer-file buf)) (format nil "~a" file)) buf))))
-
+     (cond
+       ((null buf) nil)
+       ((consp buf) (or (bufname= (first buf) file) (bufname= (rest buf) file)))
+       (t (and (string= (format nil "~a" (buffer-file buf)) (format nil "~a" file)) buf))))
 
 (defun of-buffer-load (file)
   "load and register buffer from file if not loaded already. Return
 buffer."
   (let ((buf (find-buffer file)))
-    (or (bufname= buf file)
+    (if (bufname= buf file)
+        buf
         (add-buffer (buffer-load file)))))
 
-(export '(of-buffer-load buffer-id get-buffer find-buffer add-buffer remove-buffer) 'incudine)
+(export '(of-buffer-load buffer-id get-buffer find-buffer add-buffer remove-buffer
+          remove-all-buffers) 'incudine)
