@@ -31,6 +31,8 @@
 Anschließend werden sfz Dateien folgendermaßen generiert:
 
 (write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-pp" "bassoboe-pp")
+
+(write-sfz "~/work/snd/sfz/oud" "oud" "oud")
 (write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-f" "bassoboe-f")
 
 |#

@@ -61,6 +61,36 @@ sample files by parsing the pitch name."
   (remove-if-not (lambda (file) (cl-ppcre:scan template (file-namestring file)))
                  (uiop:directory-files dir)))
 
+#|
+
+(dotimes (c 6)
+  (let* ((name (format nil "guitar-pizz-orm-c~a" (1+ c)))
+         (dir (format nil "/home/orm/work/snd/sfz/guitar-pizz-orm/~a/" name))) 
+    (with-open-file (out (format nil "~a/~a.sfz" dir name)
+                         :direction :output :if-exists :supersede)
+      (let* ((sampledir (format nil "~a/samples/" dir))
+             (files (uiop:directory-files sampledir))
+             (all-keys (mapcar #'get-guitar-pitch files))
+             (keys (sort (remove-duplicates all-keys) #'<))
+             (lokeys (cons 0 (mapcar (lambda (x) (1+ x)) (butlast keys))))
+             (hikeys (append (butlast keys) '(127)))
+             (range-assoc (mapcar #'list keys lokeys hikeys)))
+        (loop
+          for key in all-keys
+          for lokey = (second (assoc key range-assoc))
+          for hikey = (third (assoc key range-assoc))
+          for file in files
+          for name = (file-namestring file)
+          do (format out "<region>
+sample=samples/~a
+volume=6
+lokey=~a
+hikey=~a
+tune=0
+pitch_keycenter=~a~%~%" name lokey hikey key))))))
+
+|#
+
 (defun write-sfz (dir name template)
   (with-open-file (out (format nil "~a/~a.sfz" dir name)
                        :direction :output :if-exists :supersede)
@@ -68,13 +98,15 @@ sample files by parsing the pitch name."
              (loop for file in (find-files-matching (format nil "~a/samples/" dir) template)
                    for name = (file-namestring file)
                    collect (list (read-from-string (subseq name 0 3)) name)))
-           (keys (mapcar #'first seq))
+           (all-keys (mapcar #'first seq))
+           (keys (sort (remove-duplicates all-keys) #'<))
            (lokeys (cons 0 (mapcar (lambda (x) (1+ x)) (butlast keys))))
-           (hikeys (append (butlast keys) '(127))))
+           (hikeys (append (butlast keys) '(127)))
+           (range-assoc (mapcar #'list keys lokeys hikeys)))
       (loop
-        for lokey in lokeys
-        for hikey in hikeys
         for (key name) in seq
+        for lokey = (second (assoc key range-assoc))
+        for hikey = (third (assoc key range-assoc))
         do (format out "<region>
 sample=samples/~a
 volume=6
