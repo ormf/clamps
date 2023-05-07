@@ -1498,7 +1498,6 @@ proplist. Props not present in proplist are ignored."
           (reverse props)
           :initial-value nil))
 
-
 (defun random-elem (seq)
   "return a random element of seq."
   (elt seq (random (length seq))))
