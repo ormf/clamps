@@ -384,6 +384,16 @@ with nil if list-length is not a multiple of count."
 (defun ct->fv (ct)
   (expt 2 (/ ct 1200)))
 
+(defun mtof (m &key (tuning-base 440))
+  (* tuning-base (expt 2 (/ (- m 69) 12))))
+
+;;; (mtof 81) -> 880
+
+(defun ftom (f &key (tuning-base 440))
+  (+ 69 (* 12 (log (/ f tuning-base) 2))))
+
+;;; (ftom 880) -> 81.0
+
 ;; helper function for rotate: It destructively modifies its argument
 ;; to an endless list and returns the size of the original list.
 
@@ -920,10 +930,11 @@ index in the lexical scope of form."
               seq)))
      (fn 0 ,initial-element)))
 
-;;; (n-get 11 n)
+;;; (n-collect 11 n)
+
 (defun repeat (n elem)
   "return a list with n occurences of elem."
-  (n-get n elem))
+  (n-collect n elem))
 
 (defun range (&rest args)
   "like clojure's range.
@@ -1488,3 +1499,6 @@ proplist. Props not present in proplist are ignored."
           :initial-value nil))
 
 
+(defun random-elem (seq)
+  "return a random element of seq."
+  (elt seq (random (length seq))))
