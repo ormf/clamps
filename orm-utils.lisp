@@ -499,6 +499,8 @@ to be sorted according to test!"
 
 ;;; Example:
 
+;;; (funcall (repeated 4 (lambda (x y) (* x y))) 1 2) ; -> 16
+
 (defun permute (list permutation)
   (loop 
      for x in permutation
@@ -550,6 +552,17 @@ to be sorted according to test!"
 ;; (next pat1 #t) -> (B D A E C)
 ;; (next pat1 #t) -> (E C D A B)
 ;; (next pat1 #t) -> (A B C D E)
+
+(defun n-apply (n fn &key (initial-value '()) (collect nil))
+  "call fn n times accumulating the results in acc. fn should accept two
+values, the current n and the accumulated results of previous
+calls. If collect is t return all results in a list."
+  (labels ((inner (idx acc)
+             (if (< idx n)
+                 (inner (1+ idx) (cons (funcall fn idx acc) acc))
+                 (if collect (reverse acc) (first acc)))))
+    (inner 0 initial-value)))
+
 
 (defun secs->timestr (secs &key (format 0))
   (ecase format
@@ -902,33 +915,21 @@ the function will blow the stack!"
 
 |#
 
-(defmacro n-get (n form &key (initial-element '()))
-  "return a seq of n elems prepended to initial-element by
-evaluating form n times with the symbol n bound to the iteration
-index in the lexical scope of form."
-  `(labels
-       ((fn (idx &optional seq)
-          (if (< idx ,n)
-              (cons
-               (let ((n idx)) ,form)
-               (fn (+ idx 1) seq))
-              seq)))
-     (fn 0 ,initial-element)))
-
 (defmacro n-collect (n form &key (initial-element '()))
-  "return a seq of n elems prepended to initial-element by
+  "return a list of n elems prepended to initial-element by
 evaluating form n times with the symbol n bound to the iteration
 index in the lexical scope of form."
-  `(labels
-       ((fn (idx &optional seq)
-          (if (< idx ,n)
-              (cons
-               (let ((n idx))
-                 (declare (ignorable n))
-                 ,form)
-               (fn (+ idx 1) seq))
-              seq)))
-     (fn 0 ,initial-element)))
+  (let ((n-var (intern "N")))
+    `(labels
+         ((fn (idx seq)
+            (if (< idx ,n)
+                (cons
+                 (let ((,n-var idx))
+                   (declare (ignorable ,n-var))
+                   ,form)
+                 (fn (+ idx 1) seq))
+                seq)))
+       (fn 0 ,initial-element))))
 
 ;;; (n-collect 11 n)
 
@@ -1458,18 +1459,18 @@ modified in the body to enable returning a value."
 with idxs taken from the rest arg."
   (reduce #'elt idxs :initial-value seq))
 
-(defun r-getf (seq &rest props)
-  "recursively traverse nested seq using props as idx. The values for
-props can be either numbers using #'elt or keywords/symbols (using
-getf)."
-  (reduce #'getf-or-elt props :initial-value seq))
-
 (defun getf-or-elt (seq id)
   "depending on the type of id retrieve the element with the #'elt
 function or with getf."
   (cond
     ((numberp id) (elt seq id))
     (t (getf seq id))))
+
+(defun r-getf (seq &rest props)
+  "recursively traverse nested seq using props as idx. The values for
+props can be either numbers using #'elt or keywords/symbols (using
+getf)."
+  (reduce #'getf-or-elt props :initial-value seq))
 
 (defun index-seq (seq &optional (n 0))
   (cond ((null seq) nil)

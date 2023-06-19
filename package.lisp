@@ -5,6 +5,7 @@
   (:use #:cl #:closer-mop)
   (:nicknames #:ou)
   (:export 
+   #:N
    #:FILTER
    #:REDUCING
 ;;   #:WHILE
@@ -22,6 +23,7 @@
    #:GROUP-BY
    #:GROUP-BY-KEY
    #:REPEATED #:DO-REPEATED #:PERMUTE #:LAST-N
+   #:N-APPLY
    #:AMP->DB #:DB->AMP
    #:FV->CT #:CT->FV
    #:MAPPLY #:FLATTEN-FN
@@ -36,7 +38,6 @@
    #:COMBINATIONS
    #:REVERSE-ALL
    #:PARAM-EXP-FUNC
-   #:N-GET
    #:N-COLLECT
    #:REPEAT
    #:RANGE
