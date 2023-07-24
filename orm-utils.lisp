@@ -651,7 +651,8 @@ calls. If collect is t return all results in a list."
 (setf *tempo* '(1/4 60))
 
 (defun amp->db (amp)
- (* 20 (log amp 10)))
+  (if (zerop amp) -100
+      (* 20 (log amp 10))))
 
 ;;; (amp->db 1) -> 0
 ;;; (amp->db 0.5) -> -6
@@ -915,6 +916,42 @@ the function will blow the stack!"
 
 |#
 
+(defun call/collecting (f n tail)
+  (let ((c (make-collector)))
+    (dotimes (i n (collector-contents c tail))
+      (collect-into c (funcall f i)))))
+
+(defmacro v-collect ((v n &optional (tail '())) form)
+  "return a list of n elems prepended to tail by evaluating form n times
+with the symbol n bound to the iteration index in the lexical scope of
+form."  `(call/collecting (lambda (,v) 
+                      (declare (ignorable ,v))
+                      ,form)
+                    ,n ,tail))
+
+;;; (v-collect (n 10) (* n n)) ;-> (0 1 4 9 16 25 36 49 64 81)
+
+#|
+;;; experimental, seems to be less efficient than v-collect.
+
+(defmacro v2-collect ((v n &optional (tail '())) form)
+  (let ((my-fn (gensym "fn"))
+        (idx (gensym "idx"))
+        (seq (gensym "seq"))
+        (num (gensym "num")))
+    `(let ((,num ,n))
+       (labels
+           ((,my-fn (,idx ,seq)
+              (if (>= ,idx ,num)
+                  ,seq
+                  (,my-fn
+                   (+ ,idx 1)
+                   (cons (let ((,v ,idx))
+                           (declare (ignorable ,v))
+                           ,form)
+                         ,seq)))))
+         (,my-fn 0 ,tail)))))
+
 (defmacro n-collect (n form &key (initial-element '()))
   "return a list of n elems prepended to initial-element by
 evaluating form n times with the symbol n bound to the iteration
@@ -932,10 +969,13 @@ index in the lexical scope of form."
        (fn 0 ,initial-element))))
 
 ;;; (n-collect 11 n)
+|#
 
 (defun repeat (n elem)
   "return a list with n occurences of elem."
-  (n-collect n elem))
+  (v-collect (v n) elem))
+
+;;; (repeat 10 5)
 
 (defun range (&rest args)
   "like clojure's range.

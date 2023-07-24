@@ -2,7 +2,7 @@
 
 (defpackage #:orm-utils
   (:shadowing-import-from :closer-mop :defmethod :standard-generic-function :defgeneric)
-  (:use #:cl #:closer-mop)
+  (:use #:cl #:closer-mop #:org.tfeb.hax.collecting)
   (:nicknames #:ou)
   (:export 
    #:N
@@ -38,6 +38,7 @@
    #:COMBINATIONS
    #:REVERSE-ALL
    #:PARAM-EXP-FUNC
+   #:V-COLLECT
    #:N-COLLECT
    #:REPEAT
    #:RANGE
