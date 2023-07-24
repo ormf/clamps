@@ -924,7 +924,13 @@ the function will blow the stack!"
 (defmacro v-collect ((v n &optional (tail '())) form)
   "return a list of n elems prepended to tail by evaluating form n times
 with the symbol n bound to the iteration index in the lexical scope of
-form."  `(call/collecting (lambda (,v) 
+form.
+
+Example:
+
+(v-collect (n 10) (* n n)) ;-> (0 1 4 9 16 25 36 49 64 81)
+"
+  `(call/collecting (lambda (,v) 
                       (declare (ignorable ,v))
                       ,form)
                     ,n ,tail))
@@ -972,29 +978,36 @@ index in the lexical scope of form."
 |#
 
 (defun repeat (n elem)
-  "return a list with n occurences of elem."
+  "return a list with n occurences of elem.
+Example:
+
+(repeat 10 5) ;-> (5 5 5 5 5 5 5 5 5 5)
+"
   (v-collect (v n) elem))
 
 ;;; (repeat 10 5)
 
 (defun range (&rest args)
   "like clojure's range.
-   Arities:
-   (range end) 
-   (range start end) 
-   (range start end step) 
+Arities:
+(range end) 
+(range start end) 
+(range start end step) 
 
-   Return a list of nums from start (inclusive) to end (exclusive) by
-   step. Start and step are optional args defaulting to 0 and 1
-   respectively."
+Return a list of nums from start (inclusive) to end (exclusive) by
+step. Start and step are optional args defaulting to 0 and 1
+respectively.
+
+Example:
+
+(range 1 10 2) ;-> (1 3 5 7 9)
+"
   (destructuring-bind (start end step)
       (cond
         ((third args) args)
         ((second args) (list (first args) (second args) 1))
         (t (list 0 (first args) 1)))
     (loop for i from start below end by step collect i)))
-
-;;; (range 1 10 2) -> (1 3 5 7 9)
 
 #|
 
@@ -1062,21 +1075,25 @@ as first arg to fn and is reset for each seq."
        (setf ,sym (if ,h ,h ,default)))))
 
 (defun spit (seq &key (outfile "/tmp/test.lisp"))
+  "print seq to outfile, each element on a new line."
   (with-open-file (out outfile
                        :direction :output
                        :if-exists :supersede)
     (dolist (line seq)
-      (format out "~a~%" line))))
+      (format out "~A~%" line))))
 
 
-(defun slurp (filename)
-  (with-open-file (stream filename)
+(defun slurp (file)
+  "return contents of file as a list of all lines read individually by
+the lisp reader."
+  (with-open-file (stream file)
     (loop for line = (read-line stream nil)
           while line
        collect (read-from-string line))))
 
-(defun slurp-string (filename)
-  (with-open-file (stream filename)
+(defun slurp-string (file)
+  "return contents of file as a string."
+  (with-open-file (stream file)
     (with-output-to-string (str)
       (loop for line = (read-line stream nil)
          while line
@@ -1085,7 +1102,8 @@ as first arg to fn and is reset for each seq."
 (defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
 
 (defun map-all-pairs (fn seq)
-  "Execute fn on all possible pairs of two different elements of seq."
+  "Execute fn on all possible pairs of two different elements of
+seq. The pairs are given to fn in the order of appearance in the seq."
   (loop
      for (b1 . rest) on seq
      do (loop for b2 in rest do (funcall fn b1 b2))))
