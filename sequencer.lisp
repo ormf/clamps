@@ -37,9 +37,11 @@
 
 ;;; (make-song)
 
-(defun play-song (song)
+(defun play-song (song &key player-type duration amp)
   (funcall (song-playfn song)
-           (funcall (song-durfn song))))
+           (or duration (funcall (song-durfn song)))
+           :amp amp
+           :player-type player-type))
 
 (defun playpattern (idxstream rstream start dur dtime &rest args)
   "play a pattern of idxs (into *buffers*) given by idxstream with given

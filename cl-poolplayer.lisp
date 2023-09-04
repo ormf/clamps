@@ -55,7 +55,7 @@ issued in the #'perform function."
          (apply (get-preset-fn preset :outfn) x dur p1 p2 p3 p4 args)
        (list :out1 out1 :out2 out2)))))
 
-;;; (collect-argvals 0 nil (aref *presets* 0))
+;;; (collect-argvals 0 nil (aref *poolplayer-presets* 0))
 
 (defun normalize-x (curr-time end-time dur)
   "given curr-time, end-time and total-duration of a preset, return
@@ -84,7 +84,7 @@ is before the end time of the player's life cycle. Otherwise it just
 sets the 'playing slot of the player to nil and returns."
   (with-slots (playing preset start end dur) player
     (let* ((x (normalize-x time end dur))
-           (prst (aref *presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
+           (prst (aref *poolplayer-presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
            (params (collect-argvals x dur prst args)))
       ;;        (format t "x: ~a, preset: ~a" x prst)
       ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
@@ -112,7 +112,7 @@ is before the end time of the player's life cycle. Otherwise it just
 sets the 'playing slot of the player to nil and returns."
   (with-slots (playing preset start end dur) player
     (let* ((x (normalize-x time end dur))
-           (prst (aref *presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
+           (prst (aref *poolplayer-presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
            (params (collect-argvals x dur prst args)))
       ;;        (format t "x: ~a, preset: ~a" x prst)
       ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
@@ -131,7 +131,7 @@ sets the 'playing slot of the player to nil and returns."
                 (setf playing nil)
                 (at next #'perform player next args)))))))
 
-;;; (collect-argvals 0 nil (aref *presets* 15))
+;;; (collect-argvals 0 nil (aref *poolplayer-presets* 15))
 
 (defmethod perform ((player eventplotter) time args)
   "central perform routine used by #'preset-play: It calculates params
@@ -145,7 +145,7 @@ result."
     (labels ((inner (player time args)
                (with-slots (playing preset start end dur) player
                  (let* ((x (normalize-x time end dur))
-                        (prst (aref *presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
+                        (prst (aref *poolplayer-presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
                         (params (collect-argvals x dur prst args)))
                    ;;        (format t "x: ~a, preset: ~a" x prst)
                    ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
@@ -172,7 +172,7 @@ is lower than the end index of the player's life cycle. Otherwise it just
 sets the 'playing slot of the player to nil and returns."
   (with-slots (playing preset start end dur) player
     (let* ((x (/ (getf args :curr-idx) end))
-           (prst (aref *presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
+           (prst (aref *poolplayer-presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
            (params (collect-argvals x dur prst args)))
       ;;        (format t "x: ~a, preset: ~a" x prst)
       ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
@@ -190,7 +190,7 @@ sets the 'playing slot of the player to nil and returns."
                 (setf playing nil)
                 (at next #'nperform player next args)))))))
 
-;;; (collect-argvals 0 nil (aref *presets* 15))
+;;; (collect-argvals 0 nil (aref *poolplayer-presets* 15))
 
 
 
@@ -203,7 +203,7 @@ is lower than the end index of the player's life cycle. Otherwise it just
 sets the 'playing slot of the player to nil and returns."
   (with-slots (playing preset start end dur) player
     (let* ((x (/ (getf args :curr-idx) end))
-           (prst (aref *presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
+           (prst (aref *poolplayer-presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
            (params (collect-argvals x dur prst args)))
       ;;        (format t "x: ~a, preset: ~a" x prst)
       ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)

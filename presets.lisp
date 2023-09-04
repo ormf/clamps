@@ -48,43 +48,23 @@
 ;;; of the preset (which are also defined as envelopes and thus can
 ;;; change over the course of an event).
 
-#|
-(defstruct preset
-  (dtime (make-env :start 0.1 :delta 1 :type :exp))
-  (dtime-dev (make-env :start 1.2 :delta 1 :type :exp))
-  (dur (make-env :start 3 :delta 1 :type :exp))
-  (dur-dev (make-env :start 1 :delta 1 :type :exp))
-  (transp (make-env))
-  (transp-dev (make-env))
-  (stretch (make-env :start 1 :delta 1 :type :exp))
-  (stretch-dev (make-env :start 1 :delta 1 :type :exp))
-  (wsize (make-env :start 123 :delta 1 :type :exp))
-  (wsize-dev (make-env :start 1 :delta 1 :type :exp))
-  (amp (make-env))
-  (amp-dev (make-env))
-  (inner-attack (make-env)) ;;; attack of the env of a single buff-stretch-play call
-  (inner-attack-dev (make-env :start 1 :delta 1 :type :exp))
-  (inner-release (make-env :start 0.01))  ;;; release of the env of a single buff-stretch-play call
-  (inner-release-dev (make-env :start 1 :delta 1 :type :exp))
-  (chan 0)
-  (chan-dev (make-env)))
-|#
-
-(defparameter *default-audio-preset* '(nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil))
+(defparameter *default-poolplayer-preset* `((:p1 0 :p2 0 :p3 0 :p4 0 :dtimefn (funcall (or (getf args :dtimefn) (lambda (x) (n-exp x 0.05 0.2))) x) :lsamplefn (r-elt (getf args :g1)) :ampfn (funcall (or (getf args :ampfn) (lambda (x) x (+ (or (getf args :amp 0)) (random 12) -6))) x) :transpfn (funcall (getf args :transpfn (lambda (x) (r-lin (n-lin x -30 40) (n-lin x -30 80)))) x) :startfn 0 :endfn 0 :stretchfn (r-exp 1 1) :wwidthfn 123 :attackfn 0 :panfn 0.5 :releasefn 0.01 :outfn (funcall (getf args :outfn #'stereo-out) x))
+                                            ,@(repeat 17 nil)))
 
 (defparameter *audio-fn-id-lookup*
   (let ((hash (make-hash-table)))
-    (loop for key in '(:preset-form :p1 :p2 :p3 :p4 :dtimefn :lsamplefn :ampfn :transpfn :startfn :endfn :stretchfn
+    (loop for key in '(:preset-form :p1 :p2 :p3 :p4 :dtimefn :lsamplefn :ampfn
+                       :transpfn :startfn :endfn :stretchfn
                        :wwidthfn :attackfn :releasefn :panfn :outfn)
        for id from 0
        do (setf (gethash key hash) id))
     hash))
 
-(defun new-audio-preset ()
-  (make-array 17 :initial-contents *default-audio-preset*))
+(defun new-poolplayer-preset ()
+  (make-array 18 :initial-contents *default-poolplayer-preset*))
 
-;;; (new-audio-preset)
-;;; *presets*
+;;; (new-poolplayer-preset)
+;;; *poolplayer-presets*
 (defun get-fn-idx (key)
   (gethash key *audio-fn-id-lookup*))
 
@@ -111,10 +91,11 @@
 
 (defmacro digest-poolplayer-preset (ref args)
   (let ((preset (gensym "preset")))
-    `(let ((,preset (aref *presets* ,ref)))
+    `(let ((,preset (aref *poolplayer-presets* ,ref)))
        (progn
          ,@(expand-args preset args))
        (setf (aref ,preset 0) ',args)
+       (setf *curr-poolplayer-preset-nr* ,ref)
        ,preset)))
 
 ;;; (get-fn-idx :ampfn)
@@ -123,7 +104,7 @@
 ;;; implementation as function. The args have to get quoted.
 
 (defun digest-bo-preset (ref args)
-  (let ((preset (aref *presets* ref)))
+  (let ((preset (aref *poolplayer-presets* ref)))
     (loop
        for (key val) on args by #'cddr
        for idx = (get-fn-idx key)
@@ -139,21 +120,32 @@
 
 ;;; (make-preset)
 
-(defparameter *presets-file* "presets/big-orchestra01.lisp")
+(defparameter *poolplayer-presets-file*
+  (namestring (merge-pathnames "presets/cl-poolplayer-01.lisp" (asdf:system-source-directory :cl-poolplayer)))) 
+
 ;;; (defparameter *audio-presets-file* "presets/schwarm01-audio-presets.lisp")
 
-;;; (setf *presets-file* "presets/schwarm-18-11-18.lisp")
+;;; (setf *poolplayer-presets-file* "presets/schwarm-18-11-18.lisp")
 
-(defparameter *presets*
+(defparameter *poolplayer-presets*
   (make-array
    100
    :element-type 'vector
    :initial-contents
-   (loop for i below 100 collect (new-audio-preset))))
+   (loop for i below 100 collect (new-poolplayer-preset))))
+
+
 
 #| 
+(setf *poolplayer-presets*
+  (make-array
+   100
+   :element-type 'vector
+   :initial-contents
+   (loop for i below 100 collect (new-poolplayer-preset))))
+
 (setf *default-audio-preset*
-      (digest-bo-preset
+      (digest-poolplayer-preset
        0
        `(:p1 0
          :p2 0
@@ -172,59 +164,140 @@
          :outfn 0)))
 |#
 
-(setf *presets*
-  (make-array
-   100
-   :element-type 'vector
-   :initial-contents
-   (loop for i below 100 collect (new-audio-preset))))
+(defparameter *curr-poolplayer-preset-nr* 0)
+(defparameter *max-poolplayer-preset-nr* 99)
 
-;;; (setf (env-delta (preset-amp-env (aref *presets* 1))) 3)
+(defun next-poolplayer-preset ()
+  (if (< *curr-poolplayer-preset-nr* *max-poolplayer-preset-nr*)
+      (edit-preset-in-emacs (incf *curr-poolplayer-preset-nr*))))
 
-;;; (sv (aref *presets* 0) :amp-env )
+(defun previous-poolplayer-preset ()
+  (if (> *curr-poolplayer-preset-nr* 0)
+      (edit-preset-in-emacs (decf *curr-poolplayer-preset-nr*))))
+
+(defun show-poolplayer-preset (num)
+  (setf *curr-poolplayer-preset-nr* (max (min num *max-poolplayer-preset-nr*) 0))
+  (edit-preset-in-emacs *curr-poolplayer-preset-nr*))
+
+
+#+swank
+(defparameter *emcs-conn* swank::*emacs-connection*)
+
+#+swank
+(defun define-elisp-code ()
+  (let ((swank::*emacs-connection* *emcs-conn*))
+    (swank::eval-in-emacs
+     `(progn
+        (setq poolplayer-preset-file ,(namestring
+                                       (merge-pathnames
+                                        "curr-preset.lisp"
+                                        (asdf:system-source-directory :cl-poolplayer))))
+        (find-file poolplayer-preset-file)
+        (set-window-dedicated-p (get-buffer-window "curr-preset.lisp" t) t)
+        (load ,(namestring
+                (merge-pathnames
+                 "edit-poolplayer-presets.el"
+                 (asdf:system-source-directory :cl-poolplayer))))
+        ) t)))
+
+#+slynk
+(defun define-elisp-code ()
+  (slynk::eval-in-emacs
+   `(progn
+      (setq poolplayer-preset-file
+            ,(namestring
+              (merge-pathnames
+               "curr-preset.lisp"
+               (asdf:system-source-directory :cl-poolplayer))))
+      (find-file poolplayer-preset-file)
+      (set-window-dedicated-p (get-buffer-window "curr-preset.lisp" t) t)
+      (load ,(namestring
+              (merge-pathnames
+               "sly-edit-poolplayer-presets.el"
+               (asdf:system-source-directory :cl-poolplayer)))))
+   t))
+
+#+swank
+(defun edit-preset-in-emacs (ref)
+  "send the preset form referenced by <ref> to emacs for display in the
+curr-preset.lisp buffer."
+  (let ((swank::*emacs-connection* *emcs-conn*))
+    (if (numberp ref)
+        (swank::eval-in-emacs
+         `(edit-poolplayer-preset
+           ,(progn
+              (in-package :cl-poolplayer)
+              (defparameter swank::*send-counter* 0)
+              (preset->string ref))
+           ,ref) t)
+        (swank::eval-in-emacs
+         `(save-excursion
+           (switch-to-buffer (get-buffer "curr-preset.lisp"))) t))))
+
+#+slynk
+(defun edit-preset-in-emacs (ref)
+  "send the preset form referenced by <ref> to emacs for display in the
+curr-preset.lisp buffer."
+  (if (numberp ref)
+      (slynk::eval-in-emacs
+       `(edit-poolplayer-preset
+         ,(progn
+            (in-package :cl-poolplayer)
+            (preset->string ref))
+         ,ref) t)
+      (slynk::eval-in-emacs
+       `(save-excursion
+         (switch-to-buffer (get-buffer "curr-preset.lisp"))) t)))
+
+(define-elisp-code)
+;;;
+
+;;; (edit-preset-in-emacs 0)
+
+;;; (setf (env-delta (preset-amp-env (aref *poolplayer-presets* 1))) 3)
+
+;;; (sv (aref *poolplayer-presets* 0) :amp-env )
 
 (defun get-preset-form (idx)
-  (elt (elt *presets* idx) 0))
+  (elt (elt *poolplayer-presets* idx) 0))
 
 (defun get-preset-string (idx)
   (with-output-to-string (out)
     (loop for (key value) on (get-preset-form idx) by #'cddr
-          for start = "'(" then #\NEWLINE
+          for start = "(" then #\NEWLINE
           do (format out "~a~s ~s" start key value))
     (format out ")")))
 
-;;; (get-preset-string 1)
+;;; (get-preset-string 0)
 
 (defun get-preset-load-form (preset-no)
   (with-output-to-string (out)
-    (format out "(digest-bo-preset~%~d~%~A)~%"
+    (format out "(digest-poolplayer-preset~%~d~%~A)~%"
             preset-no
             (get-preset-string preset-no))))
 
 ;;; (get-preset-load-form 0)
 
-;;; #'save-presets
+;;; #'save-poolplayer-presets
 
-(defun save-presets (&key (file *presets-file*))
+(defun save-poolplayer-presets (&optional (file *poolplayer-presets-file*))
   (with-open-file (out file :direction :output
                             :if-exists :supersede)
     (format out "(in-package :cl-poolplayer)~%~%(progn~%")
-    (loop for preset across *presets*
+    (loop for preset across *poolplayer-presets*
           for idx from 0
           do (format out (get-preset-load-form idx)))
     (format out ")~%"))
   (format t "presets written to ~a" file)
   (format nil "presets written to ~a" file))
 
-;;; (save-presets :file "presets/test02.lisp")
+(save-poolplayer-presets :file (merge-pathnames "presets/test02.lisp"
+(asdf:system-source-directory :cl-poolplayer)))
 
-(defun load-presets (file)
+(defun load-poolplayer-presets (&optional (file *poolplayer-presets-file*))
   (load file))
 
-;;; (load-presets "presets/big-orchestra01.lisp")
-
 (defparameter *curr-preset-no* 0)
-(defparameter *curr-audio-preset-no* 0)
 
 ;;; tmp storage for all bound cc-fns in running preset. Used for
 ;;; suspending current pending actions when changing a preset before
@@ -245,169 +318,30 @@
                                              (if (symbolp v) (format nil ":~a" v) v))))))
             (otherwise p-sv)))))
 
-(defun collect-preset-slots (preset)
-  (loop
-    for slot in '(:dtime :dtime-dev :dur :dur-dev :transp :transp-dev :stretch :stretch-dev
+#|
+(:dtime :dtime-dev :dur :dur-dev :transp :transp-dev :stretch :stretch-dev
                   :wsize :wsize-dev :amp :amp-dev :inner-attack :inner-attack-dev
                   :inner-release :inner-release-dev :chan :chan-dev)
+|#
+
+
+(defun collect-preset-slots (preset)
+  (loop
+    for slot in '(:p1 :p2 :p3 :p4 :dtimefn :lsamplefn :ampfn :transpfn :startfn :endfn
+                  :stretchfn :wwidthfn :attackfn :panfn :releasefn :outfn)
     collect (preset-print-slot preset slot)))
 
-;;; (collect-preset-slots (aref *presets* 0))
+;;; (collect-preset-slots (aref *poolplayer-presets* 0))
 
 (defun preset->string (ref)
-  (let ((preset (aref *presets* ref)))
-    (format nil "(digest-bo-preset
+  (let ((preset (aref *poolplayer-presets* ref)))
+    (format nil "(digest-poolplayer-preset
           ~a
           (~{~a~^~%~}))"
             ref
-            (loop
-              for (slot val) on (aref preset 0) by #'cddr
-              collect (format nil ":~a ~s" slot val)))))
+            (with-proplist/collecting (slot val) (aref preset 0)
+              (format nil ":~a ~s" slot val)))))
 
 ;;; (preset->string 0)
 
-(defparameter *emcs-conn* swank::*emacs-connection*)
-
-(defun edit-preset-in-emacs (ref)
-  (let ((swank::*emacs-connection* *emcs-conn*))
-    (if (numberp ref)
-        (swank::eval-in-emacs
-         `(edit-big-orchestra-preset
-           ,(progn
-              (in-package :cl-poolplayer)
-              (defparameter swank::*send-counter* 0)
-              (preset->string ref))
-           ,(format nil "~a" ref))
-         t)
-        (swank::eval-in-emacs `(edit-big-orchestra-preset
-                                ,(preset->string ref)
-                                ,(format nil "~a" *curr-preset-no*)) t))))
-
-;;; (edit-preset-in-emacs 0)
-
-(defun previous-preset ()
-  (let ((next-no (max 0 (1- *curr-preset-no*))))
-    (if (/= next-no *curr-preset-no*)
-        (progn
-          (setf *curr-preset-no* next-no)
-;;;          (qt:emit-signal (find-gui :pv1) "setPreset(int)" *curr-preset-no*)
-          (edit-preset-in-emacs *curr-preset-no*)))
-    *curr-preset-no*))
-
-;;; (edit-preset-in-emacs 0)
-
-
 #|
-(next-preset)
-(qt:emit-signal (find-gui :pv1) "setPreset(int)" 3)
-(previous-preset)
-
-                                      ;
-|#
-
-(defun next-preset ()
-  (let ((next-no (min 127 (1+ *curr-preset-no*))))
-    (if (/= next-no *curr-preset-no*)
-        (progn
-          (setf *curr-preset-no* next-no)
-          ;; (qt:emit-signal (find-gui :pv1) "setPreset(int)" *curr-preset-no*)
-          (edit-preset-in-emacs *curr-preset-no*)))
-    *curr-preset-no*))
-
-(defun goto-preset (num)
-  (let ((next-no (min 127 num)))
-    (if (/= next-no *curr-preset-no*)
-        (progn
-          (setf *curr-preset-no* next-no)
-          ;; (qt:emit-signal (find-gui :pv1) "setPreset(int)" *curr-preset-no*)
-          (edit-preset-in-emacs *curr-preset-no*)))
-    *curr-preset-no*))
-
-#|
-
-(defun digest-bo-preset (ref defs)
-  (setf (aref *presets* ref)
-        (apply #'make-preset
-               (loop
-                 for (slot val) on defs by #'cddr
-                 append (list (intern (string-upcase (format nil "~a" slot)) :keyword)
-                               (if (consp val)
-                                   (apply #'make-env val)
-                                   val))))))
-
-  (defun set-fixed-cc-fns (nk2-chan)
-  (setf (aref *cc-fns* nk2-chan 58)
-  (lambda (d2)
-  (if (= d2 127)
-  (previous-preset))))
-  (setf (aref *cc-fns* nk2-chan 43)
-  (lambda (d2)
-  (declare (ignore d2))
-  (load-current-preset)))
-  (setf (aref *cc-fns* nk2-chan 46)
-  (lambda (d2)
-  (if (= d2 127)
-  (edit-preset-in-emacs *curr-preset-no*))))
-
-  (setf (aref *cc-fns* nk2-chan 59)
-  (lambda (d2)
-  (if (= d2 127)
-  (next-preset))))
-
-  (setf (aref *cc-fns* nk2-chan 45)
-  (lambda (d2)
-  (if (= d2 127)
-  (load-current-preset))))
-  
-  (setf (aref *cc-fns* nk2-chan 61)
-  (lambda (d2)
-  (if (= d2 127)
-  (previous-audio-preset))))
-
-  (setf (aref *cc-fns* nk2-chan 60)
-  (lambda (d2)
-  (if (= d2 127)
-  (edit-audio-preset-in-emacs *curr-audio-preset-no*))))
-  
-  (setf (aref *cc-fns* nk2-chan 62)
-  (lambda (d2)
-  (if (= d2 127)
-  (next-audio-preset))))
-  (setf (aref *cc-fns* nk2-chan 42)
-  (lambda (d2)
-  (declare (ignore d2))
-  (cl-boids-gpu::reshuffle-life cl-boids-gpu::*win* :regular nil))))
-|#
-
-
-#|
-
-(defmacro nk2-ref (ref)
-  `(aref *cc-state* *nk2-chan* ,ref))
-|#
-
-
-#|
-(defun edit-audio-preset-in-emacs (ref)
-  (let ((swank::*emacs-connection* *emcs-conn*))
-    (if (numberp ref)
-        (swank::eval-in-emacs
-         `(edit-flock-audio-preset
-           ,(progn
-              (in-package :luftstrom-display)
-              (get-audio-preset-load-form ref))
-           ,(format nil "~a" ref))
-                              t))))
-
-(defun view-audio-preset-in-emacs (ref)
-  (let ((swank::*emacs-connection* *emcs-conn*))
-    (if (numberp ref)
-        (swank::eval-in-emacs
-         `(view-flock-audio-preset
-           ,(progn
-              (in-package :luftstrom-display)
-              (get-audio-preset-load-form ref))
-           ,(format nil "~a" ref))
-         t))))
-
-|#
