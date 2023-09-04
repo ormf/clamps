@@ -1238,31 +1238,70 @@ Works on all sequence types."
  (loop for x below 100 collect (cm:new cm:midi :keynum (cm:between 60 73)))
  :key #'cm::midi-keynum)
 
-|#
-
 (defun parse-props (props seq)
   (loop for prop in props
         collect (list
                  prop
-                 `(getf ,seq ,(intern (string-upcase (symbol-name prop)) 'keyword)))))
+`(getf ,seq ,(intern (string-upcase (symbol-name prop)) 'keyword)))))
 
-
-
-;;; (parse-props '(x1 x2 y1 y2 color) 'test)
-
-#|
 (defmacro with-props (props seq &body body)
   `(let ,(parse-props `,props `,seq)
      ,@body))
 |#
 
+(defun delete-props (proplist &rest props)
+  "destructively remove props from proplist and return it."
+  (mapc (lambda (prop) (remf proplist prop)) props)
+  proplist)
+
+(defun get-props-list (proplist props &key (force-all nil))
+  "create a new proplist by extracting props and their values from
+proplist. Props not present in proplist are ignored."
+  (reduce (lambda (seq prop) (let ((val (getf proplist prop :not-supplied)))
+                          (if (eql val :not-supplied)
+                              (if force-all
+                                  (list* prop nil seq)
+                                  seq)
+                              (list* prop val seq))))
+          (reverse props)
+          :initial-value nil))
+
 (defmacro with-props (vars proplist &body body)
-  `(let ,(mapcar (lambda (a)
-                   (list a `(getf ,proplist ,(intern (symbol-name a) :keyword))))
-                vars)
+  "like with-slots but using a proplist instead of a class instance."
+  `(let ,(mapcar
+          (lambda (sym) (list sym `(getf ,proplist ,(intern (symbol-name sym) :keyword))))
+          vars)
      ,@body))
 
-;;; (ou:with-props (amp keynum) '(:amp 1 :keynum 60) (list amp keynum))
+;;; (ou:with-props (amp keynum) '(:amp 1 :keynum 60) (list amp keynum)) => (1 60)
+
+(defmacro map-proplist (fn proplist)
+  "like mapcar but traversing a property list. fn has to accept two
+values, the key and the value of each property in the proplist."
+  `(loop for (key value) on ,proplist by #'cddr
+         collect (funcall ,fn key value)))
+
+;;; (map-proplist #'list '(:a 2 :b 5 :c 4)) => ((:a 2) (:b 5) (:c 4))
+
+(defmacro do-proplist ((key value) proplist &body body)
+  "like dolist but traversing a property list. fn has to accept two
+values, the key and the value of each property in the proplist."
+  `(loop for (,key ,value) on ,proplist by #'cddr
+         do ,@body))
+
+;;; (do-proplist (key val) '("a" 2 "b" 5 "c" 4) (format t "key: ~a, val: ~a~%" key val))
+
+(defmacro with-proplist/collecting ((key value) proplist &body body)
+  "like do-props but collecting the result."
+  `(loop for (,key ,value) on ,proplist by #'cddr
+         collect ,@body))
+
+;;; (with-proplist/collecting (key val) '(:a 2 :b 5 :c 4) (list key (1+ val))) => ((:a 3) (:b 6) (:c 5))
+
+(defun get-prop (proplist key &optional default)
+  "like getf but using #'equal for testing."
+  (or (second (member key proplist :test #'equal)) default))
+
 
 (defun n-exp (x min max)
   "linear interpolation for normalized x."
@@ -1539,23 +1578,6 @@ getf)."
 number of elems before the end."
   (let ((end (and end (if (< end 0) (+ end (length seq)) end))))
     (subseq seq start end)))
-
-(defun delete-props (proplist &rest props)
-  "destructively remove props from proplist and return it."
-  (mapc (lambda (prop) (remf proplist prop)) props)
-  proplist)
-
-(defun get-props-list (proplist props &key (force-all nil))
-  "create a new proplist by extracting props and their values from
-proplist. Props not present in proplist are ignored."
-  (reduce (lambda (seq prop) (let ((val (getf proplist prop :not-supplied)))
-                          (if (eql val :not-supplied)
-                              (if force-all
-                                  (list* prop nil seq)
-                                  seq)
-                              (list* prop val seq))))
-          (reverse props)
-          :initial-value nil))
 
 (defun random-elem (seq)
   "return a random element of seq."
