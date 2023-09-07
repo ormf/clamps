@@ -21,11 +21,11 @@
 (in-package :cl-poolplayer)
 
 
-(defun cm-collect-song (song)
+(defun cm-collect-song (song &key (amp 0) (delay 0))
   "generate a time-sorted seq of cm::poolevt instances by collecting
 param lists of the events using the song-playfn with an 'eventplotter
 player-type and supplying them to make-instance of the poolevt."
-  (let ((time (now))) ;; capture the value of time just to be
+  (let ((start-time (now))) ;; capture the value of time just to be
                       ;; sure. The song-playfn should also use (now)
                       ;; for the time calculation of its first event
     (sort
@@ -38,10 +38,12 @@ player-type and supplying them to make-instance of the poolevt."
                    (remf args :transp)
                    (setf (getf args :keynum) keynum)
                    (apply #'make-instance 'cm::poolevt
-                          :time (float (- (first x) time) 1.0)
+                          :time (float (- (first x) start-time) 1.0)
                           args)))
              (funcall (song-playfn song)
                       (funcall (song-durfn song))
+                      :amp amp
+                      :time (+ start-time delay)
                       :player-type 'eventplotter))
      #'< :key (lambda (x) (sv x cm::time)))))
 

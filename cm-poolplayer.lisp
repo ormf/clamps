@@ -105,19 +105,24 @@ an external package, a leading <package-name>: has to be provided."
         (string-upcase
          (cl-ppcre:regex-replace "^\([^>]\+\)" str "\\\1"))))))
 
-(defun cm::lsample->poolevt (lsample pitch &key time (startpos 0) (dur 1) (ampdb 0))
-  (let* ((transp (- pitch (incudine:lsample-keynum lsample)))
+(defun cm::lsample->poolevt (lsample &key keynum (time 0) (startpos 0) dur (ampdb 0))
+  (let* ((transp (if keynum (- keynum (incudine:lsample-keynum lsample))
+                     0))
          (rate (ou:ct->fv transp))
          (bsr (incudine:buffer-sample-rate (incudine:lsample-buffer lsample)))
          (start (/ (* bsr startpos) incudine::*sample-rate*))
-         (end (* (+ start dur) rate)))
+         (end (* (+ start (or dur
+                              (/ (incudine:buffer-frames
+                                  (incudine:lsample-buffer lsample))
+                                 bsr)))
+                 rate)))
     ;;    (break "~a" (eql play-fn #'sample-play))
     ;;            (format t "~a~%" (incudine::buffer-file buffer))
     (new poolevt
       :time time
       :lsample lsample
       :amp ampdb
-      :keynum pitch
+      :keynum (or keynum (incudine:lsample-keynum lsample))
       :start start
       :end end
       :stretch (/ rate))))
@@ -208,8 +213,9 @@ an external package, a leading <package-name>: has to be provided."
 insert it at the appropriate position into the elements slot of the
 svg-file."
   (with-slots (lsample amp keynum dy start end stretch wwidth attack release pan snd-id adjust-stretch out1 out2) obj
-    (with-slots (incudine::filename incudine::buffer incudine::play-fn incudine::keynum incudine::loopstart incudine::loopend) lsample
+    (with-slots (incudine::buffer incudine::play-fn incudine::keynum incudine::loopstart incudine::loopend) lsample
       (let* ((myid (incudine:buffer-id incudine::buffer))
+             (filename (incudine:buffer-file incudine::buffer))
              (x-scale (x-scale fil))
              (stroke-width 0.5)
              (id (or snd-id (if (numberp myid) myid) 2))
@@ -236,7 +242,7 @@ svg-file."
                       :stroke-color color 
                       ;; :fill-color color
                       :attributes (format nil ":type poolevt :lsample ~A :lsample-keynum ~a :lsample-amp ~a :lsample-play-fn ~a :keynum ~a :amp ~a :start ~a :end ~a :stretch ~a :wwidth ~a :attack ~a :release ~a :pan ~a :out1 ~a :out2 ~a :loopstart ~a :loopend ~a :dy ~a :snd-id ~a :adjust-stretch ~a"
-                                          incudine::filename
+                                          filename
                                           incudine::keynum
                                           (incudine:lsample-amp lsample)
                                           (function-name incudine::play-fn)

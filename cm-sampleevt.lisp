@@ -88,6 +88,14 @@ svg-file."
            )
       (at time #'incudine:play-lsample lsample keynum amp duration :startpos start))))
 
+(defmethod write-event ((obj incudine:lsample) (to incudine-stream) scoretime)
+  "play an lsample."
+  (let* ((buffer (incudine:lsample-buffer obj))
+         (time (+ (rts-now) (if scoretime (* *rt-scale* scoretime) 0)))
+         (amp (incudine:lsample-amp obj))
+         (dur (/ (incudine:buffer-size buffer) (incudine:buffer-sample-rate buffer))))
+    (at time #'incudine::play-lsample-oneshot* buffer dur amp)))
+
 (svg-ie:add-svg-attr-props-to-quote :lsample)
 ;;;(svg-ie:add-svg-attr-props-to-quote :play-fn)
 
@@ -116,6 +124,7 @@ svg-file."
                                           :loopstart :loopend
                                           :amp :amplitude :channel))))))
 ;;; (setf *debug* t)
+
 
 (add-svg-assoc-fns
  `((sampleevt . ,#'svg->sampleevt)))
