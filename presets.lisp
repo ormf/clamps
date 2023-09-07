@@ -291,9 +291,6 @@ curr-preset.lisp buffer."
   (format t "presets written to ~a" file)
   (format nil "presets written to ~a" file))
 
-(save-poolplayer-presets :file (merge-pathnames "presets/test02.lisp"
-(asdf:system-source-directory :cl-poolplayer)))
-
 (defun load-poolplayer-presets (&optional (file *poolplayer-presets-file*))
   (load file))
 
@@ -343,5 +340,3 @@ curr-preset.lisp buffer."
               (format nil ":~a ~s" slot val)))))
 
 ;;; (preset->string 0)
-
-#|

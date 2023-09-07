@@ -37,10 +37,10 @@
 
 ;;; (make-song)
 
-(defun play-song (song &key player-type duration amp)
+(defun play-song (song &key (player-type 'eventplayer) duration amp)
   (funcall (song-playfn song)
            (or duration (funcall (song-durfn song)))
-           :amp amp
+           :amp (or amp 0)
            :player-type player-type))
 
 (defun playpattern (idxstream rstream start dur dtime &rest args)

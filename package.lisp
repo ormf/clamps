@@ -1,8 +1,12 @@
 ;;;; package.lisp
 
 (defpackage #:cl-poolplayer
-  (:shadowing-import-from #:cm :range :cd :pwd :drunk-traverse)
-  (:use #:cl #:orm-utils #:cm #:of-incudine-dsps) ;;  #:incudine.scratch
+  (:use #:cl #:orm-utils #:cm #:incudine #:of-incudine-dsps) ;;  #:incudine.scratch
+  (:shadowing-import-from #:cm :range :cd :pwd :drunk-traverse :quantize
+                          #:at #:rescale-envelope #:tuning #:play
+                          #:now #:stop #:*tempo*
+                          )
+  (:shadowing-import-from #:orm-utils #:group)
   (:export
    #:*POOL-HASH*
    #:DTIME-DEV #:DTIME #:PRESET-PLAY #:EVENTPLAYER #:EVENTPLOTTER #:R-ELT
@@ -37,5 +41,6 @@
    #:EVENTPLAYER
    #:EVENTPLOTTER
    #:*POOLPLAYER-PRESETS-FILE*
+   #:SHOW-POOLPLAYER-PRESET
    #:LOAD-POOLPLAYER-PRESETS
    #:SAVE-POOLPLAYER-PRESETS))

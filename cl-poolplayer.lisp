@@ -32,6 +32,7 @@ p1..p4 and args to produce the parameter value for the current call. x
 is the normalized local time within the total duration (dur) of the
 preset. The function returns a property list for a call of the synth
 issued in the #'perform function."
+  
   (let* ((p1 (apply (get-preset-fn preset :p1) x dur args))
          (p2 (apply (get-preset-fn preset :p2) x dur p1 args))
          (p3 (apply (get-preset-fn preset :p3) x dur p1 p2 args))
