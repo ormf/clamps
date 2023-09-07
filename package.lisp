@@ -73,6 +73,8 @@
    #:NTOM
    #:N-EXP
    #:N-LIN
+   #:N-LIN-DEV
+   #:N-EXP-DEV
    #:N-LIN-FN
    #:N-EXP-FN
    #:N-LIN-REV-FN
