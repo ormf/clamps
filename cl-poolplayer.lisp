@@ -74,6 +74,51 @@ between start and end-time."
 ;;;  (apply #'send-to-remote params)
   )
 
+(defun get-evts (time dur preset &rest args)
+  "central perform routine used by #'preset-play: It calculates params
+according to the preset definition used by the player and pushes them
+as property list with prepended time to result. It then reschedules
+itself in case the calculated time for the next event is before the
+end time of the player's life cycle. Otherwise it just sets the
+'playing slot of the player to nil and returns the accumulated
+result."
+  (let ((end (+ time dur)))
+    (labels ((inner (time args)
+               (let* ((x (normalize-x time end dur))
+                      (prst (aref *poolplayer-presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
+                      (params (collect-argvals x dur prst args)))
+                 ;;        (format t "x: ~a, preset: ~a" x prst)
+                 ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
+                 (let* ((next (+ time (getf params :dtime)))
+                        (keynum (+ (incudine:lsample-keynum (getf params :lsample)) (getf params :transp))))
+                   (remf params :dtime)
+                   (setf (getf params :keynum) keynum)
+                   (remf params :transp)
+                   ;;            (format t "~&~a" params)
+                   (incf (getf params :amp) *master-amp-db*)
+                   (cons
+                    (apply #'make-instance 'cm::poolevt
+                           :time (float time 1.0)
+                           params)
+                    (if (<= next end)
+                        (inner next args)))))))
+      (inner time args))))
+
+
+                 (let* ((lsample (getf (cdr x) :lsample))
+                        (keynum (+ (incudine:lsample-keynum lsample) (getf (cdr x) :transp)))
+                        (args (cdr x)))
+                   (remf args :transp)
+                   (setf (getf args :keynum) keynum)
+                   (apply #'make-instance 'cm::poolevt
+                          :time (float (- (first x) start-time) 1.0)
+                          args))
+
+
+(apply #'make-instance 'poolplayer)
+
+
+
 (defgeneric perform (player time args))
 
 (defmethod perform ((player eventplayer) time args)
@@ -229,26 +274,28 @@ sets the 'playing slot of the player to nil and returns."
 (defgeneric preset-play (player preset dur &rest args))
 
 (defmethod preset-play ((p eventplayer) preset dur &rest args)
-  (sv p
-      :playing t
-    :end (if dur (+ (now) dur))
-    :dur dur
-    :preset preset)
-  (funcall #'perform p (now) args))
+  (let ((time (or (getf args :time) (now))))
+    (cm::sv p
+        :playing t
+      :end (if dur (+ time dur))
+      :dur dur
+      :preset preset)
+    (funcall #'perform p time args)))
 
 (defmethod preset-play ((p eventplotter) preset dur &rest args)
-  (sv p
-      :playing t
-    :end (if dur (+ (getf args :time) dur))
-    :dur dur
-    :preset preset)
-  (funcall #'perform p (getf args :time) args))
+  (let ((time (or (getf args :time) 0)))
+    (cm::sv p
+        :playing t
+      :end (if dur (+ time dur))
+      :dur dur
+      :preset preset)
+    (funcall #'perform p time args)))
 
 
 (defgeneric npreset-play (player preset &rest args))
 
 (defmethod npreset-play ((p eventplayer) preset &rest args)
-  (sv p
+  (cm::sv p
       :playing t
     :end (getf args :num)
     :dur nil
@@ -256,7 +303,7 @@ sets the 'playing slot of the player to nil and returns."
   (funcall #'nperform p (now) args))
 
 (defmethod npreset-play ((p eventplotter) preset &rest args)
-  (sv p
+  (cm::sv p
       :playing t
     :end (getf args :num)
     :dur nil

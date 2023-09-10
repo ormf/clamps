@@ -1,10 +1,12 @@
 ;;;; package.lisp
 
 (defpackage #:cl-poolplayer
-  (:use #:cl #:orm-utils #:cm #:incudine #:of-incudine-dsps) ;;  #:incudine.scratch
-  (:shadowing-import-from #:cm :range :cd :pwd :drunk-traverse :quantize
+  (:use #:cl #:orm-utils #:incudine #:of-incudine-dsps) ;;  #:incudine.scratch
+  (:shadowing-import-from #:cm :song #:new :range :cd :pwd :drunk-traverse :quantize
                           #:at #:rescale-envelope #:tuning #:play
                           #:now #:stop #:*tempo*
+                          #:next #:cycle #:interp
+                          #:weighting
                           )
   (:shadowing-import-from #:orm-utils #:group)
   (:export
@@ -13,17 +15,17 @@
    #:NPRESET-PLAY
    #:FIG12-OUT #:LOAD-POOLPLAYER-SOUNDS
    #:COLLECT-POOL
-   #:MAKE-SONG
+   #:MAKE-P-SONG
    #:N-LIN #:N-EXP #:R-LIN #:R-EXP
    #:INIT-POOLPLAYER
    #:BUF-IDX
    #:PLAY-SONG
    #:STEREO-OUT
-   #:SONG-PLAYFN
-   #:SONG-DURFN
-   #:SONG-NAME
-   #:SONG-BEFOREFN
-   #:SONG-AFTERFN
+   #:P-SONG-PLAYFN
+   #:P-SONG-DURFN
+   #:P-SONG-NAME
+   #:P-SONG-BEFOREFN
+   #:P-SONG-AFTERFN
    #:DIGEST-POOLPLAYER-PRESET
    #:DISTRIBUTED-PLAY
    #:GET-DTIME-FN
@@ -43,4 +45,5 @@
    #:*POOLPLAYER-PRESETS-FILE*
    #:SHOW-POOLPLAYER-PRESET
    #:LOAD-POOLPLAYER-PRESETS
-   #:SAVE-POOLPLAYER-PRESETS))
+   #:SAVE-POOLPLAYER-PRESETS
+   #:SERIALIZE-SCORE))

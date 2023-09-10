@@ -249,7 +249,7 @@ curr-preset.lisp buffer."
        `(save-excursion
          (switch-to-buffer (get-buffer "curr-preset.lisp"))) t)))
 
-(define-elisp-code)
+;;; into init-file: (define-elisp-code)
 ;;;
 
 ;;; (edit-preset-in-emacs 0)

@@ -21,5 +21,6 @@
                (:file "midictl")
 ;;               (:file "cm-poolplayer")
 ;;               (:file "cl-poolplayer-default-presets")
+               (:file "songplayer")
                (:file "init")
                )) 

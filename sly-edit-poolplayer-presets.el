@@ -1,4 +1,4 @@
-(setq orgel-preset-file "/home/orm/work/programmieren/lisp/cl-poolplayer/curr-preset.lisp")
+(setq poolplayer-preset-file "/home/orm/work/programmieren/lisp/cl-poolplayer/curr-preset.lisp")
 
 (defun edit-poolplayer-preset (str ref)
   (set-buffer (find-file-noselect orgel-preset-file))
