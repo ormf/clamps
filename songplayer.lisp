@@ -209,12 +209,12 @@ by (transp play-obj)."
                   (incf (y2 new) transp2)
                   (setf (duration new) (* stretch (duration new)))
                   new))
-              elems)))
+              elems))))
 
-  (defun shift-copy (elem x-offs)
-    (let ((new (cm:copy-object elem)))
-      (incf (x1 new) x-offs)
-      new)))
+(defun shift-copy (elem x-offs)
+  (let ((new (cm:copy-object elem)))
+    (incf (x1 new) x-offs)
+    new))
 
 (defun expand-rec-obj (elems x-offs expanded-hash)
   (cond ((null elems) ())

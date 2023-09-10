@@ -104,21 +104,6 @@ result."
                         (inner next args)))))))
       (inner time args))))
 
-
-                 (let* ((lsample (getf (cdr x) :lsample))
-                        (keynum (+ (incudine:lsample-keynum lsample) (getf (cdr x) :transp)))
-                        (args (cdr x)))
-                   (remf args :transp)
-                   (setf (getf args :keynum) keynum)
-                   (apply #'make-instance 'cm::poolevt
-                          :time (float (- (first x) start-time) 1.0)
-                          args))
-
-
-(apply #'make-instance 'poolplayer)
-
-
-
 (defgeneric perform (player time args))
 
 (defmethod perform ((player eventplayer) time args)
