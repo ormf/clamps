@@ -287,9 +287,9 @@ distance."
   (mapcar #'speakers
           (sort (mapcar (lambda (p) (list :speakers p
                                      :dist (apply #'v-angle (mapcar #'coords p))))
-;;; by reducing sets of all possible pairs in all available triplets
-;;; into a set, clojure automagically removes duplicates regardless of
-;;; the ordering of the pairs themselves:
+;;; reduce the sets of all possible pairs in all available triplets
+;;; and remove any duplicates regardless of the ordering of the pairs
+;;; themselves:
                         (remove-duplicates
                          (apply #'append (mapcar
                                           (lambda (triplet) (all-combinations triplet 2))
@@ -436,15 +436,17 @@ distance."
           (get-2d-vbap-buffer-data speakers)
           (get-3d-vbap-buffer-data speakers))))
 
- (apply #'append
+
+#|
+;;; Examples:
+
+(apply #'append
          (mapcar #'list
                  '(-45 0 45 90 135 180 -135 -90)
                  '(0 45 0 45 0 45 0 45)))
 
-(-45 0 0 45 45 0 90 45 135 0 180 45 -135 0 -90 45)
+ => (-45 0 0 45 45 0 90 45 135 0 180 45 -135 0 -90 45)
 
-#|
-;;; Examples:
 
 (vbap-speaker-array '(-45 0 45 90 135 180 -135 -90))
 
@@ -467,13 +469,14 @@ distance."
 -1.0 1.0 0.0 -1.414)
 
 (vbap-speaker-array
-(mapcar #'list
+ (mapcar #'list
          '(-45 0 45 90 135 180 -135 -90)
          '(0 45 0 45 0 45 0 45)))
 
-(apply #'mapcar #'append '((-45 0) (0 45) (45 0) (90 45) (135 0) (180 45) (-135 0) (-90 45))
+
 
 (3.0 8.0
+
  1.0 2.0 3.0
  0.707 -0.707 -0.707 0.0 0.0 1.414 0.707 0.707 -0.707
  0.707 0.707 0.707 -0.707 0.0 0.707 0.0 0.707 0.0
