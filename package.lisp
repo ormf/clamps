@@ -11,4 +11,6 @@
            #:FIND-CONTROLLER
            #:NANOCTL
            #:GUI
-           #:*MIDI-DEBUG*))
+           #:*MIDI-DEBUG*
+           #:*MIDI-IN1*
+           #:*MIDI-OUT1*))
