@@ -43,3 +43,6 @@
 
 ;;; (make-instance 'nanoctl)
 
+;;; (defparameter cm:*midi-in1* (jackmidi:open ))
+
+

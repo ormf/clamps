@@ -27,6 +27,9 @@
 (setf *midi-in1* (jackmidi:open :direction :input
                                 :port-name "midi_in_1"))
 
+(setf *midi-out1* (jackmidi:open :direction :output
+                                 :port-name "midi_out_1"))
+
 
 ;;; connect midi device with jackmidi port "midi_in_1"
 

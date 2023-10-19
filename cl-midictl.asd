@@ -9,5 +9,6 @@
   :serial t
   :depends-on (#:incudine)
   :components ((:file "package")
+               (:file "globals")
                (:file "cl-midictl")
                (:file "nanoctl")))
