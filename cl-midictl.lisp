@@ -132,13 +132,16 @@
    (last-note-on :initform 0 :initarg :last-note-on :accessor last-note-on)
    (cc-state :initform (make-array 128 :initial-element 0)
              :initarg :cc-state :accessor cc-state)
-   ;;; storage of functions to call for individual cc events
-   (cc-fns :initform (make-array 128 :initial-element #'identity)
+   ;;; storage of functions to call for individual cc events. An entry
+   ;;; of the array is a list of functions accepting one arg: the
+   ;;; controller value.
+   (cc-fns :initform (make-array 128 :initial-element nil)
            :initarg :cc-fns :accessor cc-fns)
-   ;;; storage of functions to call for individual note-on events
-   (note-fn :initform (lambda (keynum velo) (declare (ignore velo keynum)))
-            :initarg :note-fn :accessor note-fn))
-    (:documentation "generic class for midi-controllers. An instance
+   ;;; storage of functions to call for individual note-on/off
+   ;;; events. This is a list of functions accepting two args: keynum
+   ;;; and velo.
+   (note-fns :initform nil :initarg :note-fns :accessor note-fns))
+  (:documentation "generic class for midi-controllers. An instance
   should get initialized with #'add-midi-controller and get removed
   with #'remove-midi-controller, using its id as argument in order to
   close the gui and remove its handler functions from
@@ -161,12 +164,12 @@
   (with-slots (cc-fns cc-map cc-state note-fn last-note-on) instance
     (case opcode
       (:cc (progn
-             (funcall (aref cc-fns d1) d2)
+             (mapcar (lambda (fn) (funcall fn d2)) (aref cc-fns d1))
              (setf (aref cc-state (aref cc-map d1)) d2)))
       (:note-on (progn
-                  (funcall (note-fn instance) d1 d2)
+                  (mapcar (lambda (fn) (funcall fn d1 d2)) (note-fns instance))
                   (setf last-note-on d1)))
-      (:note-off (funcall (note-fn instance) d1 0)))))
+      (:note-off (mapcar (lambda (fn) (funcall fn d1 0)) (note-fns instance))))))
 
 ;;; (make-instance 'midi-controller)
 
