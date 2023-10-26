@@ -9,6 +9,7 @@
    #:FILTER
    #:REDUCING
 ;;   #:WHILE
+   #:ENSURE-PROP
    #:EVERY-NTH
    #:FIRSTN
    #:SORT-BY
@@ -123,4 +124,5 @@
    #:MAKE-QUANTLIST
    #:QUANTIZE-TIME
    #:RANDOM-ELEM
+   #:PORT-AVAILABLE-P
    ))

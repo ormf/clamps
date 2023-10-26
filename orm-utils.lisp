@@ -37,6 +37,9 @@
   "return a list of all elements of seq satisfying pred."
   (remove-if-not pred seq))
 
+(defmacro ensure-prop (args prop val)
+  `(unless (getf ,args ,prop) (setf (getf ,args ,prop) ,val)))
+
 (defun every-nth (l n)
   (loop
      for x in l
@@ -304,9 +307,15 @@ with nil if list-length is not a multiple of count."
 
 |#
 
-(defun flatten (seq &key (test #'atom) (key #'identity))
-  "remove all brackets except the outmost in seq."
-  (flatten-fn seq :test test :key key))
+(defun flatten (obj)
+  "non-recursive, non-stack version from Rosetta Code."
+  (do* ((result (list obj))
+        (node result))
+       ((null node) (delete nil result))
+    (cond ((consp (car node))
+           (when (cdar node) (push (cdar node) (cdr node)))
+           (setf (car node) (caar node)))
+          (t (setf node (cdr node))))))
 
 ;;; calc fibonacci number directly:
 
@@ -1371,9 +1380,11 @@ values, the key and the value of each property in the proplist."
   (r-lin 0 max))
 
 (defun n-exp-dev (x max)
-  "return a deviation factor, the deviation being exponentially
+  "return a random deviation factor, the deviation being exponentially
 interpolated between 1 for x=0 and [1/max..max] for x=1."
-  (expt max (- 1 (* 2.0 x))))
+  (r-exp
+   (n-lin x 1 (/ max))
+   (n-lin x 1 max)))
 
 (defun r-exp-dev (max)
   "return a random deviation factor, the deviation being exponentially
@@ -1582,3 +1593,13 @@ number of elems before the end."
 (defun random-elem (seq)
   "return a random element of seq."
   (elt seq (random (length seq))))
+
+(defun port-available-p (portno)
+  "check if port is available by issuing shell command. Only works on
+Unix with lsof installed."
+  (string= ""
+           (string-trim '(#\NEWLINE)
+                        (with-output-to-string (out)
+                          (uiop::run-program (format nil "lsof -i:~d" portno)
+                                             :ignore-error-status t
+                                             :output out)))))
