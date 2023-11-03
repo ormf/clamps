@@ -23,3 +23,12 @@
 (defparameter *midi-in1* nil)
 (defparameter *midi-out1* nil)
 
+(defparameter *midi-cc-state*
+  (make-array 16 :initial-contents
+              (loop repeat 16
+                    collect (make-array 128 :initial-contents (loop repeat 128 collect 0)))))
+
+(defparameter *midi-cc-fns*
+  (make-array 16 :initial-contents
+              (loop repeat 16
+                    collect (make-array 128 :initial-contents (loop repeat 128 collect nil)))))
