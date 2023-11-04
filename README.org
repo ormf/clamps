@@ -1,0 +1,13 @@
+* clog-midi-controller
+*** _Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>_
+
+definitions for clog guis of midi controllers
+
+** License
+
+gpl 2.0 or later
+
+
+Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
+
+
