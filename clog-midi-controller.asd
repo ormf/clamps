@@ -12,4 +12,5 @@
   :depends-on (#:clog-dsp-widgets #:cl-midictl)
   :components ((:file "package")
                (:file "nano-ctl")
+               (:file "faderfox-ctl")
                (:file "clog-midi-controller")))

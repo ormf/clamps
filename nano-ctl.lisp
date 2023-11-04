@@ -155,7 +155,7 @@
         (setf r-btn-panel (create-div knob-fader-panel))        
 
         (define-momentary-button gui-track-left track-left "<" gui-ctl-subpanel)
-        (define-momentary-button gui-track-left track-left ">" gui-ctl-subpanel)
+        (define-momentary-button gui-track-right track-right ">" gui-ctl-subpanel)
         (dotimes (n 3) (create-div gui-ctl-subpanel))
         (define-momentary-button gui-cycle cycle "cycle" gui-ctl-subpanel)
         (create-div gui-ctl-subpanel)
