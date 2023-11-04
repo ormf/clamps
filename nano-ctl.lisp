@@ -172,12 +172,13 @@
         (setf gui-fader
               (coerce
                (loop for panel in (list knob-panel fader-panel)
+                     for offs in '(0 8)
                      append (v-collect
                                 (n 8)
                                 (numbox
                                  panel
                                  :min 0 :max 127 :size 10 :css '(:margin 2px)
-                                 :val-change-cb (let ((n n))
+                                 :val-change-cb (let ((n (+ n offs)))
                                                   (lambda (v obj)
                                                     (let ((value (read-from-string v)))
                                                       (setf (val (aref (nk2-faders controller) n)) value)
