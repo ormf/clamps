@@ -201,6 +201,18 @@ controller actions."))
 (defmethod init-gui-callbacks ((instance midi-controller) &key (echo t))
   (declare (ignore instance echo)))
 
+(defgeneric update-state (instance)
+  (:documentation "set state of controller according to *midi-cc-state*"))
+
+(defmethod update-state ((instance midi-controller))
+  (with-slots (chan midi-output) instance
+    (dotimes (cc-num 128)
+      (jackmidi:write-short
+       midi-output
+       (jackmidi:message
+        (+ chan 176) cc-num (val (aref (aref *midi-cc-state* chan) cc-num)))
+       3))))
+
 (defmethod initialize-instance :after ((instance midi-controller) &rest args)
   (declare (ignorable args))
   (with-slots (id) instance
@@ -209,7 +221,8 @@ controller actions."))
         (warn "id already used: ~a" id)
         (progn
           (format t "adding controller ~a~%" id)
-          (unless (midi-input instance) (error "no midi-in specified for ~a" instance))
+          (unless (midi-input instance) (error "no midi-input specified for ~a" instance))
+          (unless (midi-output instance) (error "no midi-output specified for ~a" instance))
           (push instance (gethash (midi-input instance) *midi-controllers*))
           (setf (gethash id *midi-controllers*) instance)))))
 

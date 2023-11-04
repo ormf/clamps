@@ -32,15 +32,12 @@
    (set-marker :accessor set-marker)
    (marker-left :accessor marker-left)
    (marker-right :accessor marker-right)
-   (rewind :accessor tr-rewind)
-   (ffwd :accessor tr-ffwd)
-   (stop :accessor tr-stop)
-   (play :accessor tr-play)
-   (rec :accessor tr-rec)
+   (tr-rewind :accessor tr-rewind)
+   (tr-ffwd :accessor tr-ffwd)
+   (tr-stop :accessor tr-stop)
+   (tr-play :accessor tr-play)
+   (tr-rec :accessor tr-rec)
    (cc-nums :accessor cc-nums)))
-
-(export '(nk2-faders nk2-fader-update-fns s-buttons m-buttons r-buttons track-left track-right cycle set-marker marker-left marker-right tr-rewind tr-ffwd tr-stop tr-play tr-rec cc-nums)
-        'cl-midictl)
 
 #|
 
@@ -83,7 +80,8 @@ nanokontrol2.
 |#
 
 (defmethod initialize-instance :after ((obj nanoctl-midi) &rest args)
-  (with-slots (cc-map cc-nums cc-state nk2-faders s-buttons m-buttons r-buttons) obj
+  (with-slots (cc-map cc-nums cc-state chan nk2-faders s-buttons m-buttons r-buttons)
+      obj
     (setf cc-nums
           (coerce
            (or (getf args :cc-nums)
@@ -106,27 +104,66 @@ nanokontrol2.
       do (setf (aref cc-map ccnum) idx))
     (setf cc-state (make-array (length cc-nums)
                                :initial-contents
-                               (loop for x below (length cc-nums) collect (make-instance 'value-cell))))
+                               (loop for x below (length cc-nums) collect (if (<= 40 x 45)
+                                                                              (make-instance 'bang-cell)
+                                                                              (make-instance 'value-cell)))))
     (setf nk2-faders (make-array 16 :displaced-to cc-state))
     (setf s-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 16))
     (setf m-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 24))
-    (setf r-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 32))))
+    (setf r-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 32))
+    (map () (lambda (slot local-idx)
+              (setf (slot-value obj slot) (aref cc-state local-idx)))
+         '(cl-midictl:track-left
+           cl-midictl:track-right
+           cl-midictl:cycle
+           cl-midictl:set-marker
+           cl-midictl:marker-left
+           cl-midictl:marker-right
+           cl-midictl:tr-rewind
+           cl-midictl:tr-ffwd
+           cl-midictl:tr-stop
+           cl-midictl:tr-play
+           cl-midictl:tr-rec)
+         (ou:v-collect (n 11) (+ n 40)))
+    (dotimes (i (length cc-nums))
+      (unless (<= 40 i 45)
+        (setf (val (aref cc-state i)) (aref (aref *midi-cc-state* chan) (aref cc-nums i)))))
+    )
+  (update-state obj))
 
 (defmethod handle-midi-in ((instance nanoctl-midi) opcode d1 d2)
 ;;;  (call-next-method)
-  (with-slots (cc-fns nk2-fader-update-fns cc-map cc-state note-fn last-note-on midi-output chan) instance
+  (with-slots (cc-fns cc-nums nk2-fader-update-fns cc-map cc-state note-fn last-note-on midi-output chan) instance
     (case opcode
       (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
-       (let* ((fader-idx (aref cc-map d1))
-              (fn (aref nk2-fader-update-fns fader-idx))
-              (gui-slot (aref cc-state fader-idx)))
-         (if fn
-             (when (funcall fn d2 (val gui-slot))
-               (setf (val gui-slot) d2)
-               (setf (aref nk2-fader-update-fns fader-idx) nil))
-             (setf (val gui-slot) d2))
-         ))
+       (cond
+         ((< (aref cc-map d1) 16)
+          (let* ((fader-idx (aref cc-map d1))
+                 (fn (aref nk2-fader-update-fns fader-idx))
+                 (gui-slot (aref cc-state fader-idx)))
+            (if fn
+                (when (funcall fn d2 (val gui-slot))
+                  (setf (val gui-slot) d2)
+                  (setf (aref nk2-fader-update-fns fader-idx) nil))
+                (setf (val gui-slot) d2))
+            ))
+         ((<= 40 (aref cc-map d1) 45)
+          (let ((slot (aref cc-state (aref cc-map d1))))
+            (unless (zerop d2) (trigger slot nil))))
+         (t (let ((slot (aref cc-state (aref cc-map d1))))
+              (toggle-slot slot)))))
       (:note-on (setf last-note-on d1)))))
+
+(defmethod update-state ((instance nanoctl-midi))
+  (with-slots (chan cc-nums cc-map cc-state midi-output) instance
+    (dotimes (local-idx (length cc-nums))
+      (unless (<= 40 local-idx 45)
+        (let ((cc-num (aref cc-nums local-idx)))
+          (jackmidi:write-short
+           midi-output
+           (jackmidi:message
+            (+ chan 176) cc-num (val (aref cc-state local-idx)))
+           3))))))
 
 ;;; (cellctl:set-ref)
 #|

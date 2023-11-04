@@ -10,5 +10,6 @@
   :depends-on (#:cellctl #:incudine)
   :components ((:file "package")
                (:file "globals")
+               (:file "utils")
                (:file "cl-midictl")
                (:file "nanoctl")))
