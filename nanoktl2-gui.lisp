@@ -1,14 +1,20 @@
 ;;;
 ;;; nanoktl2-gui.lisp
 ;;;
-;;; nanoktl2-gui besteht aus einer Gui Instanz und einem Controller
-;;; (nanoktl2-midi), der eine spezielle Klasse eines midicontrollers
-;;; ist (definiert in cl-midictl). Es kann mehrere Gui Instanzen
-;;; geben, die alle auf die selbe Controller Instanz bezogen sind,
-;;; daher ist der Controller ein Slot de Gui Instanz und muss bei
-;;; make-instance der Gui Instanz übergeben werden (wird im
-;;; on-new-window Code gemacht). Im Controller sind model-slots, deren
-;;; set-cell Funktionen alle Slots im gui updaten.
+;;; nanoktl2-gui besteht aus einer Gui Instanz (nanoktl2-gui) und
+;;; einem Controller (nanoktl2-midi), der eine spezielle Klasse eines
+;;; midicontrollers ist (definiert in cl-midictl).
+;;; 
+;;; nanoktl2-gui ist eine Klasse, die die Gui Instanz und den
+;;; Hardware Controller zusammenfasst (nanoktl2-gui existiert nur der
+;;; Vollständigkeit halber, falls der unwahrscheinliche Fall auftritt,
+;;; dass man ein Gui ohne HardwareController verwenden möchte). Da es
+;;; mehrere Gui Instanzen geben kann, die alle auf die selbe
+;;; Controller Instanz bezogen sind, ist der Controller ein Slot der
+;;; Gui Instanz von (nanoktl2-gui) und muss bei make-instance der
+;;; Gui Instanz übergeben werden (wird im on-new-window Code
+;;; gemacht). Im Controller sind model-slots, deren set-cell
+;;; Funktionen alle Slots im gui updaten.
 ;;;
 ;;; Um mangels Motorfadern/Endlosreglern des NanoKontrol2 Werte
 ;;; "fangen zu können", um Wertesprünge zu vermeiden, gibt es
@@ -48,7 +54,8 @@
 (in-package :clog-midi-controller)
 
 (defclass nanoktl2-gui ()
-  ((gui-parent :initarg :gui-parent :accessor gui-parent)
+  ((controller :initarg :controller :accessor controller)
+   (gui-parent :initarg :gui-parent :accessor gui-parent)
    (gui-container :initarg :gui-container :accessor gui-container)
    (gui-fader :initarg :gui-fader :accessor gui-fader)
    (gui-s-buttons :initarg :gui-s-buttons :accessor gui-s-buttons)
@@ -67,14 +74,6 @@
    (gui-stop :initarg :gui-stop :accessor gui-stop)
    (gui-play :initarg :gui-play :accessor gui-play)
    (gui-rec :initarg :gui-rec :accessor gui-rec)))
-
-(defclass nanoktl2-midi-gui (nanoktl2-gui)
-  ((type :initform :midi)
-   (controller :initarg :controller :accessor controller)))
-
-(defclass nanoktl2-osc-gui (nanoktl2-gui)
-  ((type :initform :osc)
-   (controller :initarg :controller :accessor controller)))
 
 (defmacro trigger-fn (slot)
   `(lambda (src) (trigger ,slot src)))
@@ -110,7 +109,7 @@
   (osc-midi-write-short stream (+ chan 176) cc-num 127)
   (at (+ (now) 4410) #'osc-midi-write-short stream (+ chan 176) cc-num 0))
 
-(defmethod initialize-instance :after ((instance nanoktl2-midi-gui) &rest args)
+(defmethod initialize-instance :after ((instance nanoktl2-gui) &rest args)
   (declare (ignorable args))
   (with-slots (gui-parent gui-container
                gui-fader gui-s-buttons gui-m-buttons gui-r-buttons
@@ -120,7 +119,7 @@
                controller
                )
       instance
-    (unless gui-parent (error "nanoktl2-midi-gui initialized without parent supplied!"))
+    (unless gui-parent (error "nanoktl2-gui initialized without parent supplied!"))
     (with-connection-cache (gui-parent)
       (setf gui-container (create-div gui-parent
                                       :css '(:display flex
@@ -369,6 +368,6 @@
             (setf (style gui-ctl-panel "display") "flex")
             (setf ctl-panel-vis t))))))
 
-;;; (add-midi-controller 'nanoktl2-midi-gui :id :nk2 :chan 5)
+;;; (add-midi-controller 'nanoktl2-gui :id :nk2 :chan 5)
 
 ;;; (find-controller :nk2)
