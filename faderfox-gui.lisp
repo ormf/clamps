@@ -1,14 +1,20 @@
 ;;;
 ;;; faderfox-gui.lisp
 ;;;
-;;; faderfox-gui besteht aus einer Gui Instanz und einem Controller
-;;; (faderfox-midi), der eine spezielle Klasse eines midicontrollers
-;;; ist (definiert in cl-midictl). Es kann mehrere Gui Instanzen
-;;; geben, die alle auf die selbe Controller Instanz bezogen sind,
-;;; daher ist der Controller ein Slot de Gui Instanz und muss bei
-;;; make-instance der Gui Instanz übergeben werden (wird im
-;;; on-new-window Code gemacht). Im Controller sind model-slots, deren
-;;; set-cell Funktionen alle Slots im gui updaten.
+;;; faderfox-gui besteht aus einer Gui Instanz (faderfox-gui) und
+;;; einem Controller (faderfox-midi), der eine spezielle Klasse eines
+;;; midicontrollers ist (definiert in cl-midictl).
+;;; 
+;;; faderfox-gui ist eine Klasse, die die Gui Instanz und den
+;;; Hardware Controller zusammenfasst (faderfox-gui existiert nur der
+;;; Vollständigkeit halber, falls der unwahrscheinliche Fall auftritt,
+;;; dass man ein Gui ohne HardwareController verwenden möchte). Da es
+;;; mehrere Gui Instanzen geben kann, die alle auf die selbe
+;;; Controller Instanz bezogen sind, ist der Controller ein Slot der
+;;; Gui Instanz von (faderfox-gui) und muss bei make-instance der
+;;; Gui Instanz übergeben werden (wird im on-new-window Code
+;;; gemacht). Im Controller sind model-slots, deren set-cell
+;;; Funktionen alle Slots im gui updaten.
 ;;;
 ;;; Um mangels Motorfadern/Endlosreglern des NanoKontrol2 Werte
 ;;; "fangen zu können", um Wertesprünge zu vermeiden, gibt es
@@ -48,7 +54,8 @@
 (in-package :clog-midi-controller)
 
 (defclass faderfox-gui ()
-  ((gui-parent :initarg :gui-parent :accessor gui-parent)
+  ((midi-controller :initarg :midi-controller :accessor midi-controller)
+   (gui-parent :initarg :gui-parent :accessor gui-parent)
    (gui-container :initarg :gui-container :accessor gui-container)
    (gui-fader :initarg :gui-fader :accessor gui-fader)
    (gui-s-buttons :initarg :gui-s-buttons :accessor gui-s-buttons)
@@ -68,14 +75,6 @@
    (gui-play :initarg :gui-play :accessor gui-play)
    (gui-rec :initarg :gui-rec :accessor gui-rec)))
 
-(defclass faderfox-midi-gui (faderfox-gui)
-  ((type :initform :midi)
-   (controller :initarg :controller :accessor controller)))
-
-(defclass faderfox-osc-gui (faderfox-gui)
-  ((type :initform :osc)
-   (controller :initarg :controller :accessor controller)))
-
 (defmacro trigger-fn (slot)
   `(lambda (src) (trigger ,slot src)))
 
@@ -85,12 +84,12 @@
                              :val-change-cb (lambda (v obj)
                                               (declare (ignore obj))
                                               (let ((value (read-from-string v)))
-                                                (setf (val (,ctl-slot controller)) value))))))
+                                                (setf (val (,ctl-slot midi-controller)) value))))))
 
 (defmacro define-momentary-button (gui-slot ctl-slot label panel)
   `(setf ,gui-slot
          (bang ,panel :background '("gray" "#ff8888") :label ,label :css small-btn-css
-                                :action-cb (trigger-fn (,ctl-slot controller)))))
+                                :action-cb (trigger-fn (,ctl-slot midi-controller)))))
 
 (defmacro define-button-row (gui-slot ctl-slot label panel)
   `(setf ,gui-slot
@@ -103,24 +102,24 @@
                       :values '("0" "127")
                       :label ,label
                       :val-change-cb (lambda (v obj) (declare (ignore obj))
-                                       (setf (val (aref (,ctl-slot controller) n)) (read-from-string v)))))
+                                       (setf (val (aref (,ctl-slot midi-controller) n)) (read-from-string v)))))
           'vector)))
 
 (defun flash-midi-out (stream cc-num chan)
   (osc-midi-write-short stream (+ chan 176) cc-num 127)
   (at (+ (now) 4410) #'osc-midi-write-short stream (+ chan 176) cc-num 0))
 
-(defmethod initialize-instance :after ((instance faderfox-midi-gui) &rest args)
+(defmethod initialize-instance :after ((instance faderfox-gui) &rest args)
   (declare (ignorable args))
   (with-slots (gui-parent gui-container
                gui-fader gui-s-buttons gui-m-buttons gui-r-buttons
                gui-track-left gui-track-right
                gui-cycle gui-set-marker gui-marker-left gui-marker-right
                gui-rewind gui-ffwd gui-stop gui-play gui-rec gui-ctl-panel
-               controller
+               midi-controller
                )
       instance
-    (unless gui-parent (error "faderfox-midi-gui initialized without parent supplied!"))
+    (unless gui-parent (error "faderfox-gui initialized without parent supplied!"))
     (with-connection-cache (gui-parent)
       (setf gui-container (create-div gui-parent
                                       :css '(:display flex
@@ -188,9 +187,9 @@
                                  (let ((n (+ n offs)))
                                    (lambda (v obj)
                                      (let ((new-value (read-from-string v)))
-                                       (setf (val (aref (nk2-faders controller) n)) new-value)
+                                       (setf (val (aref (nk2-faders midi-controller) n)) new-value)
 ;;; nk2-fader-update-fns are functions to compare incoming
-;;; midi-cc-values from the hardware controller against the current
+;;; midi-cc-values from the hardware midi-controller against the current
 ;;; value in the gui. As soon as the update-fn returns t, the
 ;;; hardware fader is "caught" and the background in the gui is set
 ;;; to green. This is implemented in the handle-midi-in method of the
@@ -203,11 +202,11 @@
 ;;; of the midi-controller instance. That state is always in sync with
 ;;; the gui (using model-slots and synchronizing with the gui and the
 ;;; hardware controller via its ref-set-hooks defined below).
-                                       (setf (aref (nk2-fader-update-fns controller) n)
+                                       (setf (aref (nk2-fader-update-fns midi-controller) n)
                                              (let ((hw-val (aref
                                                             (aref *midi-cc-state*
-                                                                  (chan controller))
-                                                            (aref (cc-nums controller) n))))
+                                                                  (chan midi-controller))
+                                                            (aref (cc-nums midi-controller) n))))
                                                (cond
                                                  ((> new-value hw-val)
                                                   (setf (style obj :background-color) "#ffaaaa")
@@ -224,7 +223,7 @@
 
 ;;; set the ref-set-hooks in the model-slots of the midi-controller
     (dotimes (i 16) ;;; faders and knobs
-      (with-slots (nk2-faders chan cc-nums) controller
+      (with-slots (nk2-faders chan cc-nums) midi-controller
         (setf (ref-set-hook (aref nk2-faders i))
               (let ((i i))
                 (lambda (val) 
@@ -246,10 +245,10 @@
                     (r-buttons gui-r-buttons 32)))
       (destructuring-bind (nk2-slot gui-slot cc-map-offs) syms
         (dotimes (i 8)
-          (setf (ref-set-hook (aref (slot-value controller nk2-slot) i))
+          (setf (ref-set-hook (aref (slot-value midi-controller nk2-slot) i))
                 (let* ((i i)
-                       (chan (chan controller))
-                       (cc-num (elt (cc-nums controller) (+ i cc-map-offs))))
+                       (chan (chan midi-controller))
+                       (cc-num (elt (cc-nums midi-controller) (+ i cc-map-offs))))
                   (lambda (val) 
                     (osc-midi-write-short *midi-out1* (+ chan 176) cc-num val)
                     (maphash (lambda (connection-id connection-hash)
@@ -265,12 +264,12 @@
                     (tr-play gui-play 49)
                     (tr-rec gui-rec 50)))
       (destructuring-bind (nk2-slot gui-slot cc-map-offs) syms ;;; assigning transport button hooks
-        (setf (ref-set-hook (slot-value controller nk2-slot))
-              (let* ((chan (chan controller))
-                     (cc-num (elt (cc-nums controller) cc-map-offs)))
+        (setf (ref-set-hook (slot-value midi-controller nk2-slot))
+              (let* ((chan (chan midi-controller))
+                     (cc-num (elt (cc-nums midi-controller) cc-map-offs)))
                 (lambda (val)
                   (incudine.util:msg :info "val: ~a, chan: ~a, cc-num: ~a" val chan cc-num)
-                  (osc-midi-write-short (midi-output controller) (+ chan 176) cc-num (if (zerop val) 0 127))
+                  (osc-midi-write-short (midi-output midi-controller) (+ chan 176) cc-num (if (zerop val) 0 127))
                   (maphash (lambda (connection-id connection-hash)
                              (declare (ignore connection-id))
                              (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
@@ -286,12 +285,12 @@
                     (marker-left gui-marker-left 44)
                     (marker-right gui-marker-right 45)))
       (destructuring-bind (nk2-slot gui-slot cc-map-offs) syms ;;; assigning click event handlers
-        (setf (slot-value (slot-value controller nk2-slot) 'cellctl:action-fn)
-              (let* ((chan (chan controller))
-                     (cc-num (elt (cc-nums controller) cc-map-offs)))
+        (setf (slot-value (slot-value midi-controller nk2-slot) 'cellctl:action-fn)
+              (let* ((chan (chan midi-controller))
+                     (cc-num (elt (cc-nums midi-controller) cc-map-offs)))
                 (lambda (obj)
                   (incudine.util:msg :info "chan: ~a, cc-num: ~a" chan cc-num)
-                  (flash-midi-out (midi-output controller) cc-num chan)
+                  (flash-midi-out (midi-output midi-controller) cc-num chan)
                   (maphash (lambda (connection-id connection-hash)
                              (declare (ignore connection-id))
                              (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
@@ -315,10 +314,10 @@
     (update-state instance)))
 
 (defmethod update-state ((gui faderfox-gui))
-  (with-slots (controller gui-fader gui-m-buttons gui-s-buttons gui-r-buttons
+  (with-slots (midi-controller gui-fader gui-m-buttons gui-s-buttons gui-r-buttons
                gui-rewind gui-ffwd gui-stop gui-play gui-rec)
       gui
-    (with-slots (cc-nums cc-state chan) controller
+    (with-slots (cc-nums cc-state chan) midi-controller
       (dotimes (i 16)
         (let ((elem (aref gui-fader i))
               (fader-value (val (aref cc-state i))))
@@ -369,6 +368,6 @@
             (setf (style gui-ctl-panel "display") "flex")
             (setf ctl-panel-vis t))))))
 
-;;; (add-midi-controller 'faderfox-midi-gui :id :nk2 :chan 5)
+;;; (add-midi-controller 'faderfox-gui :id :nk2 :chan 5)
 
 ;;; (find-controller :nk2)

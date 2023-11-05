@@ -9,7 +9,8 @@
                           #:group)
   (:shadowing-import-from #:clog
                           #:rotate)
-  (:export #:NANOCTL-MIDI-GUI #:NANOCTL-GUI
+  (:export #:NANOKTL2-GUI #:FADERFOX-GUI
+           #:MIDICONTROLLER
            #:GUI-PARENT #:GUI-CONTAINER #:GUI-FADER #:GUI-S-BUTTONS #:GUI-M-BUTTONS #:GUI-R-BUTTONS
            #:GUI-CTL-PANEL #:CTL-PANEL-VIS
            #:GUI-TRACK-LEFT #:GUI-TRACK-RIGHT #:GUI-CYCLE #:GUI-SET-MARKER #:GUI-MARKER-LEFT #:GUI-MARKER-RIGHT
