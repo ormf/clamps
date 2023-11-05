@@ -1,5 +1,5 @@
 ;;; 
-;;; nanoctl.lisp
+;;; nanoktl2.lisp
 ;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2021 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
@@ -20,7 +20,7 @@
 
 (in-package :cl-midictl)
 
-(defclass nanoctl-midi (midi-controller)
+(defclass nanoktl2-midi (midi-controller)
   ((nk2-faders :accessor nk2-faders)
    (nk2-fader-update-fns :accessor nk2-fader-update-fns :initform (coerce (loop repeat 16 collect nil) 'vector))
    (s-buttons :accessor s-buttons)
@@ -41,7 +41,7 @@
 
 #|
 
-(defclass nanoctl-osc (osc-controller)
+(defclass nanoktl2-osc (osc-controller)
   ((nk2-faders :accessor nk2-faders)
    (s-buttons :accessor s-buttons)
    (m-buttons :accessor m-buttons)
@@ -79,7 +79,7 @@ nanokontrol2.
 
 |#
 
-(defmethod initialize-instance :after ((obj nanoctl-midi) &rest args)
+(defmethod initialize-instance :after ((obj nanoktl2-midi) &rest args)
   (with-slots (cc-map cc-nums cc-state chan nk2-faders s-buttons m-buttons r-buttons)
       obj
     (setf cc-nums
@@ -131,7 +131,7 @@ nanokontrol2.
     )
   (update-state obj))
 
-(defmethod handle-midi-in ((instance nanoctl-midi) opcode d1 d2)
+(defmethod handle-midi-in ((instance nanoktl2-midi) opcode d1 d2)
 ;;;  (call-next-method)
   (with-slots (cc-fns cc-nums nk2-fader-update-fns cc-map cc-state note-fn last-note-on midi-output chan) instance
     (case opcode
@@ -154,7 +154,7 @@ nanokontrol2.
               (toggle-slot slot)))))
       (:note-on (setf last-note-on d1)))))
 
-(defmethod update-state ((instance nanoctl-midi))
+(defmethod update-state ((instance nanoktl2-midi))
   (with-slots (chan cc-nums cc-map cc-state midi-output) instance
     (dotimes (local-idx (length cc-nums))
       (unless (<= 40 local-idx 45)
@@ -165,7 +165,7 @@ nanokontrol2.
 
 ;;; (cellctl:set-ref)
 #|
-(defmethod (setf s-buttons) (val (obj nanoctl) idx)
+(defmethod (setf s-buttons) (val (obj nanoktl2) idx)
   (setf (aref (slot-value instance :s-buttons) idx) val)
   val)
 |#

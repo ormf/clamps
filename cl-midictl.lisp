@@ -180,15 +180,18 @@ receiver but can also be called by gui code or directly to emulate
 controller actions."))
 
 (defmethod handle-midi-in ((instance midi-controller) opcode d1 d2)
-  (with-slots (cc-fns cc-map cc-state note-fn last-note-on) instance
+  (with-slots (cc-fns cc-map cc-state note-state note-fn last-note-on) instance
     (case opcode
       (:cc (progn
              (setf (val (aref cc-state (aref cc-map d1))) d2)
              (mapcar (lambda (fn) (funcall fn d2)) (aref cc-fns d1))))
       (:note-on (progn
+                  (setf (val (aref note-state (aref cc-map d1))) d2)
                   (mapcar (lambda (fn) (funcall fn d1 d2)) (note-fns instance))
                   (setf last-note-on d1)))
-      (:note-off (mapcar (lambda (fn) (funcall fn d1 0)) (note-fns instance))))))
+      (:note-off (progn
+                   (setf (val (aref note-state (aref cc-map d1))) 0)
+                   (mapcar (lambda (fn) (funcall fn d1 0)) (note-fns instance)))))))
 
 ;;; (make-instance 'midi-controller)
 

@@ -13,4 +13,5 @@
                (:file "utils")
                (:file "osc")
                (:file "cl-midictl")
-               (:file "nanoctl")))
+               (:file "nanoktl2")
+               (:file "faderfox")))

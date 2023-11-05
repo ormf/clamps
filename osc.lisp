@@ -93,5 +93,6 @@
     (incudine.osc:message connection "/midiout" "iii" st d1 d2)))
 
 (defun osc-midi-write-short (stream st d1 d2)
+  (format t "~a ~a ~a ~%" st d1 d2)
   (jackmidi:write-short stream (jackmidi:message st d1 d2) 3)
   (osc-midi-broadcast st d1 d2))
