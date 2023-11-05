@@ -1,26 +1,28 @@
 ;;;
-;;; nano-ctl.lisp
+;;; faderfox-gui.lisp
 ;;;
-;;; nano-ctl besteht aus einer Gui Instanz und einem Controller, der
-;;; eine spezielle Klasse eines midicontrollers ist. Es kann mehrere
-;;; Gui Instanzen geben, die alle auf die selbe Controller Instanz
-;;; bezogen sind, daher ist der Controller ein Slot de Gui Instanz und
-;;; muss bei make-instance der Gui Instanz übergeben werden (wird im
+;;; faderfox-gui besteht aus einer Gui Instanz und einem Controller
+;;; (faderfox-midi), der eine spezielle Klasse eines midicontrollers
+;;; ist (definiert in cl-midictl). Es kann mehrere Gui Instanzen
+;;; geben, die alle auf die selbe Controller Instanz bezogen sind,
+;;; daher ist der Controller ein Slot de Gui Instanz und muss bei
+;;; make-instance der Gui Instanz übergeben werden (wird im
 ;;; on-new-window Code gemacht). Im Controller sind model-slots, deren
 ;;; set-cell Funktionen alle Slots im gui updaten.
 ;;;
-;;; Um beim NanoKontrol Werte "fangen zu können", gibt es
+;;; Um mangels Motorfadern/Endlosreglern des NanoKontrol2 Werte
+;;; "fangen zu können", um Wertesprünge zu vermeiden, gibt es
 ;;; cl-midictl:*midi-cc-state*, der immer den aktuellen Stand der
-;;; HardwareController enthält (der responder wird automatisch
+;;; HardwareFader/knobs enthält (der responder dafür wird automatisch
 ;;; gestartet). *midi-cc-state* enthält keine model-slots, da die
 ;;; Werte einfach nur gesetzt werden, wenn der Fader bewegt wird,
 ;;; ansonsten aber nur gelesen werden müssen, wenn das gui mit den
 ;;; HardwareControllern verglichen werden soll.
 ;;;
 ;;; Das konkrete Verhalten des Controllers ist in handle-midi-in der
-;;; Controller Klasse geregelt und besteht nur darin, den Wert des
-;;; jeweiligen model-slots zu aktualisieren (wenn der Wert "gefangen"
-;;; ist).
+;;; Controller Klasse (faderfox-midi) geregelt und besteht nur darin,
+;;; den Wert des jeweiligen model-slots zu aktualisieren (wenn der
+;;; Wert "gefangen" ist).
 ;;;
 ;;; Bei Instantiierung des Gui Instanz (initialize-instance :after)
 ;;; werden an die model-slots der Controller Instanz set-cell-hooks
@@ -45,7 +47,7 @@
 
 (in-package :clog-midi-controller)
 
-(defclass nanoctl-gui ()
+(defclass faderfox-gui ()
   ((gui-parent :initarg :gui-parent :accessor gui-parent)
    (gui-container :initarg :gui-container :accessor gui-container)
    (gui-fader :initarg :gui-fader :accessor gui-fader)
@@ -66,11 +68,11 @@
    (gui-play :initarg :gui-play :accessor gui-play)
    (gui-rec :initarg :gui-rec :accessor gui-rec)))
 
-(defclass nanoctl-midi-gui (nanoctl-gui)
+(defclass faderfox-midi-gui (faderfox-gui)
   ((type :initform :midi)
    (controller :initarg :controller :accessor controller)))
 
-(defclass nanoctl-osc-gui (nanoctl-gui)
+(defclass faderfox-osc-gui (faderfox-gui)
   ((type :initform :osc)
    (controller :initarg :controller :accessor controller)))
 
@@ -104,7 +106,11 @@
                                        (setf (val (aref (,ctl-slot controller) n)) (read-from-string v)))))
           'vector)))
 
-(defmethod initialize-instance :after ((instance nanoctl-midi-gui) &rest args)
+(defun flash-midi-out (stream cc-num chan)
+  (osc-midi-write-short stream (+ chan 176) cc-num 127)
+  (at (+ (now) 4410) #'osc-midi-write-short stream (+ chan 176) cc-num 0))
+
+(defmethod initialize-instance :after ((instance faderfox-midi-gui) &rest args)
   (declare (ignorable args))
   (with-slots (gui-parent gui-container
                gui-fader gui-s-buttons gui-m-buttons gui-r-buttons
@@ -114,7 +120,7 @@
                controller
                )
       instance
-    (unless gui-parent (error "nanoctl-midi-gui initialized without parent supplied!"))
+    (unless gui-parent (error "faderfox-midi-gui initialized without parent supplied!"))
     (with-connection-cache (gui-parent)
       (setf gui-container (create-div gui-parent
                                       :css '(:display flex
@@ -178,24 +184,39 @@
                                 (numbox
                                  panel
                                  :min 0 :max 127 :size 10 :css '(:margin 2px)
-                                 :val-change-cb (let ((n (+ n offs)))
-                                                  (lambda (v obj)
-                                                    (let ((value (read-from-string v)))
-                                                      (setf (val (aref (nk2-faders controller) n)) value)
-                                                      (setf (aref (nk2-fader-update-fns controller) n)
-                                                            (let ((hw-val (aref
-                                                                           (aref cl-midictl::*midi-cc-state*
-                                                                                 (chan controller))
-                                                                           (aref (cl-midictl::cc-nums controller) n))))
-                                                              (cond
-                                                                ((> value hw-val)
-                                                                 (setf (style obj :background-color) "#ffaaaa")
-                                                                 #'>=)
-                                                                ((< value hw-val)
-                                                                 (setf (style obj :background-color) "#ffaaaa")
-                                                                 #'<=)
-                                                                (t (setf (style obj :background-color) "#aaffaa")
-                                                                   nil))))))))))
+                                 :val-change-cb
+                                 (let ((n (+ n offs)))
+                                   (lambda (v obj)
+                                     (let ((new-value (read-from-string v)))
+                                       (setf (val (aref (nk2-faders controller) n)) new-value)
+;;; nk2-fader-update-fns are functions to compare incoming
+;;; midi-cc-values from the hardware controller against the current
+;;; value in the gui. As soon as the update-fn returns t, the
+;;; hardware fader is "caught" and the background in the gui is set
+;;; to green. This is implemented in the handle-midi-in method of the
+;;; midi-controller side of the code (in faderfox.lisp of
+;;; cl-midictl). Here these functions and the background colors are
+;;; set up in response to a change in the gui.
+;;;
+;;; IMPORTANT NOTE: The physical state of the hardware controller is
+;;; maintained in cl-midictl:*midi-cc-state* and *NOT* in the cc-state
+;;; of the midi-controller instance. That state is always in sync with
+;;; the gui (using model-slots and synchronizing with the gui and the
+;;; hardware controller via its ref-set-hooks defined below).
+                                       (setf (aref (nk2-fader-update-fns controller) n)
+                                             (let ((hw-val (aref
+                                                            (aref *midi-cc-state*
+                                                                  (chan controller))
+                                                            (aref (cc-nums controller) n))))
+                                               (cond
+                                                 ((> new-value hw-val)
+                                                  (setf (style obj :background-color) "#ffaaaa")
+                                                  #'>=)
+                                                 ((< new-value hw-val)
+                                                  (setf (style obj :background-color) "#ffaaaa")
+                                                  #'<=)
+                                                 (t (setf (style obj :background-color) "#aaffaa")
+                                                    nil))))))))))
                'vector))
         (define-button-row gui-s-buttons s-buttons "S" s-btn-panel)
         (define-button-row gui-m-buttons m-buttons "M" m-btn-panel)
@@ -210,7 +231,6 @@
                   (maphash (lambda (connection-id connection-hash)
                              (declare (ignore connection-id))
                              (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
-;;;                         (break "~a" f.orm-gui)
                                (when f.orm-gui
                                  (let ((elem (aref (gui-fader f.orm-gui) i)))
                                    (setf (clog:value elem) val)
@@ -231,7 +251,7 @@
                        (chan (chan controller))
                        (cc-num (elt (cc-nums controller) (+ i cc-map-offs))))
                   (lambda (val) 
-                    (jackmidi:write-short *midi-out1* (jackmidi:message (+ chan 176) cc-num val) 3)
+                    (osc-midi-write-short *midi-out1* (+ chan 176) cc-num val)
                     (maphash (lambda (connection-id connection-hash)
                                (declare (ignore connection-id))
                                (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
@@ -239,7 +259,6 @@
                                    (let ((elem (aref (slot-value f.orm-gui gui-slot) i)))
                                      (setf (clog:attribute elem "data-val") val)))))
                              clog-connection::*connection-data*)))))))
-
     (dolist (syms '((tr-rewind gui-rewind 46) ;;; transport buttons
                     (tr-ffwd gui-ffwd 47)
                     (tr-stop gui-stop 48)
@@ -251,12 +270,10 @@
                      (cc-num (elt (cc-nums controller) cc-map-offs)))
                 (lambda (val)
                   (incudine.util:msg :info "val: ~a, chan: ~a, cc-num: ~a" val chan cc-num)
-                  (jackmidi:write-short (midi-output controller) (jackmidi:message (+ chan 176) cc-num (if (zerop val) 0 127)) 3)
+                  (osc-midi-write-short (midi-output controller) (+ chan 176) cc-num (if (zerop val) 0 127))
                   (maphash (lambda (connection-id connection-hash)
                              (declare (ignore connection-id))
-                             (let* ((f.orm-gui (gethash "f.orm-gui"
-                                                        connection-hash)))
-;;;                         (break "~a" f.orm-gui)
+                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
                                (when f.orm-gui
                                  (let ((elem (slot-value f.orm-gui gui-slot)))
                                    (setf (clog:attribute elem "data-val") val)))))
@@ -274,13 +291,10 @@
                      (cc-num (elt (cc-nums controller) cc-map-offs)))
                 (lambda (obj)
                   (incudine.util:msg :info "chan: ~a, cc-num: ~a" chan cc-num)
-                  (jackmidi:write-short (midi-output controller) (jackmidi:message (+ chan 176) cc-num 127) 3)
-                  (at (+ (now) 4410) #'jackmidi:write-short (midi-output controller) (jackmidi:message (+ chan 176) cc-num 0) 3)
+                  (flash-midi-out (midi-output controller) cc-num chan)
                   (maphash (lambda (connection-id connection-hash)
                              (declare (ignore connection-id))
-                             (let* ((f.orm-gui (gethash "f.orm-gui"
-                                                        connection-hash)))
-;;;                         (break "~a" f.orm-gui)
+                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
                                (when f.orm-gui
                                  (let ((elem (slot-value f.orm-gui gui-slot)))
                                    (if (not (eql obj elem)) (flash elem))))))
@@ -300,7 +314,7 @@
 "  gui-ctl-panel-id gui-ctl-panel-id)))
     (update-state instance)))
 
-(defmethod update-state ((gui nanoctl-gui))
+(defmethod update-state ((gui faderfox-gui))
   (with-slots (controller gui-fader gui-m-buttons gui-s-buttons gui-r-buttons
                gui-rewind gui-ffwd gui-stop gui-play gui-rec)
       gui
@@ -330,7 +344,7 @@
              '(46 47 48 49 50)))))
 
 (defgeneric show-ctl-panel (gui show)
-  (:method ((gui nanoctl-gui) show)
+  (:method ((gui faderfox-gui) show)
     (with-slots (gui-ctl-panel ctl-panel-vis) gui
       (if show
           (progn
@@ -345,7 +359,7 @@
             )))))
 
 (defgeneric toggle-ctl-panel-vis (gui)
-  (:method ((gui nanoctl-gui))
+  (:method ((gui faderfox-gui))
     (with-slots (gui-ctl-panel ctl-panel-vis) gui
       (if ctl-panel-vis
           (progn
@@ -355,61 +369,6 @@
             (setf (style gui-ctl-panel "display") "flex")
             (setf ctl-panel-vis t))))))
 
-;;; (add-midi-controller 'nanoctl-midi-gui :id :nk2 :chan 5)
+;;; (add-midi-controller 'faderfox-midi-gui :id :nk2 :chan 5)
 
 ;;; (find-controller :nk2)
-
-#|
-
-(defstruct nanoctl
-  (slider (make-array 16 :initial-contents (v-collect (v 16) (make-instance 'value-cell))))
-  (s-buttons (v-collect (n 8) (make-instance 'value-cell)))
-  (m-buttons (v-collect (n 8) (make-instance 'value-cell)))
-  (r-buttons (v-collect (n 8) (make-instance 'value-cell)))
-  (track-left (make-instance 'value-cell))
-  (track-right (make-instance 'value-cell))
-  (cycle (make-instance 'value-cell))
-  (set (make-instance 'value-cell))
-  (prev (make-instance 'value-cell))
-  (next (make-instance 'value-cell))
-  (rewind (make-instance 'value-cell))
-  (ffwd (make-instance 'value-cell))
-  (stop (make-instance 'value-cell))
-  (play (make-instance 'value-cell))
-  (rec (make-instance 'value-cell)))
-
-
-
-(defmethod initialize-instance :after ((obj nanoctl-gui) &rest args)
-  (declare (ignore obj args))
-
-  )
-
-|#
-
-#|
-(create-div body :css '(:display flex
-                                                 :flex-wrap wrap
-                                                 :margin-right 15px
-                                                 :padding-bottom 30px))
-;;; borealis
-
-
-(let ((color color) (bg bg) (lbl lbl)
-             (active-color active-color) (active-bg active-bg)
-             (active-lbl active-lbl))
-         (lambda (obj evt)
-           (declare (ignore obj evt))
-           (setf (style btn "background") active-bg)
-           (setf (style btn "color") active-color)
-           (setf (inner-html btn) active-lbl)
-           (if (functionp val-change-cb) (funcall val-change-cb))
-           (sleep 0.1)
-           (setf (style btn "background") bg)
-           (setf (style btn "color") color)
-           (setf (inner-html btn) lbl)
-           ))
-
-|#
-
-
