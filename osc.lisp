@@ -23,13 +23,13 @@
 (defparameter *local-host* "127.0.0.1")
 
 ;;; this has to be defined for every registered host:
-;;; (defparameter *oscout* (incudine.osc:open :port 3010 :host *remote-host* :direction :output :protocol :udp))
-(defparameter *oscin* nil)
+;;; (defparameter *oscout* (incudine.osc:open :port 4711 :host *remote-host* :direction :output :protocol :udp))
+(defparameter *osc-midi-in* nil)
 (defparameter *midictl-osc-responders* (make-hash-table)) ;;; a hashtable with the handles of all registered midi responders
 
 (defparameter *midictl-osc-remote-connections* nil)
 
-(defun osc-midi-add-remote-connection (host local-midi-in &key (port 3010))
+(defun osc-midi-add-remote-connection (host local-midi-in &key (port 4710))
   (let ((entry (first (member host *midictl-osc-remote-connections* :key #'incudine.osc:host :test #'string-equal))))
     (when entry
       (incudine.osc:close entry)
@@ -55,21 +55,21 @@
 
 ;;; osc responder:
 
-(defun start-osc-midi-receive (local-midi-in &key (port 3011))
+(defun start-osc-midi-receive (local-midi-in &key (port 4711))
   "start osc on localhost:port and its receivers."
-  (when *oscin* (incudine.osc:close *oscin*))
+  (when *osc-midi-in* (incudine.osc:close *osc-midi-in*))
   (maphash (lambda (key val) key (incudine:remove-responder val)) *midictl-osc-responders*)
-  (setf *oscin* (incudine.osc:open :host "127.0.0.1" :port port :direction :input :protocol :udp))
+  (setf *osc-midi-in* (incudine.osc:open :host "127.0.0.1" :port port :direction :input :protocol :udp))
   (setf (gethash :osc-midi-register *midictl-osc-responders*)
         (incudine::make-osc-responder
-         *oscin* "/osc-midi-register" "sf"
+         *osc-midi-in* "/osc-midi-register" "sf"
          (lambda (host port)
            (let ((port (round port)))
              (incudine.util:msg :info "osc-midi-register: ~a ~a" host port)
              (osc-midi-add-remote-connection host local-midi-in :port port)))))
   (setf (gethash :midiin *midictl-osc-responders*)
         (incudine::make-osc-responder
-         *oscin* "/midiin" "fff"
+         *osc-midi-in* "/midiin" "fff"
          (lambda (st d1 d2)
            (let ((st (round st))
                  (d1 (round d1))
@@ -82,11 +82,11 @@
                (dolist (controller (gethash local-midi-in *midi-controllers*))
                  (if (= chan (chan controller))
                      (handle-midi-in controller opcode d1 d2))))))))
-  (recv-start *oscin*))
+  (recv-start *osc-midi-in*))
 
 (defun stop-osc-midi-receive (&optional local-midi-in)
   (declare (ignore local-midi-in))
-   (recv-stop *oscin*))
+   (recv-stop *osc-midi-in*))
 
 (defun osc-midi-broadcast (st d1 d2)
   (dolist (connection *midictl-osc-remote-connections*)
