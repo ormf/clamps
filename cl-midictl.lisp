@@ -115,16 +115,16 @@
                0 127)))
 
 (declaim (inline midi-out))
-(defun midi-out (stream status data1 data2 data-size)
+(defun midi-out (stream status data1 data2)
   "create a closure to defer a call to jm_write_event."
   (lambda ()
-    (jackmidi:write-short stream (jackmidi:message status data1 data2) data-size)))
+    (osc-midi-write-short stream status data1 data2)))
 
 (declaim (inline ctl-out))
 (defun ctl-out (stream ccno ccval chan)
   "wrapper for midi ctl-change messages."
   (let ((status (+ chan (ash #b1011 4))))
-    (midi-out stream status ccno ccval 3)))
+    (midi-out stream status ccno ccval)))
 
 (defparameter *midi-controllers* (make-hash-table :test #'equal)
   "hash-table which stores all currently active midi controllers by id
@@ -207,11 +207,9 @@ controller actions."))
 (defmethod update-state ((instance midi-controller))
   (with-slots (chan midi-output) instance
     (dotimes (cc-num 128)
-      (jackmidi:write-short
+      (osc-midi-write-short
        midi-output
-       (jackmidi:message
-        (+ chan 176) cc-num (val (aref (aref *midi-cc-state* chan) cc-num)))
-       3))))
+       (+ chan 176) cc-num (val (aref (aref *midi-cc-state* chan) cc-num))))))
 
 (defmethod initialize-instance :after ((instance midi-controller) &rest args)
   (declare (ignorable args))

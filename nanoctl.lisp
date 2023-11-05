@@ -124,7 +124,7 @@ nanokontrol2.
            cl-midictl:tr-stop
            cl-midictl:tr-play
            cl-midictl:tr-rec)
-         (ou:v-collect (n 11) (+ n 40)))
+         (v-collect (n 11) (+ n 40)))
     (dotimes (i (length cc-nums))
       (unless (<= 40 i 45)
         (setf (val (aref cc-state i)) (aref (aref *midi-cc-state* chan) (aref cc-nums i)))))
@@ -159,11 +159,9 @@ nanokontrol2.
     (dotimes (local-idx (length cc-nums))
       (unless (<= 40 local-idx 45)
         (let ((cc-num (aref cc-nums local-idx)))
-          (jackmidi:write-short
+          (osc-midi-write-short
            midi-output
-           (jackmidi:message
-            (+ chan 176) cc-num (val (aref cc-state local-idx)))
-           3))))))
+           (+ chan 176) cc-num (val (aref cc-state local-idx))))))))
 
 ;;; (cellctl:set-ref)
 #|

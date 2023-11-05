@@ -7,9 +7,10 @@
   :license  "Gnu Public license, version 2.0 or later."
   :version "0.0.1"
   :serial t
-  :depends-on (#:cellctl #:incudine)
+  :depends-on (#:cellctl #:orm-utils #:incudine)
   :components ((:file "package")
                (:file "globals")
                (:file "utils")
+               (:file "osc")
                (:file "cl-midictl")
                (:file "nanoctl")))

@@ -1,7 +1,9 @@
 ;;;; package.lisp
 
 (defpackage #:cl-midictl
-  (:use #:cl #:cellctl #:incudine)
+  (:use #:cl #:ou #:cellctl #:incudine)
+  (:shadowing-import-from #:incudine
+                          #:group)
   (:export #:START-MIDI-RECEIVE
            #:STOP-MIDI-RECEIVE
            #:ENSURE-CONTROLLER
@@ -16,6 +18,11 @@
            #:*MIDI-DEBUG*
            #:*MIDI-IN1*
            #:*MIDI-OUT1*
+           #:*MIDI-CC-STATE*
+           #:*OSCIN*
+           #:START-OSC-MIDI-RECEIVE
+           #:STOP-OSC-MIDI-RECEIVE
+           #:OSC-MIDI-WRITE-SHORT
            #:CC-MAP #:ID #:CHAN #:MIDI-INPUT #:MIDI-OUTPUT #:LAST-NOTE-ON #:CC-STATE #:CC-FNS #:NOTE-FNS
            #:TOGGLE-SLOT
            #:NK2-FADERS #:NK2-FADER-UPDATE-FNS #:S-BUTTONS #:M-BUTTONS #:R-BUTTONS #:TRACK-LEFT #:TRACK-RIGHT
