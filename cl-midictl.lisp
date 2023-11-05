@@ -145,6 +145,8 @@
    (last-note-on :initform 0 :initarg :last-note-on :accessor last-note-on)
    (cc-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-instance 'value-cell)))
              :initarg :cc-state :accessor cc-state)
+   (note-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-instance 'value-cell)))
+             :initarg :note-state :accessor note-state)
    ;;; storage of functions to call for individual cc events. An entry
    ;;; of the array is a list of functions accepting one arg: the
    ;;; controller value.
