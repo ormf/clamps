@@ -85,31 +85,23 @@ nanokontrol2.
       do (setf (aref cc-map ccnum) idx))
     (setf cc-state (make-array (length cc-nums)
                                :initial-contents
-                               (loop for x below (length cc-nums) collect (if (<= 40 x 45)
-                                                                              (make-instance 'bang-cell)
-                                                                              (make-instance 'value-cell)))))
+                               (loop for x below (length cc-nums)
+                                     collect (if (<= 40 x 45)
+                                                 (make-instance 'bang-cell)
+                                                 (make-instance 'value-cell)))))
     (setf nk2-faders (make-array 16 :displaced-to cc-state))
     (setf s-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 16))
     (setf m-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 24))
     (setf r-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 32))
     (map () (lambda (slot local-idx)
               (setf (slot-value obj slot) (aref cc-state local-idx)))
-         '(cl-midictl:track-left
-           cl-midictl:track-right
-           cl-midictl:cycle
-           cl-midictl:set-marker
-           cl-midictl:marker-left
-           cl-midictl:marker-right
-           cl-midictl:tr-rewind
-           cl-midictl:tr-ffwd
-           cl-midictl:tr-stop
-           cl-midictl:tr-play
-           cl-midictl:tr-rec)
+         '(track-left track-right
+           cycle set-marker marker-left marker-right
+           tr-rewind tr-ffwd tr-stop tr-play tr-rec)
          (v-collect (n 11) (+ n 40)))
     (dotimes (i (length cc-nums))
       (unless (<= 40 i 45)
-        (setf (val (aref cc-state i)) (aref (aref *midi-cc-state* chan) (aref cc-nums i)))))
-    )
+        (setf (val (aref cc-state i)) (aref (aref *midi-cc-state* chan) (aref cc-nums i))))))
   (update-state obj))
 
 (defmethod handle-midi-in ((instance nanoktl2-midi) opcode d1 d2)
@@ -144,11 +136,4 @@ nanokontrol2.
           (osc-midi-write-short
            midi-output
            (+ chan 176) cc-num (val (aref cc-state local-idx))))))))
-
-;;; (cellctl:set-ref)
-#|
-(defmethod (setf s-buttons) (val (obj nanoktl2) idx)
-  (setf (aref (slot-value instance :s-buttons) idx) val)
-  val)
-|#
 
