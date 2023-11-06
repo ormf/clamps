@@ -170,33 +170,18 @@
                                    (setf (clog:value elem) val)))))
                            clog-connection::*connection-data*)))
           )))
-    (update-state midi-controller)))
+    (update-gui-state instance)))
 
-(defgeneric show-ctl-panel (gui show)
-  (:method ((gui faderfox-gui) show)
-    (with-slots (gui-ctl-panel ctl-panel-vis) gui
-      (if show
-          (progn
-            (setf (style gui-ctl-panel "display") "flex")
-            (setf ctl-panel-vis t)
-;;;            (setf (style gui-ctl-panel "max-width") "160px")
-            )
-          (progn
-            (setf (style gui-ctl-panel "display") "none")
-            (setf ctl-panel-vis nil)
-;;;            (setf (style gui-ctl-panel "max-width") "0")
-            )))))
-
-(defgeneric toggle-ctl-panel-vis (gui)
-  (:method ((gui faderfox-gui))
-    (with-slots (gui-ctl-panel ctl-panel-vis) gui
-      (if ctl-panel-vis
-          (progn
-            (setf (style gui-ctl-panel "display") "none")
-            (setf ctl-panel-vis nil))
-          (progn
-            (setf (style gui-ctl-panel "display") "flex")
-            (setf ctl-panel-vis t))))))
+(defmethod update-gui-state ((gui faderfox-gui))
+  (with-slots (midi-controller gui-fader gui-buttons) gui
+    (with-slots (cc-nums cc-state note-state chan) midi-controller
+      (dotimes (i 16)
+        (let ((numbox (aref gui-fader i))
+              (button (aref gui-buttons i))
+              (fader-value (val (aref cc-state i)))
+              (button-state (val (aref note-state i))))
+          (setf (clog:value numbox) fader-value)
+          (setf (clog:value button) button-state))))))
 
 ;;; (add-midi-controller 'faderfox-gui :id :ff01 :chan 5)
 
