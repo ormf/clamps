@@ -62,7 +62,7 @@ Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
      The controller gui class is defined in =clog-gui-widgets=. It
      contains slots for all the gui elements (being clog instances in
      the gui) and a slot containing the controller instance defined in
-     cl-midictl. This seperation is necessary as there might be more
+     [[https://github.com/ormf/cl-midictl.git][cl-midictl]]. This seperation is necessary as there might be more
      than one Gui active (in case of multiple connections to the
      server), which all relate to the same controller instance. The
      methods of the gui instance maintain the gui state of all
@@ -98,12 +98,12 @@ Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 ** Defining new gui controllers
 
    A new gui controller can be defined accordingly: In case it is just
-   an alternative gui to an already existing hardware controller, the
-   elements of the gui need to get defined in the class definition and
-   its appearence in the =initialize-instance :after= method. In this
-   method also the updating behaviour needs to be defined by setting
-   the ref-set-hooks of the slots used in the hardware controller
-   instance.
+   an alternative gui to an already existing hardware controller
+   defined in [[https://github.com/ormf/cl-midictl.git][cl-midictl]], the elements of the gui need to get defined
+   in the class definition and its appearence in the
+   =initialize-instance :after= method. In this method also the
+   updating behaviour needs to be defined by setting the ref-set-hooks
+   of the slots used in the hardware controller instance.
 
    In case there is no hardware controller defined in =cl-midictl=, it
    needs to get defined in the =:cl-midictl= package and referenced by
