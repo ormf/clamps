@@ -58,64 +58,32 @@
    (gui-parent :initarg :gui-parent :accessor gui-parent)
    (gui-container :initarg :gui-container :accessor gui-container)
    (gui-fader :initarg :gui-fader :accessor gui-fader)
-   (gui-s-buttons :initarg :gui-s-buttons :accessor gui-s-buttons)
-   (gui-m-buttons :initarg :gui-m-buttons :accessor gui-m-buttons)
-   (gui-r-buttons :initarg :gui-r-buttons :accessor gui-r-buttons)
+   (gui-buttons :initarg :gui-buttons :accessor gui-buttons)
    (gui-ctl-panel :initarg :gui-ctl-panel :accessor gui-ctl-panel)
-   (ctl-panel-vis :initform t :initarg :ctl-panel-vis :accessor ctl-panel-vis)
-   (gui-track-left :initarg :gui-track-left :accessor gui-track-left)
-   (gui-track-right :initarg :gui-track-right :accessor gui-track-right)
-   (gui-cycle :initarg :gui-cycle :accessor gui-cycle)
-   (gui-set-marker :initarg :gui-set-marker :accessor gui-set-marker)
-   (gui-marker-left :initarg :gui-marker-left :accessor gui-marker-left)
-   (gui-marker-right :initarg :gui-marker-right :accessor gui-marker-right)
-   (gui-rewind :initarg :gui-rewind :accessor gui-rewind)
-   (gui-ffwd :initarg :gui-ffwd :accessor gui-ffwd)
-   (gui-stop :initarg :gui-stop :accessor gui-stop)
-   (gui-play :initarg :gui-play :accessor gui-play)
-   (gui-rec :initarg :gui-rec :accessor gui-rec)))
+   (ctl-panel-vis :initform t :initarg :ctl-panel-vis :accessor ctl-panel-vis)))
 
 (defmacro trigger-fn (slot)
   `(lambda (src) (trigger ,slot src)))
 
-(defmacro define-transport-button (gui-slot ctl-slot label panel)
-  `(setf ,gui-slot
-    (toggle ,panel :background '("gray" "#ff8888") :label ,label :values '(0 127) :css transport-btn-css
-                             :val-change-cb (lambda (v obj)
-                                              (declare (ignore obj))
-                                              (let ((value (read-from-string v)))
-                                                (setf (val (,ctl-slot midi-controller)) value))))))
-
-(defmacro define-momentary-button (gui-slot ctl-slot label panel)
-  `(setf ,gui-slot
-         (bang ,panel :background '("gray" "#ff8888") :label ,label :css small-btn-css
-                                :action-cb (trigger-fn (,ctl-slot midi-controller)))))
-
-(defmacro define-button-row (gui-slot ctl-slot label panel)
+(defmacro define-buttons (gui-slot ctl-slot panel)
   `(setf ,gui-slot
          (coerce
-          (v-collect (n 8)
+          (v-collect (n 16)
                      (toggle
                       ,panel
                       :css gui-btn-css
                       :background '("gray" "#ff8888")
                       :values '("0" "127")
-                      :label ,label
+                      :label (1+ n)
                       :val-change-cb (lambda (v obj) (declare (ignore obj))
                                        (setf (val (aref (,ctl-slot midi-controller) n)) (read-from-string v)))))
           'vector)))
 
-(defun flash-midi-out (stream cc-num chan)
-  (osc-midi-write-short stream (+ chan 176) cc-num 127)
-  (at (+ (now) 4410) #'osc-midi-write-short stream (+ chan 176) cc-num 0))
-
 (defmethod initialize-instance :after ((instance faderfox-gui) &rest args)
   (declare (ignorable args))
   (with-slots (gui-parent gui-container
-               gui-fader gui-s-buttons gui-m-buttons gui-r-buttons
-               gui-track-left gui-track-right
-               gui-cycle gui-set-marker gui-marker-left gui-marker-right
-               gui-rewind gui-ffwd gui-stop gui-play gui-rec gui-ctl-panel
+               gui-fader gui-buttons
+               gui-ctl-panel
                midi-controller
                )
       instance
@@ -128,98 +96,57 @@
                                              :flex "0 0 auto"
                                              :margin-right 15px
                                              :padding-bottom 30px)))
-      (let (knob-fader-panel knob-panel fader-panel s-btn-panel m-btn-panel r-btn-panel
-            gui-ctl-subpanel
-            (small-btn-css '(:width 30px :height 10px :font-size 6px :margin 0px))
-            (transport-btn-css '(:width 30px :height 15px :font-size 10px))
+      (let (fader-panel button-panel
+            fader-subpanel button-subpanel
             (gui-btn-css '(:width 50px :height 15px :font-size 10px :margin 2px)))
-        (setf gui-ctl-panel (create-div gui-container :css '(:width 180px
-                                                             :height 103px
-                                                             :display "flex"
-                                                             :flex-direction "column"
-                                                             :justify-content "flex-end"
-                                                             :max-width 180px
-                                                             :max-height 103px)))
-        (setf gui-ctl-subpanel (create-div gui-ctl-panel :css '(:width "100%" :height 65px
-                                                                :display "grid"
-                                                                :grid-template-columns "1fr 1fr 1fr 1fr 1fr"
-                                                                :grid-template-rows "1fr 1fr 1fr"
-                                                                :gap 5px ;
-                                                                :padding 10px
-                                                                :justify-content "space-around"
-                                                                :align-content "space-around")))
-        (setf knob-fader-panel (create-div gui-container :css '(:line-height 0)))
-        (setf knob-panel (create-div knob-fader-panel))
-        (create-br knob-fader-panel)
-        (setf fader-panel (create-div knob-fader-panel))
-        (create-br knob-fader-panel)
-        (setf s-btn-panel (create-div knob-fader-panel))
-        (create-br knob-fader-panel)
-        (setf m-btn-panel (create-div knob-fader-panel))
-        (create-br knob-fader-panel)
-        (setf r-btn-panel (create-div knob-fader-panel))        
-
-        (define-momentary-button gui-track-left track-left "<" gui-ctl-subpanel)
-        (define-momentary-button gui-track-right track-right ">" gui-ctl-subpanel)
-        (dotimes (n 3) (create-div gui-ctl-subpanel))
-        (define-momentary-button gui-cycle cycle "cycle" gui-ctl-subpanel)
-        (create-div gui-ctl-subpanel)
-        (define-momentary-button gui-set-marker set-marker "set" gui-ctl-subpanel)
-        (define-momentary-button gui-marker-left marker-left "<" gui-ctl-subpanel)
-        (define-momentary-button gui-marker-right marker-right ">" gui-ctl-subpanel)
-
-        (define-transport-button gui-rewind tr-rewind "1" gui-ctl-subpanel)
-        (define-transport-button gui-ffwd tr-ffwd "2" gui-ctl-subpanel)
-        (define-transport-button gui-stop tr-stop "3" gui-ctl-subpanel)
-        (define-transport-button gui-play tr-play "4" gui-ctl-subpanel)
-        (define-transport-button gui-rec tr-rec "5" gui-ctl-subpanel)
-
+        (setf fader-panel (create-div gui-container :css '(:width 220px
+                                                           :height 80px
+                                                           :display "flex"
+                                                           :flex-direction "column"
+                                                           :justify-content "flex-end"
+                                                           :max-width 220px
+                                                           :max-height 80px)))
+        (setf fader-subpanel (create-div fader-panel :css '(:width "100%" :height 65px
+                                                            :display "grid"
+                                                            :grid-template-columns "1fr 1fr 1fr 1fr"
+                                                            :grid-template-rows "1fr 1fr 1fr 1fr"
+                                                            :gap 0px ;
+                                                            :padding 10px
+                                                            :justify-content "space-around"
+                                                            :align-content "space-around")))
+        (setf button-panel (create-div gui-container :css '(:width 220px
+                                                            :height 80px
+                                                            :display "flex"
+                                                            :flex-direction "column"
+                                                            :justify-content "flex-end"
+                                                            :max-width 220px
+                                                            :max-height 80px)))
+        (setf button-subpanel (create-div button-panel :css '(:width "100%" :height 65px
+                                                              :display "grid"
+                                                              :grid-template-columns "1fr 1fr 1fr 1fr"
+                                                              :grid-template-rows "1fr 1fr 1fr 1fr"
+                                                              :gap 0px ;
+                                                              :padding 10px
+                                                              :justify-content "space-around"
+                                                              :align-content "space-around")))
         (setf gui-fader
               (coerce
-               (loop for panel in (list knob-panel fader-panel)
-                     for offs in '(0 8)
-                     append (v-collect
-                                (n 8)
-                                (numbox
-                                 panel
-                                 :min 0 :max 127 :size 10 :css '(:margin 2px)
-                                 :val-change-cb
-                                 (let ((n (+ n offs)))
-                                   (lambda (v obj)
-                                     (let ((new-value (read-from-string v)))
-                                       (setf (val (aref (nk2-faders midi-controller) n)) new-value)
-;;; nk2-fader-update-fns are functions to compare incoming
-;;; midi-cc-values from the hardware midi-controller against the current
-;;; value in the gui. As soon as the update-fn returns t, the
-;;; hardware fader is "caught" and the background in the gui is set
-;;; to green. This is implemented in the handle-midi-in method of the
-;;; midi-controller side of the code (in faderfox.lisp of
-;;; cl-midictl). Here these functions and the background colors are
-;;; set up in response to a change in the gui.
-;;;
-;;; IMPORTANT NOTE: The physical state of the hardware controller is
-;;; maintained in cl-midictl:*midi-cc-state* and *NOT* in the cc-state
-;;; of the midi-controller instance. That state is always in sync with
-;;; the gui (using model-slots and synchronizing with the gui and the
-;;; hardware controller via its ref-set-hooks defined below).
-                                       (setf (aref (nk2-fader-update-fns midi-controller) n)
-                                             (let ((hw-val (aref
-                                                            (aref *midi-cc-state*
-                                                                  (chan midi-controller))
-                                                            (aref (cc-nums midi-controller) n))))
-                                               (cond
-                                                 ((> new-value hw-val)
-                                                  (setf (style obj :background-color) "#ffaaaa")
-                                                  #'>=)
-                                                 ((< new-value hw-val)
-                                                  (setf (style obj :background-color) "#ffaaaa")
-                                                  #'<=)
-                                                 (t (setf (style obj :background-color) "#aaffaa")
-                                                    nil))))))))))
+               (v-collect
+                   (n 16)
+                   (numbox
+                    fader-subpanel
+                    :min 0 :max 127 :size 10 :css '(:margin 2px)
+                    :val-change-cb
+                    (let ((n n))
+                      (lambda (v obj)
+                        (declare (ignore obj))
+                        (let ((new-value (read-from-string v)))
+                          (setf (val (aref (ff-faders midi-controller) n)) new-value))))))
                'vector))
-        (define-button-row gui-s-buttons s-buttons "S" s-btn-panel)
-        (define-button-row gui-m-buttons m-buttons "M" m-btn-panel)
-        (define-button-row gui-r-buttons r-buttons "R" r-btn-panel)))
+        (define-buttons gui-buttons ff-buttons button-subpanel)))
+
+
+#|
 
 ;;; set the ref-set-hooks in the model-slots of the midi-controller
     (dotimes (i 16) ;;; faders and knobs
@@ -311,7 +238,9 @@
   }
 };
 "  gui-ctl-panel-id gui-ctl-panel-id)))
-    (update-state instance)))
+        (update-state instance)
+|#
+        ))
 
 (defmethod update-state ((gui faderfox-gui))
   (with-slots (midi-controller gui-fader gui-m-buttons gui-s-buttons gui-r-buttons
@@ -368,6 +297,6 @@
             (setf (style gui-ctl-panel "display") "flex")
             (setf ctl-panel-vis t))))))
 
-;;; (add-midi-controller 'faderfox-gui :id :nk2 :chan 5)
+;;; (add-midi-controller 'faderfox-gui :id :ff01 :chan 5)
 
-;;; (find-controller :nk2)
+;;; (find-controller :ff01)
