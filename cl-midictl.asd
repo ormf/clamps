@@ -11,7 +11,7 @@
   :components ((:file "package")
                (:file "globals")
                (:file "utils")
-               (:file "osc")
+               (:file "osc-midi")
                (:file "cl-midictl")
                (:file "nanoktl2")
                (:file "faderfox")))
