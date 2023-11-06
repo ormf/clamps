@@ -288,6 +288,7 @@ mouse interaction or presets in the instance."
 midi input it scans all elems of *midi-controllers* and calls their
 handle-midi-in method in case the event's midi channel matches the
 controller's channel."
+  (remove-all-responders input)
   (make-responder input
      (lambda (st d1 d2)
        (incudine::msg :info "~&~S ~a ~a ~a" (status->opcode st) d1 d2 (status->channel st))
@@ -297,7 +298,8 @@ controller's channel."
          (dolist (controller (gethash input *midi-controllers*))
            (if (= chan (chan controller))
                (handle-midi-in controller opcode d1 d2))))))
-  (recv-start input))
+  (recv-start input)
+  (update-all-controllers input))
 
 (defun stop-midi-receive (input)
   "general receiver/dispatcher for all midi input of input arg. On any
@@ -306,3 +308,9 @@ handle-midi-in method in case the event's midi channel matches the
 controller's channel."
   (remove-all-responders input)
   (recv-stop input))
+
+(defun update-all-controllers (midi-in-port)
+  (dolist (controller (gethash midi-in-port *midi-controllers*))
+    (update-state controller)))
+
+;;; (start-midi-receive *midi-in1*)

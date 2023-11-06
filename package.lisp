@@ -32,4 +32,5 @@
            #:FADERFOX-MIDI
            #:FF-FADERS
            #:FF-BUTTONS
-           #:UPDATE-STATE))
+           #:UPDATE-STATE
+           #:UPDATE-ALL-CONTROLLERS))
