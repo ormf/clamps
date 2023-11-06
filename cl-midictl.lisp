@@ -267,16 +267,35 @@ the hash-table entry of its midi-input."
 
 (defun generic-midi-handler (opcode d1 d2 channel)
   "the generic handler simply maintains the *midi-cc-state* array and
-calls all functions registered in *midi-cc-fns*. This can be used in
-scratch situation where no controller is actually instanced.
+calls all functions registered in *midi-cc-fns*.
 
-In addition this is used in the nanoctl to check the real state of the
-hardware controllers compared to the values being set directly using
-mouse interaction or presets in the instance."
+The function gets called by the midi responder installed with
+start-midi-receive before calling the the handle-midi-in method of all
+registered controllers.
+
+Normally controllers will install their own handlers using the
+handle-midi-in method.
+
+But it can be used e.g. in a scratch environment where no controller
+is actually instanced.
+
+In addition this is used in the nanoktl2-gui code (in the
+:clog-midi-controller package) to compare the real state of the
+hardware controller's faders to the cc-state being set directly in the
+controller instance using mouse interaction or presets and only
+updating the cc-state in the controller when the incoming midi values
+agree to the values to avoid jumps in the cc-state of the controller
+instance."
   (case opcode
     (:cc (progn
            (setf (aref (aref *midi-cc-state* channel) d1) d2)
            (mapcar (lambda (fn) (funcall fn d2)) (aref (aref *midi-cc-fns* channel) d1))))
+    (:note-on (progn
+                (setf (aref (aref *midi-note-state* channel) d1) d2)
+                (mapcar (lambda (fn) (funcall fn d2)) (aref (aref *midi-note-fns* channel) d1))))
+    (:note-off (progn
+                (setf (aref (aref *midi-note-state* channel) d1) 0)
+                (mapcar (lambda (fn) (funcall fn 0)) (aref (aref *midi-note-fns* channel) d1))))
     ;; (:note-on (progn
     ;;             (mapcar (lambda (fn) (funcall fn d1 d2)) (note-fns instance))
     ;;             (setf last-note-on d1)))
@@ -302,10 +321,8 @@ controller's channel."
   (update-all-controllers input))
 
 (defun stop-midi-receive (input)
-  "general receiver/dispatcher for all midi input of input arg. On any
-midi input it scans all elems of *midi-controllers* and calls their
-handle-midi-in method in case the event's midi channel matches the
-controller's channel."
+  "remove all responders of input and stop general receiver/dispatcher
+of the input."
   (remove-all-responders input)
   (recv-stop input))
 

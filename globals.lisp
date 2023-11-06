@@ -32,3 +32,13 @@
   (make-array 16 :initial-contents
               (loop repeat 16
                     collect (make-array 128 :initial-contents (loop repeat 128 collect nil)))))
+
+(defparameter *midi-note-state*
+  (make-array 16 :initial-contents
+              (loop repeat 16
+                    collect (make-array 128 :initial-contents (loop repeat 128 collect 0)))))
+
+(defparameter *midi-note-fns*
+  (make-array 16 :initial-contents
+              (loop repeat 16
+                    collect (make-array 128 :initial-contents (loop repeat 128 collect nil)))))
