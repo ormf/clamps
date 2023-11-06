@@ -21,10 +21,7 @@
 (in-package :cl-midictl)
 
 (defclass faderfox-midi (midi-controller)
-  ((echo :initarg :echo :initform t :accessor echo
-         :documentation "en/disable direct display-updates in hw-controller when midi-input is
-received. (default: t)")
-   (cc-nums :accessor cc-nums)
+  ((cc-nums :accessor cc-nums)
    (ff-faders :accessor ff-faders)
    (ff-buttons :accessor ff-buttons)))
 
@@ -75,29 +72,29 @@ nanokontrol2.
 (defmethod handle-midi-in ((instance faderfox-midi) opcode d1 d2)
 ;;;  (call-next-method)
   (with-slots (cc-fns cc-nums ff-fader-update-fns echo
-               cc-map cc-state note-fn last-note-on midi-output chan)
+               cc-map cc-state note-state note-fn last-note-on midi-output chan)
       instance
     (case opcode
       (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
        (cond
          ((< (aref cc-map d1) 16)
           (let* ((fader-idx (aref cc-map d1))
-                 (gui-slot (aref cc-state fader-idx))
-                 (old-value (val gui-slot))
+                 (fader-slot (aref cc-state fader-idx))
+                 (old-value (val fader-slot))
                  (new-value (max 0 (min 127 (+ old-value (midi-delta->i d2))))))
             (incudine.util:msg :info "old-value: ~a, new-value: ~a" old-value new-value)
             (when (/= old-value new-value)
-              (setf (val gui-slot) new-value)
+              (setf (val fader-slot) new-value)
               (when echo (osc-midi-write-short midi-output (+ chan 176) d1 new-value)))))))
       (:note-on (incudine.util:msg :info "notein: ~a ~a" d1 d2)
-       (let ((fader-idx (aref cc-map d1)))
-         (cond ((and (< fader-idx 16) (= d2 127))
-                (let ((gui-slot (aref cc-state fader-idx)))
-                  (toggle-slot gui-slot)))))))))
+       (let ((button-idx (aref cc-map d1)))
+         (cond ((and (< button-idx 16) (= d2 127))
+                (let ((button-slot (aref note-state button-idx)))
+                  (toggle-slot button-slot)))))))))
 
 (defmethod update-state ((instance faderfox-midi))
   (with-slots (chan cc-nums cc-map cc-state note-state midi-output) instance
-    (dotimes (local-idx (length cc-nums))
+    (dotimes (local-idx 16)
       (let ((cc-num (aref cc-nums local-idx)))
         (osc-midi-write-short
          midi-output

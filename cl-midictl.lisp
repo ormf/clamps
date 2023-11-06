@@ -142,6 +142,8 @@
            :initarg :cc-map :accessor cc-map)
    (midi-input :initform nil :initarg :midi-input :accessor midi-input)
    (midi-output :initform nil :initarg :midi-output :accessor midi-output)
+   (echo :initarg :echo :initform t :accessor echo
+         :documentation "en/disable direct updates in hw-controller when midi-input is received. (default: t)")
    (last-note-on :initform 0 :initarg :last-note-on :accessor last-note-on)
    (cc-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-instance 'value-cell)))
              :initarg :cc-state :accessor cc-state)

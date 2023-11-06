@@ -14,6 +14,7 @@
            #:FIND-CONTROLLER
            #:NANOKTL2-MIDI
            #:GUI
+           #:ECHO
            #:CHAN
            #:*MIDI-DEBUG*
            #:*MIDI-IN1*
@@ -30,4 +31,5 @@
 
            #:FADERFOX-MIDI
            #:FF-FADERS
-           #:FF-BUTTONS))
+           #:FF-BUTTONS
+           #:UPDATE-STATE))
