@@ -220,6 +220,7 @@
         (define-button-row gui-m-buttons m-buttons "M" m-btn-panel)
         (define-button-row gui-r-buttons r-buttons "R" r-btn-panel)))
 
+    (setf (slot-value midi-controller 'echo) nil)
 ;;; set the ref-set-hooks in the model-slots of the midi-controller
     (dotimes (i 16) ;;; faders and knobs
       (with-slots (nk2-faders chan cc-nums) midi-controller
@@ -310,36 +311,7 @@
   }
 };
 "  gui-ctl-panel-id gui-ctl-panel-id)))
-    (update-state instance)))
-
-(defmethod update-state ((gui nanoktl2-gui))
-  (with-slots (midi-controller gui-fader gui-m-buttons gui-s-buttons gui-r-buttons
-               gui-rewind gui-ffwd gui-stop gui-play gui-rec)
-      gui
-    (with-slots (cc-nums cc-state chan) midi-controller
-      (dotimes (i 16)
-        (let ((elem (aref gui-fader i))
-              (fader-value (val (aref cc-state i))))
-          (setf (clog:value elem) fader-value)
-          (setf (style elem :background-color)
-                (if (= fader-value
-                       (aref
-                        (aref cl-midictl::*midi-cc-state* chan)
-                        (aref cc-nums i)))
-                    "#aaffaa" "#ffaaaa"))))
-      (dotimes (i 8)
-        (map '() (lambda (slot offs)
-                   (let ((elem (aref slot i))
-                         (value (val (aref cc-state (+ i offs)))))
-                     (setf (clog:value elem) value)))
-             (list gui-s-buttons gui-m-buttons gui-r-buttons)
-             '(16 24 32)))
-      (map '() (lambda (slot offs)
-                   (let ((elem slot)
-                         (value (val (aref cc-state offs))))
-                     (setf (clog:value elem) value)))
-             (list gui-rewind gui-ffwd gui-stop gui-play gui-rec)
-             '(46 47 48 49 50)))))
+    (update-state midi-controller)))
 
 (defgeneric show-ctl-panel (gui show)
   (:method ((gui nanoktl2-gui) show)

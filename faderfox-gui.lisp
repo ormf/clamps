@@ -80,10 +80,10 @@
 
 (defmethod initialize-instance :after ((instance faderfox-gui) &rest args)
   (declare (ignorable args))
-  (with-slots (gui-parent gui-container
+  (with-slots (connection-hash-key midi-controller
+               gui-parent gui-container
                gui-fader gui-buttons
                gui-ctl-panel
-               midi-controller
                )
       instance
     (unless gui-parent (error "faderfox-gui initialized without parent supplied!"))
@@ -134,7 +134,7 @@
                    (n 16)
                    (numbox
                     fader-subpanel
-                    :min 0 :max 127 :size 10 :css '(:margin 2px)
+                    :min 0 :max 127 :size 10 :css '(:background "#dddddd" :margin 2px)
                     :val-change-cb
                     (let ((n n))
                       (lambda (v obj)
@@ -144,151 +144,33 @@
                'vector))
         (define-buttons gui-buttons ff-buttons button-subpanel)))
 
-    #|
-
-    (dotimes (i 16) ;;; faders and knobs
-      (with-slots (nk2-faders chan cc-nums) midi-controller
-        (setf (ref-set-hook (aref nk2-faders i))
-              (let ((i i))
+    (with-slots (ff-faders ff-buttons chan midi-output cc-nums echo) midi-controller
+      (setf echo nil)
+      (dotimes (i 16) ;;; rotaries and buttons
+        (let ((i i)
+              (connection-hash-key connection-hash-key))
+          (setf (ref-set-hook (aref ff-faders i))
+                (lambda (val) 
+                  (osc-midi-write-short midi-output (+ chan 176) (aref cc-nums i) (round val))
+                  (maphash (lambda (connection-id connection-hash)
+                             (declare (ignore connection-id))
+                             (let* ((ff-gui (gethash connection-hash-key connection-hash)))
+                               (when ff-gui
+                                 (let ((elem (aref (gui-fader ff-gui) i)))
+                                   (setf (clog:value elem) val)))
+                               ))
+                           clog-connection::*connection-data*)))
+          (setf (ref-set-hook (aref ff-buttons i))
                 (lambda (val) 
                   (maphash (lambda (connection-id connection-hash)
                              (declare (ignore connection-id))
-                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
-                               (when f.orm-gui
-                                 (let ((elem (aref (gui-fader f.orm-gui) i)))
-                                   (setf (clog:value elem) val)
-                                   (setf (style elem :background-color)
-                                         (if (= val
-                                                (aref
-                                                 (aref cl-midictl::*midi-cc-state* chan)
-                                                 (aref cc-nums i)))
-                                             "#aaffaa" "#ffaaaa"))))))
-                           clog-connection::*connection-data*))))))
-    
-
-
-;;; set the ref-set-hooks in the model-slots of the midi-controller
-    (dotimes (i 16) ;;; faders and knobs
-      (with-slots (nk2-faders chan cc-nums) midi-controller
-        (setf (ref-set-hook (aref nk2-faders i))
-              (let ((i i))
-                (lambda (val) 
-                  (maphash (lambda (connection-id connection-hash)
-                             (declare (ignore connection-id))
-                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
-                               (when f.orm-gui
-                                 (let ((elem (aref (gui-fader f.orm-gui) i)))
-                                   (setf (clog:value elem) val)
-                                   (setf (style elem :background-color)
-                                         (if (= val
-                                                (aref
-                                                 (aref cl-midictl::*midi-cc-state* chan)
-                                                 (aref cc-nums i)))
-                                             "#aaffaa" "#ffaaaa"))))))
-                           clog-connection::*connection-data*))))))
-    (dolist (syms '((s-buttons gui-s-buttons 16)  ;;; buttons next to faders
-                    (m-buttons gui-m-buttons 24)
-                    (r-buttons gui-r-buttons 32)))
-      (destructuring-bind (nk2-slot gui-slot cc-map-offs) syms
-        (dotimes (i 8)
-          (setf (ref-set-hook (aref (slot-value midi-controller nk2-slot) i))
-                (let* ((i i)
-                       (chan (chan midi-controller))
-                       (cc-num (elt (cc-nums midi-controller) (+ i cc-map-offs))))
-                  (lambda (val) 
-                    (osc-midi-write-short *midi-out1* (+ chan 176) cc-num val)
-                    (maphash (lambda (connection-id connection-hash)
-                               (declare (ignore connection-id))
-                               (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
-                                 (when f.orm-gui
-                                   (let ((elem (aref (slot-value f.orm-gui gui-slot) i)))
-                                     (setf (clog:attribute elem "data-val") val)))))
-                             clog-connection::*connection-data*)))))))
-    (dolist (syms '((tr-rewind gui-rewind 46) ;;; transport buttons
-                    (tr-ffwd gui-ffwd 47)
-                    (tr-stop gui-stop 48)
-                    (tr-play gui-play 49)
-                    (tr-rec gui-rec 50)))
-      (destructuring-bind (nk2-slot gui-slot cc-map-offs) syms ;;; assigning transport button hooks
-        (setf (ref-set-hook (slot-value midi-controller nk2-slot))
-              (let* ((chan (chan midi-controller))
-                     (cc-num (elt (cc-nums midi-controller) cc-map-offs)))
-                (lambda (val)
-                  (incudine.util:msg :info "val: ~a, chan: ~a, cc-num: ~a" val chan cc-num)
-                  (osc-midi-write-short (midi-output midi-controller) (+ chan 176) cc-num (if (zerop val) 0 127))
-                  (maphash (lambda (connection-id connection-hash)
-                             (declare (ignore connection-id))
-                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
-                               (when f.orm-gui
-                                 (let ((elem (slot-value f.orm-gui gui-slot)))
-                                   (setf (clog:attribute elem "data-val") val)))))
-                           clog-connection::*connection-data*))))))
-
-    (dolist (syms '((track-left gui-track-left 40)
-                    (track-right gui-track-right 41)
-                    (cycle gui-cycle 42)
-                    (set-marker gui-set-marker 43)
-                    (marker-left gui-marker-left 44)
-                    (marker-right gui-marker-right 45)))
-      (destructuring-bind (nk2-slot gui-slot cc-map-offs) syms ;;; assigning click event handlers
-        (setf (slot-value (slot-value midi-controller nk2-slot) 'cellctl:action-fn)
-              (let* ((chan (chan midi-controller))
-                     (cc-num (elt (cc-nums midi-controller) cc-map-offs)))
-                (lambda (obj)
-                  (incudine.util:msg :info "chan: ~a, cc-num: ~a" chan cc-num)
-                  (flash-midi-out (midi-output midi-controller) cc-num chan)
-                  (maphash (lambda (connection-id connection-hash)
-                             (declare (ignore connection-id))
-                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
-                               (when f.orm-gui
-                                 (let ((elem (slot-value f.orm-gui gui-slot)))
-                                   (if (not (eql obj elem)) (flash elem))))))
-                           clog-connection::*connection-data*))))))
-;;; setup of F1/F2 switches to show/hide ctl-panel
-    (let ((gui-ctl-panel-id (html-id gui-ctl-panel)))
-      (clog:js-execute
-       gui-parent
-       (format nil "document.onkeydown = function (event) {
-  if (event.which == 112 || event.keyCode == 112) {
-   document.getElementById('~a').style.display = \"none\";
-  }
-  if (event.which == 113 || event.keyCode == 113) {
-   document.getElementById('~a').style.display = \"flex\";
-  }
-};
-"  gui-ctl-panel-id gui-ctl-panel-id)))
-        (update-state instance)
-|#
-        ))
-
-(defmethod update-state ((gui faderfox-gui))
-  (with-slots (midi-controller gui-fader gui-m-buttons gui-s-buttons gui-r-buttons
-               gui-rewind gui-ffwd gui-stop gui-play gui-rec)
-      gui
-    (with-slots (cc-nums cc-state chan) midi-controller
-      (dotimes (i 16)
-        (let ((elem (aref gui-fader i))
-              (fader-value (val (aref cc-state i))))
-          (setf (clog:value elem) fader-value)
-          (setf (style elem :background-color)
-                (if (= fader-value
-                       (aref
-                        (aref cl-midictl::*midi-cc-state* chan)
-                        (aref cc-nums i)))
-                    "#aaffaa" "#ffaaaa"))))
-      (dotimes (i 8)
-        (map '() (lambda (slot offs)
-                   (let ((elem (aref slot i))
-                         (value (val (aref cc-state (+ i offs)))))
-                     (setf (clog:value elem) value)))
-             (list gui-s-buttons gui-m-buttons gui-r-buttons)
-             '(16 24 32)))
-      (map '() (lambda (slot offs)
-                   (let ((elem slot)
-                         (value (val (aref cc-state offs))))
-                     (setf (clog:value elem) value)))
-             (list gui-rewind gui-ffwd gui-stop gui-play gui-rec)
-             '(46 47 48 49 50)))))
+                             (let* ((ff-gui (gethash connection-hash-key connection-hash)))
+                               (when ff-gui
+                                 (let ((elem (aref (gui-buttons ff-gui) i)))
+                                   (setf (clog:value elem) val)))))
+                           clog-connection::*connection-data*)))
+          )))
+    (update-state midi-controller)))
 
 (defgeneric show-ctl-panel (gui show)
   (:method ((gui faderfox-gui) show)
