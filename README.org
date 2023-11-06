@@ -55,8 +55,8 @@ Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
      than midi input, by comparing the =cc-state= of the controller
      instance to the incoming values stored in =*midi-cc-state*= and
      act accordingly, e.g. by only updating the controller state in
-     case the incoming value is matching it (for an example, see
-     the file =nanoktl2.lisp= in [[https://github.com/ormf/cl-midictl.git][cl-midictl]]).
+     case the incoming value is matching it (for an example, see the
+     =handle-midi-in= method in =nanoktl2.lisp= in [[https://github.com/ormf/cl-midictl.git][cl-midictl]]).
 
    - Controller Gui
 
