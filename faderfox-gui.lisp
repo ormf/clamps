@@ -144,8 +144,28 @@
                'vector))
         (define-buttons gui-buttons ff-buttons button-subpanel)))
 
+    #|
 
-#|
+    (dotimes (i 16) ;;; faders and knobs
+      (with-slots (nk2-faders chan cc-nums) midi-controller
+        (setf (ref-set-hook (aref nk2-faders i))
+              (let ((i i))
+                (lambda (val) 
+                  (maphash (lambda (connection-id connection-hash)
+                             (declare (ignore connection-id))
+                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
+                               (when f.orm-gui
+                                 (let ((elem (aref (gui-fader f.orm-gui) i)))
+                                   (setf (clog:value elem) val)
+                                   (setf (style elem :background-color)
+                                         (if (= val
+                                                (aref
+                                                 (aref cl-midictl::*midi-cc-state* chan)
+                                                 (aref cc-nums i)))
+                                             "#aaffaa" "#ffaaaa"))))))
+                           clog-connection::*connection-data*))))))
+    
+
 
 ;;; set the ref-set-hooks in the model-slots of the midi-controller
     (dotimes (i 16) ;;; faders and knobs

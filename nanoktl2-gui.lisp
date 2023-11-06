@@ -110,12 +110,12 @@
 
 (defmethod initialize-instance :after ((instance nanoktl2-gui) &rest args)
   (declare (ignorable args))
-  (with-slots (gui-parent gui-container
+  (with-slots (midi-controller connection-hash-key
+               gui-parent gui-container
                gui-fader gui-s-buttons gui-m-buttons gui-r-buttons
                gui-track-left gui-track-right
                gui-cycle gui-set-marker gui-marker-left gui-marker-right
                gui-rewind gui-ffwd gui-stop gui-play gui-rec gui-ctl-panel
-               midi-controller
                )
       instance
     (unless gui-parent (error "nanoktl2-gui initialized without parent supplied!"))
@@ -228,7 +228,7 @@
                 (lambda (val) 
                   (maphash (lambda (connection-id connection-hash)
                              (declare (ignore connection-id))
-                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
+                             (let* ((f.orm-gui (gethash connection-hash-key connection-hash)))
                                (when f.orm-gui
                                  (let ((elem (aref (gui-fader f.orm-gui) i)))
                                    (setf (clog:value elem) val)
@@ -252,7 +252,7 @@
                     (osc-midi-write-short *midi-out1* (+ chan 176) cc-num val)
                     (maphash (lambda (connection-id connection-hash)
                                (declare (ignore connection-id))
-                               (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
+                               (let* ((f.orm-gui (gethash connection-hash-key connection-hash)))
                                  (when f.orm-gui
                                    (let ((elem (aref (slot-value f.orm-gui gui-slot) i)))
                                      (setf (clog:attribute elem "data-val") val)))))
@@ -271,7 +271,7 @@
                   (osc-midi-write-short (midi-output midi-controller) (+ chan 176) cc-num (if (zerop val) 0 127))
                   (maphash (lambda (connection-id connection-hash)
                              (declare (ignore connection-id))
-                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
+                             (let* ((f.orm-gui (gethash connection-hash-key connection-hash)))
                                (when f.orm-gui
                                  (let ((elem (slot-value f.orm-gui gui-slot)))
                                    (setf (clog:attribute elem "data-val") val)))))
@@ -292,7 +292,7 @@
                   (flash-midi-out (midi-output midi-controller) cc-num chan)
                   (maphash (lambda (connection-id connection-hash)
                              (declare (ignore connection-id))
-                             (let* ((f.orm-gui (gethash "f.orm-gui" connection-hash)))
+                             (let* ((f.orm-gui (gethash connection-hash-key connection-hash)))
                                (when f.orm-gui
                                  (let ((elem (slot-value f.orm-gui gui-slot)))
                                    (if (not (eql obj elem)) (flash elem))))))
