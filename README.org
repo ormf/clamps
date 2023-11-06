@@ -10,6 +10,23 @@ gpl 2.0 or later
 
 Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 
+** Dependencies
+
+   [[https://github.com/ormf/clog-dsp-widgets][clog-dsp-widgets]]
+
+   [[https://github.com/ormf/cl-midictl.git][cl-midictl]]
+
+   and their dependencies
+
+** Installation
+
+   After installing the dependencies, clone this repository into
+   =$HOME/quicklisp/local-projects= and call
+
+   =(ql:quickload :clog-midi-controller)=
+
+   from sbcl.
+
 ** Overview
    The package provides the infrastructure and clog guis for Hardware
    Midi Controllers. It needs [[https://github.com/ormf/clog-dsp-widgets][clog-dsp-widgets]] and [[https://github.com/ormf/cl-midictl.git][cl-midictl]]
