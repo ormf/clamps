@@ -12,13 +12,13 @@ Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 
 ** Overview
    The package provides the infrastructure and clog guis for Hardware
-   Midi Controllers. It needs =clog-dsp-widgets= and =cl-midictl=
+   Midi Controllers. It needs [[https://github.com/ormf/clog-dsp-widgets][clog-dsp-widgets]] and [[https://github.com/ormf/cl-midictl.git][cl-midictl]]
    (including their dendencies) to work and consists of two parts:
 
    - Midi Controllers
 
-     These are defined in =cl-midictl= and establish a representation
-     of the hardware controllers, their connection to the midi input
+     These are defined in [[https://github.com/ormf/cl-midictl.git][cl-midictl]] and establish a representation of
+     the hardware controllers, their connection to the midi input
      output and their state as visible to the application.
 
      A Hardware midi controller instance is initialized with
