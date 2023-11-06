@@ -41,28 +41,12 @@
 
 #|
 
-(defclass nanoktl2-osc (osc-controller)
-  ((nk2-faders :accessor nk2-faders)
-   (s-buttons :accessor s-buttons)
-   (m-buttons :accessor m-buttons)
-   (r-buttons :accessor r-buttons)
-   (track-left :accessor track-left)
-   (track-right :accessor track-right)
-   (cycle :accessor cycle)
-   (set-marker :accessor set-marker)
-   (marker-left :accessor marker-left)
-   (marker-right :accessor marker-right)
-   (rewind :accessor tr-rewind)
-   (ffwd :accessor tr-ffwd)
-   (stop :accessor tr-stop)
-   (play :accessor tr-play)
-   (rec :accessor tr-rec)))
+cc-map is a lookup table mapping the cc nums of the nanokontrol2 to
+the idx of the cc-state array slots. It is implemented as an array of
+128 values. Undefined cc nums are set to nil.
 
-|#
-
-;;; the cc-map maps the cc nums to the array slots. Their order is like this:
-#|
-array-idx: cc-nums of nanokontrol2
+The cc-map below is according to the factory settings of a
+nanokontrol2.
 
 00-08:     cc-nums of faders
 08-15:     cc-nums of knobs
@@ -73,9 +57,6 @@ array-idx: cc-nums of nanokontrol2
 40-41:     cc-nums of left and right button
 50-53:     cc-nums of cycle, marker-set, marker-left and marker-right buttons
 54-58:     cc-nums of transport buttons (left to right).
-
-the cc-map below is according to the factory settings of a
-nanokontrol2.
 
 |#
 
@@ -136,22 +117,23 @@ nanokontrol2.
   (with-slots (cc-fns cc-nums nk2-fader-update-fns cc-map cc-state note-fn last-note-on midi-output chan) instance
     (case opcode
       (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
-       (cond
-         ((< (aref cc-map d1) 16)
-          (let* ((fader-idx (aref cc-map d1))
-                 (fn (aref nk2-fader-update-fns fader-idx))
-                 (gui-slot (aref cc-state fader-idx)))
-            (if fn
-                (when (funcall fn d2 (val gui-slot))
-                  (setf (val gui-slot) d2)
-                  (setf (aref nk2-fader-update-fns fader-idx) nil))
-                (setf (val gui-slot) d2))
-            ))
-         ((<= 40 (aref cc-map d1) 45)
-          (let ((slot (aref cc-state (aref cc-map d1))))
-            (unless (zerop d2) (trigger slot nil))))
-         (t (let ((slot (aref cc-state (aref cc-map d1))))
-              (toggle-slot slot)))))
+       (let ((fader-idx (aref cc-map d1)))
+         (when fader-idx
+           (cond
+             ((< fader-idx 16)
+              (let* ((fn (aref nk2-fader-update-fns fader-idx))
+                     (gui-slot (aref cc-state fader-idx)))
+                (if fn
+                    (when (funcall fn d2 (val gui-slot))
+                      (setf (val gui-slot) d2)
+                      (setf (aref nk2-fader-update-fns fader-idx) nil))
+                    (setf (val gui-slot) d2))
+                ))
+             ((<= 40 fader-idx 45)
+              (let ((slot (aref cc-state (aref cc-map d1))))
+                (unless (zerop d2) (trigger slot nil))))
+             (t (let ((slot (aref cc-state (aref cc-map d1))))
+                  (toggle-slot slot)))))))
       (:note-on (setf last-note-on d1)))))
 
 (defmethod update-state ((instance nanoktl2-midi))

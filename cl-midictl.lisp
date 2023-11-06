@@ -195,17 +195,6 @@ controller actions."))
 
 ;;; (make-instance 'midi-controller)
 
-(defgeneric init-gui-callbacks (instance &key echo)
-  (:documentation "initialize the gui callback functions."))
-
-(defgeneric init-gui-callbacks (instance &key echo)
-  (:documentation "initialize the gui callback functions of a
-  controller. Called in initialize-instance :after of a controller
-  gui."))
-
-(defmethod init-gui-callbacks ((instance midi-controller) &key (echo t))
-  (declare (ignore instance echo)))
-
 (defgeneric update-state (instance)
   (:documentation "set state of controller according to *midi-cc-state*"))
 
@@ -261,7 +250,6 @@ the hash-table entry of its midi-input."
                          (delete v (gethash (midi-input v) *midi-controllers*)))
                    (format t "removing ~a: ~a" key (remhash key *midi-controllers*)))
                      (warn "couldn't remove midi-controller ~a" v))))))
-
 
 (defun find-controller (id)
   (gethash id *midi-controllers*))
