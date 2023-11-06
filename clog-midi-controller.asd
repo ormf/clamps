@@ -11,6 +11,6 @@
   :serial t
   :depends-on (#:clog-dsp-widgets #:cl-midictl)
   :components ((:file "package")
+               (:file "clog-midi-controller")
                (:file "nanoktl2-gui")
-               (:file "faderfox-gui")
-               (:file "clog-midi-controller")))
+               (:file "faderfox-gui")))

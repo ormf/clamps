@@ -53,9 +53,8 @@
 
 (in-package :clog-midi-controller)
 
-(defclass faderfox-gui ()
-  ((midi-controller :initarg :midi-controller :accessor midi-controller)
-   (gui-parent :initarg :gui-parent :accessor gui-parent)
+(defclass faderfox-gui (clog-midi-controller)
+  ((gui-parent :initarg :gui-parent :accessor gui-parent)
    (gui-container :initarg :gui-container :accessor gui-container)
    (gui-fader :initarg :gui-fader :accessor gui-fader)
    (gui-buttons :initarg :gui-buttons :accessor gui-buttons)

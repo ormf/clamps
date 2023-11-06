@@ -53,9 +53,8 @@
 
 (in-package :clog-midi-controller)
 
-(defclass nanoktl2-gui ()
-  ((midi-controller :initarg :midi-controller :accessor midi-controller)
-   (gui-parent :initarg :gui-parent :accessor gui-parent)
+(defclass nanoktl2-gui (clog-midi-controller)
+  ((gui-parent :initarg :gui-parent :accessor gui-parent)
    (gui-container :initarg :gui-container :accessor gui-container)
    (gui-fader :initarg :gui-fader :accessor gui-fader)
    (gui-s-buttons :initarg :gui-s-buttons :accessor gui-s-buttons)

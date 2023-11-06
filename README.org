@@ -106,8 +106,8 @@ Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
    of the slots used in the hardware controller instance.
 
    In case there is no hardware controller defined in =cl-midictl=, it
-   needs to get defined in the =:cl-midictl= package and referenced by
-   the gui definition.
+   first needs to get defined in the =:cl-midictl= package and then
+   referenced by the gui definition.
 
    If new guis and hardware controllers are defined, please issue a
    pull request for =clog-midi-controller= and/or =cl-midictl=.
