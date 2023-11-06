@@ -96,14 +96,15 @@ Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
    using the :midi-controller keyword.
 
 ** Defining new gui controllers
-
-   A new gui controller can be defined accordingly: In case it is just
-   an alternative gui to an already existing hardware controller
-   defined in [[https://github.com/ormf/cl-midictl.git][cl-midictl]], the elements of the gui need to get defined
-   in the class definition and its appearence in the
-   =initialize-instance :after= method. In this method also the
-   updating behaviour needs to be defined by setting the ref-set-hooks
-   of the slots used in the hardware controller instance.
+   
+   A new gui controller (as a subclass of =clog-midi-controller=) can
+   be defined accordingly: In case it is just an alternative gui to an
+   already existing hardware controller defined in [[https://github.com/ormf/cl-midictl.git][cl-midictl]], the
+   elements of the gui need to get defined in the class definition and
+   its appearence in the =initialize-instance :after= method. In this
+   method also the updating behaviour needs to be defined by setting
+   the ref-set-hooks of the slots used in the hardware controller
+   instance.
 
    In case there is no hardware controller defined in =cl-midictl=, it
    first needs to get defined in the =:cl-midictl= package and then
