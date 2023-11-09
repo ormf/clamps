@@ -134,7 +134,7 @@
                    (n 16)
                    (numbox
                     fader-subpanel
-                    :min 0 :max 127 :size 10 :css '(:background "#dddddd" :margin 2px)
+                    :min 0 :max 127 :size 10 :css '(:background "#cccccc" :margin 2px)
                     :val-change-cb
                     (let ((n n))
                       (lambda (v obj)
