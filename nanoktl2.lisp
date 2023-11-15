@@ -23,6 +23,8 @@
 (defclass nanoktl2-midi (midi-controller)
   ((nk2-faders :accessor nk2-faders)
    (nk2-fader-update-fns :accessor nk2-fader-update-fns :initform (coerce (loop repeat 16 collect nil) 'vector))
+   (nk2-fader-modes :accessor nk2-fader-modes :initform (coerce (loop repeat 16 collect :scale) 'vector))
+   (nk2-fader-last-cc :accessor nk2-fader-last-cc :initform (coerce (loop repeat 16 collect 0) 'vector))
    (s-buttons :accessor s-buttons)
    (m-buttons :accessor m-buttons)
    (r-buttons :accessor r-buttons)
@@ -106,7 +108,9 @@ nanokontrol2.
 
 (defmethod handle-midi-in ((instance nanoktl2-midi) opcode d1 d2)
 ;;;  (call-next-method)
-  (with-slots (cc-fns cc-nums nk2-fader-update-fns cc-map cc-state note-fn last-note-on midi-output chan) instance
+  (with-slots (cc-fns cc-nums nk2-fader-update-fns
+               nk2-fader-modes nk2-fader-last-cc cc-map cc-state note-fn last-note-on midi-output chan)
+      instance
     (case opcode
       (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
        (let ((fader-idx (aref cc-map d1)))
@@ -114,13 +118,20 @@ nanokontrol2.
            (cond
              ((< fader-idx 16)
               (let* ((fn (aref nk2-fader-update-fns fader-idx))
+                     (fader-mode (aref nk2-fader-modes fader-idx))
+                     (last-cc (aref nk2-fader-last-cc fader-idx))
                      (gui-slot (aref cc-state fader-idx)))
-                (if fn
-                    (when (funcall fn d2 (val gui-slot))
-                      (setf (val gui-slot) d2)
-                      (setf (aref nk2-fader-update-fns fader-idx) nil))
-                    (setf (val gui-slot) d2))
-                ))
+                (case fader-mode
+                  (:scale
+                   (progn
+                     (setf (val gui-slot) (buchla-scale d2 last-cc (val gui-slot)))
+                     (setf (aref nk2-fader-last-cc fader-idx) d2)))
+                  (:jump (setf (val gui-slot) d2))
+                  (:catch (if fn
+                              (when (funcall fn d2 (val gui-slot))
+                                (setf (val gui-slot) d2)
+                                (setf (aref nk2-fader-update-fns fader-idx) nil))
+                              (setf (val gui-slot) d2))))))
              ((<= 40 fader-idx 45)
               (let ((slot (aref cc-state (aref cc-map d1))))
                 (unless (zerop d2) (trigger slot nil))))

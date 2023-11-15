@@ -24,3 +24,19 @@
   `(setf (val ,slot)
          (if (zerop (val ,slot))
              127 0)))
+
+(defun buchla-scale (curr old target &key (max 127))
+  "scale the target fader by interpolating using the curr and old values
+of the source fader."
+  (float
+   (if (< curr old)
+       (* (- 1 (/ (- old curr) old)) target)
+       (- max (* (- 1 (/ (- curr old) (- max old))) (- max target))))
+   1.0))
+
+
+(buchla-scale 40 41 60)
+
+(buchla-scale 41 40 60)
+
+(1- 1 )
