@@ -185,8 +185,9 @@
                                  :val-change-cb
                                  (let ((n (+ n offs)))
                                    (lambda (v obj)
-                                     (let ((new-value (read-from-string v)))
-                                       (setf (val (aref (nk2-faders midi-controller) n)) new-value)
+                                     (with-slots (nk2-faders nk2-fader-update-fns nk2-fader-modes) midi-controller
+                                       (let ((new-value (read-from-string v)))
+                                         (setf (val (aref nk2-faders n)) new-value)
 ;;; nk2-fader-update-fns are functions to compare incoming
 ;;; midi-cc-values from the hardware midi-controller against the current
 ;;; value in the gui. As soon as the update-fn returns t, the
@@ -201,20 +202,25 @@
 ;;; of the midi-controller instance. That state is always in sync with
 ;;; the gui (using model-slots and synchronizing with the gui and the
 ;;; hardware controller via its ref-set-hooks defined below).
-                                       (setf (aref (nk2-fader-update-fns midi-controller) n)
-                                             (let ((hw-val (aref
-                                                            (aref *midi-cc-state*
-                                                                  (chan midi-controller))
-                                                            (aref (cc-nums midi-controller) n))))
-                                               (cond
-                                                 ((> new-value hw-val)
-                                                  (setf (style obj :background-color) "#ffaaaa")
-                                                  #'>=)
-                                                 ((< new-value hw-val)
-                                                  (setf (style obj :background-color) "#ffaaaa")
-                                                  #'<=)
-                                                 (t (setf (style obj :background-color) "#aaffaa")
-                                                    nil))))))))))
+                                         (let ((hw-val (aref
+                                                        (aref *midi-cc-state*
+                                                              (chan midi-controller))
+                                                        (aref (cc-nums midi-controller) n))))
+                                           (case (aref nk2-fader-modes n)
+                                             (:scale (if (/= hw-val new-value)
+                                                         (setf (style obj :background-color) "#7ef")
+                                                         (setf (style obj :background-color) "#ccc")))
+                                             (:jump (setf (style obj :background-color) "#ccc"))
+                                             (:catch (setf (aref (nk2-fader-update-fns midi-controller) n)
+                                                           (cond
+                                                             ((> new-value hw-val)
+                                                              (setf (style obj :background-color) "#ffaaaa")
+                                                              #'>=)
+                                                             ((< new-value hw-val)
+                                                              (setf (style obj :background-color) "#ffaaaa")
+                                                              #'<=)
+                                                             (t (setf (style obj :background-color) "#aaffaa")
+                                                                nil)))))))))))))
                'vector))
         (define-button-row gui-s-buttons s-buttons "S" s-btn-panel)
         (define-button-row gui-m-buttons m-buttons "M" m-btn-panel)
@@ -223,7 +229,7 @@
     (setf (echo midi-controller) nil)
 ;;; set the ref-set-hooks in the model-slots of the midi-controller
     (dotimes (i 16) ;;; faders and knobs
-      (with-slots (nk2-faders chan cc-nums) midi-controller
+      (with-slots (nk2-faders chan cc-nums nk2-fader-modes) midi-controller
         (setf (ref-set-hook (aref nk2-faders i))
               (let ((i i))
                 (lambda (val) 
@@ -231,16 +237,24 @@
                              (declare (ignore connection-id))
                              (let* ((f.orm-gui (gethash connection-hash-key connection-hash)))
                                (when f.orm-gui
-                                 (let ((elem (aref (gui-fader f.orm-gui) i)))
+                                 (let ((elem (aref (gui-fader f.orm-gui) i))
+                                       (mode (aref nk2-fader-modes i)))
                                    (setf (clog:value elem) val)
                                    (setf (style elem :background-color)
-                                         (if (= val
-                                                (aref
-                                                 (aref cl-midictl::*midi-cc-state* chan)
-                                                 (aref cc-nums i)))
-                                             "#aaffaa" "#ffaaaa"))))))
+                                         (case mode
+                                           (:jump "#ccc")
+                                           (:catch (if (= val
+                                                          (aref
+                                                           (aref cl-midictl::*midi-cc-state* chan)
+                                                           (aref cc-nums i)))
+                                                       "#aaffaa" "#ffaaaa"))
+                                           (:scale (if (= val
+                                                          (aref
+                                                           (aref cl-midictl::*midi-cc-state* chan)
+                                                           (aref cc-nums i)))
+                                                       "#ccc" "#7ef"))))))))
                            clog-connection::*connection-data*))))))
-    (dolist (syms '((s-buttons gui-s-buttons 16)  ;;; buttons next to faders
+    (dolist (syms '((s-buttons gui-s-buttons 16) ;;; buttons next to faders
                     (m-buttons gui-m-buttons 24)
                     (r-buttons gui-r-buttons 32)))
       (destructuring-bind (nk2-slot gui-slot cc-map-offs) syms
@@ -317,17 +331,21 @@
   (with-slots (midi-controller gui-fader gui-m-buttons gui-s-buttons gui-r-buttons
                gui-rewind gui-ffwd gui-stop gui-play gui-rec)
       gui
-    (with-slots (cc-nums cc-state chan) midi-controller
+    (with-slots (cc-nums cc-state chan nk2-fader-modes) midi-controller
       (dotimes (i 16)
         (let ((elem (aref gui-fader i))
-              (fader-value (val (aref cc-state i))))
+              (fader-value (val (aref cc-state i)))
+              (hw-value (aref
+                         (aref cl-midictl::*midi-cc-state* chan)
+                         (aref cc-nums i))))
           (setf (clog:value elem) fader-value)
           (setf (style elem :background-color)
-                (if (= fader-value
-                       (aref
-                        (aref cl-midictl::*midi-cc-state* chan)
-                        (aref cc-nums i)))
-                    "#aaffaa" "#ffaaaa"))))
+                (case (aref nk2-fader-modes i)
+                  (:scale (if (= fader-value hw-value) "#ccc" "#7ef"))
+                  (:jump "#ccc")
+                  (:catch
+                      (if (= fader-value hw-value)
+                          "#aaffaa" "#ffaaaa"))))))
       (dotimes (i 8)
         (map '() (lambda (slot offs)
                    (let ((elem (aref slot i))
