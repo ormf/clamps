@@ -124,7 +124,7 @@ nanokontrol2.
                 (case fader-mode
                   (:scale
                    (progn
-                     (setf (val gui-slot) (buchla-scale d2 last-cc (val gui-slot)))
+                     (setf (val gui-slot) (round (buchla-scale d2 last-cc (val gui-slot))))
                      (setf (aref nk2-fader-last-cc fader-idx) d2)))
                   (:jump (setf (val gui-slot) d2))
                   (:catch (if fn
