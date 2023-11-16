@@ -82,11 +82,11 @@ supplied and gets interned as a parameter."
 (format t "~&midi initialized!~%")
 
 #+swank
-(progn
-  (swank:eval-in-emacs
-   `(load ,(namestring
-            (asdf:system-relative-pathname :cm-all "elisp/incudine-hush.el"))))
-  (swank:eval-in-emacs `(slime-repl-eval-string "(cm)")))
+;; (progn
+;;   (swank:eval-in-emacs
+;;    `(load ,(namestring
+;;             (asdf:system-relative-pathname :cm-all "elisp/incudine-hush.el"))))
+;;   (swank:eval-in-emacs `(slime-repl-eval-string "(cm)")))
 
 #+slynk
 (progn
@@ -96,4 +96,4 @@ supplied and gets interned as a parameter."
       (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
 
 (export '(reinit-midi restart-qsynth jack-connect-qsynth *mt-out01* *midi-out1*) 'cm)
-(find-package :swank)
+

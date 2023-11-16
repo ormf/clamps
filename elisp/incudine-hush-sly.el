@@ -1,0 +1,31 @@
+(defun incudine-hush ()
+  (interactive)
+  (progn
+    (sly-interactive-eval "(incudine:flush-pending)")
+    (sly-interactive-eval "(dotimes (chan 16) (cm::sprout (cm::new cm::midi-control-change :time 0 :controller 123 :value 127 :channel chan)))")
+;;;    (sly-interactive-eval "(scratch::node-free-unprotected)")
+    (sly-interactive-eval "(scratch::node-free-all)")
+;;;    (sly-interactive-eval "(uptothree02::osc-stop)")
+;;;    (sly-interactive-eval "(uptothree02::osc-notes-off)")
+    ))
+
+(defun incudine-rt-start ()
+  (interactive)
+  (sly-interactive-eval "(incudine:rt-start)"))
+
+(defun incudine-rt-stop ()
+  (interactive)
+  (sly-interactive-eval "(incudine:rt-stop)"))
+
+(defun test-midi ()
+  (interactive)
+  (sly-interactive-eval "(cm::testmidi)"))
+
+(define-key lisp-mode-map (kbd "C-.") 'incudine-hush)
+(define-key lisp-mode-map (kbd "C-c C-.") 'incudine-rt-stop)
+(define-key lisp-mode-map (kbd "C-c M-.") 'incudine-rt-start)
+(define-key lisp-mode-map (kbd "C-c t") 'test-midi)
+(define-key sly-mrepl-mode-map (kbd "C-.") 'incudine-hush)
+(define-key sly-mrepl-mode-map (kbd "C-c C-.") 'incudine-rt-stop)
+(define-key sly-mrepl-mode-map (kbd "C-c M-.") 'incudine-rt-start)
+(define-key sly-mrepl-mode-map (kbd "C-c t") 'test-midi)
