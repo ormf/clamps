@@ -145,8 +145,9 @@ nanokontrol2.
                 (otherwise
                  (let ((slot (aref cc-state (aref cc-map d1))))
                    (unless (zerop d2) (trigger slot nil))))))
-             (t (let ((slot (aref cc-state (aref cc-map d1))))
-                  (toggle-slot slot)))))))
+             (t (if (/= d2 0)
+                    (let ((slot (aref cc-state (aref cc-map d1))))
+                      (toggle-slot slot))))))))
       (:note-on (setf last-note-on d1)))))
 
 (defmethod update-state ((instance nanoktl2-midi))
