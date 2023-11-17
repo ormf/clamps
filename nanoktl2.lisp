@@ -25,6 +25,7 @@
    (nk2-fader-update-fns :accessor nk2-fader-update-fns :initform (coerce (loop repeat 16 collect nil) 'vector))
    (nk2-fader-modes :accessor nk2-fader-modes :initform (coerce (loop repeat 16 collect :scale) 'vector))
    (nk2-fader-last-cc :accessor nk2-fader-last-cc :initform (coerce (loop repeat 16 collect 0) 'vector))
+   (hide-fader :accessor hide-fader :initform nil)
    (s-buttons :accessor s-buttons)
    (m-buttons :accessor m-buttons)
    (r-buttons :accessor r-buttons)
@@ -107,9 +108,9 @@ nanokontrol2.
   (update-state obj))
 
 (defmethod handle-midi-in ((instance nanoktl2-midi) opcode d1 d2)
-;;;  (call-next-method)
   (with-slots (cc-fns cc-nums nk2-fader-update-fns
-               nk2-fader-modes nk2-fader-last-cc cc-map cc-state note-fn last-note-on midi-output chan)
+               nk2-fader-modes nk2-fader-last-cc
+               hide-fader cc-map cc-state note-fn last-note-on midi-output chan)
       instance
     (case opcode
       (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
@@ -124,17 +125,22 @@ nanokontrol2.
                 (case fader-mode
                   (:scale
                    (progn
-                     (setf (val gui-slot) (round (buchla-scale d2 last-cc (val gui-slot))))
+                     (unless hide-fader
+                       (setf (val gui-slot) (buchla-scale d2 last-cc (val gui-slot))))
                      (setf (aref nk2-fader-last-cc fader-idx) d2)))
-                  (:jump (setf (val gui-slot) d2))
-                  (:catch (if fn
-                              (when (funcall fn d2 (val gui-slot))
-                                (setf (val gui-slot) d2)
-                                (setf (aref nk2-fader-update-fns fader-idx) nil))
-                              (setf (val gui-slot) d2))))))
+                  (:jump (unless hide-fader (setf (val gui-slot) d2)))
+                  (:catch (unless hide-fader
+                            (if fn
+                                (when (funcall fn d2 (val gui-slot))
+                                  (setf (val gui-slot) d2)
+                                  (setf (aref nk2-fader-update-fns fader-idx) nil))
+                                (setf (val gui-slot) d2)))))))
+             
              ((<= 40 fader-idx 45)
-              (let ((slot (aref cc-state (aref cc-map d1))))
-                (unless (zerop d2) (trigger slot nil))))
+              (if (= fader-idx 43) ;;; set button
+                  (setf hide-fader (> d2 0))
+                  (let ((slot (aref cc-state (aref cc-map d1))))
+                    (unless (zerop d2) (trigger slot nil)))))
              (t (let ((slot (aref cc-state (aref cc-map d1))))
                   (toggle-slot slot)))))))
       (:note-on (setf last-note-on d1)))))
@@ -146,5 +152,5 @@ nanokontrol2.
         (let ((cc-num (aref cc-nums local-idx)))
           (osc-midi-write-short
            midi-output
-           (+ chan 176) cc-num (val (aref cc-state local-idx))))))))
+           (+ chan 176) cc-num (round (val (aref cc-state local-idx)))))))))
 

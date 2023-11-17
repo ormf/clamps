@@ -36,4 +36,3 @@ of the source fader."
       (* (- 1 (/ (- old curr) old)) target))
      (t (- max (* (- 1 (/ (- curr old) (- max old))) (- max target)))))
    1.0))
-
