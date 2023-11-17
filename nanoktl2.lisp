@@ -137,10 +137,14 @@ nanokontrol2.
                                 (setf (val gui-slot) d2)))))))
              
              ((<= 40 fader-idx 45)
-              (if (= fader-idx 43) ;;; set button
-                  (setf hide-fader (> d2 0))
-                  (let ((slot (aref cc-state (aref cc-map d1))))
-                    (unless (zerop d2) (trigger slot nil)))))
+              (case fader-idx
+                (43 ;;; set button
+                 (setf hide-fader (> d2 0)))
+                (42 ;;; cycle button
+                 (update-state instance))
+                (otherwise
+                 (let ((slot (aref cc-state (aref cc-map d1))))
+                   (unless (zerop d2) (trigger slot nil))))))
              (t (let ((slot (aref cc-state (aref cc-map d1))))
                   (toggle-slot slot)))))))
       (:note-on (setf last-note-on d1)))))
