@@ -287,8 +287,8 @@ The curvature CURVE defaults to -4."
         frm)))
 
 
-(dsp! play-buffer* ((buffer buffer) amp rate start end)
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 1 0 0)
+(dsp! play-buffer* ((buffer buffer) amp rate start end (out fixnum))
+  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 1 0 0 0)
   (with-samples ((ampl (db->linear amp)))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) (buffer-sample-rate buffer))
@@ -300,7 +300,7 @@ The curvature CURVE defaults to -4."
         (maybe-expand frm1)
         (maybe-expand frm2)
         (foreach-frame
-          (incf (audio-out 0)
+          (incf (audio-out out)
                 (* ampl (frame-ref frm1 current-frame)
                    (frame-ref frm2 current-frame))))))))
 
