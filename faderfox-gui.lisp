@@ -67,8 +67,6 @@
     (setf (val (aref ff-buttons curr-player)) 127)))
 
 (defmethod handle-midi-in ((instance faderfox-midi) opcode d1 d2)
-;;;  (call-next-method)
-;;;  (incudine.util:msg :info "midiin: ~a ~a ~a" opcode d1 d2)
   (with-slots (cc-fns cc-nums ff-fader-update-fns echo
                cc-map cc-state note-state note-fn last-note-on midi-output chan)
       instance
