@@ -16,14 +16,14 @@
 ;;; gemacht). Im Controller sind model-slots, deren set-cell
 ;;; Funktionen alle Slots im gui updaten.
 ;;;
-;;; Um mangels Motorfadern/Endlosreglern des NanoKontrol2 Werte
-;;; "fangen zu können", um Wertesprünge zu vermeiden, gibt es
-;;; cl-midictl:*midi-cc-state*, der immer den aktuellen Stand der
-;;; HardwareFader/knobs enthält (der responder dafür wird automatisch
-;;; gestartet). *midi-cc-state* enthält keine model-slots, da die
-;;; Werte einfach nur gesetzt werden, wenn der Fader bewegt wird,
-;;; ansonsten aber nur gelesen werden müssen, wenn das gui mit den
-;;; HardwareControllern verglichen werden soll.
+;;; Um mangels Motorfadern/Endlosreglern bei Controllern, wie dem
+;;; NanoKontrol2 Werte "fangen zu können", um Wertesprünge zu
+;;; vermeiden, gibt es cl-midictl:*midi-cc-state*, der immer den
+;;; aktuellen Stand der HardwareFader/knobs enthält (der responder
+;;; dafür wird automatisch gestartet). *midi-cc-state* enthält keine
+;;; model-slots, da die Werte einfach nur gesetzt werden, wenn der
+;;; Fader bewegt wird, ansonsten aber nur gelesen werden müssen, wenn
+;;; das gui mit den HardwareControllern verglichen werden soll.
 ;;;
 ;;; Das konkrete Verhalten des Controllers ist in handle-midi-in der
 ;;; Controller Klasse (faderfox-midi) geregelt und besteht nur darin,
@@ -51,6 +51,47 @@
 ;;;
 ;;; **********************************************************************
 
+(in-package :cl-midictl)
+
+(defclass faderfox-midi (midi-controller)
+  ((curr-player :initform 0 :type (integer 0 3) :accessor curr-player)
+   (cc-nums :accessor cc-nums)
+   (ff-faders :accessor ff-faders)
+   (ff-buttons :accessor ff-buttons)))
+
+(defun handle-player-switch (instance button-idx)
+  (incudine.util:msg :info "handle-player-switch: ~a" button-idx)
+  (with-slots (ff-buttons curr-player) instance
+    (setf (val (aref ff-buttons curr-player)) 0)
+    (setf curr-player button-idx)
+    (setf (val (aref ff-buttons curr-player)) 127)))
+
+(defmethod handle-midi-in ((instance faderfox-midi) opcode d1 d2)
+;;;  (call-next-method)
+;;;  (incudine.util:msg :info "midiin: ~a ~a ~a" opcode d1 d2)
+  (with-slots (cc-fns cc-nums ff-fader-update-fns echo
+               cc-map cc-state note-state note-fn last-note-on midi-output chan)
+      instance
+    (case opcode
+      (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
+       (cond
+         ((< (aref cc-map d1) 16)
+          (let* ((fader-idx (aref cc-map d1))
+                 (fader-slot (aref cc-state fader-idx))
+                 (old-value (val fader-slot))
+                 (new-value (max 0 (min 127 (+ old-value (midi-delta->i d2))))))
+            (incudine.util:msg :info "old-value: ~a, new-value: ~a" old-value new-value)
+            (when (/= old-value new-value)
+              (setf (val fader-slot) new-value)
+              (when echo (osc-midi-write-short midi-output (+ chan 176) d1 new-value)))))))
+      (:note-on (incudine.util:msg :info "notein: ~a ~a" d1 d2)
+       (let ((button-idx (aref cc-map d1)))
+         (cond ((and (< 3 button-idx 16) (= d2 127))
+                (let ((button-slot (aref note-state button-idx)))
+                  (toggle-slot button-slot)))
+               ((and (< button-idx 4) (= d2 127))
+                (handle-player-switch instance button-idx))))))))
+
 (in-package :clog-midi-controller)
 
 (defclass faderfox-gui (clog-midi-controller)
@@ -63,20 +104,6 @@
 
 (defmacro trigger-fn (slot)
   `(lambda (src) (trigger ,slot src)))
-
-(defmacro define-buttons (gui-slot ctl-slot panel)
-  `(setf ,gui-slot
-         (coerce
-          (v-collect (n 16)
-                     (toggle
-                      ,panel
-                      :css gui-btn-css
-                      :background '("gray" "#ff8888")
-                      :values '("0" "127")
-                      :label (1+ n)
-                      :val-change-cb (lambda (v obj) (declare (ignore obj))
-                                       (setf (val (aref (,ctl-slot midi-controller) n)) (read-from-string v)))))
-          'vector)))
 
 (defmethod initialize-instance :after ((instance faderfox-gui) &rest args)
   (declare (ignorable args))
@@ -142,8 +169,22 @@
                         (let ((new-value (read-from-string v)))
                           (setf (val (aref (ff-faders midi-controller) n)) new-value))))))
                'vector))
-        (define-buttons gui-buttons ff-buttons button-subpanel)))
-
+        (setf gui-buttons
+              (coerce
+               (v-collect (n 16)
+                          (toggle
+                           button-subpanel
+                           :background '("gray" "#ff8888")
+                           :label (1+ n)
+                           :css gui-btn-css
+                           :val-change-cb
+                           (let* ((n n)
+                                  (keynum (aref (cc-nums midi-controller) n)))
+                             (lambda (v obj) (declare (ignore obj v))
+                               (incudine.util:msg :info "keynum: ~a" keynum)
+                               (cl-midictl:handle-midi-in midi-controller :note-on keynum 127)))))
+               'vector))))
+    
     (with-slots (ff-faders ff-buttons chan midi-output cc-nums echo) midi-controller
       (setf echo nil)
       (dotimes (i 16) ;;; rotaries and buttons
@@ -181,7 +222,7 @@
               (fader-value (val (aref cc-state i)))
               (button-state (val (aref note-state i))))
           (setf (clog:value numbox) fader-value)
-          (setf (clog:value button) button-state))))))
+          (clog-dsp-widgets:highlight button button-state))))))
 
 ;;; (add-midi-controller 'faderfox-gui :id :ff01 :chan 5)
 

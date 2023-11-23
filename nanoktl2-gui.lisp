@@ -94,14 +94,15 @@
   `(setf ,gui-slot
          (coerce
           (v-collect (n 8)
-                     (toggle
-                      ,panel
-                      :css gui-btn-css
-                      :background '("gray" "#ff8888")
-                      :values '("0" "127")
-                      :label ,label
-                      :val-change-cb (lambda (v obj) (declare (ignore obj))
-                                       (setf (val (aref (,ctl-slot midi-controller) n)) (read-from-string v)))))
+                     (let ((label (if (consp ,label) (elt ,label n) ,label)))
+                       (toggle
+                        ,panel
+                        :css gui-btn-css
+                        :background '("gray" "#ff8888")
+                        :values '("0" "127")
+                        :label label
+                        :val-change-cb (lambda (v obj) (declare (ignore obj))
+                                         (setf (val (aref (,ctl-slot midi-controller) n)) (read-from-string v))))))
           'vector)))
 
 (defun flash-midi-out (stream cc-num chan)
@@ -167,11 +168,11 @@
         (define-momentary-button gui-marker-left marker-left "<" gui-ctl-subpanel)
         (define-momentary-button gui-marker-right marker-right ">" gui-ctl-subpanel)
 
-        (define-transport-button gui-rewind tr-rewind "1" gui-ctl-subpanel)
-        (define-transport-button gui-ffwd tr-ffwd "2" gui-ctl-subpanel)
-        (define-transport-button gui-stop tr-stop "3" gui-ctl-subpanel)
-        (define-transport-button gui-play tr-play "4" gui-ctl-subpanel)
-        (define-transport-button gui-rec tr-rec "5" gui-ctl-subpanel)
+        (define-transport-button gui-rewind tr-rewind "<<" gui-ctl-subpanel)
+        (define-transport-button gui-ffwd tr-ffwd ">>" gui-ctl-subpanel)
+        (define-transport-button gui-stop tr-stop "stop" gui-ctl-subpanel)
+        (define-transport-button gui-play tr-play "play" gui-ctl-subpanel)
+        (define-transport-button gui-rec tr-rec "rec" gui-ctl-subpanel)
 
         (setf gui-fader
               (coerce
@@ -207,9 +208,12 @@
                                                               (chan midi-controller))
                                                         (aref (cc-nums midi-controller) n))))
                                            (case (aref nk2-fader-modes n)
-                                             (:scale (if (/= hw-val new-value)
-                                                         (setf (style obj :background-color) "#7ef")
-                                                         (setf (style obj :background-color) "#ccc")))
+                                             (:scale (setf (style obj :background-color)
+                                                           (let ((diff (abs (- hw-val new-value))))
+                                                             (case diff
+                                                               (0 "#ccc")
+                                                               (1 "#a00") 
+                                                               ('otherwise "#7ef")))))
                                              (:jump (setf (style obj :background-color) "#ccc"))
                                              (:catch (setf (aref (nk2-fader-update-fns midi-controller) n)
                                                            (cond
