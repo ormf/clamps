@@ -1,0 +1,25 @@
+* clog-widgets
+*** Orm Finnendahl
+
+Widgets for DSP related interactive Guis using CLOG
+
+** License
+
+gpl 2.0 or later
+
+
+Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
+
+** Install
+
+   - clone [[https://github.com/rabbibotton/clog/][clog]] and all its dependencies into =$HOME/quicklisp/local-projects=
+
+   - clone [[https://github.com/ormf/cl-refs][cl-refs]] into =$HOME/quicklisp/local-projects=
+   
+   - clone this Repository into =$HOME/quicklisp/local-projects=
+
+   - Startup a lisp and issue =(ql:quickload :clog-widgets)=
+
+** Usage
+
+   - see =examples/example.lisp= in this repository
