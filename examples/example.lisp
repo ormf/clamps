@@ -1,11 +1,10 @@
 ;;;  define the system and its dependencies:
 
-(asdf:defsystem #:clog-widgets-example
-  :depends-on (:clog-widgets))
+
 
 ;;; load depedencies
 
-(asdf:operate 'asdf:load-op :clog-widgets-example)
+(ql:quickload :clog-widgets)
 
 ;;; define the package and tell it to use all dependencies
 
@@ -49,6 +48,24 @@
 
 ;;;(trigger x-bang)
 
+(setf francesco (make-ref 0.4))
+
+(get-val francesco)
+(set-val francesco 1.3)
+
+(setf orm (make-computed
+           (lambda () (* 2 (get-val francesco)))
+           (lambda (val) (%set-val francesco (/ val 2)))))
+
+(get-val orm)
+
+(set-val orm 1.2)
+
+(get-val francesco)
+
+(setf test (watch (lambda () (print (get-val francesco)))))
+
+
 (progn
   (clear-bindings)
   (setf x (make-ref 0.5))
@@ -66,6 +83,13 @@
   nil)
 
 ;;; Define our CLOG application
+
+#|
+
+(defparameter *meineaktion* (watch (lambda () (format t "~,2f~%" (get-val x)))))
+(funcall *meineaktion*)
+
+|#
 
 (defun new-window (body)
   "On-new-window handler."
@@ -108,3 +132,23 @@
 ;;; connected
 
 (start)
+
+
+
+(defparameter jonathan (make-ref 0.5))
+
+jonathan
+
+(get-val jonathan)
+(set-val jonathan 0.2)
+
+(defparameter orm
+  (make-computed
+   (lambda () (* 2 (get-val jonathan)))
+   (lambda (val) (set-val jonathan (/ val 2)))))
+
+(get-val orm)
+
+(set-val orm 3)
+
+(get-val jonathan)

@@ -23,6 +23,15 @@ body{
   grid-column: span 6;
 }
 
+[data-width="8/40"]
+  grid-column: span 8;
+}
+
+[data-width="5/15"]
+  grid-column: span 5;
+}
+
+
 [data-width="5/12"]{
   grid-column: span 5;
 }
@@ -43,9 +52,15 @@ body{
   grid-column: span 1;
 }
 
-.group{
+.nk2-ctl{
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(5, minmax(1em, 1fr));
+}
+
+
+.nk2-fader{
+  display: grid;
+  grid-template-columns: repeat(8, minmax(1em, 1fr));
 }
 
 .collection{
@@ -112,7 +127,6 @@ o-numbox[type=text] {
 
 o-numbox[type=text]::selection {
     caret-color: transparent;
-
 }
 
 input::selection {
@@ -125,6 +139,7 @@ input[is=o-numbox] {
     font-size: 2em;
     --textbox-selected-foreground: black;
     --textbox-selected-background: lightblue;
+    text-align: center;
     user-select: none;
     color: black;
     background-color: white;

@@ -1,17 +1,19 @@
 // toggle and radiobox
 
 class ToggleElement extends HTMLElement {
-//  static observedAttributes = ['color', 'size'];
+    static observedAttributes = ['label-off', 'label-on', 'value'];
 
     constructor() {
         // Always call super first in constructor
         super();
+        toggle(this, { unloadEvent: true });
+//        this.addEventListener('mousedown', this.mouseDownListener);
 //        console.log('o-toggle constructed: ' + this );
     }
 
     connectedCallback() {
 //        console.log('o-toggle added to page: ' + this );
-        toggle(this, { unloadEvent: true });
+//        toggle(this, { unloadEvent: true });
     }
 
     disconnectedCallback() {
@@ -24,7 +26,30 @@ class ToggleElement extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log(`Attribute ${name} has changed.`);
+//        console.log('now: ', JSON.stringify(this));        
+        switch (name) {
+        case 'label-off':
+            this.drawToggle(this.getAttribute('value'));
+            break;
+        case 'label-on':
+            this.drawToggle(this.getAttribute('value'));
+            break;
+
+        case 'value':
+            let value;
+            if (this.externalValueChange == true) {
+                value = parseFloat(newValue);
+                // if (value != valueOff) value = valueOn;
+            }
+            else value = newValue;
+            this.drawToggle(value);
+            if (this.externalValueChange == false) {
+                $(this).trigger('data', { value: value });
+                this.externalValueChange = true;
+            }
+            break;
+        }
+//        console.log(`Attribute ${name} has changed.`);
     }
 }
 
@@ -39,6 +64,21 @@ function toggle (elem, config) {
         myToggle = elem.get(0);
     else
         myToggle = elem;
+
+    myToggle.drawToggle = function (val) {
+        if (val != valueOff) {
+            myToggle.textContent = myToggle.getAttribute('label-on');
+            myToggle.style.color = colorOn;
+            myToggle.style.background = backgroundOn;
+        }
+        else {
+            myToggle.textContent = myToggle.getAttribute('label-off');
+            myToggle.style.color = colorOff;
+            myToggle.style.background = backgroundOff;
+        }
+    }
+    myToggle.draw = myToggle.drawToggle;
+
     
     var colorOff         = myToggle.getAttribute('color-off') || 'black';
     var colorOn          = myToggle.getAttribute('color-on') || 'black';
@@ -54,7 +94,7 @@ function toggle (elem, config) {
     // myToggle.externalValueChange = false;
     // 
     // override setAttribute
-    const mySetAttribute = myToggle.setAttribute;
+//    const mySetAttribute = myToggle.setAttribute;
     
     myToggle.colorOff = colorOff;
     myToggle.backgroundOff = backgroundOff;
@@ -66,34 +106,22 @@ function toggle (elem, config) {
     myToggle.valueOn = valueOn;
     
 
-    myToggle.setAttribute = function (key, value) {
-        if (key == 'value') {
-            if (myToggle.externalValueChange == true) {
-                value = parseFloat(value);
-                // if (value != valueOff) value = valueOn;
-            }
-            mySetAttribute.call(myToggle, key, value);
-            drawToggle(value);
-            if (myToggle.externalValueChange == false) {
-                $(myToggle).trigger('data', { value: value });
-                myToggle.externalValueChange = true;
-            }
-        }
-    }
+    // myToggle.setAttribute = function (key, value) {
+    //     console.log('attr-change: ' + key + ', ' + value);
+    //     if (key == 'value') {
+    //         if (myToggle.externalValueChange == true) {
+    //             value = parseFloat(value);
+    //             // if (value != valueOff) value = valueOn;
+    //         }
+    //         mySetAttribute.call(myToggle, key, value);
+    //         myToggle.drawToggle(value);
+    //         if (myToggle.externalValueChange == false) {
+    //             $(myToggle).trigger('data', { value: value });
+    //             myToggle.externalValueChange = true;
+    //         }
+    //     }
+    // }
     
-    var  drawToggle = function (val) {
-//        console.log('val: ' + val);
-        if (val != valueOff) {
-            myToggle.textContent = labelOn;
-            myToggle.style.color = colorOn;
-            myToggle.style.background = backgroundOn;
-        }
-        else {
-            myToggle.textContent = labelOff;
-            myToggle.style.color = colorOff;
-            myToggle.style.background = backgroundOff;
-        }
-    }
 
     function mouseDownListener (event) {
         myToggle.externalValueChange = false;
@@ -105,11 +133,11 @@ function toggle (elem, config) {
         myToggle.removeEventListener('mousedown', mouseDownListener);
     }
 
-    myToggle.draw = drawToggle;
 
     function disable () { return false };
     
     function init () {
+//        console.log('init: ', myToggle);
         myToggle.colorOff = colorOff;
         myToggle.backgroundOff = backgroundOff;
         myToggle.labelOff = labelOff;
@@ -119,6 +147,7 @@ function toggle (elem, config) {
         myToggle.labelOn = labelOn;
         myToggle.valueOn = valueOn;
         myToggle.ondragstart = () => { return false; }
+        myToggle.removeMouseDownListener();
         myToggle.addEventListener('mousedown', mouseDownListener);
         if (unloadEvent)
             addEventListener('beforeunload', (event) => {
@@ -131,13 +160,15 @@ function toggle (elem, config) {
         let val = parseFloat(myToggle.getAttribute('value')).toFixed(0);
         if ((val != valueOff) && (val != valueOn)) {
             val = valueOff;
-            mySetAttribute.call(myToggle, 'value', val);
+//            mySetAttribute.call(myToggle, 'value', val);
         }
-        drawToggle(val);
+        myToggle.drawToggle(val);
         myToggle.externalValueChange = true;
     }
 
     init();
+//     myToggle.addEventListener('mousedown', mouseDownListener);
+
 }
 
 // RADIO Button
@@ -400,4 +431,5 @@ function radio (elem) {
     }
     
     init();
+
 }

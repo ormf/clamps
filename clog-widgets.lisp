@@ -70,9 +70,9 @@
          (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
          (if *debug* (format t "~&~%seen: ~a~%" (obj-print *refs-seen*)))
          (dolist (obj (b-elist new)) ;;; iterate through all bound html elems
-           (unless (member obj *refs-seen*)
+           (unless (member (list obj attr) *refs-seen* :test #'equal)
              (if *debug* (format t "~&~%watch update: ~a~%-> ~a ~a~%" (obj-print *refs-seen*) obj val))
-             (push obj *refs-seen*)
+             (push (list obj attr) *refs-seen*)
              (setf (attribute obj attr) val)))))))
   (:method ((refvar bang-object) attr new)
     (watch ;;; watch registers an on-update function
@@ -84,7 +84,7 @@
        (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
        (if *debug* (format t "~&~%seen: ~a~%" (obj-print *refs-seen*)))
        (dolist (obj (b-elist new)) ;;; iterate through all bound html elems
-         (unless (member obj *refs-seen*)
+         (unless (member (list obj attr) *refs-seen* :test #'equal)
            (if *debug* (format t "~&~%watch update: ~a~%-> ~a~%" (obj-print *refs-seen*) obj))
            (push obj *refs-seen*)
            (js-execute obj (format nil "~A.bang()" (script-id obj)))
@@ -113,7 +113,8 @@ will establish a watch function, which will automatically set the attr
 of all registered html elements on state change of the
 refvar. Registering html elements is done by pushing the html element
 to the b-elist slot of the binding (normally done in the creation
-function of the html element)."))
+function of the html element). The method returns the binding or an
+array of bindings, depending on the class."))
 
  ;;; (setf (gethash...) ) returns the value which got set (new in this case).
 
@@ -124,6 +125,9 @@ function of the html element)."))
                       ((functionp x) (format nil "<function {~a}>" (sb-kernel:get-lisp-obj-address x)))
                       (:else (format nil "~a" x))))
                   seq)))
+
+(defmacro b-unregister (element binding)
+  `(setf (b-elist ,binding) (remove ,element (b-elist ,binding))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;                       clog part                                          ;;;
@@ -176,15 +180,17 @@ function of the html element)."))
                            (format t "closing knob~%")
                            (setf (b-elist binding) (remove element (b-elist binding)))) ;;; cleanup: unregister elem.
                          (%set-val var (gethash attr data)) ;; otherwise set value.
-                         ))))))
+                         ))))
+    element))
 
-(defun create-o-numbox (parent binding min max &key (precision 2))
+(defun create-o-numbox (parent binding min max &key (precision 2) css)
   (let ((var (b-ref binding))
         (attr (b-attr binding))
         (element (create-child
                   parent
-                  (format nil "<input is=\"o-numbox\" min=\"~a\" max=\"~a\" value=\"~a\" precision=\"~a\">"
-                          min max (get-val (b-ref binding)) precision)))) ;;; the get-val automagically registers the ref
+                  (format nil "<input is=\"o-numbox\" min=\"~a\" max=\"~a\" value=\"~a\" precision=\"~a\" ~@[~a~]>"
+                          min max (get-val (b-ref binding)) precision
+                          (format-style css))))) ;;; the get-val automagically registers the ref
     (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
@@ -197,7 +203,8 @@ function of the html element)."))
                          (progn
                            (format t "closing numbox~%")
                            (setf (b-elist binding) (remove element (b-elist binding)))) ;;; cleanup: unregister elem.
-                         (%set-val var (gethash attr data))))))))
+                         (%set-val var (gethash attr data))))))
+    element))
 
 (defmacro option-main (option)
   `(if (listp ,option)
@@ -212,12 +219,23 @@ function of the html element)."))
 (defun opt-format-attr (attr val)
   (when val (format nil "~a='~(~a~)'" attr val)))
 
-(defun create-o-bang (parent binding &key label (background '("transparent" "orange")) color flash-time)
+(defun create-o-bang (parent binding &key label (background '("transparent" "orange")) color flash-time css)
+  ;; (break "~a" (format nil "<o-bang ~{~@[~a ~]~}~@[~a~]>~@[~a~]</o-bang>"
+  ;;                         (list
+  ;;                          (opt-format-attr "label-off" (option-main label))
+  ;;                          (opt-format-attr "label-on" (option-second label))
+  ;;                          (opt-format-attr "background-off" (option-main background))
+  ;;                          (opt-format-attr "background-on" (option-second background))
+  ;;                          (opt-format-attr "color-off" (option-main color))
+  ;;                          (opt-format-attr "color-on" (option-second color))
+  ;;                          (opt-format-attr "flash-time" flash-time))
+  ;;                         (if css (format-style css))
+  ;;                         (or (option-main label) "")))
   (let ((var (b-ref binding))
         (attr (b-attr binding))
         (element (create-child
                   parent
-                  (format nil "<o-bang ~{~@[~a ~]~}>~@[~a~]</o-bang>"
+                  (format nil "<o-bang ~{~@[~a ~]~}~@[~a~]>~@[~a~]</o-bang>"
                           (list
                            (opt-format-attr "label-off" (option-main label))
                            (opt-format-attr "label-on" (option-second label))
@@ -226,6 +244,7 @@ function of the html element)."))
                            (opt-format-attr "color-off" (option-main color))
                            (opt-format-attr "color-on" (option-second color))
                            (opt-format-attr "flash-time" flash-time))
+                          (if css (format-style css))
                           (or (option-main label) "")))))
     (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
@@ -240,17 +259,18 @@ function of the html element)."))
                               (setf (b-elist binding) (remove element (b-elist binding))))) ;;; cleanup: unregister elem.
                            ((gethash "bang" data)
                             (let ((*refs-seen* (list obj)))
-                              (%trigger var)))))))))
+                              (%trigger var)))))))
+    element))
 
 (defun array->attr (arr)
   (format nil "[~{~a~^, ~}]" (coerce arr 'list)))
 
-(defun create-o-toggle (parent binding &key label (background '("transparent" "orange")) color flash-time values)
+(defun create-o-toggle (parent binding &key label (background '("transparent" "orange")) color flash-time values css)
   (let* ((var (b-ref binding))
          (attr (b-attr binding))
          (element (create-child
                    parent
-                   (format nil "<o-toggle ~{~@[~a ~]~}>~@[~a~]</o-toggle>"
+                   (format nil "<o-toggle ~{~@[~a ~]~}~@[~a~]>~@[~a~]</o-toggle>"
                            (list
                             (opt-format-attr "value" (get-val var))
                             (opt-format-attr "label-off" (option-main label))
@@ -262,6 +282,7 @@ function of the html element)."))
                             (opt-format-attr "flash-time" flash-time)
                             (opt-format-attr "value-off" (or (first values) 0))
                             (opt-format-attr "value-on" (or (second values) 1)))
+                           (format-style css)
                            (or (option-main label) "")))))
     (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
@@ -276,7 +297,8 @@ function of the html element)."))
                               (format t "closing toggle~%")
                               (setf (b-elist binding) (remove element (b-elist binding)))))
                            (t (%set-val var (read-from-string (gethash attr data))))
-                           ))))))
+                           ))))
+    element))
 
 (defun create-o-radio (parent binding &key labels label (background '("transparent" "orange")) color flash-time values
                                         (num 8) (direction :right))
@@ -288,18 +310,12 @@ function of the html element)."))
                    (format nil "<o-radio ~{~@[~a ~]~}>~@[~a~]</o-radio>"
                            (list
                             (opt-format-attr "value" (round (get-val var)))
-                            (opt-format-attr "label-off" (if (option-main labels)
-                                                             (format nil "~{~a~^,~}" (option-main labels))))
-                            (opt-format-attr "label-on" (if (option-second labels)
-                                                            (format nil "~{~a~^,~}" (option-second labels))))
-                            (opt-format-attr "background-off" (if (option-main background)
-                                                                  (format nil "~{~a~^,~}" (option-main background))))
-                            (opt-format-attr "background-on" (if (option-second background)
-                                                                 (format nil "~{~a~^,~}" (option-second background))))
-                            (opt-format-attr "color-off" (if (option-main color)
-                                                             (format nil "~{~a~^,~}" (option-main color))))
-                            (opt-format-attr "color-on" (if (option-second color)
-                                                            (format nil "~{~a~^,~}" (option-second color))))
+                            (opt-format-attr "label-off" (if (option-main labels) (format nil "~{~a~^,~}" (option-main labels))))
+                            (opt-format-attr "label-on" (if (option-second labels) (format nil "~{~a~^,~}" (option-second labels))))
+                            (opt-format-attr "background-off" (if (option-main background) (format nil "~{~a~^,~}" (option-main background))))
+                            (opt-format-attr "background-on" (if (option-second background) (format nil "~{~a~^,~}" (option-second background))))
+                            (opt-format-attr "color-off" (if (option-main color) (format nil "~{~a~^,~}" (option-main color))))
+                            (opt-format-attr "color-on" (if (option-second color) (format nil "~{~a~^,~}" (option-second color))))
                             (opt-format-attr "flash-time" flash-time)
                             (opt-format-attr "value-off" (or (first values) 0))
                             (opt-format-attr "value-on" (or (second values) 1))
@@ -318,7 +334,8 @@ function of the html element)."))
                             (progn
                               (format t "closing radio~%")
                               (setf (b-elist binding) (remove element (b-elist binding)))))
-                           (t (%set-val var (gethash attr data)))))))))
+                           (t (%set-val var (gethash attr data)))))))
+    element))
 
 (defun format-style (css)
   (format nil "style=\"~@[~{~(~A~): ~(~a~);~}~]\"" css))
@@ -360,7 +377,8 @@ function of the html element)."))
                             (progn
                               (format t "closing slider~%")
                               (setf (b-elist binding) (remove element (b-elist binding)))))
-                           (t (%set-val var (gethash attr data)))))))))
+                           (t (%set-val var (gethash attr data)))))))
+    element))
 
 ;;; min, max, mapping, clip-zero, thumb-color, bar-color
 
@@ -390,7 +408,8 @@ function of the html element)."))
           collect (create-o-slider element binding :thumb-color (or thumb-color "transparent") :direction direction))
     (execute element (format nil "initSliders(~a)" num-sliders) )
 ;;    (js-execute element (format nil "slider(~A, { \"thumb\": '~(~a~)'})" (jquery element) "false"))
-))
+
+    element))
 
 
 
@@ -402,3 +421,6 @@ function of the html element)."))
 
 (defun create-collection (parent width)
   (create-child parent (format nil "<div data-width='~a' class='collection'></div>" width)))
+
+(defun create-grid (parent class width)
+  (create-child parent (format nil "<div data-width='~a' class='~a'></div>" width class)))
