@@ -13,5 +13,5 @@
   :components ((:file "package")
                (:file "clog-midi-controller")
                (:file "nanoktl2-preset-gui")
-;;;               (:file "faderfox-gui")
+               (:file "faderfox-gui")
                ))
