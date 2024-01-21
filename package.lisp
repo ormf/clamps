@@ -40,4 +40,9 @@
    #:format-style
    #:opt-format-attr
    #:create-grid
+
+   #:flash
+   #:pulse-on
+   #:pulse-off
+   #:highlight
    ))

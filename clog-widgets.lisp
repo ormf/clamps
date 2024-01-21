@@ -35,9 +35,6 @@
 ;;; dependencies. This function is stored in the unwatch slot of the
 ;;; binding to facilitate unbinding.
 
-; On initialization of a clog gui element, a
-; the element is pushed to the elist of the binding.
-
 (defvar *bindings* (make-hash-table :test 'equal))
 
 (defun clear-bindings ()
@@ -157,8 +154,7 @@ array of bindings, depending on the class."))
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-;;; custom html element also defined in js:
+;;; o-knob is a custom html element defined in js:
 
 (defun create-o-knob (parent binding min max step &key (unit "") (precision 2))
   (let ((var (b-ref binding))
@@ -220,17 +216,6 @@ array of bindings, depending on the class."))
   (when val (format nil "~a='~(~a~)'" attr val)))
 
 (defun create-o-bang (parent binding &key label (background '("transparent" "orange")) color flash-time css)
-  ;; (break "~a" (format nil "<o-bang ~{~@[~a ~]~}~@[~a~]>~@[~a~]</o-bang>"
-  ;;                         (list
-  ;;                          (opt-format-attr "label-off" (option-main label))
-  ;;                          (opt-format-attr "label-on" (option-second label))
-  ;;                          (opt-format-attr "background-off" (option-main background))
-  ;;                          (opt-format-attr "background-on" (option-second background))
-  ;;                          (opt-format-attr "color-off" (option-main color))
-  ;;                          (opt-format-attr "color-on" (option-second color))
-  ;;                          (opt-format-attr "flash-time" flash-time))
-  ;;                         (if css (format-style css))
-  ;;                         (or (option-main label) "")))
   (let ((var (b-ref binding))
         (attr (b-attr binding))
         (element (create-child
@@ -300,8 +285,8 @@ array of bindings, depending on the class."))
                            ))))
     element))
 
-(defun create-o-radio (parent binding &key labels label (background '("transparent" "orange")) color flash-time values
-                                        (num 8) (direction :right))
+(defun create-o-radio (parent binding &key labels label (background '("transparent" "orange"))
+                                        color flash-time values (num 8) (direction :right))
   (declare (type (member :up :right :down :left) direction))
   (let* ((var (b-ref binding))
          (attr (b-attr binding)) ;;; format nil "~{~a~^,~}"
@@ -404,22 +389,51 @@ array of bindings, depending on the class."))
                                (opt-format-attr "clip-zero" clip-zero ))
                               (or (option-main label) "")))))
     (loop for binding across binding-array
-          collect (create-o-slider element binding :thumb-color (or thumb-color "transparent") :direction direction))
+          collect (create-o-slider element binding
+                                   :thumb-color (or thumb-color "transparent")
+                                   :direction direction))
     (execute element (format nil "initSliders(~a)" num-sliders) )
-;;    (js-execute element (format nil "slider(~A, { \"thumb\": '~(~a~)'})" (jquery element) "false"))
-
     element))
 
-
-
 ;; array as attribute: <div id="demo" data-stuff='["some", "string", "here"]'></div>
-
+;;
 ;; <div id="storageElement" data-storeIt="stuff,more stuff"></div> and use string.split.
-
-;;; this is just how I would structure such a dynamic website. With a 12 column layout with collection of input elements
+;;
+;; this is just how I would structure such a dynamic website. With a
+;; 12 column layout with collection of input elements
 
 (defun create-collection (parent width)
   (create-child parent (format nil "<div data-width='~a' class='collection'></div>" width)))
 
 (defun create-grid (parent class width)
   (create-child parent (format nil "<div data-width='~a' class='~a'></div>" width class)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; utils from clog-dsp-widgets (will be replaced soon)
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defgeneric flash (clog-obj)
+  (:method ((obj clog-obj))
+    (execute obj "bang()"))
+  (:documentation "call the bang() function of clog-obj without triggering the bang
+event."))
+
+(defgeneric pulse-on (clog-obj &optional freq)
+  (:method ((obj clog-obj) &optional (freq 2))
+    (execute obj (format nil "pulseOn(~A)" (round (/ 1000 freq 2.0)))))
+  (:documentation "call the pulseOn() function of clog-obj."))
+
+(defgeneric pulse-off (clog-obj)
+  (:method ((obj clog-obj))
+    (execute obj "pulseOff()"))
+  (:documentation "call the pulseOff() function of clog-obj."))
+
+(defgeneric highlight (clog-element value)
+  (:documentation "Highlight element (0 unhighlights, all other values highlight)."))
+
+(defmethod highlight ((obj clog-element) value)
+  (execute obj (format nil "highlight(~A)" value))  
+  value)
