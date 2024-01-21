@@ -5,37 +5,37 @@
 ;;; einem Controller (faderfox-midi), der eine spezielle Klasse eines
 ;;; midicontrollers ist (definiert in cl-midictl).
 ;;; 
-;;; faderfox-gui ist eine Klasse, die die Gui Instanz und den
-;;; Hardware Controller zusammenfasst (faderfox-gui existiert nur der
-;;; Vollständigkeit halber, falls der unwahrscheinliche Fall auftritt,
-;;; dass man ein Gui ohne HardwareController verwenden möchte). Da es
-;;; mehrere Gui Instanzen geben kann, die alle auf die selbe
-;;; Controller Instanz bezogen sind, ist der Controller ein Slot der
-;;; Gui Instanz von (faderfox-gui) und muss bei make-instance der
-;;; Gui Instanz übergeben werden (wird im on-new-window Code
-;;; gemacht). Im Controller sind model-slots, deren set-cell
-;;; Funktionen alle Slots im gui updaten.
+;;; faderfox-gui ist eine Funktion, die die html Objekte für jede Gui
+;;; Instanz generiert und mit dem Hardware Controller
+;;; zusammenfasst. Da es mehrere Gui Instanzen geben kann, die alle
+;;; auf die selbe Controller Instanz bezogen sind, muss der Controller
+;;; außerhalb der faderfox-gui Funktion existieren (die Controller
+;;; Instanz wird mit add-midi-controller erzeugt). Im Controller sind
+;;; ref-objects, deren set-val Funktionen die entsprechenden Slots in
+;;; allen guis updaten (durch bind-ref-to-attr) und dem gewünschten
+;;; Verhalten der MidiController entsprechende Aktionen triggern
+;;; (durch watch Funktionen, die in der intialize-instance :after
+;;; Methode der MidiController Klassen eingerichtet werden).
 ;;;
 ;;; Um mangels Motorfadern/Endlosreglern bei Controllern, wie dem
-;;; NanoKontrol2 Werte "fangen zu können", um Wertesprünge zu
-;;; vermeiden, gibt es cl-midictl:*midi-cc-state*, der immer den
-;;; aktuellen Stand der HardwareFader/knobs enthält (der responder
-;;; dafür wird automatisch gestartet). *midi-cc-state* enthält keine
-;;; model-slots, da die Werte einfach nur gesetzt werden, wenn der
-;;; Fader bewegt wird, ansonsten aber nur gelesen werden müssen, wenn
-;;; das gui mit den HardwareControllern verglichen werden soll.
+;;; NanoKontrol2, Werte "fangen" zu können bzw. durch Skalieren
+;;; anzugleichen, um Wertesprünge zu vermeiden, gibt es
+;;; cl-midictl:*midi-cc-state*, der immer den aktuellen Stand der
+;;; HardwareFader/knobs enthält (der responder dafür wird automatisch
+;;; gestartet) und der abhängig vom Faderwert der Klasse dann
+;;; interpoliert/gefangen werden kann. *midi-cc-state* enthält keine
+;;; ref-objects, da die Werte nur gesetzt werden, wenn der Fader
+;;; bewegt wird, ansonsten aber nur gelesen werden müssen, wenn das
+;;; gui mit den HardwareControllern verglichen werden soll.
 ;;;
 ;;; Das konkrete Verhalten des Controllers ist in handle-midi-in der
 ;;; Controller Klasse (faderfox-midi) geregelt und besteht nur darin,
-;;; den Wert des jeweiligen model-slots zu aktualisieren (wenn der
-;;; Wert "gefangen" ist).
-;;;
-;;; Bei Instantiierung des Gui Instanz (initialize-instance :after)
-;;; werden an die model-slots der Controller Instanz set-cell-hooks
-;;; gebunden, die alle existierenden Gui Referenzen updaten.
+;;; den Wert des jeweiligen ref-objects zu aktualisieren. Das
+;;; Verhalten wird dann in dem ref-object geregelt (siehe Erklärung
+;;; oben).
 ;;;
 ;;; **********************************************************************
-;;; Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
+;;; Copyright (c) 2023/24 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 ;;;
 ;;; Revision history: See git repository.
 ;;;
@@ -88,7 +88,7 @@
 
 (in-package :clog-midi-controller)
 
-(defun faderfox-gui-fn (id gui-parent)
+(defun faderfox-gui (id gui-parent)
   (let ((midi-controller (find-controller id)))
     (with-slots (cc-state note-state) midi-controller
       (let* ((gui-container (create-div gui-parent
