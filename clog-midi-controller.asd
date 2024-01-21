@@ -9,8 +9,9 @@
   :license  "gpl 2.0 or later"
   :version "0.0.1"
   :serial t
-  :depends-on (#:clog-dsp-widgets #:cl-midictl)
+  :depends-on (#:clog-widgets #:cl-midictl)
   :components ((:file "package")
                (:file "clog-midi-controller")
-               (:file "nanoktl2-gui")
-               (:file "faderfox-gui")))
+               (:file "nanoktl2-preset-gui")
+;;;               (:file "faderfox-gui")
+               ))

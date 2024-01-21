@@ -59,6 +59,15 @@
    (ff-faders :accessor ff-faders)
    (ff-buttons :accessor ff-buttons)))
 
+#|
+
+(defun set-player-enable (idx state)
+  (with-slots (cl-poolplayer::playing cl-poolplayer::play-fn) (aref *players* idx)
+    (setf cl-poolplayer::playing (> state 0))
+    (if (> state 0)
+        (pmde-01-lve nil :player idx :preset idx))))
+|#
+
 (defun handle-player-switch (instance button-idx)
   (incudine.util:msg :info "handle-player-switch: ~a" button-idx)
   (with-slots (ff-buttons curr-player) instance

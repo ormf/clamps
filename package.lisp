@@ -4,7 +4,7 @@
 
 
 (defpackage #:clog-midi-controller
-  (:use #:cl #:ou #:cellctl #:cl-midictl #:clog #:clog-dsp-widgets #:incudine)
+  (:use #:cl #:ou #:cl-refs #:cl-midictl #:clog #:clog-widgets #:incudine)
   (:shadowing-import-from #:incudine
                           #:group)
   (:shadowing-import-from #:clog

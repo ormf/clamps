@@ -1,0 +1,119 @@
+% Created 2023-11-06 Mo 09:27
+% Intended LaTeX compiler: xelatex
+\documentclass[a4paper]{article}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[top=0.5cm, left=2cm, bottom=0.5cm, right=2cm]{geometry}
+\usepackage{fontspec} % For loading fonts
+\defaultfontfeatures{Mapping=tex-text}
+\setmainfont[Scale=0.9]{Calibri}
+\setsansfont[Scale=0.9]{Calibri}[Scale=MatchLowercase]
+\setmonofont[Scale=0.7]{DejaVu Sans Mono}[Scale=MatchLowercase]
+\date{\today}
+\title{overview.org}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={overview.org},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.1 (Org mode 9.6.6)}, 
+ pdflang={German}}
+\begin{document}
+
+\maketitle
+\setlength\parindent{0pt}
+
+
+\section{clog-gui-widgets}
+\label{sec:orga20417f}
+
+\subsection{Overview}
+\label{sec:org695d911}
+The package provides the infrastructure and clog guis for Hardware
+Midi Controllers. It needs \texttt{clog-dsp-widgets} and \texttt{cl-midictl}
+(including their dendencies) to work and consists of two parts:
+
+\begin{itemize}
+\item Midi Controllers
+
+These are defined in \texttt{cl-midictl} and establish a representation
+of the hardware controllers, their connection to the midi input
+output and their state as visible to the application.
+
+A Hardware midi controller instance is initialized with
+\texttt{add-midi-controller}, which adds the controller instance to the
+cl-midictl:*midi-controllers* hash-table.
+
+Midi input is handled by \texttt{generic-midi-handler}. The routine
+first stores the incoming values in \texttt{*midi-cc-state*} or
+\texttt{*midi-note-state*} and then calls the \texttt{handle-midi-in} method in
+all controllers registered in \texttt{*midi-controllers*}. This routine
+should take care of updating the slots of the midi-controllers
+according to the defined behaviour for the hardware
+controller. Generally this state is equivalent to the state in
+\texttt{*midi-cc-state*}, but -in the case of non-motor sliders or
+buttons- it can provide mechanisms to "catch" values in case the
+state of the controller instance has changed through code rather
+than midi input, by comparing the \texttt{cc-state} of the controller
+instance to the incoming values stored in \texttt{*midi-cc-state*} and
+act accordingly, e.g. by only updating the controller state in
+case the incoming value is matching it.
+
+\item Controller Gui
+
+The controller gui class is defined in \texttt{clog-gui-widgets}. It
+contains slots for all the gui elements (being clog instances in
+the gui) and a slot containing the controller instance defined in
+cl-midictl. This seperation is necessary as there might be more
+than one Gui active (in case of multiple connections to the
+server), which all relate to the same controller instance. The
+methods of the gui instance maintain the gui state of all
+connected guis and the synchronization between the controller
+instance and the guis.
+
+The synchronization between the gui and the controller is done in
+the following way:
+
+The gui elements simply set the corresponding slots of the
+controller instance in their val-change-cb function. As the slots
+in the hardware controller instance are implemented as
+\texttt{cellctl:value-slots}, changing their value (using the \texttt{val}
+method) triggers the ref-set method of the controller slot
+instance.
+
+The \texttt{ref-set method} takes care of defining the code to
+synchronize all gui elements and the visual elements of the
+hardware controller (leds, etc.). It is set up for all controller
+slots in the \texttt{initialize-instance :after} method of the gui
+controller class.
+\end{itemize}
+
+\subsection{Usage}
+\label{sec:orgfb97016}
+
+In order to use a gui controller in an application, its
+\texttt{on-new-window} method needs to ensure, that the corresponding
+midi controller exists before instantiationg the gui instance
+(using \texttt{find-controller} or initializing a new hardware controller
+in case it doesn't yet exist). Then it instantiates the gui
+controller instance, providing it with the controller instance
+using the :midi-controller keyword.
+
+\subsection{Defining new gui controllers}
+\label{sec:org0894166}
+
+A new gui controller can be defined accordingly: In case it is just
+an alternative gui to an already existing hardware controller, the
+elements of the gui need to get defined in the class definition and
+its appearence in the \texttt{initialize-instance :after} method. In this
+method also the updating behaviour needs to be defined by setting
+the ref-set-hooks of the slots used in the hardware controller
+instance.
+\end{document}

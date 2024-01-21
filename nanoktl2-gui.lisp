@@ -105,9 +105,13 @@
                                          (setf (val (aref (,ctl-slot midi-controller) n)) (read-from-string v))))))
           'vector)))
 
+(defmacro ms->samples (ms)
+  (* ms incudine.util:*sample-rate* 1/1000))
+
 (defun flash-midi-out (stream cc-num chan)
   (osc-midi-write-short stream (+ chan 176) cc-num 127)
-  (at (+ (now) 4410) #'osc-midi-write-short stream (+ chan 176) cc-num 0))
+  (incudine:at (+ (incudine:now) (ms->samples 100))
+      #'osc-midi-write-short stream (+ chan 176) cc-num 0))
 
 (defmethod initialize-instance :after ((instance nanoktl2-gui) &rest args)
   (declare (ignorable args))
