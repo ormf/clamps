@@ -52,9 +52,14 @@ body{
   grid-column: span 1;
 }
 
+.nk2-panel{
+  display: flex;
+}
+
 .nk2-ctl{
   display: grid;
-  grid-template-columns: repeat(5, minmax(1em, 1fr));
+  grid-template-columns: repeat(5, minmax(5em, 1fr));
+  self-align: bottom;
 }
 
 

@@ -340,7 +340,6 @@ array of bindings, depending on the class."))
 (defun format-style (css)
   (format nil "style=\"~@[~{~(~A~): ~(~a~);~}~]\"" css))
 
-
 (defun create-o-slider (parent binding &key (direction :up) (min 0) (max 1)
                                          label background thumb-color bar-color
                                          (mapping :lin) (clip-zero nil)

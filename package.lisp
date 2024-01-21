@@ -37,4 +37,7 @@
    #:create-o-slider
    #:create-o-multislider
    #:create-collection
+   #:format-style
+   #:opt-format-attr
+   #:create-grid
    ))

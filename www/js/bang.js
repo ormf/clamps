@@ -1,15 +1,15 @@
 class BangElement extends HTMLElement {
-//  static observedAttributes = ["color", "size"];
+    static observedAttributes = ['highlight', 'label-off', 'label-on'];
 
     constructor() {
         // Always call super first in constructor
         super();
+        bang(this);
 //        console.log("o-bang constructed: " + this );
     }
 
     connectedCallback() {
 //        console.log("o-bang added to page: " + this );
-        bang(this);
     }
 
     disconnectedCallback() {
@@ -21,7 +21,18 @@ class BangElement extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log(`Attribute ${name} has changed.`);
+//        console.log(`Attribute ${name} has changed: ~{newValue}`)
+        switch (name) {
+        case 'highlight':
+            this.highlight(parseInt(newValue));
+            break;
+        case 'label-off':
+            this.textContent = newValue;
+            break;
+        case 'label-on':
+            this.textContent = newValue;
+            break;
+        }
     }
 }
 
@@ -36,35 +47,8 @@ function bang (elem) {
     else
         myBang = elem;
     let style = getComputedStyle(elem);
-//    console.log(style.colorOn);
     var flashTime        = myBang.getAttribute('flash-time') || '150'; // flash time in ms
-//    var pulseTime        = config.pulseTime || '250'; // pulse time in ms
-    var colorOn          = myBang.getAttribute('color-on') || 'black';
-    var colorOff         = myBang.getAttribute('color-off') || 'black';
-    var backgroundOn     = myBang.getAttribute('background-on') || 'black';
-    var backgroundOff    = myBang.getAttribute('background-off') || 'white';
-    var labelOn          = myBang.getAttribute('label-on') || '';
-    var labelOff         = myBang.getAttribute('label-off') || '';
 
-
-    // override setAttribute
-//    const mySetAttribute = myBang.setAttribute;
-
-    
-    // myBang.setAttribute = function (key, value) {
-    //     if (key == 'data-val') {
-    //         if (myBang.externalValueChange == true) {
-    //             value = parseFloat(value).toFixed(0);
-    //             if (value != valueOff) value = valueOn;
-    //         }
-    //         mySetAttribute.call(myBang, key, value);
-    //         drawBang(value);
-    //         if (myBang.externalValueChange == false) {
-    //             myBang.dispatchEvent(valChangeEvent);
-    //             myBang.externalValueChange = true;
-    //         }
-    //     }
-    // }
     function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -74,65 +58,74 @@ function bang (elem) {
         flashBang();
         if (myBang.externalValueChange == false) {
             $(myBang).trigger('data', { bang: true })
-
-//            myBang.dispatchEvent(bangEvent);
         }
     }
 
     function pulseOn(ms) {
         myBang.pulseActive = true;
-        console.log("pulseTime: ", ms);
+        if (myBang.style.background === myBang.getAttribute('background-off'))
+            (myBang.pulseState == false);
+        else
+            (myBang.pulseState == true);
         pulseBang(ms);
     }
- 
+
+    function setBang(v) {
+        if (v == 0) {
+            myBang.textContent = myBang.getAttribute('label-off') || '';
+            myBang.style.color = myBang.getAttribute('color-off') || 'black';
+            myBang.style.background = myBang.getAttribute('background-off') || 'white';
+        }
+        else {
+            myBang.textContent = myBang.getAttribute('label-on') || '';
+            myBang.style.color = myBang.getAttribute('color-on') || 'black';
+            myBang.style.background = myBang.getAttribute('background-on') || 'black';
+        }
+    }
+    
     function pulseOff() {
         myBang.pulseActive = false;
-        myBang.textContent = myBang.labelOff;
-        myBang.style.color = myBang.colorOff;
-        myBang.style.background = myBang.backgroundOff;
      }
 
     
     async function pulseBang(ms) {
         if (myBang.pulseActive == true) {
             if (myBang.pulseState == false) {
-                myBang.textContent = myBang.labelOn;
-                myBang.style.color = myBang.colorOn;
-                myBang.style.background = myBang.backgroundOn;
+                setBang(1);
                 myBang.pulseState = true;
             }
             else {
-                myBang.textContent = myBang.labelOff;
-                myBang.style.color = myBang.colorOff;
-                myBang.style.background = myBang.backgroundOff;
+                setBang(0);
                 myBang.pulseState = false;
             }
             await sleep(ms);
             pulseBang(ms);
         }
     }
-
  
-    
     async function flashBang() {
-        if (myBang.flashTime > 0) {
-            myBang.textContent = myBang.labelOn;
-            myBang.style.color = myBang.colorOn;
-            myBang.style.background = myBang.backgroundOn;
-            
-            await sleep(myBang.flashTime);
-
-            myBang.textContent = myBang.labelOff;
-            myBang.style.color = myBang.colorOff;
-            myBang.style.background = myBang.backgroundOff;
+        if (myBang.getAttribute('flash') != '0') {
+            if (myBang.flashTime > 0) {
+                setBang(1);
+                await sleep(myBang.flashTime);
+                
+                setBang(0);
+            }
         }
     }
 
-    function highlight (v) {
-        if (v == 0)
-            myBang.style.background = myBang.backgroundOff;
-        else
-            myBang.style.background = myBang.backgroundOn;
+    function highlight(v) {
+        switch (v) {
+        case 0: myBang.pulseOff();
+            setBang(0);
+            break;
+        case 1: myBang.pulseOff();
+            setBang(1);
+            break;
+        case 2:
+            myBang.pulseOn(250);
+            break;
+        }
     }
 
     
@@ -156,12 +149,6 @@ function bang (elem) {
         myBang.externalValueChange = true;
         myBang.pulseState = false;
         myBang.pulseActive = false;
-        myBang.colorOff = colorOff;
-        myBang.backgroundOff = backgroundOff;
-        myBang.labelOff = labelOff;
-        myBang.colorOn = colorOn;
-        myBang.backgroundOn = backgroundOn;
-        myBang.labelOn = labelOn;
         myBang.ondragstart = disable;
         myBang.addEventListener('mousedown', mouseDownListener);
         addEventListener('beforeunload', (event) => {
@@ -170,21 +157,12 @@ function bang (elem) {
         myBang.textContent = myBang.labelOff;
         myBang.style.color = myBang.colorOff;
         myBang.style.background = myBang.backgroundOff;
-        // myBang.addEventListener('dblclick', function(event) {
-        //     event.preventDefault();
-        //     event.stopPropagation();
-        // }, true);
-//        let val = parseFloat(myBang.getAttribute('data-val')).toFixed(0);
-        // if ((val != valueOff) && (val != valueOn)) {
-        //     val = valueOff;
-        //     mySetAttribute.call(myBang, 'data-val', val);
-        // }
-//        drawBang(val);
         myBang.externalValueChange = true;
         myBang.bang = bang;
         myBang.pulseOn = pulseOn;
         myBang.pulseOff = pulseOff
         myBang.highlight = highlight;
+        setBang(0);
     }
 
     init();

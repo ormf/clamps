@@ -49,6 +49,27 @@
    (tr-rec :accessor tr-rec)
    (cc-nums :accessor cc-nums)))
 
+(export '(nanoktl2-midi
+          nk2-faders nk2-fader-update-fns
+          nk2-fader-modes
+          nk2-fader-last-cc
+          hide-fader
+          s-buttons
+          m-buttons
+          track-left
+          track-right
+          cycle
+          set-marker
+          marker-left
+          marker-right
+          tr-rewind
+          tr-ffwd
+          tr-stop
+          tr-play
+          tr-rec
+          cc-nums)
+        'cl-midictl)
+
 #|
 
 cc-map is a lookup table mapping the cc nums of the nanokontrol2 to
