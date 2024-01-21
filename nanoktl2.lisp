@@ -20,6 +20,8 @@
 
 (in-package :cl-midictl)
 
+;; (make-ref 0.5)
+
 (defclass nanoktl2-midi (midi-controller)
   ((nk2-faders :accessor nk2-faders)
    (nk2-fader-update-fns :accessor nk2-fader-update-fns :initform (coerce (loop repeat 16 collect nil) 'vector))
@@ -41,6 +43,27 @@
    (tr-play :accessor tr-play)
    (tr-rec :accessor tr-rec)
    (cc-nums :accessor cc-nums)))
+
+(export '(nanoktl2-midi
+          nk2-faders nk2-fader-update-fns
+          nk2-fader-modes
+          nk2-fader-last-cc
+          hide-fader
+          s-buttons
+          m-buttons
+          track-left
+          track-right
+          cycle
+          set-marker
+          marker-left
+          marker-right
+          tr-rewind
+          tr-ffwd
+          tr-stop
+          tr-play
+          tr-rec
+          cc-nums)
+        'cl-midictl)
 
 #|
 
@@ -81,7 +104,6 @@ nanokontrol2.
                  ))
            'vector))
     (dotimes (i 128) (setf (aref cc-map i) nil)) ;;; initialize cc-map with nil
-
     (loop
       for idx from 0
       for ccnum across cc-nums
@@ -90,8 +112,8 @@ nanokontrol2.
                                :initial-contents
                                (loop for x below (length cc-nums)
                                      collect (if (<= 40 x 45)
-                                                 (make-instance 'bang-cell)
-                                                 (make-instance 'value-cell)))))
+                                                 (make-bang)
+                                                 (make-ref 0.0)))))
     (setf nk2-faders (make-array 16 :displaced-to cc-state))
     (setf s-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 16))
     (setf m-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 24))
@@ -104,9 +126,16 @@ nanokontrol2.
          (v-collect (n 11) (+ n 40)))
     (dotimes (i (length cc-nums))
       (unless (<= 40 i 45)
-        (setf (val (aref cc-state i)) (aref (aref *midi-cc-state* chan) (aref cc-nums i))))))
+        (set-val (aref cc-state i) (aref (aref *midi-cc-state* chan) (aref cc-nums i))))))
   (update-state obj))
 
+
+#|
+                   (osc-midi-write-short
+                      (midi-output midi-controller)
+                      (+ (chan midi-controller) 176) cc-num (if flash-state 127 0))
+
+|#
 (defmethod handle-midi-in ((instance nanoktl2-midi) opcode d1 d2)
   (with-slots (cc-fns cc-nums nk2-fader-update-fns
                nk2-fader-modes nk2-fader-last-cc
@@ -126,15 +155,15 @@ nanokontrol2.
                   (:scale
                    (progn
                      (unless hide-fader
-                       (setf (val gui-slot) (buchla-scale d2 last-cc (val gui-slot))))
+                       (set-val gui-slot (buchla-scale d2 last-cc (get-val gui-slot))))
                      (setf (aref nk2-fader-last-cc fader-idx) d2)))
-                  (:jump (unless hide-fader (setf (val gui-slot) d2)))
+                  (:jump (unless hide-fader (set-val gui-slot d2)))
                   (:catch (unless hide-fader
                             (if fn
                                 (when (funcall fn d2 (val gui-slot))
-                                  (setf (val gui-slot) d2)
+                                  (set-val gui-slot d2)
                                   (setf (aref nk2-fader-update-fns fader-idx) nil))
-                                (setf (val gui-slot) d2)))))))
+                                (set-val gui-slot d2)))))))
              
              ((<= 40 fader-idx 45)
               (case fader-idx
@@ -144,7 +173,7 @@ nanokontrol2.
                  (update-state instance))
                 (otherwise
                  (let ((slot (aref cc-state (aref cc-map d1))))
-                   (unless (zerop d2) (trigger slot nil))))))
+                   (unless (zerop d2) (trigger slot))))))
              (t (if (/= d2 0)
                     (let ((slot (aref cc-state (aref cc-map d1))))
                       (toggle-slot slot))))))))
@@ -157,5 +186,5 @@ nanokontrol2.
         (let ((cc-num (aref cc-nums local-idx)))
           (osc-midi-write-short
            midi-output
-           (+ chan 176) cc-num (round (val (aref cc-state local-idx)))))))))
+           (+ chan 176) cc-num (round (get-val (aref cc-state local-idx)))))))))
 

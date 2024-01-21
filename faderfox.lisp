@@ -88,7 +88,10 @@ nanokontrol2.
               (when echo (osc-midi-write-short midi-output (+ chan 176) d1 new-value)))))))
       (:note-on (incudine.util:msg :info "notein: ~a ~a" d1 d2)
        (let ((button-idx (aref cc-map d1)))
-         (cond ((and (< button-idx 16) (= d2 127))
+         (cond ((and (< 3 button-idx 16) (= d2 127))
+                (let ((button-slot (aref note-state button-idx)))
+                  (toggle-slot button-slot)))
+               ((and (< button-idx 3) (= d2 127))
                 (let ((button-slot (aref note-state button-idx)))
                   (toggle-slot button-slot)))))))))
 
@@ -99,9 +102,10 @@ nanokontrol2.
         (osc-midi-write-short
          midi-output
          (+ chan 176) cc-num (val (aref cc-state local-idx)))
-        (osc-midi-write-short
-         midi-output
-         (+ chan 144) cc-num (val (aref note-state local-idx)))))))
+        ;; (osc-midi-write-short
+        ;;  midi-output
+        ;;  (+ chan 144) cc-num (val (aref note-state local-idx)))
+        ))))
 
 ;;; (cellctl:set-ref)
 #|

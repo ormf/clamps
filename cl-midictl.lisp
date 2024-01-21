@@ -137,6 +137,8 @@
 
 (defclass midi-controller ()
   ((id :initform nil :initarg :id :accessor id)
+   (gui-update-off :initform nil :accessor gui-update-off)
+   (gui :initform nil :accessor gui)
    (chan :initform 0 :initarg :chan :accessor chan)
    (cc-map :initform (make-array 128 :initial-contents (loop for i below 128 collect i))
            :initarg :cc-map :accessor cc-map)
@@ -145,9 +147,9 @@
    (echo :initarg :echo :initform t :accessor echo
          :documentation "en/disable direct updates in hw-controller when midi-input is received. (default: t)")
    (last-note-on :initform 0 :initarg :last-note-on :accessor last-note-on)
-   (cc-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-instance 'value-cell)))
+   (cc-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-ref 0)))
              :initarg :cc-state :accessor cc-state)
-   (note-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-instance 'value-cell)))
+   (note-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-ref 0)))
              :initarg :note-state :accessor note-state)
    ;;; storage of functions to call for individual cc events. An entry
    ;;; of the array is a list of functions accepting one arg: the
@@ -157,7 +159,8 @@
    ;;; storage of functions to call for individual note-on/off
    ;;; events. This is a list of functions accepting two args: keynum
    ;;; and velo.
-   (note-fns :initform nil :initarg :note-fns :accessor note-fns))
+   (note-fns :initform nil :initarg :note-fns :accessor note-fns)
+   (unwatch :initform nil :initarg :unwatch :accessor unwatch))
   (:documentation "generic class for midi-controllers. An instance
   should get initialized with #'add-midi-controller and get removed
   with #'remove-midi-controller, using its id as argument in order to
@@ -185,14 +188,14 @@ controller actions."))
   (with-slots (cc-fns cc-map cc-state note-state note-fn last-note-on) instance
     (case opcode
       (:cc (progn
-             (setf (val (aref cc-state (aref cc-map d1))) d2)
+             (set-val (aref cc-state (aref cc-map d1)) d2)
              (mapcar (lambda (fn) (funcall fn d2)) (aref cc-fns d1))))
       (:note-on (progn
-                  (setf (val (aref note-state (aref cc-map d1))) d2)
+                  (set-val (aref note-state (aref cc-map d1)) d2)
                   (mapcar (lambda (fn) (funcall fn d1 d2)) (note-fns instance))
                   (setf last-note-on d1)))
       (:note-off (progn
-                   (setf (val (aref note-state (aref cc-map d1))) 0)
+                   (set-val (aref note-state (aref cc-map d1)) 0)
                    (mapcar (lambda (fn) (funcall fn d1 0)) (note-fns instance)))))))
 
 ;;; (make-instance 'midi-controller)
@@ -205,7 +208,7 @@ controller actions."))
     (dotimes (cc-num 128)
       (osc-midi-write-short
        midi-output
-       (+ chan 176) cc-num (val (aref (aref *midi-cc-state* chan) cc-num))))))
+       (+ chan 176) cc-num (get-val (aref (aref *midi-cc-state* chan) cc-num))))))
 
 (defmethod initialize-instance :after ((instance midi-controller) &rest args)
   (declare (ignorable args))
@@ -231,12 +234,14 @@ the hash-table entry of its midi-input."
   (let ((instance (gethash id *midi-controllers*)))
     (format t "~&removing: ~a~%" id)
     (if instance
-        (if (member instance (gethash (midi-input instance) *midi-controllers*))
-            (progn
-              (setf (gethash (midi-input instance) *midi-controllers*)
-                    (delete instance (gethash (midi-input instance) *midi-controllers*)))
-              (format t "removing ~a: ~a" id (remhash id *midi-controllers*)))
-            (warn "couldn't remove midi-controller ~a" instance)))))
+        (progn
+          (mapcar #'funcall (unwatch instance))
+          (if (member instance (gethash (midi-input instance) *midi-controllers*))
+              (progn
+                (setf (gethash (midi-input instance) *midi-controllers*)
+                      (delete instance (gethash (midi-input instance) *midi-controllers*)))
+                (format t "removing ~a: ~a" id (remhash id *midi-controllers*)))
+              (warn "couldn't remove midi-controller ~a" instance))))))
 
 (defun remove-all-midi-controllers ()
   (loop

@@ -21,9 +21,9 @@
 (in-package :cl-midictl)
 
 (defmacro toggle-slot (slot)
-  `(setf (val ,slot)
-         (if (zerop (val ,slot))
-             127 0)))
+  `(set-val ,slot
+            (if (zerop (get-val ,slot))
+                127 0)))
 
 (defun buchla-scale (curr old target &key (max 127))
   "scale the target fader by interpolating using the curr and old values
@@ -36,3 +36,9 @@ of the source fader."
       (* (- 1 (/ (- old curr) old)) target))
      (t (- max (* (- 1 (/ (- curr old) (- max old))) (- max target)))))
    1.0))
+
+(defmacro with-gui-update-off ((instance) &body body)
+  `(progn
+     (setf (gui-update-off ,instance) t)
+     (unwind-protect ,@body
+       (setf (gui-update-off ,instance) nil))))
