@@ -5,9 +5,16 @@
 (defpackage #:cl-refs
   (:use #:cl)
   (:export
+   #:ref-object-super
+   #:*refs-seen*
+   #:*debug*
+   #:ref-object #:bang-object
+   #:ref-listeners
+   #:ref-id
    #:make-ref #:set-val #:%set-val #:get-val
    #:make-bang #:trigger #:%trigger
    #:make-computed
+   #:watch
    #:clear-dependencies #:with-updating-deps
    #:on-deps-update
    #:copy-ref

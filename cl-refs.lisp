@@ -8,7 +8,7 @@
 
 (in-package #:cl-refs)
 
-
+(defparameter *debug* nil)
 (defparameter *ref-id* '(0))
 
 (defun next-id (ref-id)
