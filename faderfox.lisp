@@ -21,9 +21,7 @@
 (in-package :cl-midictl)
 
 (defclass faderfox-midi (midi-controller)
-  ((cc-nums :accessor cc-nums)
-   (ff-faders :accessor ff-faders)
-   (ff-buttons :accessor ff-buttons)))
+  ((cc-nums :accessor cc-nums)))
 
 ;;; the cc-map maps the cc nums to the array slots. Their order is like this:
 #|
@@ -38,29 +36,37 @@ nanokontrol2.
 |#
 
 (defmethod initialize-instance :after ((obj faderfox-midi) &rest args)
-  (with-slots (cc-map cc-nums cc-state note-state chan ff-faders ff-buttons)
+  (with-slots (cc-map cc-nums cc-state note-state chan ff-faders ff-buttons
+               midi-output unwatch)
       obj
     (setf cc-nums
           (coerce
            (or (getf args :cc-nums)
-               '(32 33 34 35 36 37 38 39        ;;; rotaries and button keynums
-                 40 41 42 43 44 45 46 47        ;;; 
-                 ))
+               '(32 33 34 35   ;;; rotary ccnums and button keynums
+                 36 37 38 39        
+                 40 41 42 43
+                 44 45 46 47))
            'vector))
     (dotimes (i 128) (setf (aref cc-map i) nil)) ;;; initialize cc-map with nil
-
     (loop
       for idx from 0
       for ccnum across cc-nums
       do (setf (aref cc-map ccnum) idx))
     (setf cc-state (make-array (length cc-nums)
                                :initial-contents
-                               (loop for x below (length cc-nums) collect (make-instance 'value-cell))))
+                               (loop for x below (length cc-nums) collect (make-ref 0))))
     (setf note-state (make-array (length cc-nums)
                                :initial-contents
-                               (loop for x below (length cc-nums) collect (make-instance 'value-cell))))
-    (setf ff-faders cc-state)
-    (setf ff-buttons note-state))
+                               (loop for x below (length cc-nums) collect (make-ref 0))))
+    (dotimes (idx 16)
+      (push
+       (watch
+        (let* ((idx idx)
+               (cc-num (aref cc-nums idx))
+               (opcode (+ 176 chan))
+               (cc-state (aref cc-state idx)))
+          (lambda () (osc-midi-write-short midi-output opcode cc-num (get-val cc-state)))))
+       unwatch)))
   (update-state obj))
 
 (defun midi-delta->i (n)
@@ -80,18 +86,14 @@ nanokontrol2.
          ((< (aref cc-map d1) 16)
           (let* ((fader-idx (aref cc-map d1))
                  (fader-slot (aref cc-state fader-idx))
-                 (old-value (val fader-slot))
+                 (old-value (get-val fader-slot))
                  (new-value (max 0 (min 127 (+ old-value (midi-delta->i d2))))))
             (incudine.util:msg :info "old-value: ~a, new-value: ~a" old-value new-value)
             (when (/= old-value new-value)
-              (setf (val fader-slot) new-value)
-              (when echo (osc-midi-write-short midi-output (+ chan 176) d1 new-value)))))))
+              (set-val fader-slot new-value))))))
       (:note-on (incudine.util:msg :info "notein: ~a ~a" d1 d2)
        (let ((button-idx (aref cc-map d1)))
-         (cond ((and (< 3 button-idx 16) (= d2 127))
-                (let ((button-slot (aref note-state button-idx)))
-                  (toggle-slot button-slot)))
-               ((and (< button-idx 3) (= d2 127))
+         (cond ((and (< button-idx 16) (= d2 127))
                 (let ((button-slot (aref note-state button-idx)))
                   (toggle-slot button-slot)))))))))
 
@@ -101,15 +103,15 @@ nanokontrol2.
       (let ((cc-num (aref cc-nums local-idx)))
         (osc-midi-write-short
          midi-output
-         (+ chan 176) cc-num (val (aref cc-state local-idx)))
+         (+ chan 176) cc-num (get-val (aref cc-state local-idx)))
         ;; (osc-midi-write-short
         ;;  midi-output
-        ;;  (+ chan 144) cc-num (val (aref note-state local-idx)))
+        ;;  (+ chan 144) cc-num (get-val (aref note-state local-idx)))
         ))))
 
 ;;; (cellctl:set-ref)
 #|
-(defmethod (setf s-buttons) (val (obj faderfox) idx)
+(defmethod (setf s-buttons) (get-val (obj faderfox) idx)
   (setf (aref (slot-value instance :s-buttons) idx) val)
   val)
 |#

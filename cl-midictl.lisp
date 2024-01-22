@@ -336,3 +336,12 @@ of the input."
     (update-state controller)))
 
 ;;; (start-midi-receive *midi-in1*)
+
+(defun start-midi-engine ()
+  (setf *midi-in1* (jackmidi:open :direction :input
+                                  :port-name "midi_in_1"))
+
+  (setf *midi-out1* (jackmidi:open :direction :output
+                                   :port-name "midi_out_1"))
+  (start-midi-receive *midi-in1*)
+  (incudine:rt-start))

@@ -20,6 +20,13 @@
 
 (in-package :cl-midictl)
 
+(defun get-ref (controller ref-idx)
+  "return the ref-object of a midi-controller given the idx according to
+cc-nums."
+  (with-slots (cc-nums cc-state) controller
+    (aref cc-state (aref cc-nums ref-idx))))
+
+
 (defmacro toggle-slot (slot)
   `(set-val ,slot
             (if (zerop (get-val ,slot))
