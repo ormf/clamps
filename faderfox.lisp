@@ -66,6 +66,15 @@ nanokontrol2.
                (opcode (+ 176 chan))
                (cc-state (aref cc-state idx)))
           (lambda () (osc-midi-write-short midi-output opcode cc-num (get-val cc-state)))))
+       unwatch))
+    (dotimes (player-idx 4)
+      (push
+       (watch
+        (let* ((idx player-idx)
+               (cc-num (aref cc-nums idx))
+               (opcode (+ 176 chan))
+               (cc-state (aref cc-state idx)))
+          (lambda () (osc-midi-write-short midi-output opcode cc-num (get-val cc-state)))))
        unwatch)))
   (update-state obj))
 
@@ -108,6 +117,26 @@ nanokontrol2.
         ;;  midi-output
         ;;  (+ chan 144) cc-num (get-val (aref note-state local-idx)))
         ))))
+
+(defclass faderfox-midi-f.orm (faderfox-midi)
+  ((curr-player :initform 0 :type (integer 0 3) :accessor curr-player)))
+
+(defmethod initialize-instance :after ((controller faderfox-midi-f.orm) &rest args)
+  (declare (ignore args))
+  (with-slots (note-state curr-player unwatch) controller
+    (dotimes (player-idx 4)
+      (push
+       (watch ;;; handle player switch (radio behaviour of top 4 buttons)
+        (let* ((idx player-idx)
+               (button (aref note-state idx)))
+          (lambda ()
+            (when (= (get-val button) 127)
+              (set-val (aref note-state curr-player) 0)
+              (setf curr-player idx)))))
+       unwatch))))
+
+
+
 
 ;;; (cellctl:set-ref)
 #|
