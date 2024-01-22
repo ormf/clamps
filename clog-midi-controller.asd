@@ -12,6 +12,7 @@
   :depends-on (#:clog-widgets #:cl-midictl)
   :components ((:file "package")
                (:file "clog-midi-controller")
+               (:file "nanoktl2-gui")
                (:file "nanoktl2-preset-gui")
                (:file "faderfox-gui")
                ))

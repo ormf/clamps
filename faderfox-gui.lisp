@@ -96,17 +96,19 @@
                                         :css '(:width "80%")))
              (fader-panel (create-div gui-container :css '(:display "flex"
                                                            :flex-direction "column")))
-             (fader-subpanel (create-div fader-panel :css '(:display "grid"
-                                                            :grid-template-columns "repeat(4, minmax(3em, 0.37fr))")))
-             (button-panel (create-div gui-container :css '(:width "40%"
-                                                            :display "grid"
-                                                            :grid-template-columns "repeat(4, minmax(3em, 0.6fr))"
-                                                            ))))
+             (fader-subpanel (create-div fader-panel
+                                         :css '(:display "grid"
+                                                :grid-template-columns "repeat(4, minmax(3em, 0.37fr))")))
+             (button-panel (create-div gui-container
+                                       :css '(:width "40%"
+                                              :display "grid"
+                                              :grid-template-columns "repeat(4, minmax(3em, 0.6fr))"))))
         (dotimes (idx 16)
           (create-o-numbox
            fader-subpanel
            (bind-ref-to-attr (aref cc-state idx) "value")
-           0 127 :precision 0 :css '(:text-align "center" :background "#ccc" :font-size "2em" :height "1.3em" :margin 2px))
+           0 127 :precision 0 :css '(:text-align "center" :background "#ccc"
+                                     :font-size "2em" :height "1.3em" :margin 2px))
           (create-o-toggle
            button-panel
            (bind-ref-to-attr (aref note-state idx) "value")
