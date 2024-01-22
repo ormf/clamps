@@ -45,4 +45,6 @@
    #:pulse-on
    #:pulse-off
    #:highlight
+   #:start
+   #:new-window
    ))

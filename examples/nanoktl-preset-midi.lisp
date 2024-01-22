@@ -107,12 +107,17 @@
           (watch
            (let* ((idx idx)
                   (button (aref r-buttons idx)))
-             (lambda () (unless (or (zerop (get-val button))
-                               (eql button (aref r-buttons curr-bank)))
-                     (set-val (aref r-buttons curr-bank) 0)
-                     (setf curr-bank idx)
-                     (loop for i from 0 for label in button-labels
-                           do (set-val label (+ (* curr-bank 16) i)))))))
+             (lambda ()
+               (let ((val (get-val button)))
+                 (incudine.util:msg :info "idx: ~a, val: ~a, curr-bank: ~a" idx val curr-bank)
+                 (if (zerop val)
+                     (when (= curr-bank idx)
+                       (set-val button 1))
+                     (unless (= curr-bank idx)
+                       (let ((old curr-bank))
+                         (setf curr-bank idx)
+                         (incudine.util:msg :info "old: ~a" old)
+                         (set-val (aref r-buttons old) 0))))))))
           unwatch))
     (let ((opcode (+ chan 176)))
       (loop for idx below 8
@@ -252,7 +257,7 @@ off is determined by <initial-flash>."
 (defun handle-preset-bank-button-press (instance button-idx)
   (incudine.util:msg :info "preset-bank-button-press ~a" button-idx)
   (with-slots (curr-bank button-labels r-buttons s-buttons m-buttons) instance
-    (set-val (aref r-buttons button-idx) 127)))
+    (set-val (aref r-buttons button-idx) 1)))
 
 (defun preset-state (preset-no active-players)
 
@@ -323,7 +328,7 @@ off is determined by <initial-flash>."
              ((<= 16 fader-idx 31) ;;; s and m buttons
               (when (/= d2 0) (trigger (aref (preset-buttons instance) (- fader-idx 16)))))
              ((<= 32 fader-idx 39) ;;; r buttons
-              (when (/= d2 0) (set-val (aref (r-buttons instance) (- fader-idx 32)) 127)))
+              (when (/= d2 0) (set-val (aref (r-buttons instance) (- fader-idx 32)) 1)))
              ((<= 40 fader-idx 45) ;;; small buttons
               (case fader-idx
                 (43 ;;; set button
@@ -342,4 +347,4 @@ off is determined by <initial-flash>."
       (:note-on (setf last-note-on d1)))))
 
 (defun select-preset-bank (controller idx)
-  (set-val (aref (r-buttons controller) idx) 127))
+  (set-val (aref (r-buttons controller) idx) 1))

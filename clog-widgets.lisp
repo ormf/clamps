@@ -437,3 +437,29 @@ event."))
 (defmethod highlight ((obj clog-element) value)
   (execute obj (format nil "highlight(~A)" value))  
   value)
+
+
+;;; We don't want to restart the server everytime when the new-window
+;;; fun is canged thats why this proxy gets defined
+(defun on-new-window (body)
+  (new-window body))
+
+;; Initialize the CLOG system with a boot file which contains the
+;; static js files. For customized uses copy the "www" subdirectory of
+;; the repository to your local project and adjust :static-root
+;; accordingly
+
+(defun new-window (body)
+  "On-new-window handler."
+  (setf (title (html-document body)) "Clog Test"))
+
+(defun start (&key (port 8080))
+  (clear-bindings) ;;; start from scratch
+  (initialize #'on-new-window
+              :port port
+              :static-root (merge-pathnames "www/" (asdf:system-source-directory :clog-widgets))
+              :boot-file "/start.html")
+  ;; Open a browser to http://127.0.0.1:8080 - the default for CLOG apps
+  (open-browser))
+
+;;; (start) should start a webserver
