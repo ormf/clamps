@@ -57,24 +57,6 @@
 
 (in-package :cl-midictl)
 
-(defclass faderfox-midi-f.orm (faderfox-midi)
-  ((curr-player :initform 0 :type (integer 0 3) :accessor curr-player)))
-
-(defmethod initialize-instance :after ((controller faderfox-midi-f.orm) &rest args)
-  (declare (ignore args))
-  (with-slots (note-state curr-player unwatch) controller
-    (dotimes (player-idx 4)
-      (push
-       (watch ;;; handle player switch (radio behaviour of top 4 buttons)
-        (let* ((idx player-idx)
-               (button (aref note-state idx)))
-          (lambda ()
-            (when (= (get-val button) 127)
-              (set-val (aref note-state curr-player) 0)
-              (setf curr-player idx)))))
-       unwatch))))
-
-(export '(curr-player faderfox-midi-f.orm) 'cl-midictl)
 
 #|
 
@@ -88,8 +70,14 @@
 
 (in-package :clog-midi-controller)
 
-(defun faderfox-gui (id gui-parent)
-  (let ((midi-controller (find-controller id)))
+(defun faderfox-gui (id gui-parent &key (chan 4))
+  (let ((midi-controller
+          (or (find-controller id)
+              (add-midi-controller 'faderfox-midi
+                                   :id id
+                                   :chan chan
+                                   :midi-input *midi-in1*
+                                   :midi-output *midi-out1*))))
     (with-slots (cc-state note-state) midi-controller
       (let* ((gui-container (create-div gui-parent
                                         :class "nk2-panel"
