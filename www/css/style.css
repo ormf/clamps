@@ -52,18 +52,114 @@ body{
   grid-column: span 1;
 }
 
-.nk2-panel{
+o-bang {
+    position: relative;
+    font-size: 2em;
+    user-select: none;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    text-align: center;
+    background-off: transparent;
+    background-on: orange;
+    color-off: black;
+    color-on: black;
+    border: solid 0.15em;
+}
+
+
+o-toggle {
+    position: relative;
+    font-size: 2em;
+    user-select: none;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    text-align: center;
+    background-off: transparent;
+    background-on: orange;
+    color-off: black;
+    color-on: black;
+    border: solid 0.15em;
+}
+
+o-radio {
+    position: relative;
+    font-size: 1.6em;
+    user-select: none;
+//    width: 1em;
+//    height: 8em;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    text-align: center;
+    background-off: transparent;
+    background-on: orange;
+    color-off: black;
+    color-on: black;
+    border: solid 0.15em;
+}
+
+o-slider {
+    position: relative;
+    font-size: 2em;
+    user-select: none;
+//    width: 1em;
+//    height: 8em;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    text-align: center;
+    background: transparent;
+    border: solid 0.15em;
+}
+
+
+o-multislider {
+    position: relative;
+    font-size: 2em;
+    user-select: none;
+    width: 8em;
+    height: 8em;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    border: none;
+    text-align: center;
+    background: transparent;
+    display: flex;
+    flex: 0 0 auto;
+    border: solid 0.15em;
+}
+
+.mvslider {
+    flex-direction: column-reverse;
+    display: flex;
+}
+
+.sliderbar {
+    position: relative;
+    width: 100%;
+}
+
+
+.nk2-panel {
   display: flex;
 }
 
-.nk2-ctl{
+.nk2-ctl {
   display: grid;
   grid-template-columns: repeat(5, minmax(5em, 1fr));
   self-align: bottom;
 }
 
 
-.nk2-fader{
+.nk2-fader {
   display: grid;
   grid-template-columns: repeat(8, minmax(1em, 1fr));
 }
@@ -73,7 +169,7 @@ body{
 //    padding: 0.5rem;
     justify-content: flex-start; /* flex-start, flex-end */
     align-items: left; /* center flex-start, flex-end
-  outline: 0.1em solid black;
+  outline: 0.15em solid black;
 }
 
 /* Knob */
@@ -155,105 +251,9 @@ input[is=o-numbox] {
     margin-bottom: 0;
     margin-left: 0;
     margin-right: 0;
-    border: solid 0.1em;
+    border: solid 0.15em;
     text-align: center;
 }
 
 /* o-bang */
 
-o-bang {
-    position: relative;
-    font-size: 2em;
-    user-select: none;
-    width: 1em;
-    height: 1em;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    border: solid 1px;
-    text-align: center;
-    background-off: transparent;
-    background-on: orange;
-    color-off: black;
-    color-on: black;
-}
-
-o-toggle {
-    position: relative;
-    font-size: 2em;
-    user-select: none;
-    width: 1em;
-    height: 1em;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    border: solid 1px;
-    text-align: center;
-    background-off: transparent;
-    background-on: orange;
-    color-off: black;
-    color-on: black;
-}
-
-o-radio {
-    position: relative;
-    font-size: 1.6em;
-    user-select: none;
-//    width: 1em;
-//    height: 8em;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    border: solid 1px;
-    text-align: center;
-    background-off: transparent;
-    background-on: orange;
-    color-off: black;
-    color-on: black;
-}
-
-o-slider {
-    position: relative;
-    font-size: 2em;
-    user-select: none;
-//    width: 1em;
-//    height: 8em;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    border: solid 1px;
-    text-align: center;
-    background: transparent;
-}
-
-
-o-multislider {
-    position: relative;
-    font-size: 2em;
-    user-select: none;
-    width: 8em;
-    height: 8em;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    border: none;
-    text-align: center;
-    background: transparent;
-    display: flex;
-    flex: 0 0 auto;
-}
-
-.mvslider {
-    flex-direction: column-reverse;
-    display: flex;
-}
-
-.sliderbar {
-    position: relative;
-    width: 100%;
-}
