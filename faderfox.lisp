@@ -65,7 +65,7 @@ nanokontrol2.
                (cc-num (aref cc-nums idx))
                (opcode (+ 176 chan))
                (cc-state (aref cc-state idx)))
-          (lambda () (osc-midi-write-short midi-output opcode cc-num (get-val cc-state)))))
+          (lambda () (osc-midi-write-short midi-output opcode cc-num (round (get-val cc-state))))))
        unwatch))
     (dotimes (player-idx 4)
       (push
@@ -74,7 +74,7 @@ nanokontrol2.
                (cc-num (aref cc-nums idx))
                (opcode (+ 176 chan))
                (cc-state (aref cc-state idx)))
-          (lambda () (osc-midi-write-short midi-output opcode cc-num (get-val cc-state)))))
+          (lambda () (osc-midi-write-short midi-output opcode cc-num (round (get-val cc-state))))))
        unwatch)))
   (update-state obj))
 
@@ -112,7 +112,7 @@ nanokontrol2.
       (let ((cc-num (aref cc-nums local-idx)))
         (osc-midi-write-short
          midi-output
-         (+ chan 176) cc-num (get-val (aref cc-state local-idx)))
+         (+ chan 176) cc-num (round (get-val (aref cc-state local-idx))))
         ;; (osc-midi-write-short
         ;;  midi-output
         ;;  (+ chan 144) cc-num (get-val (aref note-state local-idx)))
@@ -130,13 +130,15 @@ nanokontrol2.
         (let* ((idx player-idx)
                (button (aref note-state idx)))
           (lambda ()
-            (when (= (get-val button) 127)
-              (set-val (aref note-state curr-player) 0)
-              (setf curr-player idx)))))
-       unwatch))))
-
-
-
+            (if (= (get-val button) 127)
+                (unless (= curr-player idx)
+                  (let ((old curr-player))
+                    (setf curr-player idx)
+                    (set-val (aref note-state old) 0)))
+                (when (= curr-player idx)
+                  (set-val (aref note-state idx) 127))))))
+       unwatch))
+    (set-val (aref note-state 0) 127)))
 
 ;;; (cellctl:set-ref)
 #|

@@ -43,12 +43,13 @@
 
 (defclass nanoktl2-preset-midi (nanoktl2-midi)
   ((button-labels :initarg :button-labels :accessor button-labels
-                  :initform (loop for i below 16 collect (make-ref (format nil "~a" i))))
+                  :initform (loop for i below 16 collect (make-ref (format nil "~a" i)))
+                  :documentation "labels of preset buttons in gui (if present)")
    (preset-buttons :initarg :preset-buttons :accessor preset-buttons
                    :initform (make-array 16 :initial-contents (loop repeat 16 collect (make-bang))))
    (curr-bank :initform 0 :initarg :curr-bank :type (integer 0 7) :accessor curr-bank
            :documentation "idx of current preset bank")
-   (cp-src :initform 0 :initarg :cp-src :type (integer 0 127) :accessor cp-src
+   (cp-src :initform -1 :initarg :cp-src :type (integer -1 127) :accessor cp-src
            :documentation "idx of src preset to copy")
    (presets :initform (make-array 4 :initial-contents (loop repeat 4 collect (make-array 128)))
             :initarg :presets :accessor presets)))
@@ -103,7 +104,7 @@
     (update-state obj)
     (mapcar #'funcall unwatch)
     (loop for idx below 8
-      do (push
+      do (push ;;; relabeling of preset-buttons on bank change
           (watch
            (let* ((idx idx)
                   (button (aref r-buttons idx)))
@@ -181,10 +182,9 @@
                 opcode cc-num
                 (if (zerop (get-val button)) 0 127)))
               (2 (pulse obj button cc-num))))))
-       unwatch)
-      )
-    
-    ))
+       unwatch))
+    (setf curr-bank 0)
+    (set-val (aref r-buttons 0) 1)))
 
 (defun pulse (midi-controller slot cc-num &key (pulse-freq 2) (initial-flash nil))
   "pulse the LED of <midi-controller> at <cc-num> with frequency
@@ -252,7 +252,7 @@ off is determined by <initial-flash>."
 (defun handle-preset-bank-button-press (instance button-idx)
   (incudine.util:msg :info "preset-bank-button-press ~a" button-idx)
   (with-slots (curr-bank button-labels r-buttons s-buttons m-buttons) instance
-    (set-val (aref r-buttons button-idx) 127)))
+    (set-val (aref r-buttons button-idx) 1)))
 
 (defun preset-state (preset-no active-players)
 
@@ -342,4 +342,4 @@ off is determined by <initial-flash>."
       (:note-on (setf last-note-on d1)))))
 
 (defun select-preset-bank (controller idx)
-  (set-val (aref (r-buttons controller) idx) 127))
+  (set-val (aref (r-buttons controller) idx) 1))

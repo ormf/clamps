@@ -312,6 +312,7 @@ instance."
 midi input it scans all elems of *midi-controllers* and calls their
 handle-midi-in method in case the event's midi channel matches the
 controller's channel."
+  (incudine.util:msg :info "removing-responders")
   (remove-all-responders input)
   (make-responder input
      (lambda (st d1 d2)
