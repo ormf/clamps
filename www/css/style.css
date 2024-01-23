@@ -6,12 +6,13 @@ body{
   margin: 0 auto;
   width: 192rem;
   height: 108rem;
+//  height: 68rem;
   font-size: 1.6rem;
   outline: 1px solid red;
   /* display: grid; */
   /* grid-template-columns: repeat(12, 1fr); */
   /* grid-template-rows: max-content; */
-  background-color: #444;
+  background-color: #607d8b;
   font-family: sans-serif;
 }
 
@@ -65,7 +66,7 @@ o-bang {
     background-on: orange;
     color-off: black;
     color-on: black;
-    border: solid 0.15em;
+    border: solid 0.1em;
 }
 
 
@@ -73,16 +74,21 @@ o-toggle {
     position: relative;
     font-size: 2em;
     user-select: none;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
     text-align: center;
     background-off: transparent;
     background-on: orange;
     color-off: black;
     color-on: black;
-    border: solid 0.15em;
+    border: solid 0.1em;
+}
+
+o-numbox {
+    position: relative;
+    font-size: 2em;
+    min-width: 4em;
+    user-select: none;
+    text-align: center;
+    border: solid 0.1em;
 }
 
 o-radio {
@@ -100,7 +106,7 @@ o-radio {
     background-on: orange;
     color-off: black;
     color-on: black;
-    border: solid 0.15em;
+    border: solid 0.1em;
 }
 
 o-slider {
@@ -115,7 +121,7 @@ o-slider {
     margin-right: 0px;
     text-align: center;
     background: transparent;
-    border: solid 0.15em;
+    border: solid 0.1em;
 }
 
 
@@ -134,7 +140,7 @@ o-multislider {
     background: transparent;
     display: flex;
     flex: 0 0 auto;
-    border: solid 0.15em;
+    border: solid 0.1em;
 }
 
 .mvslider {
@@ -169,7 +175,7 @@ o-multislider {
 //    padding: 0.5rem;
     justify-content: flex-start; /* flex-start, flex-end */
     align-items: left; /* center flex-start, flex-end
-  outline: 0.15em solid black;
+  outline: 0.1em solid black;
 }
 
 /* Knob */
@@ -251,7 +257,7 @@ input[is=o-numbox] {
     margin-bottom: 0;
     margin-left: 0;
     margin-right: 0;
-    border: solid 0.15em;
+    border: solid 0.1em;
     text-align: center;
 }
 

@@ -184,7 +184,7 @@ array of bindings, depending on the class."))
         (attr (b-attr binding))
         (element (create-child
                   parent
-                  (format nil "<input is=\"o-numbox\" min=\"~a\" max=\"~a\" value=\"~a\" precision=\"~a\" ~@[~a~]>"
+                  (format nil "<o-numbox min=\"~a\" max=\"~a\" value=\"~a\" precision=\"~a\" ~@[~a~]>"
                           min max (get-val (b-ref binding)) precision
                           (format-style css))))) ;;; the get-val automagically registers the ref
     (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
@@ -395,6 +395,46 @@ array of bindings, depending on the class."))
     (execute element (format nil "initSliders(~a)" num-sliders) )
     element))
 
+(defun create-hide-button (parent element-to-hide
+                           &key label (background '("transparent" "orange"))
+                             color flash-time values css (val 1) auto-place)
+  (let* ((button (create-child
+                   parent
+                   (format nil "<o-toggle ~{~@[~a ~]~}~@[~a~]>~@[~a~]</o-toggle>"
+                           (list
+                            (opt-format-attr "value" val)
+                            (opt-format-attr "label-off" (option-main label))
+                            (opt-format-attr "label-on" (option-second label))
+                            (opt-format-attr "background-off" (option-main background))
+                            (opt-format-attr "background-on" (option-second background))
+                            (opt-format-attr "color-off" (option-main color))
+                            (opt-format-attr "color-on" (option-second color))
+                            (opt-format-attr "flash-time" flash-time)
+                            (opt-format-attr "value-off" (or (first values) 0))
+                            (opt-format-attr "value-on" (or (second values) 1)))
+                           (format-style css)
+                           (or (option-main label) ""))
+                   :auto-place auto-place)))
+    (set-on-data button ;;; react to changes in the browser page
+                 (lambda (obj data)
+                   (declare (ignore obj))
+                   (let ((*refs-seen* (list button)))
+                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" button
+                                         (or (if (gethash "close" data) "close")
+                                             (gethash "value" data))))
+                     (cond ((gethash "close" data)
+                            (progn
+                              (format t "closing toggle~%")))
+                           (t (setf (hiddenp element-to-hide)
+                                    (zerop (read-from-string
+                                            (gethash "value" data)))))))))
+    button))
+
+
+
+
+
+
 ;; array as attribute: <div id="demo" data-stuff='["some", "string", "here"]'></div>
 ;;
 ;; <div id="storageElement" data-storeIt="stuff,more stuff"></div> and use string.split.
@@ -451,7 +491,8 @@ event."))
 
 (defun new-window (body)
   "On-new-window handler."
-  (setf (title (html-document body)) "Clog Test"))
+  (setf (title (html-document body)) "Clog Test")
+  (add-class body "w3-blue-grey"))
 
 (defun start (&key (port 8080))
   (clear-bindings) ;;; start from scratch

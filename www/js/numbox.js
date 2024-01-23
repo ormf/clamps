@@ -28,18 +28,17 @@
 //
 // **********************************************************************
 
-class NumBoxElement extends HTMLInputElement {
-  static observedAttributes = ["color", "size"];
+class NumBoxElement extends HTMLElement {
+//  static observedAttributes = ["color", "size"];
 
   constructor() {
     // Always call super first in constructor
     super();
-  }        numboxData = { close: true };
-
+        numbox(this);
+  }
 
     connectedCallback() {
 //        console.log("o-numbox added to page: " + this.value );
-        numbox(this);
     }
 
   disconnectedCallback() {
@@ -56,7 +55,7 @@ class NumBoxElement extends HTMLInputElement {
   }
 }
 
-customElements.define("o-numbox", NumBoxElement, { extends: "input" } );
+customElements.define("o-numbox", NumBoxElement, { } );
 
 function numbox(elem) {
 
@@ -65,8 +64,6 @@ function numbox(elem) {
         numbox = elem.get(0);
     else
         numbox = elem;
-
-
 
 //    const valChangeEvent = new Event("valuechange");
     const pxRegex = /([0-9]+).*/
@@ -113,8 +110,8 @@ function numbox(elem) {
         return value.toFixed(Math.min(precision, getPrecision(value)));
     }
 
-    function calcNumScale (mouseX) {
-//        console.log('calcNumScale' + ' ' + mouseX);
+    function calcNumScale (mouseX, numboxWidth) {
+        //        console.log('calcNumScale' + ' ' + mouseX);
         if (mouseX < 0) return 100;
         if (mouseX < numboxWidth*0.2) return 10;
         if (mouseX < numboxWidth*0.8) return 1;
@@ -151,7 +148,7 @@ function numbox(elem) {
 //       console.log('setAttribute: ' + value);
         if (key == 'value') {
             if (numbox.externalValueChange) {
-                numbox.value = formatNumBox(value, precision);
+                numbox.innerText = formatNumBox(value, precision);
                 if (value != lastValue)
                     mySetAttribute.call(numbox, key, numbox.value);
             }
@@ -184,6 +181,7 @@ function numbox(elem) {
         numbox.externalValueChange = false;
         startValue = parseFloat(numbox.value);
         numbox.currValue = startValue;
+        console.log('mousedown');
 //        console.log('value: ' + numbox.value);
 //        console.log('floatvalue: ' + parseFloat(numbox.value));
         mouseStartX = event.clientX;
@@ -194,19 +192,20 @@ function numbox(elem) {
     
     function mouseMoveListener (event) {
         let valString;
-//        console.log('currValue1: ' + numbox.currValue);
+        let numboxRect = numbox.getBoundingClientRect()
+        console.log('currValue1: ' + numbox.currValue);
         if (moved == false) {
             { // called only once after a click and subsequent move.
                 dragging = true;
                 numbox.style.userSelect = 'none';
 
-//                console.log('startX: ', mouseStartX, 'clientY: ', event.clientY);
+                console.log('startX: ', mouseStartX, 'clientY: ', event.clientY, 'leftX: ', numbox.getBoundingClientRect().left);
 //                console.log('startY: ', mouseStartY, 'clientX: ', event.clientX);
-                numScale = calcNumScale(event.clientX-numbox.getBoundingClientRect().left);
+                numScale = calcNumScale(event.clientX-numboxRect.left, numboxRect.width);
                 numbox.style.setProperty('--textbox-selected-background', background);
                 numbox.style.setProperty('--textbox-selected-foreground', foreground);
                 numbox.style.setProperty('--textbox-caret-color', 'transparent');
-//                console.log('numScale: ' + numScale + ', calc: ' + (startValue + (mouseStartY - event.clientY) * numScale));
+                console.log('numScale: ' + numScale + ', calc: ' + (startValue + (mouseStartY - event.clientY) * numScale));
 //                console.log('checkMinMax: ' + checkMinMax(startValue + (mouseStartY - event.clientY) * numScale));
                 
                 numbox.currValue = checkMinMax(startValue + (mouseStartY - event.clientY) * numScale);
@@ -214,6 +213,7 @@ function numbox(elem) {
                 valString = numbox.currValue.toFixed(precision); // while dragging truncate attribute to 2 digits after the comma.
                 if (valString != lastValue) {
                     numbox.value = valString;
+                    numbox.innerText = numbox.value;
                     lastValue = numbox.currValue;
 //                    let event = new CustomEvent ('data', { value: lastValue });
 //                    console.log(event);
@@ -225,17 +225,18 @@ function numbox(elem) {
             moved = true;
         }
         else { // called while dragging
-//            console.log('dragging2 ' + numScale + ' ' + event.clientY + ' ' + lastValue + ' ' + lastY);
+            console.log('dragging2 ' + numScale + ' ' + event.clientY + ' ' + lastValue + ' ' + lastY);
 //            console.log('startX: ', mouseStartX, 'clientY: ', event.clientY);
 //            console.log('startY: ', mouseStartY, 'clientX: ', event.clientX);
             if (event.shiftKey) {
-                numScale = calcNumScale(event.clientX - numbox.getBoundingClientRect().left);
+                numScale = calcNumScale(event.clientX-numboxRect.left, numboxRect.width);
             }
             numbox.currValue = checkMinMax(lastValue + (lastY - event.clientY) * numScale);
             lastY = event.clientY;
             valString = numbox.currValue.toFixed(precision); // while dragging truncate to 2 digits after the comma.
             if (valString != lastValue) {
                 numbox.value = valString;
+                numbox.innerText = numbox.value;
                 lastValue = numbox.currValue;
 //                numboxDataEvent.detail = { value: lastValue };
 //                let event = new CustomEvent ('data', { detail: { value: lastValue } });
@@ -327,8 +328,8 @@ function numbox(elem) {
 
     function init () {
         disableDrag(numbox);
-        numboxHeight = parseFloat(style.height.match(pxRegex)[1]);
-        numboxWidth = parseFloat(style.width.match(pxRegex)[1]);
+//        numboxHeight = parseFloat(style.height.match(pxRegex)[1]);
+//        numboxWidth = parseFloat(style.width.match(pxRegex)[1]);
         numbox.addEventListener('mousedown', mouseDownListener);
         numbox.addEventListener('unload', numbox.onUnloadListener);
         minValue = parseFloat(numbox.getAttribute('min'));
@@ -347,6 +348,7 @@ function numbox(elem) {
         if (isNaN(value)) value = minValue;
         else value = checkMinMax(value);
         numbox.value = formatNumBox(value, precision);
+        numbox.innerText = numbox.value;
         numbox.currValue = value;
         addEventListener('beforeunload', (event) => {
             $(numbox).trigger("data", {close: true})});

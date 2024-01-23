@@ -43,7 +43,7 @@
 
 (defclass nanoktl2-preset-midi (nanoktl2-midi)
   ((button-labels :initarg :button-labels :accessor button-labels
-                  :initform (loop for i below 16 collect (make-ref (format nil "~a" i))))
+                  :initform (coerce (loop for i below 16 collect (make-ref (format nil "~a" i))) 'vector))
    (preset-buttons :initarg :preset-buttons :accessor preset-buttons
                    :initform (make-array 16 :initial-contents (loop repeat 16 collect (make-bang))))
    (curr-bank :initform 0 :initarg :curr-bank :type (integer 0 7) :accessor curr-bank
@@ -109,14 +109,16 @@
                   (button (aref r-buttons idx)))
              (lambda ()
                (let ((val (get-val button)))
-                 (incudine.util:msg :info "idx: ~a, val: ~a, curr-bank: ~a" idx val curr-bank)
+;;;                 (incudine.util:msg :info "idx: ~a, val: ~a, curr-bank: ~a" idx val curr-bank)
                  (if (zerop val)
                      (when (= curr-bank idx)
                        (set-val button 1))
                      (unless (= curr-bank idx)
                        (let ((old curr-bank))
                          (setf curr-bank idx)
-                         (incudine.util:msg :info "old: ~a" old)
+                         (loop for idx below 16
+                               do (set-val (aref button-labels idx) (+ (* 16 curr-bank) idx)))
+;;;                         (incudine.util:msg :info "old: ~a" old)
                          (set-val (aref r-buttons old) 0))))))))
           unwatch))
     (let ((opcode (+ chan 176)))
@@ -249,7 +251,7 @@ off is determined by <initial-flash>."
     (set-val (aref r-buttons curr-bank) 0)
     (setf curr-bank button-idx)
     (set-val (aref r-buttons button-idx) 127)
-    (loop for i from 0 for label in button-labels
+    (loop for i from 0 for label across button-labels
           do (set-val label (+ (* curr-bank 16) i)))
     (update-preset-buttons instance)))
 |#
