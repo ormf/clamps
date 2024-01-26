@@ -101,11 +101,13 @@ function numbox(elem) {
     
     function getPrecision (num) {
         let absNum = Math.abs(num);
-        let fraction = (absNum - Math.floor(absNum));
+        let fraction = Math.trunc(Math.pow(10, numbox.precision) * (absNum - Math.floor(absNum)));
+        console.log('num: ', num, 'fraction: ', fraction, 'fraction%100', (fraction%100));
         if ((fraction == 0) || (fraction == 1)) return 0;
-        if ((fraction*10)%1 == 0) return 1;
-        if ((fraction*100%1) == 0) return 2;
-        return 3}
+        if ((fraction%1000) == 0) return 1;
+        if ((fraction%100) == 0) return 2;
+        if ((fraction%10) == 0) return 3;
+        return 4}
 
     var formatNumBox;
     
@@ -116,12 +118,15 @@ function numbox(elem) {
     }
 
     function normalizedFormatNumBox (value) {
-//        console.log('precision ', numbox.precision, 'value: ', value, 'getPrecision: ', getPrecision(value));
-        //        console.log( value.toFixed(Math.min(precision, getPrecision(value))));
-        if (value < 1)
-            return value.toFixed(Math.min(precision, getPrecision(value))).replace("0.", ".");
-        else
-            return "1";
+        const endregex = /0+$/
+        if (value == 0)
+            return "0";
+        else {
+            if (value < 1)
+                return value.toFixed(numbox.precision).replace(endregex, "").replace("0.",".");
+            else
+                return "1";
+        }
     }
 
     function calcNumScale (mouseX, numboxWidth) {

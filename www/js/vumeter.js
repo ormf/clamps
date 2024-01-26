@@ -1,15 +1,85 @@
-function vumeter(elem, config){
+//
+// vumeter.js
+//
+// definition of numberbox mouse and event handling in the client.
+//
+// a numberbox is basically an input of type text with added mouse
+// handling for dragging numbers. vumeter() has to be called with a
+// <input type="text"> element.
+//
+// WARNING: Currently only the value attribute can be changed after
+// initialization. All other attribute or style changes after
+// initialization probably have no or detrimental effects.
+//
+// **********************************************************************
+// Copyright (c) 2023/24 Orm Finnendahl
+// <orm.finnendahl@selma.hfmdk-frankfurt.de>
+//
+// Revision history: See git repository.
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the Gnu Public License, version 2 or
+// later. See https://www.gnu.org/licenses/gpl-2.0.html for the text
+// of this agreement.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// **********************************************************************
+
+class VuMeterElement extends HTMLElement {
+    static observedAttributes = ["data-db"];
+
+  constructor() {
+    // Always call super first in constructor
+      super();
+      vumeter(this);
+  }
+
+    connectedCallback() {
+//        console.log("o-vumeter added to page: " + this.value );
+    }
+
+  disconnectedCallback() {
+      $(vumeter).trigger("data", {close: true});
+      console.log("Custom element removed from page.");
+  }
+
+  adoptedCallback() {
+    console.log("Custom element moved to new page.");
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+      switch (name) {
+      case 'data-db':
+            this.value = clamp(parseFloat(newValue), 0 , 112).toFixed(0);
+            this.drawVu();
+      }
+      vuMeter.setAttribute = function (key, value) {
+        }
+    }
+
+
+      console.log(`Attribute ${name} has changed.`);
+  }
+}
+
+customElements.define("o-vumeter", VuMeterElement, { } );
+
+function vumeter(elem){
 //    console.log(elem, Date.now())
     // Settings
-    var max             = config.max || 100;
-    var boxCount        = config.boxCount || 40;
-    var ledColors       = config.ledColors || 'green';
-    var barColor        = config.barColor || 'rgba(60,60,255,1.0)';
-    var vuType          = config.vuType || 'led';
-    var ledMapping      = config.ledMapping || 'db-lin';
-    var vuDirection     = config.direction || 'up';
-    var vuInnerPadding = config.innerPadding || '2px';
-    var vuInnerPaddingBottom = config.innerPaddingBottom || '2px';
+    var max             = elemGetAttribute('max') || 100;
+    var boxCount        = elemGetAttribute('box-count') || 40;
+    var ledColors       = elemGetAttribute('led-colors') || 'green';
+    var barColor        = elemGetAttribute('bar-color') || 'rgba(60,60,255,1.0)';
+    var vuType          = elemGetAttribute('vu-type') || 'led';
+    var ledMapping      = elemGetAttribute('led-mapping') || 'db-lin';
+    var vuDirection     = elemGetAttribute('direction') || 'up';
+    var vuInnerPadding = elemGetAttribute('inner-padding') || '2px';
+    var vuInnerPaddingBottom = elemGetAttribute('inner-padding-bottom') || '2px';
 
 //    console.log(config);
     
@@ -157,16 +227,8 @@ function vumeter(elem, config){
         lastVal = targetDB;
     };
     
-    const mySetAttribute = vuMeter.setAttribute;
+//    const mySetAttribute = vuMeter.setAttribute;
     // override setAttribte
-
-    vuMeter.setAttribute = function (key, value) {
-        mySetAttribute.call(vuMeter, key, value);
-        if (key == 'data-db') {
-            value = clamp(parseFloat(value), 0 , 112).toFixed(0);
-            drawVu();
-        }
-    }
 
     function setPdColors () {
         for (i = 0;i<16;i++) { colors[i] = PdGreen; }
