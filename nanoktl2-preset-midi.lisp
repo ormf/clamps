@@ -301,25 +301,25 @@ off is determined by <initial-flash>."
        (let ((fader-idx (aref cc-map d1)))
          (when fader-idx
            (cond
-             ((< fader-idx 16)
+             ((< fader-idx 16) ;;; faders
               (let* ((fn (aref nk2-fader-update-fns fader-idx))
                      (fader-mode (aref nk2-fader-modes fader-idx))
                      (last-cc (aref nk2-fader-last-cc fader-idx))
-                     (gui-slot (aref cc-state fader-idx)))
+                     (gui-slot (aref cc-state fader-idx))
+                     (val (/ d2 127.0)))
                 (case fader-mode
                   (:scale
                    (progn
                      (unless hide-fader
-                       (set-val gui-slot (buchla-scale d2 last-cc (get-val gui-slot))))
-                     (setf (aref nk2-fader-last-cc fader-idx) d2)))
-                  (:jump (unless hide-fader (set-val gui-slot d2)))
+                       (set-val gui-slot (buchla-scale val last-cc (get-val gui-slot))))
+                     (setf (aref nk2-fader-last-cc fader-idx) val)))
+                  (:jump (unless hide-fader (set-val gui-slot val)))
                   (:catch (unless hide-fader
                             (if fn
-                                (when (funcall fn d2 (get-val gui-slot))
-                                  (set-val gui-slot d2)
+                                (when (funcall fn val (get-val gui-slot))
+                                  (set-val gui-slot val)
                                   (setf (aref nk2-fader-update-fns fader-idx) nil))
-                                (set-val gui-slot d2)))))))
-             
+                                (set-val gui-slot val)))))))
              ((<= 16 fader-idx 31) ;;; s and m buttons
               (when (/= d2 0) (trigger (aref (preset-buttons instance) (- fader-idx 16)))))
              ((<= 32 fader-idx 39) ;;; r buttons
@@ -343,3 +343,20 @@ off is determined by <initial-flash>."
 
 (defun select-preset-bank (controller idx)
   (set-val (aref (r-buttons controller) idx) 1))
+
+(defgeneric copy-preset (instance preset-no src dest)
+  (:method ((controller nanoktl2-preset-midi) preset-no src dest)
+    (with-slots (presets) controller
+      (loop
+        for player in (get-active-players controller)
+        do (setf (aref (aref presets player) dest)
+                 (copy-structure (aref (aref presets player) src)))))))
+
+(defgeneric store-preset (instance preset dest)
+  (:method ((controller nanoktl2-preset-midi) preset dest)
+    (with-slots (presets) controller
+      (loop
+        for player in (get-active-players controller)
+        do (setf (aref (aref presets player) dest)
+                 (copy-structure preset)))))
+  )

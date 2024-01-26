@@ -65,17 +65,18 @@ nanokontrol2.
                (cc-num (aref cc-nums idx))
                (opcode (+ 176 chan))
                (cc-state (aref cc-state idx)))
-          (lambda () (osc-midi-write-short midi-output opcode cc-num (round (get-val cc-state))))))
+          (lambda () (osc-midi-write-short midi-output opcode cc-num (round (* 127 (get-val cc-state)))))))
        unwatch))
-    (dotimes (player-idx 4)
-      (push
-       (watch
-        (let* ((idx player-idx)
-               (cc-num (aref cc-nums idx))
-               (opcode (+ 176 chan))
-               (cc-state (aref cc-state idx)))
-          (lambda () (osc-midi-write-short midi-output opcode cc-num (round (get-val cc-state))))))
-       unwatch)))
+    ;; (dotimes (player-idx 4)
+    ;;   (push
+    ;;    (watch
+    ;;     (let* ((idx player-idx)
+    ;;            (cc-num (aref cc-nums idx))
+    ;;            (opcode (+ 176 chan))
+    ;;            (cc-state (aref cc-state idx)))
+    ;;       (lambda () (osc-midi-write-short midi-output opcode cc-num (round (get-val cc-state))))))
+    ;;    unwatch))
+    )
   (update-state obj))
 
 (defun midi-delta->i (n)
@@ -85,7 +86,6 @@ nanokontrol2.
 ;;; (midi-delta->i 126)
 
 (defmethod handle-midi-in ((instance faderfox-midi) opcode d1 d2)
-;;;  (call-next-method)
   (with-slots (cc-fns cc-nums ff-fader-update-fns echo
                cc-map cc-state note-state note-fn last-note-on midi-output chan)
       instance
@@ -96,7 +96,7 @@ nanokontrol2.
           (let* ((fader-idx (aref cc-map d1))
                  (fader-slot (aref cc-state fader-idx))
                  (old-value (get-val fader-slot))
-                 (new-value (max 0 (min 127 (+ old-value (midi-delta->i d2))))))
+                 (new-value (max 0 (min 1 (float (+ old-value (/ (midi-delta->i d2) 127)) 1.0)))))
             (incudine.util:msg :info "old-value: ~a, new-value: ~a" old-value new-value)
             (when (/= old-value new-value)
               (set-val fader-slot new-value))))))
