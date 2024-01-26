@@ -20,7 +20,10 @@
 
 (in-package :cl-midictl)
 
+(defparameter *curr-preset* (coerce '(t t t t) 'vector))
+
 (export '(nanoktl2-preset-midi
+          *curr-preset*
           get-active-players
           button-labels
           preset-buttons
@@ -49,9 +52,9 @@
                    :initform (make-array 16 :initial-contents (loop repeat 16 collect (make-bang))))
    (curr-bank :initform 0 :initarg :curr-bank :type (integer 0 7) :accessor curr-bank
            :documentation "idx of current preset bank")
-   (cp-src :initform -1 :initarg :cp-src :type (integer -1 127) :accessor cp-src
+   (cp-src :initform nil :initarg :cp-src :accessor cp-src
            :documentation "idx of src preset to copy")
-   (presets :initform (make-array 4 :initial-contents (loop repeat 4 collect (make-array 128)))
+   (presets :initform (make-array 4 :initial-contents (loop repeat 4 collect (make-array 128 :initial-element nil)))
             :initarg :presets :accessor presets)))
 
 (defmethod initialize-instance :after ((obj nanoktl2-preset-midi) &rest args)
@@ -104,7 +107,7 @@
     (update-state obj)
     (mapcar #'funcall unwatch)
     (loop for idx below 8
-      do (push ;;; relabeling of preset-buttons on bank change
+      do (push ;;; bank-chage buttons: relabeling of preset-buttons
           (watch
            (let* ((idx idx)
                   (button (aref r-buttons idx)))
@@ -113,10 +116,11 @@
                      (set-val (aref r-buttons curr-bank) 0)
                      (setf curr-bank idx)
                      (loop for i from 0 for label in button-labels
-                           do (set-val label (+ (* curr-bank 16) i)))))))
+                           do (set-val label (+ (* curr-bank 16) i)))
+                     (update-preset-buttons obj)))))
           unwatch))
     (let ((opcode (+ chan 176)))
-      (loop for idx below 8
+      (loop for idx below 8 ;;; state change in any of the preset buttons
             do (loop
                  for offs in '(16 24)
                  for slot in '(s-buttons m-buttons)
@@ -134,19 +138,7 @@
                               (if (zerop (get-val button)) 0 127)))
                             (2 (pulse obj button cc-num))))))
                      unwatch)))
-      (loop for idx below 8
-            do (push
-                (watch
-                 (let* ((idx idx)
-                        (offs 32)
-                        (slot 'r-buttons))
-                   (lambda ()
-                     (osc-midi-write-short
-                      midi-output
-                      opcode (aref cc-nums (+ offs idx))
-                      (if (zerop (get-val (aref (slot-value obj slot) idx))) 0 127)))))
-                unwatch))
-      (loop for idx below 8
+      (loop for idx below 8 ;;; preset bank buttons
             do (push
                 (watch
                  (let* ((idx idx)
@@ -158,7 +150,7 @@
                       opcode cc-num
                       (if (zerop (get-val button)) 0 127)))))
                 unwatch))
-      (loop for button in (list tr-rewind tr-ffwd tr-stop tr-play)
+      (loop for button in (list tr-rewind tr-ffwd tr-stop tr-play) ;;; player-buttons
             for cc-num-idx from 46 
             do (push
                 (watch
@@ -168,11 +160,12 @@
                      (osc-midi-write-short
                       midi-output
                       opcode cc-num
-                      (if (zerop (get-val button)) 0 127)))))
+                      (if (zerop (get-val button)) 0 127))
+                     (update-preset-buttons obj))))
                 unwatch))
       (push
        (watch
-        (let* ((button tr-rec)
+        (let* ((button tr-rec) ;;; store button
                (cc-num (aref cc-nums 50)))
           (lambda ()
             (case (get-val button)
@@ -208,8 +201,8 @@ off is determined by <initial-flash>."
         (active-players (get-active-players controller)))
     (incudine.util:msg :info "update-preset-buttons")
     (dotimes (i 8)
-      (set-val (aref (s-buttons controller) i) (preset-state (+ preset-offs i) active-players))
-      (set-val (aref (m-buttons controller) i) (preset-state (+ preset-offs i 8) active-players)))))
+      (set-val (aref (s-buttons controller) i) (preset-state controller (+ preset-offs i) active-players))
+      (set-val (aref (m-buttons controller) i) (preset-state controller (+ preset-offs i 8) active-players)))))
 
 (defun handle-preset-button-press (instance button-idx)
   (incudine.util:msg :info "preset-button-press ~a" button-idx)
@@ -217,21 +210,20 @@ off is determined by <initial-flash>."
     (let ((preset-no (+ (* 16 curr-bank) button-idx)))
       (case (get-val tr-rec)
         (0 (unless (zerop (get-val (aref (slot-value instance (if (< button-idx 8) 's-buttons 'm-buttons))
-                                     (mod button-idx 8))))
-;;; NOTE             (f.orm::recall-preset preset-no)
+                                         (mod button-idx 8))))
+             (recall-preset instance preset-no)
              (update-preset-buttons instance)))
-        (1 ;;; (f.orm::store-preset preset-no)
+        (1 (store-preset instance preset-no)
          (set-val tr-rec 0)
          (update-preset-buttons instance))
         (2 (if cp-src
                (let* ((src-idx (mod cp-src 16))
                       (slot-name (if (< src-idx 8) 's-buttons 'm-buttons))
                       (src-button (aref (slot-value instance slot-name) (mod src-idx 8))))
-                 (;;; f.orm::cp-preset cp-src preset-no
-                  )
-                 (set-val src-button 0)
+                 (copy-preset instance cp-src preset-no)
+                 (set-val src-button 0) ;;; unhighlight button
                  (setf cp-src nil)
-                 (set-val tr-rec 0)
+                 (set-val tr-rec 0) ;;; unhighlight store button
                  (update-preset-buttons instance))
                (let* ((slot-name (if (< button-idx 8) 's-buttons 'm-buttons)))
                  (set-val (aref (slot-value instance slot-name) (mod button-idx 8)) 2)
@@ -254,32 +246,23 @@ off is determined by <initial-flash>."
   (with-slots (curr-bank button-labels r-buttons s-buttons m-buttons) instance
     (set-val (aref r-buttons button-idx) 1)))
 
-(defun preset-state (preset-no active-players)
-
-0
-;;;NOTE;;
-  ;; (let ((preset (aref f.orm::*global-presets* preset-no)))
-  ;;   (loop for idx in active-players if (aref preset idx) return 1 finally (return 0)))
-  )
+(defgeneric preset-state (instance preset-no active-players)
+  (:method ((instance nanoktl2-preset-midi) preset-no active-players)
+    (or
+     (block nil
+       (dolist (p active-players)
+         (when (aref (aref (presets instance) p) preset-no)
+           (return 1))))
+     0)))
 
 (defun get-active-players (controller)
   (loop for idx below 4
         for slot in '(tr-rewind tr-ffwd tr-stop tr-play)
         unless (zerop (get-val (slot-value controller slot))) collect idx))
 
-#|
-
-(get-active-players (find-controller :nk2))
-(defun get-bank (instance)
-  (loop for idx below 8
-        while (zerop (get-val (aref (r-buttons instance) idx)))
-        finally (return idx)))
-|#
-
 (defun handle-player-button-press (instance button-idx)
   (incudine.util:msg :info "player-button-press ~a" button-idx)
-  (toggle-slot (slot-value instance (aref #(tr-rewind tr-ffwd tr-stop tr-play) button-idx)))
-  (update-preset-buttons instance))
+  (toggle-slot (slot-value instance (aref #(tr-rewind tr-ffwd tr-stop tr-play) button-idx))))
 
 (defun handle-store-button-press (instance)
   (incudine.util:msg :info "store-button-press")
@@ -344,19 +327,34 @@ off is determined by <initial-flash>."
 (defun select-preset-bank (controller idx)
   (set-val (aref (r-buttons controller) idx) 1))
 
-(defgeneric copy-preset (instance preset-no src dest)
-  (:method ((controller nanoktl2-preset-midi) preset-no src dest)
-    (with-slots (presets) controller
-      (loop
-        for player in (get-active-players controller)
-        do (setf (aref (aref presets player) dest)
-                 (copy-structure (aref (aref presets player) src)))))))
+(defgeneric copy-preset (instance src dest)
+  (:method ((controller nanoktl2-preset-midi) src dest)
+    (format t "copy preset from ~a to ~a~%" src dest)
+    (unless (= src dest)
+      (with-slots (presets) controller
+        (loop
+          for player in (get-active-players controller)
+          do (setf (aref (aref presets player) dest)
+;;;                   (copy-structure (aref (aref presets player) src))
+                   (aref (aref presets player) src)))))))
 
-(defgeneric store-preset (instance preset dest)
-  (:method ((controller nanoktl2-preset-midi) preset dest)
+(defgeneric store-preset (instance dest)
+  (:method ((controller nanoktl2-preset-midi) dest)
     (with-slots (presets) controller
+      (format t "store preset to ~a~%" dest)
       (loop
         for player in (get-active-players controller)
         do (setf (aref (aref presets player) dest)
-                 (copy-structure preset)))))
-  )
+                 ;;;(copy-structure (aref *curr-preset* player))
+                 (aref *curr-preset* player))))))
+
+(defgeneric recall-preset (instance src)
+  (:method ((controller nanoktl2-preset-midi) src)
+    (format t "recall preset from ~a~%" src)
+    (with-slots (presets) controller
+      (loop
+        for player in (get-active-players controller)
+        do (setf (aref *curr-preset* player)
+;;;                 (copy-structure (aref (aref presets player) src))
+                 (aref (aref presets player) src))))))
+

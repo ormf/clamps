@@ -20,8 +20,6 @@
    #:ECHO
    #:CHAN
    #:*MIDI-DEBUG*
-   #:*MIDI-IN1*
-   #:*MIDI-OUT1*
    #:*MIDI-CC-STATE*
    #:*OSCIN*
    #:START-OSC-MIDI-RECEIVE
@@ -43,4 +41,5 @@
    #:HANDLE-PLAYER-SWITCH
    #:GET-REF
    #:START-MIDI-ENGINE
+   #:PRESETS
    ))
