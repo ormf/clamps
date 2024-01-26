@@ -101,22 +101,37 @@ function numbox(elem) {
     
     function getPrecision (num) {
         let absNum = Math.abs(num);
-        let fraction = (100 * (absNum - Math.floor(absNum)));
-        if ((fraction == 0) || (fraction == 100)) return 0;
-        if (fraction%10 == 0) return 1;
-        return 2}
+        let fraction = (absNum - Math.floor(absNum));
+        if ((fraction == 0) || (fraction == 1)) return 0;
+        if ((fraction*10)%1 == 0) return 1;
+        if ((fraction*100%1) == 0) return 2;
+        return 3}
 
-    function formatNumBox (value, precision) {
+    var formatNumBox;
+    
+    function generalFormatNumBox (value) {
+//        console.log('precision ', numbox.precision, 'value: ', value, 'getPrecision: ', getPrecision(value));
+//        console.log( value.toFixed(Math.min(precision, getPrecision(value))));
         return value.toFixed(Math.min(precision, getPrecision(value)));
+    }
+
+    function normalizedFormatNumBox (value) {
+//        console.log('precision ', numbox.precision, 'value: ', value, 'getPrecision: ', getPrecision(value));
+        //        console.log( value.toFixed(Math.min(precision, getPrecision(value))));
+        if (value < 1)
+            return value.toFixed(Math.min(precision, getPrecision(value))).replace("0.", ".");
+        else
+            return "1";
     }
 
     function calcNumScale (mouseX, numboxWidth) {
         //        console.log('calcNumScale' + ' ' + mouseX);
-        if (mouseX < 0) return 100;
-        if (mouseX < numboxWidth*0.2) return 10;
-        if (mouseX < numboxWidth*0.8) return 1;
-        if (mouseX < numboxWidth) return 0.1;
-        return 0.01;
+        let precScale = Math.pow(10, (-1 * (numbox.precision-1)));
+        if (mouseX < 0) return 100 * precScale;
+        if (mouseX < numboxWidth*0.2) return 10 * precScale;
+        if (mouseX < numboxWidth*0.8) return 1 * precScale;
+        if (mouseX < numboxWidth) return 0.1 * precScale;
+        return 0.01 * precScale;
     }
 
     function checkMinMax (val) {
@@ -148,7 +163,7 @@ function numbox(elem) {
 //       console.log('setAttribute: ' + value);
         if (key == 'value') {
             if (numbox.externalValueChange) {
-                numbox.innerText = formatNumBox(value, precision);
+                numbox.innerText = formatNumBox(value);
                 if (value != lastValue)
                     mySetAttribute.call(numbox, key, numbox.value);
             }
@@ -181,7 +196,7 @@ function numbox(elem) {
         numbox.externalValueChange = false;
         startValue = parseFloat(numbox.value);
         numbox.currValue = startValue;
-        console.log('mousedown');
+//        console.log('mousedown');
 //        console.log('value: ' + numbox.value);
 //        console.log('floatvalue: ' + parseFloat(numbox.value));
         mouseStartX = event.clientX;
@@ -189,28 +204,41 @@ function numbox(elem) {
         document.addEventListener('mousemove', mouseMoveListener);
         document.addEventListener('mouseup', mouseUpListener);
     }
-    
+
+    var formatNumBoxDragging;
+
+    function normalizedFormatNumBoxDragging (val) {
+        if (val < 1)
+            return val.toFixed(numbox.precision).replace("0.", ".");
+        else
+            return val.toFixed(Math.max(0, (numbox.precision - 1)));
+    }
+
+    function generalFormatNumBoxDragging (val) {
+            return val.toFixed(numbox.precision)
+    }
+
     function mouseMoveListener (event) {
         let valString;
-        let numboxRect = numbox.getBoundingClientRect()
-        console.log('currValue1: ' + numbox.currValue);
+        let numboxRect = numbox.getBoundingClientRect();
+//        console.log('currValue1: ' + numbox.currValue);
         if (moved == false) {
             { // called only once after a click and subsequent move.
                 dragging = true;
                 numbox.style.userSelect = 'none';
 
-                console.log('startX: ', mouseStartX, 'clientY: ', event.clientY, 'leftX: ', numbox.getBoundingClientRect().left);
-//                console.log('startY: ', mouseStartY, 'clientX: ', event.clientX);
+//                console.log('startX: ', mouseStartX, 'clientY: ', event.clientY, 'leftX: ', numbox.getBoundingClientRect().left);
+                //                console.log('startY: ', mouseStartY, 'clientX: ', event.clientX);
                 numScale = calcNumScale(event.clientX-numboxRect.left, numboxRect.width);
                 numbox.style.setProperty('--textbox-selected-background', background);
                 numbox.style.setProperty('--textbox-selected-foreground', foreground);
                 numbox.style.setProperty('--textbox-caret-color', 'transparent');
-                console.log('numScale: ' + numScale + ', calc: ' + (startValue + (mouseStartY - event.clientY) * numScale));
+//                console.log('numScale: ' + numScale + ', calc: ' + (startValue + (mouseStartY - event.clientY) * numScale));
 //                console.log('checkMinMax: ' + checkMinMax(startValue + (mouseStartY - event.clientY) * numScale));
                 
                 numbox.currValue = checkMinMax(startValue + (mouseStartY - event.clientY) * numScale);
-//                console.log('currValue: ' + numbox.currValue);
-                valString = numbox.currValue.toFixed(precision); // while dragging truncate attribute to 2 digits after the comma.
+                //                console.log('currValue: ' + numbox.currValue);
+                valString = numbox.currValue.toFixed(numbox.precision); // while dragging truncate attribute to 2 digits after the comma.
                 if (valString != lastValue) {
                     numbox.value = valString;
                     numbox.innerText = numbox.value;
@@ -225,7 +253,7 @@ function numbox(elem) {
             moved = true;
         }
         else { // called while dragging
-            console.log('dragging2 ' + numScale + ' ' + event.clientY + ' ' + lastValue + ' ' + lastY);
+//            console.log('dragging2 ' + numScale + ' ' + event.clientY + ' ' + lastValue + ' ' + lastY);
 //            console.log('startX: ', mouseStartX, 'clientY: ', event.clientY);
 //            console.log('startY: ', mouseStartY, 'clientX: ', event.clientX);
             if (event.shiftKey) {
@@ -233,7 +261,7 @@ function numbox(elem) {
             }
             numbox.currValue = checkMinMax(lastValue + (lastY - event.clientY) * numScale);
             lastY = event.clientY;
-            valString = numbox.currValue.toFixed(precision); // while dragging truncate to 2 digits after the comma.
+            valString = formatNumBoxDragging(numbox.currValue); // while dragging truncate to 2 digits after the comma.
             if (valString != lastValue) {
                 numbox.value = valString;
                 numbox.innerText = numbox.value;
@@ -285,7 +313,7 @@ function numbox(elem) {
         else number = checkMinMax(number);
         if (startValue != number)
             numbox.value = number;
-        numbox.value = formatNumBox(number, precision);
+        numbox.value = formatNumBox(number);
         numbox.addEventListener('mousedown', mouseDownListener);
         numbox.removeEventListener('blur', onEditBlurListener);
         numbox.externalValueChange = true;
@@ -296,7 +324,8 @@ function numbox(elem) {
         if (dragging) {
             numbox.style.textAlign = 'center'; // restore alignment
 //            console.log('value: ' + numbox.value);
-            numbox.value = formatNumBox(parseFloat(numbox.value), precision)
+            numbox.value = formatNumBox(parseFloat(numbox.value))
+            numbox.innerText = numbox.value;
             document.removeEventListener('mousemove', mouseMoveListener);
             document.removeEventListener('mouseup', mouseUpListener);
             numbox.externalValueChange = true;
@@ -334,7 +363,7 @@ function numbox(elem) {
         numbox.addEventListener('unload', numbox.onUnloadListener);
         minValue = parseFloat(numbox.getAttribute('min'));
         maxValue = parseFloat(numbox.getAttribute('max'));
-        precision = parseInt(numbox.getAttribute('precision')) || 2;
+        numbox.precision = parseInt(numbox.getAttribute('precision')) || 2;
 
         if (isNaN(minValue)) {
             numbox.setAttribute('min', "false");
@@ -347,7 +376,16 @@ function numbox(elem) {
         let value = parseFloat(numbox.value);
         if (isNaN(value)) value = minValue;
         else value = checkMinMax(value);
-        numbox.value = formatNumBox(value, precision);
+
+        if ((minValue == 0) && (maxValue == 1)) {
+            formatNumBox = normalizedFormatNumBox;
+            formatNumBoxDragging = normalizedFormatNumBoxDragging;
+        }
+        else {
+            formatNumBox = generalFormatNumBox;
+            formatNumBoxDragging = generalFormatNumBoxDragging;
+        }
+        numbox.value = formatNumBox(value);
         numbox.innerText = numbox.value;
         numbox.currValue = value;
         addEventListener('beforeunload', (event) => {

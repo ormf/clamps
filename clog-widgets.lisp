@@ -199,7 +199,7 @@ array of bindings, depending on the class."))
                          (progn
                            (format t "closing numbox~%")
                            (setf (b-elist binding) (remove element (b-elist binding)))) ;;; cleanup: unregister elem.
-                         (%set-val var (gethash attr data))))))
+                         (%set-val var (float (gethash attr data) 1.0))))))
     element))
 
 (defmacro option-main (option)
