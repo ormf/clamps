@@ -36,6 +36,7 @@
    #:create-o-radio
    #:create-o-slider
    #:create-o-multislider
+   #:create-o-vumeter
    #:create-hide-button
    #:create-collection
    #:format-style

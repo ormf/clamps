@@ -395,6 +395,36 @@ array of bindings, depending on the class."))
     (execute element (format nil "initSliders(~a)" num-sliders) )
     element))
 
+(defun create-o-vumeter (parent binding &key (direction :up)
+                                (type :led)
+                                          (width "1em") (height "8em") padding css)
+  (declare (type (member :up :right :down :left) direction)
+           (type (member :led :bar) type))
+  (let* ((var (b-ref binding))
+         (attr (b-attr binding)) ;;; format nil "~{~a~^,~}"
+         (element (create-child
+                   parent
+                   (format nil "<o-vumeter ~{~@[~a ~]~}></o-slider>"
+                           (list
+                            (format-style (append `(:width ,width :height ,height :padding ,padding) css))
+                            (opt-format-attr "direction" direction)
+                            (opt-format-attr "db-value" (float (get-val var) 1.0))
+
+                            (opt-format-attr "type" type))))))
+    (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
+    (set-on-data element ;;; react to changes in the browser page
+                 (lambda (obj data)
+                   (declare (ignore obj))
+                   (let ((*refs-seen* (list element))) ;;; set context for %set-val below
+                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+                                         (or (if (gethash "close" data) "close")
+                                             (gethash attr data))))
+                     (cond ((gethash "close" data)
+                            (progn
+                              (format t "closing slider~%")
+                              (setf (b-elist binding) (remove element (b-elist binding)))))))))
+    element))
+
 (defun create-hide-button (parent element-to-hide
                            &key label (background '("transparent" "orange"))
                              color flash-time values css (val 1) auto-place)

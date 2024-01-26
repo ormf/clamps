@@ -1,13 +1,10 @@
 //
 // vumeter.js
 //
-// definition of numberbox mouse and event handling in the client.
+// definition of a vumeter display.
 //
-// a numberbox is basically an input of type text with added mouse
-// handling for dragging numbers. vumeter() has to be called with a
-// <input type="text"> element.
 //
-// WARNING: Currently only the value attribute can be changed after
+// WARNING: Currently only the db-value attribute can be changed after
 // initialization. All other attribute or style changes after
 // initialization probably have no or detrimental effects.
 //
@@ -30,7 +27,7 @@
 // **********************************************************************
 
 class VuMeterElement extends HTMLElement {
-    static observedAttributes = ["data-db"];
+    static observedAttributes = ['db-value'];
 
   constructor() {
     // Always call super first in constructor
@@ -39,7 +36,7 @@ class VuMeterElement extends HTMLElement {
   }
 
     connectedCallback() {
-//        console.log("o-vumeter added to page: " + this.value );
+        console.log("o-vumeter added to page: " + this.value );
     }
 
   disconnectedCallback() {
@@ -51,35 +48,40 @@ class VuMeterElement extends HTMLElement {
     console.log("Custom element moved to new page.");
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-      switch (name) {
-      case 'data-db':
-            this.value = clamp(parseFloat(newValue), 0 , 112).toFixed(0);
+    attributeChangedCallback(name, oldValue, newValue) {
+        console.log('name: ', name);
+        switch (name) {
+        case 'db-value':
+            this.value = Math.max(0, Math.min(parseFloat(newValue), 112)).toFixed(0);
             this.drawVu();
-      }
-      vuMeter.setAttribute = function (key, value) {
+            break;
         }
+      console.log(`Attribute ${name} has changed.`);
     }
 
-
-      console.log(`Attribute ${name} has changed.`);
-  }
+    
 }
 
+
 customElements.define("o-vumeter", VuMeterElement, { } );
+
+function clamp(number, min, max) {
+        return Math.max(min, Math.min(number, max));
+    }
+
 
 function vumeter(elem){
 //    console.log(elem, Date.now())
     // Settings
-    var max             = elemGetAttribute('max') || 100;
-    var boxCount        = elemGetAttribute('box-count') || 40;
-    var ledColors       = elemGetAttribute('led-colors') || 'green';
-    var barColor        = elemGetAttribute('bar-color') || 'rgba(60,60,255,1.0)';
-    var vuType          = elemGetAttribute('vu-type') || 'led';
-    var ledMapping      = elemGetAttribute('led-mapping') || 'db-lin';
-    var vuDirection     = elemGetAttribute('direction') || 'up';
-    var vuInnerPadding = elemGetAttribute('inner-padding') || '2px';
-    var vuInnerPaddingBottom = elemGetAttribute('inner-padding-bottom') || '2px';
+    var max             = elem.getAttribute('max') || 100;
+    var boxCount        = elem.getAttribute('box-count') || 40;
+    var ledColors       = elem.getAttribute('led-colors') || 'green';
+    var barColor        = elem.getAttribute('bar-color') || 'rgba(60,60,255,1.0)';
+    var vuType          = elem.getAttribute('vu-type') || 'led';
+    var ledMapping      = elem.getAttribute('led-mapping') || 'db-lin';
+    var vuDirection     = elem.getAttribute('direction') || 'up';
+    var vuInnerPadding = elem.getAttribute('inner-padding') || '2px';
+    var vuInnerPaddingBottom = elem.getAttribute('inner-padding-bottom') || '2px';
 
 //    console.log(config);
     
@@ -137,11 +139,12 @@ function vumeter(elem){
 
     var vuHeight;
     var vuWidth;
-    var drawVu;
     var vuBar;
     var setBarSize;
     
-    var vuMeter = elem.get(0);
+    var vuMeter = elem;
+    var drawVu;
+
 //    console.log('vuMeter: ' + vuMeter);
 //    console.log('ledColors: ' + ledColors);
 
@@ -150,7 +153,7 @@ function vumeter(elem){
     var lastVal = 0;
     var dbLedIdxLookup;
 
-    function clamp(number, min, max) {
+function clamp(number, min, max) {
         return Math.max(min, Math.min(number, max));
     }
     
@@ -214,7 +217,7 @@ function vumeter(elem){
     }
     
     function drawBar () {
-        var targetDB = clamp((100+parseInt(vuMeter.getAttribute("data-db"), 10)), 0, 140);
+        var targetDB = clamp((100+parseInt(vuMeter.getAttribute("db-value"), 10)), 0, 140);
 //        console.log('drawBar!' + targetDB + ' ' + colors[targetDB]);
         setBarSize(targetDB);
 //        vuMeter.vuBar.style.backgroundColor = colors[dbLedIdxLookup[targetDB]];
@@ -222,7 +225,7 @@ function vumeter(elem){
 
     function drawLed () {
         let leds = vuMeter.leds;
-        var targetDB = clamp((100+parseInt(vuMeter.getAttribute("data-db"), 10)), 0, 140);
+        var targetDB = clamp((100+parseInt(vuMeter.getAttribute("db-value"), 10)), 0, 140);
         setBarSize(targetDB);        
         lastVal = targetDB;
     };
@@ -231,6 +234,7 @@ function vumeter(elem){
     // override setAttribte
 
     function setPdColors () {
+        let i;
         for (i = 0;i<16;i++) { colors[i] = PdGreen; }
         for (i = 16;i<26;i++) { colors[i] = PdYellow; }
         for (i = 26;i<28;i++) { colors[i] = PdOrange; }
@@ -240,6 +244,7 @@ function vumeter(elem){
 
     
     function setBlueColors () {
+        let i;
         for (i = 0;i<1;i++) { colors[i] = colBlue1; }
         for (i = 1;i<4;i++) { colors[i] = colBlue2; }
         for (i = 4;i<7;i++) { colors[i] = colBlue3; }
@@ -257,6 +262,7 @@ function vumeter(elem){
      }
 
     function setGreenColors () {
+        let i;
         for (i = 0;i<1;i++) { colors[i] = colGreen1; }
         for (i = 1;i<4;i++) { colors[i] = colGreen2; }
         for (i = 4;i<7;i++) { colors[i] = colGreen3; }
@@ -274,6 +280,7 @@ function vumeter(elem){
     }
 
     function setCustomColors (cols) {
+        let i;
         for (i = 0;i<1;i++) { colors[i] = cols[0]; }
         for (i = 1;i<7;i++) { colors[i] = cols[1]; }
         for (i = 4;i<7;i++) { colors[i] = cols[2]; }
@@ -349,17 +356,18 @@ function vumeter(elem){
         setLedMapping();
         switch(vuType) {
         case 'led' :
-            drawVu = drawLed;
+            console.log('vuType: led');
+            vuMeter.drawVu = drawLed;
             createLeds(vuMeter);
             break;
         case 'bar' :
             console.log('vuType: bar');
             createBar(vuMeter);
-            drawVu = drawBar;
+            vuMeter.drawVu = drawBar;
             break;
         }
         setBarDirection();
-        drawVu();
+        vuMeter.drawVu();
     }
     
     init();
