@@ -256,8 +256,8 @@ function slider(elem) {
     function setDirection () {
         let direction = slider.getAttribute("direction") || 'up';
         let rect = slider.getBoundingClientRect(slider.parent);
-        console.log(window.getComputedStyle(slider).height);
-        console.log(rect.height);
+//        console.log(window.getComputedStyle(slider).height);
+//        console.log(rect.height);
         thumbWidth = 0; // will get reset below in case thumb == 'true';
         switch (direction) {
         case 'right':
@@ -328,7 +328,7 @@ function slider(elem) {
             calcBarSize = calcBarHeight;
             getFraction = getYFraction;
         }
-        console.log(thumbWidth);
+//        console.log(thumbWidth);
     }
 
     function setSliderValue () {

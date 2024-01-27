@@ -36,12 +36,12 @@ class VuMeterElement extends HTMLElement {
   }
 
     connectedCallback() {
-        console.log("o-vumeter added to page: " + this.value );
+//        console.log("o-vumeter added to page: " + this.value );
     }
 
   disconnectedCallback() {
       $(vumeter).trigger("data", {close: true});
-      console.log("Custom element removed from page.");
+      console.log("vumeter removed from page.");
   }
 
   adoptedCallback() {
@@ -49,14 +49,12 @@ class VuMeterElement extends HTMLElement {
   }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log('name: ', name);
         switch (name) {
         case 'db-value':
             this.value = Math.max(0, Math.min(parseFloat(newValue), 112)).toFixed(0);
             this.drawVu();
             break;
         }
-      console.log(`Attribute ${name} has changed.`);
     }
 
     
@@ -176,8 +174,8 @@ function clamp(number, min, max) {
         leds.setAttribute("class", "vubar");
         leds.style.width = "100%";
 //        leds.style.height = "100%";
-        leds.style.backgroundSize = "10px 80px";
-        leds.style.backgroundImage = "repeating-linear-gradient(to top, #000 0%, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 2.5px),linear-gradient(to top, rgba(0, 85, 100, 1.0) 0%, rgba(0, 102, 128, 1.0) 2%, rgba(0, 136, 170, 1.0) 10%, rgba(0, 170, 212, 1.0) 17.5%, rgba(0, 190, 245, 1.0) 25.0%, rgba(50, 202, 255, 1.0) 32.5%, rgba(85, 211, 255, 1.0) 40.0%, rgba(128, 222, 255, 1.0) 47.5%, rgba(170, 235, 255, 1.0) 55.0%, rgba(213, 246, 255, 1.0) 62.5%, rgba(255, 170, 170, 1.0) 70.0%, rgba(255, 128, 128, 1.0) 77.5%, rgba(255, 85, 85, 1.0) 85.0%, rgba(255, 42, 42, 1.0) 92.5%, rgba(255, 0, 42, 1.0) 100%)";
+        leds.style.backgroundSize = "0.5em 8em";
+        leds.style.backgroundImage = "repeating-linear-gradient(to top, #000 0%, rgba(0,0,0,0) 0.1em, rgba(0,0,0,0) 0.25em),linear-gradient(to top, rgba(0, 85, 100, 1.0) 0%, rgba(0, 102, 128, 1.0) 2%, rgba(0, 136, 170, 1.0) 10%, rgba(0, 170, 212, 1.0) 17.5%, rgba(0, 190, 245, 1.0) 25.0%, rgba(50, 202, 255, 1.0) 32.5%, rgba(85, 211, 255, 1.0) 40.0%, rgba(128, 222, 255, 1.0) 47.5%, rgba(170, 235, 255, 1.0) 55.0%, rgba(213, 246, 255, 1.0) 62.5%, rgba(255, 170, 170, 1.0) 70.0%, rgba(255, 128, 128, 1.0) 77.5%, rgba(255, 85, 85, 1.0) 85.0%, rgba(255, 42, 42, 1.0) 92.5%, rgba(255, 0, 42, 1.0) 100%)";
         leds.style.backgroundPosition = "bottom";
 
         leds.style.border = "thin solid var(--vu-background)";
@@ -356,12 +354,12 @@ function clamp(number, min, max) {
         setLedMapping();
         switch(vuType) {
         case 'led' :
-            console.log('vuType: led');
+//            console.log('vuType: led');
             vuMeter.drawVu = drawLed;
             createLeds(vuMeter);
             break;
         case 'bar' :
-            console.log('vuType: bar');
+//            console.log('vuType: bar');
             createBar(vuMeter);
             vuMeter.drawVu = drawBar;
             break;

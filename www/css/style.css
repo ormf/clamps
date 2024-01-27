@@ -57,16 +57,14 @@ o-bang {
     position: relative;
     font-size: 2em;
     user-select: none;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
     text-align: center;
     background-off: transparent;
     background-on: orange;
     color-off: black;
     color-on: black;
     border: solid 0.1em;
+    min-width: 1em;
+    min-height: 1em;
 }
 
 
@@ -80,6 +78,8 @@ o-toggle {
     color-off: black;
     color-on: black;
     border: solid 0.1em;
+    min-width: 1em;
+    min-height: 1em;
 }
 
 o-numbox {
@@ -141,6 +141,15 @@ o-multislider {
     display: flex;
     flex: 0 0 auto;
     border: solid 0.1em;
+}
+
+o-vumeter {
+    position: relative;
+    font-size: 2em;
+    user-select: none;
+    min-width: 1em;
+    height: 8em;
+    border: none;
 }
 
 .mvslider {
@@ -235,31 +244,4 @@ o-numbox[type=text] {
 o-numbox[type=text]::selection {
     caret-color: transparent;
 }
-
-input::selection {
-    user-select: none;
-    color: var(--textbox-selected-foreground);
-    background-color: var(--textbox-selected-background);
-}
-
-input[is=o-numbox] {
-    font-size: 2em;
-    --textbox-selected-foreground: black;
-    --textbox-selected-background: lightblue;
-    text-align: center;
-    user-select: none;
-    color: black;
-    background-color: white;
-    position: relative;
-    width: 4em;
-    height: 1.5em;
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 0;
-    border: solid 0.1em;
-    text-align: center;
-}
-
-/* o-bang */
 
