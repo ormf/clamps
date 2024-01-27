@@ -1,4 +1,4 @@
-;;;; clog-widgets.lisp
+;;;; clog-dsp-widgets.lisp
 ;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2024 Orm Finnendahl
@@ -18,7 +18,7 @@
 ;;;
 ;;; **********************************************************************
 
-(in-package #:clog-widgets)
+(in-package #:clog-dsp-widgets)
 
 ;;; clog extension to integrate reactive with clog.
 ;;;
@@ -539,7 +539,7 @@ event."))
   (clear-bindings) ;;; start from scratch
   (initialize #'on-new-window
               :port port
-              :static-root (merge-pathnames "www/" (asdf:system-source-directory :clog-widgets))
+              :static-root (merge-pathnames "www/" (asdf:system-source-directory :clog-dsp-widgets))
               :boot-file "/start.html")
   ;; Open a browser to http://127.0.0.1:8080 - the default for CLOG apps
   (open-browser))

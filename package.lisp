@@ -18,7 +18,7 @@
 ;;;
 ;;; **********************************************************************
 
-(defpackage #:clog-widgets
+(defpackage #:clog-dsp-widgets
   (:use #:cl #:clog #:cl-refs)
   (:export
    #:*bindings*

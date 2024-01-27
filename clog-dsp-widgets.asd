@@ -1,10 +1,10 @@
-;;;; clog-widgets.asd
+;;;; clog-dsp-widgets.asd
 ;;
 ;;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 
 
-(asdf:defsystem #:clog-widgets
-  :description "Describe clog-widgets here"
+(asdf:defsystem #:clog-dsp-widgets
+  :description "Describe clog-dsp-widgets here"
   :depends-on (:yason :clog :cl-refs)
   :author "Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>"
   :license  "gpl 2.0 or later"
@@ -12,4 +12,4 @@
   :serial t
   :components ((:file "package")
                (:file "clog-redefs")
-               (:file "clog-widgets")))
+               (:file "clog-dsp-widgets")))

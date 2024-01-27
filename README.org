@@ -1,4 +1,4 @@
-* clog-widgets
+* clog-dsp-widgets
 *** Orm Finnendahl
 
 Widgets for DSP related interactive Guis using CLOG
