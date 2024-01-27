@@ -1,7 +1,7 @@
 * clog-dsp-widgets
 *** Orm Finnendahl
 
-Widgets for DSP related interactive Guis using CLOG.
+Widgets for DSP related interactive Guis using [[https://github.com/rabbibotton/clog][clog]].
 
 ** Note
    
