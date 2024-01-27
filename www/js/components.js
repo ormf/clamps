@@ -57,8 +57,6 @@ export function knob(props) {
         };
     }
 
-    var va = 0;
-    
   // these are also singletons. These are derived values that get updated everytime a relevant signal changes.
     const range = useComputed(() => max.value - min.value)
     const percentage = useComputed(() => (val.value-min.value) / range.value)
@@ -87,9 +85,9 @@ export function knob(props) {
         _x: 0,
         _lastx: 0,
         _lasty: 0,
-        startvalue: 0,
+        lastValue: 0,
         get x() {
-            this.startvalue = val.value;
+            this.lastValue = val.value;
             return 0;
         },
         set x(value) {
@@ -97,7 +95,7 @@ export function knob(props) {
             return true;
         },
         get y() {
-            this.startvalue = val.value;
+            this.lastValue = val.value;
             return 0;
         },
         set y(value) {
@@ -107,9 +105,9 @@ export function knob(props) {
             this._y = (-1 * value);
             let n = diff*range/sensitivity;
             let old = val.value;
-            val.value = Math.max(min.value, Math.min(max.value, va + n));
-            va = val.value;
-//            console.log('diff', diff, 'n: ', n, 'old:', old, 'va', va, 'val: ', val.value);
+            val.value = Math.max(min.value, Math.min(max.value, this.lastValue + n));
+            this.lastValue = val.value;
+            //            console.log('diff', diff, 'n: ', n, 'old:', old, 'lastValue: ', this.lastValue, 'val: ', val.value);
             return true;
         }
     }

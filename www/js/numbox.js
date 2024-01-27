@@ -51,11 +51,11 @@ class NumBoxElement extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-      // switch (name) {
-      // case 'value':
-      //     console.log('attribute-change: ', newValue, 'external: ', this.externalValueChange);
-      //     this.setValue(newValue);
-      // }
+      switch (name) {
+      case 'value':
+          console.log('attribute-change: ', newValue, 'external: ', this.externalValueChange);
+          this.setValue(newValue);
+      }
   }
 }
 
@@ -161,12 +161,12 @@ function numbox(elem) {
 
     // store original setAttribute function
 
-    const mySetAttribute = numbox.setAttribute;
+//    const mySetAttribute = numbox.setAttribute;
 
     // override setAttribute extending the original definition.
 
-    numbox.setAttribute = function (key, value) {
-        mySetAttribute.call(numbox, key, value);
+    numbox.setValue = function (value) {
+//        mySetAttribute.call(numbox, key, value);
         numbox.value = parseFloat(value);
         console.log('setAttribute1: ', value, 'last: ', lastValue);
         if (numbox.externalValueChange) {
