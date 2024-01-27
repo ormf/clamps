@@ -40,11 +40,12 @@
 
 (setf *debug* nil)
 
-(defparameter x-bang nil)
-(defparameter x nil)
-(defparameter x-db nil)
-(defparameter radio nil)
-(defparameter mslider nil)
+(progn
+  (defparameter x-bang nil)
+  (defparameter x nil)
+  (defparameter x-db nil)
+  (defparameter radio nil)
+  (defparameter mslider nil))
 
 ;;;(trigger x-bang)
 
@@ -77,11 +78,11 @@
   "On-new-window handler."
   (setf (title (html-document body)) "Gui Test")
   (let ((collection (create-collection body "1/2")))
-    (create-o-vumeter collection (bind-ref-to-attr x-db "db-value")
-                      :mapping :db-lin)
-;;    (create-o-numbox collection (bind-ref-to-attr x "value") 0 1 :precision 2)
-    (create-o-knob collection (bind-ref-to-attr x "value") 0 1 0.01)
-    (create-o-knob collection (bind-ref-to-attr x "value") 0 1 0.01)
+   (create-o-vumeter collection (bind-ref-to-attr x-db "db-value") :mapping :pd)
+    (create-o-numbox collection (bind-ref-to-attr x "value") 0 1 :precision 2
+                     :css '(:height 1em))
+   (create-o-knob collection (bind-ref-to-attr x "value") 0 1 0.01)
+   (create-o-knob collection (bind-ref-to-attr x "value") 0 1 0.01)
     (create-o-knob collection (bind-ref-to-attr x-db "value") -40 0 1 :unit "dB" :precision 0)
     (create-o-bang collection (bind-ref-to-attr x-bang "bang")
                    :css '(:height 1em))
@@ -91,10 +92,12 @@
                     :direction :up
                     :background '(("#444" "#888") ("orange"))
                     :labels (list (loop for num below 8 collect num)))
-    (create-o-slider collection (bind-ref-to-attr x "value")
-                     :background "transparent")
-    (create-o-multislider collection (bind-ref-to-attr mslider "value")
-                          :colors '("#8f8" "#f88" "#44f") :background "transparent")
+    (create-o-slider collection (bind-ref-to-attr x "value") :background "transparent")
+    (create-o-slider collection (bind-ref-to-attr x "value") :background "transparent")
+    (create-o-slider collection (bind-ref-to-attr x "value") :background "transparent")
+    (create-o-slider collection (bind-ref-to-attr x "value") :background "transparent")
+    ;; (create-o-multislider collection (bind-ref-to-attr mslider "value")
+    ;;                       :colors '("#8f8" "#f88" "#44f") :background "transparent")
     ))
 
 ;;; We don't want to restart the server everytime when the new-window

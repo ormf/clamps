@@ -56,6 +56,8 @@ export function knob(props) {
             y: centerY + (radius * Math.sin(angleInRadians))
         };
     }
+
+    var va = 0;
     
   // these are also singletons. These are derived values that get updated everytime a relevant signal changes.
     const range = useComputed(() => max.value - min.value)
@@ -100,13 +102,14 @@ export function knob(props) {
         },
         set y(value) {
             let diff = (-1 * value) - this._y + this._x - this._lastx;
-//            console.log('diff: ' + diff);
+//            console.log('diff: ', diff);
             this._lastx = this._x;
             this._y = (-1 * value);
             let n = diff*range/sensitivity;
-//            console.log('n: ' + n);
-            val.value = Math.max(min.value, Math.min(max.value, val.value + n));
-
+            let old = val.value;
+            val.value = Math.max(min.value, Math.min(max.value, va + n));
+            va = val.value;
+//            console.log('diff', diff, 'n: ', n, 'old:', old, 'va', va, 'val: ', val.value);
             return true;
         }
     }

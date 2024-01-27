@@ -86,6 +86,9 @@ o-numbox {
     position: relative;
     font-size: 2em;
     min-width: 4em;
+    min-height: 1em;
+    background: white;
+    color: black;
     user-select: none;
     text-align: center;
     border: solid 0.1em;
