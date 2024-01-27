@@ -58,7 +58,7 @@ class VuMeterElement extends HTMLElement {
             this.ledMapping = newValue;
             this.drawVu();
  //           this.setLedMapping(newValue);
-            console.log('ledMapping: ', newValue);
+//            console.log('ledMapping: ', newValue);
             break;
         }
     }

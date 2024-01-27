@@ -58,6 +58,7 @@
   (apply #'make-instance 'binding args))
 
 ;;; (trigger x-bang)
+(setf *debug* t)
 
 (defgeneric define-watch (refvar attr new)
   (:method ((refvar ref-object) attr new)
@@ -175,32 +176,40 @@ array of bindings, depending on the class."))
                          (progn
                            (format t "closing knob~%")
                            (setf (b-elist binding) (remove element (b-elist binding)))) ;;; cleanup: unregister elem.
-                         (%set-val var (gethash attr data)) ;; otherwise set value.
+                         (progn
+                           (format t "~&knob recv value: ~a, ~a~%" (float (gethash attr data) 1.0) *refs-seen*)
+                           (%set-val var (float (gethash attr data) 1.0)))
                          ))))
     element))
 
 (defun create-o-numbox (parent binding min max &key (precision 2) css)
-  (let ((var (b-ref binding))
-        (attr (b-attr binding))
-        (element (create-child
-                  parent
-                  (format nil "<o-numbox min=\"~a\" max=\"~a\" value=\"~a\" precision=\"~a\" ~@[~a~]>"
-                          min max (get-val (b-ref binding)) precision
-                          (format-style css))))) ;;; the get-val automagically registers the ref
+  (let* ((var (b-ref binding))
+         (attr (b-attr binding))
+         (element (create-child
+                   parent
+                   (format nil "<o-numbox min=\"~a\" max=\"~a\" value=\"~a\" precision=\"~a\" ~@[~a~]>"
+                           min max (get-val (b-ref binding)) precision
+                           (format-style css))))
+         ) ;;; the get-val automagically registers the ref
     (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
-    (set-on-data element ;;; react to changes in the browser page
-                 (lambda (obj data)
-		   (declare (ignore obj))
-                   (let ((*refs-seen* (list element)))
-                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                                         (or (if (gethash "close" data) "close")
-                                             (gethash attr data))))
-                     (if (gethash "close" data)
-                         (progn
-                           (format t "closing numbox~%")
-                           (setf (b-elist binding) (remove element (b-elist binding)))) ;;; cleanup: unregister elem.
-                         (%set-val var (float (gethash attr data) 1.0))))))
+    (set-on-data ;;; react to changes in the browser page
+     element
+     (lambda (obj data)
+       (declare (ignore obj))
+       (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+                           (or (if (gethash "close" data) "close")
+                               (gethash attr data))))
+       (if (gethash "close" data)
+           (progn
+             (format t "closing numbox~%")
+             (setf (b-elist binding) (remove element (b-elist binding)))) ;;; cleanup: unregister elem.
+           (let ((*refs-seen* (list (list element attr))))
+;;;             (format t "~&numbox recv value: ~a, ~a~%" (float (gethash attr data) 1.0) *refs-seen*)
+             (%set-val var (float (gethash attr data) 1.0))
+             ))))
     element))
+
+;;; (setf *refs-seen* nil)
 
 (defmacro option-main (option)
   `(if (listp ,option)
@@ -243,7 +252,7 @@ array of bindings, depending on the class."))
                               (format t "closing bang~%")
                               (setf (b-elist binding) (remove element (b-elist binding))))) ;;; cleanup: unregister elem.
                            ((gethash "bang" data)
-                            (let ((*refs-seen* (list obj)))
+                            (let ((*refs-seen* (list obj "bang")))
                               (%trigger var)))))))
     element))
 
@@ -273,7 +282,7 @@ array of bindings, depending on the class."))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
-                   (let ((*refs-seen* (list element)))
+                   (let ((*refs-seen* (list (list element attr))))
                      (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
                                          (or (if (gethash "close" data) "close")
                                              (gethash attr data))))
@@ -311,7 +320,7 @@ array of bindings, depending on the class."))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
-                   (let ((*refs-seen* (list element)))
+                   (let ((*refs-seen* (list (list element attr))))
                      (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
                                          (or (if (gethash "close" data) "close")
                                              (gethash attr data))))
@@ -353,7 +362,7 @@ array of bindings, depending on the class."))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
-                   (let ((*refs-seen* (list element))) ;;; set context for %set-val below
+                   (let ((*refs-seen* (list (list element attr)))) ;;; set context for %set-val below
                      (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
                                          (or (if (gethash "close" data) "close")
                                              (gethash attr data))))
@@ -417,7 +426,7 @@ array of bindings, depending on the class."))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
-                   (let ((*refs-seen* (list element))) ;;; set context for %set-val below
+                   (let ((*refs-seen* (list (list element attr)))) ;;; set context for %set-val below
                      (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
                                          (or (if (gethash "close" data) "close")
                                              (gethash attr data))))

@@ -29,12 +29,12 @@
 // **********************************************************************
 
 class NumBoxElement extends HTMLElement {
-//  static observedAttributes = ["color", "size"];
+  static observedAttributes = ['value'];
 
   constructor() {
     // Always call super first in constructor
-    super();
-        numbox(this);
+      super();
+      numbox(this);
   }
 
     connectedCallback() {
@@ -51,7 +51,11 @@ class NumBoxElement extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    console.log(`Attribute ${name} has changed.`);
+      // switch (name) {
+      // case 'value':
+      //     console.log('attribute-change: ', newValue, 'external: ', this.externalValueChange);
+      //     this.setValue(newValue);
+      // }
   }
 }
 
@@ -74,7 +78,6 @@ function numbox(elem) {
     var numboxWidth;
     var minValue;
     var maxValue;
-    var lastValue;
     var numScale;
 
     var mouseMoveListener;
@@ -162,33 +165,35 @@ function numbox(elem) {
 
     // override setAttribute extending the original definition.
 
-   numbox.setAttribute = function (key, value) {
-       //       console.log('setAttribute1: ' + value + ' ' + key);
-       value = parseFloat(value);
-//       console.log('setAttribute: ' + value);
-        if (key == 'value') {
-            if (numbox.externalValueChange) {
-                numbox.innerText = formatNumBox(value);
-                if (value != lastValue)
-                    mySetAttribute.call(numbox, key, numbox.value);
-            }
-            else { 
-                if (value != lastValue) {
-                    mySetAttribute.call(numbox, key, numbox.value);
-                    //                    numbox.dispatchEvent(valChangeEvent);
-//                    let event = new CustomEvent ('data', { value: value });
-//                    numbox.dispatchEvent(event);
-                    $(numbox).trigger("data", { value: value });
-                }
+    numbox.setAttribute = function (key, value) {
+        mySetAttribute.call(numbox, key, value);
+        numbox.value = parseFloat(value);
+        console.log('setAttribute1: ', value, 'last: ', lastValue);
+        if (numbox.externalValueChange) {
+            numbox.innerText = formatNumBox(numbox.value);
+            if (value != lastValue) {
+                console.log('ext. value: ', numbox.value)
+                lastValue = numbox.value;
             }
         }
-   }
+        else { 
+            if (numbox.value != lastValue) {
+                //                    numbox.dispatchEvent(valChangeEvent);
+                //                    let event = new CustomEvent ('data', { value: value });
+                //                    numbox.dispatchEvent(event);
+                console.log('value intern: ', numbox.value)
+                lastValue = parseFloat(numbox.value.toFixed(numbox.precision));
+                $(numbox).trigger("data", { value: lastValue });
+            }
+        }
+    }
 
     // Mouse Event Handlers
     
     var moved = false;
     var dragging = false;
     var startValue = false;
+    var lastValue = false;
     
     var lastX, lastY;
     var numScale = 1;
@@ -199,11 +204,10 @@ function numbox(elem) {
         moved = false;
         dragging = false; // shouldn't be necessary, just in case...
         numbox.externalValueChange = false;
-        startValue = parseFloat(numbox.value);
+        startValue = parseFloat(numbox.getAttribute('value'));
         numbox.currValue = startValue;
-//        console.log('mousedown');
-//        console.log('value: ' + numbox.value);
-//        console.log('floatvalue: ' + parseFloat(numbox.value));
+        lastValue = startValue;
+        console.log('mousedown', lastValue);
         mouseStartX = event.clientX;
         mouseStartY = event.clientY;
         document.addEventListener('mousemove', mouseMoveListener);
@@ -226,31 +230,21 @@ function numbox(elem) {
     function mouseMoveListener (event) {
         let valString;
         let numboxRect = numbox.getBoundingClientRect();
-//        console.log('currValue1: ' + numbox.currValue);
+        console.log('mouseMoveListener: ' + numbox.currValue);
         if (moved == false) {
             { // called only once after a click and subsequent move.
                 dragging = true;
                 numbox.style.userSelect = 'none';
 
-//                console.log('startX: ', mouseStartX, 'clientY: ', event.clientY, 'leftX: ', numbox.getBoundingClientRect().left);
-                //                console.log('startY: ', mouseStartY, 'clientX: ', event.clientX);
                 numScale = calcNumScale(event.clientX-numboxRect.left, numboxRect.width);
                 numbox.style.setProperty('--textbox-selected-background', background);
                 numbox.style.setProperty('--textbox-selected-foreground', foreground);
                 numbox.style.setProperty('--textbox-caret-color', 'transparent');
-//                console.log('numScale: ' + numScale + ', calc: ' + (startValue + (mouseStartY - event.clientY) * numScale));
-//                console.log('checkMinMax: ' + checkMinMax(startValue + (mouseStartY - event.clientY) * numScale));
-                
                 numbox.currValue = checkMinMax(startValue + (mouseStartY - event.clientY) * numScale);
-                //                console.log('currValue: ' + numbox.currValue);
                 valString = numbox.currValue.toFixed(numbox.precision); // while dragging truncate attribute to 2 digits after the comma.
-                if (valString != lastValue) {
-                    numbox.value = valString;
-                    numbox.innerText = numbox.value;
-                    lastValue = numbox.currValue;
-//                    let event = new CustomEvent ('data', { value: lastValue });
-//                    console.log(event);
-                    $(numbox).trigger("data", {value: lastValue});
+                if (numbox.currValue != lastValue) {
+                    numbox.innerText = valString;
+                    numbox.setAttribute('value', numbox.currValue);
                 }
                 numbox.style.textAlign = 'right'; // and align right.
                 lastY = event.clientY;
@@ -258,24 +252,17 @@ function numbox(elem) {
             moved = true;
         }
         else { // called while dragging
-//            console.log('dragging2 ' + numScale + ' ' + event.clientY + ' ' + lastValue + ' ' + lastY);
-//            console.log('startX: ', mouseStartX, 'clientY: ', event.clientY);
-//            console.log('startY: ', mouseStartY, 'clientX: ', event.clientX);
             if (event.shiftKey) {
                 numScale = calcNumScale(event.clientX-numboxRect.left, numboxRect.width);
             }
             numbox.currValue = checkMinMax(lastValue + (lastY - event.clientY) * numScale);
+            console.log('numScale: ', numScale, 'clientY: ', event.clientY, 'lastValue: ', lastValue, 'lastY: ', lastY, 'currValue: ', numbox.currValue);
             lastY = event.clientY;
             valString = formatNumBoxDragging(numbox.currValue); // while dragging truncate to 2 digits after the comma.
-            if (valString != lastValue) {
+            if (numbox.CurrValue != lastValue) {
                 numbox.value = valString;
                 numbox.innerText = numbox.value;
-                lastValue = numbox.currValue;
-//                numboxDataEvent.detail = { value: lastValue };
-//                let event = new CustomEvent ('data', { detail: { value: lastValue } });
-//                console.log(event);
-//                numbox.dispatchEvent(event);
-                $(numbox).trigger("data", { value: lastValue });
+                numbox.setAttribute('value', numbox.currValue);
                 }
         }
     }
@@ -291,7 +278,7 @@ function numbox(elem) {
                 document.addEventListener('mousedown', mouseDownListener);
                 numbox.style.textAlign = 'center'; // restore alignment
                 numbox.value = formatNumBox(parseFloat(numbox.value), numbox.precision)
-                $(numbox).trigger("data", { value: parseFloat(numbox.value) });
+                numbox.setAttribute('value', parseFloat(numbox.value));
             }
             return true;
         }
@@ -329,6 +316,7 @@ function numbox(elem) {
         if (dragging) {
             numbox.style.textAlign = 'center'; // restore alignment
 //            console.log('value: ' + numbox.value);
+            lastValue = numbox.value;
             numbox.value = formatNumBox(parseFloat(numbox.value))
             numbox.innerText = numbox.value;
             document.removeEventListener('mousemove', mouseMoveListener);
