@@ -27,7 +27,7 @@
 // **********************************************************************
 
 class VuMeterElement extends HTMLElement {
-    static observedAttributes = ['db-value'];
+    static observedAttributes = ['db-value', 'led-mapping'];
 
   constructor() {
     // Always call super first in constructor
@@ -54,6 +54,12 @@ class VuMeterElement extends HTMLElement {
             this.value = Math.max(0, Math.min(parseFloat(newValue), 112)).toFixed(0);
             this.drawVu();
             break;
+        case 'led-mapping':
+            this.ledMapping = newValue;
+            this.drawVu();
+ //           this.setLedMapping(newValue);
+            console.log('ledMapping: ', newValue);
+            break;
         }
     }
 
@@ -76,7 +82,7 @@ function vumeter(elem){
     var ledColors       = elem.getAttribute('led-colors') || 'green';
     var barColor        = elem.getAttribute('bar-color') || 'rgba(60,60,255,1.0)';
     var vuType          = elem.getAttribute('vu-type') || 'led';
-    var ledMapping      = elem.getAttribute('led-mapping') || 'db-lin';
+//    var ledMapping      = elem.getAttribute('led-mapping') || 'pd';
     var vuDirection     = elem.getAttribute('direction') || 'up';
     var vuInnerPadding = elem.getAttribute('inner-padding') || '2px';
     var vuInnerPaddingBottom = elem.getAttribute('inner-padding-bottom') || '2px';
@@ -142,6 +148,7 @@ function vumeter(elem){
     
     var vuMeter = elem;
     var drawVu;
+    var setLedMapping;
 
 //    console.log('vuMeter: ' + vuMeter);
 //    console.log('ledColors: ' + ledColors);
@@ -151,7 +158,7 @@ function vumeter(elem){
     var lastVal = 0;
     var dbLedIdxLookup;
 
-function clamp(number, min, max) {
+    function clamp(number, min, max) {
         return Math.max(min, Math.min(number, max));
     }
     
@@ -295,7 +302,7 @@ function clamp(number, min, max) {
         for (i = 37;i<40;i++) { colors[i] = cols[13]; }
      }
 
-    function setLedMapping () {
+    function setMapping (ledMapping) {
 //        console.log('ledMapping: ' + ledMapping);
         switch (ledMapping) {
         case 'pd' :
@@ -351,7 +358,7 @@ function clamp(number, min, max) {
             else setGreenColors();
             break;
         }
-        setLedMapping();
+        vuMeter.setLedMapping = setMapping;
         switch(vuType) {
         case 'led' :
 //            console.log('vuType: led');
@@ -365,6 +372,7 @@ function clamp(number, min, max) {
             break;
         }
         setBarDirection();
+        vuMeter.setLedMapping(elem.getAttribute('led-mapping') || 'pd');
         vuMeter.drawVu();
     }
     

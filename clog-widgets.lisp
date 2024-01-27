@@ -396,10 +396,11 @@ array of bindings, depending on the class."))
     element))
 
 (defun create-o-vumeter (parent binding &key (direction :up)
-                                (type :led)
+                                (type :led) (mapping :db-lin)
                                           (width "1em") (height "8em") padding css)
   (declare (type (member :up :right :down :left) direction)
-           (type (member :led :bar) type))
+           (type (member :led :bar) type)
+           (type (member :pd :db-lin) mapping))
   (let* ((var (b-ref binding))
          (attr (b-attr binding)) ;;; format nil "~{~a~^,~}"
          (element (create-child
@@ -407,6 +408,7 @@ array of bindings, depending on the class."))
                    (format nil "<o-vumeter ~{~@[~a ~]~}></o-slider>"
                            (list
                             (format-style (append `(:width ,width :height ,height :padding ,padding) css))
+                            (opt-format-attr "led-mapping" mapping)
                             (opt-format-attr "direction" direction)
                             (opt-format-attr "db-value" (float (get-val var) 1.0))
 

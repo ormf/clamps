@@ -77,7 +77,8 @@
   "On-new-window handler."
   (setf (title (html-document body)) "Gui Test")
   (let ((collection (create-collection body "1/2")))
-    (create-o-vumeter collection (bind-ref-to-attr x-db "db-value"))
+    (create-o-vumeter collection (bind-ref-to-attr x-db "db-value")
+                      :mapping :db-lin)
 ;;    (create-o-numbox collection (bind-ref-to-attr x "value") 0 1 :precision 2)
     (create-o-knob collection (bind-ref-to-attr x "value") 0 1 0.01)
     (create-o-knob collection (bind-ref-to-attr x "value") 0 1 0.01)
