@@ -1,7 +1,15 @@
 * clog-dsp-widgets
 *** Orm Finnendahl
 
-Widgets for DSP related interactive Guis using CLOG
+Widgets for DSP related interactive Guis using CLOG.
+
+** Note
+   
+   This package is a complete (incompatible) rewrite of an older
+   package with the same name. The change took place on
+   2024-01-27. You can still find the old package on github with the
+   name [[https://githb.com/ormf/clog-orgel-widgets][clog-orgel-widgets]] (rename all references in your code using
+   it to the clog-dsp-widget package with the new name).
 
 ** License
 
