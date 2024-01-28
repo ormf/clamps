@@ -25,7 +25,7 @@
    (refs :initform nil :initarg :refs :accessor refs)
    (id :initarg :id :accessor id)
    (nodes :accessor nodes)
-   (node-group :initform 100 :initarg :node-group :accessor node-group)
+   (node-group :initform 300 :initarg :node-group :accessor node-group)
    (audio-bus :initform 0 :initarg :audio-bus :accessor audio-bus)))
 
 (defmethod initialize-instance :after ((instance levelmeter) &rest initargs)
