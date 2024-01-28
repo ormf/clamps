@@ -1,8 +1,24 @@
-;;;; clog-cuda.asd
 ;;;
+;;; clog-cuda.asd
+;;;
+;;; **********************************************************************
+;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
+;;;
+;;; Revision history: See git repository.
+;;;
+;;; This program is free software; you can redistribute it and/or
+;;; modify it under the terms of the Gnu Public License, version 2 or
+;;; later. See https://www.gnu.org/licenses/gpl-2.0.html for the text
+;;; of this agreement.
+;;; 
+;;; This program is distributed in the hope that it will be useful,
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+;;; GNU General Public License for more details.
+;;;
+;;; **********************************************************************
 ;;; extension to clog-dsp-widgets for incudine
 ;;;
-;;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 
 
 (asdf:defsystem #:clog-cuda
@@ -13,4 +29,6 @@
   :version "0.0.1"
   :serial t
   :components (;;; (:file "package")
+               (:file "incudine-setup")
+               (:file "levelmeter-incudine")
                (:file "clog-cuda")))

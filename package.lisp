@@ -1,5 +1,6 @@
-;;;; package.lisp
-;;
+;;;
+;;; package.lisp
+;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2024 Orm Finnendahl
 ;;; <orm.finnendahl@selma.hfmdk-frankfurt.de>
@@ -18,8 +19,10 @@
 ;;;
 ;;; **********************************************************************
 
+#|
 (defpackage #:clog-cuda
   (:use #:cl #:clog #:clog-dsp-widgets #:cl-refs)
   (:export
 
    ))
+|#
