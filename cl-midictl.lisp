@@ -217,7 +217,7 @@ controller actions."))
     (if (gethash id *midi-controllers*)
         (warn "id already used: ~a" id)
         (progn
-          (format t "adding controller ~a~%" id)
+          (format t "adding controller ~S~%" id)
           (unless (midi-input instance) (error "no midi-input specified for ~a" instance))
           (unless (midi-output instance) (error "no midi-output specified for ~a" instance))
           (push instance (gethash (midi-input instance) *midi-controllers*))
@@ -240,7 +240,7 @@ the hash-table entry of its midi-input."
               (progn
                 (setf (gethash (midi-input instance) *midi-controllers*)
                       (delete instance (gethash (midi-input instance) *midi-controllers*)))
-                (format t "removing ~a: ~a" id (remhash id *midi-controllers*)))
+                (format t "removing ~S: ~a" id (remhash id *midi-controllers*)))
               (warn "couldn't remove midi-controller ~a" instance))))))
 
 (defun remove-all-midi-controllers ()
@@ -339,9 +339,11 @@ of the input."
 ;;; (start-midi-receive *midi-in1*)
 
 (defun start-midi-engine ()
+  "open midi ports and start realtime thread."
+  (when *midi-in1* (jackmidi:close *midi-in1*))
+  (when *midi-out1* (jackmidi:close *midi-out1*))
   (setf *midi-in1* (jackmidi:open :direction :input
                                   :port-name "midi_in_1"))
-
   (setf *midi-out1* (jackmidi:open :direction :output
                                    :port-name "midi_out_1"))
   (start-midi-receive *midi-in1*)
