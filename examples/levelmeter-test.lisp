@@ -35,7 +35,7 @@
 ;;;  (faderfox-gui :ff01 body)
 ;;;  (create-o-slider body (bind-ref-to-attr *x* "value") :css '(:width "10em" :height "80em"))
   (levelmeter-gui :lm-in body :group 100 :refs *in-refs* :num 8)
-  (levelmeter-gui :lm-out body :group 300 :refs *out-refs* :num 8))
+  (levelmeter-gui :lm-out body :group 300 :audio-bus 8 :refs *out-refs* :num 8))
 
 (start)
 

@@ -109,18 +109,19 @@
    (:defaults 10 nil 0 2)
   (foreach-frame (env-levelmeter (bus chan) freq ref hop-size)))
 
-;;; (defparameter incudine::*note-ids* '(1 2 3))
+(defparameter *node-ids* '())
+
+(export *node-ids* :incudine)
 
 (defun meters-dsp (&key (group 300) (num *number-of-input-bus-channels*)
-                     refs (freq 5) (hop-size 2) (audio-bus 0))
-  (sleep 1)
+                     id-callback refs (freq 5) (hop-size 2) (audio-bus 0))
   (loop
     for idx below num
-    collect (env-monometer freq (aref refs idx)
-                           (+ audio-bus idx) hop-size
-                           :action (lambda (n)
-                                     (format t "~&pushing: ~a~%" (node-id n))
-                                     (push (node-id n)
-                                           incudine::*node-ids*))
-                           :tail group)))
+    do (progn
+         (env-monometer freq (aref refs idx)
+                        (+ audio-bus idx) hop-size
+                        :action (lambda (n)
+;;                                  (format t "~&pushing: ~a~%" (node-id n))
+                                  (funcall id-callback (node-id n)))
+                        :tail group))))
 

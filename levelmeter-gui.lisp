@@ -24,23 +24,24 @@
   ((num :initform 2 :initarg :num :accessor num)
    (refs :initform nil :initarg :refs :accessor refs)
    (id :initarg :id :accessor id)
-   (nodes :accessor nodes)
+   (nodes :initform '() :accessor nodes)
    (node-group :initform 300 :initarg :node-group :accessor node-group)
    (audio-bus :initform 0 :initarg :audio-bus :accessor audio-bus)))
 
 (defmethod initialize-instance :after ((instance levelmeter) &rest initargs)
   (declare (ignorable initargs))
-  (with-slots (refs num node-group audio-bus) instance
+  (with-slots (refs num nodes node-group audio-bus) instance
     (unless refs
       (setf refs (make-array num
                              :initial-contents
                              (loop repeat num collect (make-ref 0.0d0)))))
-    (meters-dsp :freq 10 :refs refs :audio-bus audio-bus :group node-group)))
+    (meters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group)))
 
-(defun levelmeter-gui (id gui-parent &key (group 300) refs (num 1))
+(defun levelmeter-gui (id gui-parent &key (group 300) refs (num 1) (audio-bus 0))
   (let ((dsp
           (or (find-dsp id)
-              (add-dsp 'levelmeter :id id :node-group group :refs refs :num num))))
+              (add-dsp 'levelmeter :id id :node-group group
+                                   :audio-bus audio-bus :refs refs :num num))))
     (with-slots (refs) dsp
       (let* ((gui-container (create-div gui-parent
                                         :class "levelmeter-panel"
