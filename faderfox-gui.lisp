@@ -73,7 +73,7 @@
 (defun faderfox-gui (id gui-parent &key (chan 4))
   (let ((midi-controller
           (or (find-controller id)
-              (add-midi-controller 'faderfox-midi
+              (add-midi-controller 'faderfox-midi-f.orm
                                    :id id
                                    :chan chan
                                    :midi-input *midi-in1*
@@ -82,24 +82,23 @@
       (let* ((gui-container (create-div gui-parent
                                         :class "nk2-panel"
                                         :css '(:width "80%")))
-             (fader-panel (create-div gui-container :css '(:display "flex"
-                                                           :flex-direction "column")))
-             (fader-subpanel (create-div fader-panel
+             (fader-subpanel (create-div gui-container
                                          :css '(:display "grid"
-                                                :grid-template-columns "repeat(4, minmax(3em, 0.37fr))")))
+                                                :grid-template-columns "repeat(4, minmax(3em, 1fr))")))
              (button-panel (create-div gui-container
                                        :css '(:width "40%"
                                               :display "grid"
-                                              :grid-template-columns "repeat(4, minmax(3em, 0.6fr))"))))
+                                              :grid-template-columns "repeat(4, minmax(3em, 1fr))"))))
         (dotimes (idx 16)
           (create-o-numbox
            fader-subpanel
            (bind-ref-to-attr (aref cc-state idx) "value")
-           0 127 :precision 0 :css '(:text-align "center" :background "#ccc"
+           0 1 :precision 3 :css '(:text-align "center" :background "#ccc"
                                      :font-size "2em" :height "1.3em" :margin 2px))
           (create-o-toggle
            button-panel
            (bind-ref-to-attr (aref note-state idx) "value")
+           :label (1+ idx)
            :background '("#888" "#f88")
            :css '(:font-size "2em" :margin 2px )
            :values '(0 127)  ))))))
