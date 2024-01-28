@@ -18,7 +18,7 @@
 ;;;
 ;;; **********************************************************************
 
-(in-package #:scratch)
+(in-package #:incudine)
 (export '(setup-io
           input-bus
           node-free-unprotected
@@ -28,7 +28,7 @@
           clear-buses
           mix-bus-to-out
           bus-to-out)
-        :scratch)
+        :incudine)
 
 (defvar *aux* (incudine.external:foreign-alloc-sample
                (* 256 *number-of-input-bus-channels*)))
@@ -85,6 +85,7 @@
             channel))))
 
 (dsp! cp-input-buses ((first-in-bus channel-number))
+  "cp all audio inputs to buses starting at first-in-bus."
   (:defaults 0)
   (foreach-frame
     (dochannels (current-channel *number-of-input-bus-channels*)
@@ -92,10 +93,12 @@
             (audio-in (+ current-channel first-in-bus))))))
 
 (dsp! cp-output-buses ((first-out-bus channel-number))
+  "cp all audio outputs to buses starting at first-out-bus."
   (:defaults 8)
   (foreach-frame
-    (setf (input-bus (+ 0 first-out-bus)) (audio-out current-channel))
-    (setf (input-bus (+ 1 first-out-bus)) (audio-out current-channel))))
+    (dochannels (current-channel *number-of-input-bus-channels*)
+      (setf (input-bus (+ current-channel first-out-bus))
+            (audio-out current-channel)))))
 
 (dsp! bus-to-out ((numchannels channel-number) (startidx channel-number))
   (foreach-frame
@@ -127,8 +130,6 @@
   (mix-bus-to-out :id 3 :startidx 16 :head 300)
   (cp-output-buses :id 4 :tail 300))
 
-(setup-io)
-
 (defun node-free-unprotected ()
  (dogroup (n (node 200))
    (free n)))
@@ -157,3 +158,6 @@
     (dochannels (current-channel *number-of-input-bus-channels*)
       (cout (input-bus current-channel)))))
 |#
+
+;;; (member :slynk *features*)
+;;; (member :slime *features*)

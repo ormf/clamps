@@ -22,7 +22,6 @@
 (export 'meters-dsp :incudine)
 
 (declaim (inline round-sample))
-
 (defun round-sample (x)
   (declare (type (sample
                   #.(coerce (ash most-negative-fixnum -1) 'sample)
@@ -100,7 +99,7 @@
                (progn
                  (nrt-funcall
                   (lambda ()
-                    (cl-refs:set-val ref (max 0 value))))
+                    (cl-refs:set-val ref (- (max 0 value) 100))))
                  (setf last-value value)))
            (Setf (smp-ref sums i) +sample-zero+)
            (setf (aref bufidx i) 0)))))
@@ -108,19 +107,20 @@
 (dsp! env-monometer ((freq fixnum) (ref cl-refs:ref-object) (chan channel-number)
                      (hop-size channel-number))
    (:defaults 10 nil 0 2)
-   (foreach-frame (env-levelmeter (audio-in chan) freq ref hop-size)))
+  (foreach-frame (env-levelmeter (bus chan) freq ref hop-size)))
 
 ;;; (defparameter incudine::*note-ids* '(1 2 3))
 
 (defun meters-dsp (&key (group 300) (num *number-of-input-bus-channels*)
                      refs (freq 5) (hop-size 2) (audio-bus 0))
   (sleep 1)
-  (dotimes (idx num)
-    (env-monometer freq (aref refs idx)
-                   (+ audio-bus idx) hop-size
-                   ;; :action (lambda (n)
-                   ;;           (format t "~&pushing: ~a~%" (node-id n))
-                   ;;           (push (node-id n)
-                   ;;                 incudine::*node-ids*))
-                   :tail group)))
+  (loop
+    for idx below num
+    collect (env-monometer freq (aref refs idx)
+                           (+ audio-bus idx) hop-size
+                           :action (lambda (n)
+                                     (format t "~&pushing: ~a~%" (node-id n))
+                                     (push (node-id n)
+                                           incudine::*node-ids*))
+                           :tail group)))
 

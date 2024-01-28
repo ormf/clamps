@@ -1,8 +1,8 @@
-;;;; clog-cuda.lisp
+;;; 
+;;; dsp-registry.lisp
 ;;;
 ;;; **********************************************************************
-;;; Copyright (c) 2024 Orm Finnendahl
-;;; <orm.finnendahl@selma.hfmdk-frankfurt.de>
+;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 ;;;
 ;;; Revision history: See git repository.
 ;;;
@@ -18,8 +18,21 @@
 ;;;
 ;;; **********************************************************************
 
-(in-package #:clog-dsp-widgets)
+(in-package :clog-dsp-widgets)
 
-(incudine:setup-io)
+(defparameter *dsps* (make-hash-table :test #'equal))
 
-(incudine:dump (incudine:node 0))
+(export '(add-dsp remove-dsp find-dsp) 'clog-dsp-widgets)
+
+(defun add-dsp (dsp &rest args &key id &allow-other-keys)
+  (setf (gethash id *dsps*)
+        (apply #'make-instance dsp args)))
+
+(defun remove-dsp (id)
+  (let ((dsp (find-dsp id)))
+    (when dsp
+      (map '() #'free (nodes dsp))
+      (remhash id *dsps*))))
+
+(defun find-dsp (id)
+  (gethash id *dsps*))
