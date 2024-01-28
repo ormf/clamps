@@ -58,8 +58,6 @@
   (apply #'make-instance 'binding args))
 
 ;;; (trigger x-bang)
-(setf *debug* t)
-
 (defgeneric define-watch (refvar attr new)
   (:method ((refvar ref-object) attr new)
     (watch ;;; watch registers an on-update function

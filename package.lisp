@@ -49,4 +49,5 @@
    #:highlight
    #:start
    #:new-window
-   ))
+
+   #:clog-dsp-widgets-initialize))

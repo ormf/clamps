@@ -202,8 +202,8 @@ function vumeter(elem){
         vuBar.style.height = "100%";
         vuBar.style.width = "100%";
 //        vuBar.style.border = "thin solid var(--vu-background)";
-        vuBar.style.border = "thin solid var(--vu-background)";
-        vuBar.style.backgroundColor = "var(--vu-background)";
+//        vuBar.style.border = "thin solid var(--vu-background)";
+//        vuBar.style.backgroundColor = "var(--vu-background)";
 //        vuBar.style.display = "flex";
 //        vuBar.style.flexDirection = "column";
 //        vuBar.style.justifyContent = "space-between";
@@ -336,7 +336,7 @@ function vumeter(elem){
     }
 
     function init() {
-        vuMeter.style.background = 'var(--vu-background)';
+//        vuMeter.style.background = 'var(--vu-background)';
         vuMeter.style.position = 'relative';
         vuHeight = parseFloat(style.height);
         vuWidth = parseFloat(style.width);
