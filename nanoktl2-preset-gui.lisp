@@ -32,7 +32,7 @@
                    parent
                    (format nil "<o-numbox min=\"~a\" max=\"~a\" value=\"~a\" precision=\"~a\" ~@[~a~]>"
                            min max (get-val (b-ref binding)) precision
-                           (clog-widgets::format-style css))))
+                           (clog-dsp-widgets::format-style css))))
          (unwatch
            (with-slots (cc-state cc-nums chan nk2-fader-modes) midi-controller
              (watch (lambda ()
@@ -58,7 +58,7 @@
                                              (gethash attr data))))
                      (if (gethash "close" data)
                          (progn
-                           (format t "closing numbox~%")
+;;;                           (format t "closing numbox~%")
                            (setf (b-elist binding) (remove element (b-elist binding)))
                            (funcall unwatch)) ;;; cleanup: unregister elem.
                          (%set-val var (gethash attr data))))))
