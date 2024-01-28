@@ -20,14 +20,6 @@
 
 (in-package :clog-dsp-widgets)
 
-(defclass cuda-dsp ()
-  ((id :initarg :id :accessor lv-id)))
-
-(defmethod initialize-instance :after ((instance cuda-dsp) &rest initargs)
-  (declare (ignorable initargs))
-  (with-slots (id) instance
-    (format t "adding dsp: ~S" id)))
-
 (defclass levelmeter (cuda-dsp)
   ((num :initform 2 :initarg :num :accessor num-meters)
    (refs :initform nil :initarg :refs :accessor refs)

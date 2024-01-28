@@ -31,7 +31,7 @@
   :components ((:file "package")
                (:file "incudine-setup")
                (:file "dsp-registry")
-               (:file "levelmeter-incudine")
                (:file "gui-base-class")
+               (:file "levelmeter-incudine")
                (:file "levelmeter-gui")
                (:file "clog-cuda")))
