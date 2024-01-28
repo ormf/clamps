@@ -19,10 +19,9 @@
 ;;;
 ;;; **********************************************************************
 
-#|
-(defpackage #:clog-cuda
-  (:use #:cl #:clog #:clog-dsp-widgets #:cl-refs)
-  (:export
+;;; we don't define an extra package but use clog-dsp-widgets and
+;;; import incudine's symbols into it.
 
-   ))
-|#
+(in-package :clog-dsp-widgets)
+
+(use-package :incudine)

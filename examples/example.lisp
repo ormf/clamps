@@ -1,5 +1,5 @@
-;;;
-;;; clog-cuda.asd
+;;; 
+;;; example.lisp
 ;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
@@ -17,19 +17,31 @@
 ;;; GNU General Public License for more details.
 ;;;
 ;;; **********************************************************************
-;;; extension to clog-dsp-widgets for incudine
-;;;
+
+(in-package :cl-user)
+
+(incudine:setup-io)
+
+(in-package :clog-dsp-widgets)
+
+(progn
+  (node-free-all)
+  (setup-io)
+  (add-dsp 'levelmeter :id :lm-in :node-group 100 :refs *in-refs*)
+  (add-dsp 'levelmeter :id :lm-out :audio-bus 8 :node-group 300 :refs *out-refs*))
+
+(defparameter *x* (make-ref 0))
+
+(defun new-window (body)
+  "On-new-window handler."
+  (setf (title (html-document body)) "Levelmeter Test")
+;;;  (nanoktl2-preset-gui :nk2 body)
+;;;  (faderfox-gui :ff01 body)
+;;;  (create-o-slider body (bind-ref-to-attr *x* "value") :css '(:width "10em" :height "80em"))
+  (levelmeter-gui :lm-in body :group 100 :refs *in-refs* :num 8)
+  (levelmeter-gui :lm-out body :group 300 :refs *out-refs* :num 8))
+
+(start)
 
 
-(asdf:defsystem #:clog-cuda
-  :description "clog widgets for use with incudine"
-  :depends-on (:yason :clog :of-incudine-dsps :clog-dsp-widgets :cl-refs)
-  :author "Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>"
-  :license  "gpl 2.0 or later"
-  :version "0.0.1"
-  :serial t
-  :components ((:file "package")
-               (:file "incudine-setup")
-               (:file "levelmeter-incudine")
-               (:file "levelmeter-gui")
-               (:file "clog-cuda")))
+

@@ -20,6 +20,7 @@
 
 (in-package #:clog-dsp-widgets)
 
-(incudine:setup-io)
+;;; (incudine:setup-io)
 
-(incudine:dump (incudine:node 0))
+;;; (incudine:dump (incudine:node 0))
+
