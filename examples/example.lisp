@@ -53,25 +53,14 @@ group 0
 
 |#
 
-
-;;; define the storage places for the levelmeter values.
-
-(defparameter *in-refs*
-  (make-array 8 :initial-contents (loop repeat 8
-                                        collect (make-ref -100.0d0))))
-
-(defparameter *out-refs*
-  (make-array 8 :initial-contents (loop repeat 8
-                                        collect (make-ref -100.0d0))))
-
 ;;; define a gui with two levelmeters, one for the input and one for
 ;;; the output:
 
 (defun new-window (body)
   "On-new-window handler."
   (setf (title (html-document body)) "Levelmeter Test")
-  (levelmeter-gui :lm-in body :group 100 :refs *in-refs* :num 8)
-  (levelmeter-gui :lm-out body :audio-bus 8 :group 300 :refs *out-refs* :num 8))
+  (levelmeter-gui :lm-in body :group 100 :num 8)
+  (levelmeter-gui :lm-out body :audio-bus 8 :group 300 :num 8))
 
 ;;; open the gui in a browser
 (start)

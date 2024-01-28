@@ -32,5 +32,6 @@
                (:file "incudine-setup")
                (:file "dsp-registry")
                (:file "levelmeter-incudine")
+               (:file "gui-base-class")
                (:file "levelmeter-gui")
                (:file "clog-cuda")))

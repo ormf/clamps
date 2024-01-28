@@ -1,9 +1,8 @@
-;;;
-;;; package.lisp
+;;; 
+;;; gui-base-class.lisp
 ;;;
 ;;; **********************************************************************
-;;; Copyright (c) 2024 Orm Finnendahl
-;;; <orm.finnendahl@selma.hfmdk-frankfurt.de>
+;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 ;;;
 ;;; Revision history: See git repository.
 ;;;
@@ -19,11 +18,12 @@
 ;;;
 ;;; **********************************************************************
 
-;;; we don't define an extra package but use clog-dsp-widgets and
-;;; import incudine's symbols into it.
-
 (in-package :clog-dsp-widgets)
 
-(use-package :incudine)
+(defclass cuda-dsp ()
+  ((id :initarg :id :accessor dsp-id)))
 
-(export '(cuda-dsp dsp-id levelmeter num-meters refs nodes node-group audio-bus levelmeter-gui) 'clog-dsp-widgets)
+(defmethod initialize-instance :after ((instance cuda-dsp) &rest initargs)
+  (declare (ignorable initargs))
+  (with-slots (id) instance
+    (format t "~&adding dsp: ~S~%" id)))
