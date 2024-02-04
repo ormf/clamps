@@ -50,7 +50,9 @@
                   :documentation "labels of preset buttons in gui (if present)")
    (preset-buttons :initarg :preset-buttons :accessor preset-buttons
                    :initform (make-array 16 :initial-contents (loop repeat 16 collect (make-bang))))
-   (curr-bank :initform 0 :initarg :curr-bank :type (integer 0 7) :accessor curr-bank
+   (bank-buttons :initarg :bank-buttons :accessor bank-buttons
+                   :initform (make-array 8 :initial-contents (loop repeat 8 collect (make-bang))))
+   (curr-bank :initform (make-ref 0) :initarg :curr-bank :accessor curr-bank
            :documentation "idx of current preset bank")
    (cp-src :initform nil :initarg :cp-src :accessor cp-src
            :documentation "idx of src preset to copy")
@@ -64,6 +66,7 @@
                nk2-faders s-buttons m-buttons r-buttons unwatch
                tr-rewind tr-ffwd tr-stop tr-play tr-rec)
       obj
+    (set-val curr-bank 1)
     (setf cc-nums
           (coerce
            (or (getf args :cc-nums)
@@ -81,6 +84,8 @@
     (dotimes (i 128) (setf (aref cc-map i) nil)) ;;; initialize cc-map with nil
     (loop for idx from 0 for bang across (preset-buttons obj)
           do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (ref-listeners bang)))
+    (loop for idx from 0 for bang across (bank-buttons obj)
+          do (push (let ((idx idx)) (lambda () (set-val (curr-bank obj) idx))) (ref-listeners bang)))
     (loop
       for idx from 0
       for ccnum across cc-nums
@@ -107,17 +112,17 @@
     (update-state obj)
     (mapcar #'funcall unwatch)
     (loop for idx below 8
-      do (push ;;; bank-chage buttons: relabeling of preset-buttons
+      do (push ;;; bank-change buttons: relabeling of preset-buttons
           (watch
-           (let* ((idx idx)
-                  (button (aref r-buttons idx)))
-             (lambda () (unless (or (zerop (get-val button))
-                               (eql button (aref r-buttons curr-bank)))
-                     (set-val (aref r-buttons curr-bank) 0)
-                     (setf curr-bank idx)
-                     (loop for i from 0 for label in button-labels
-                           do (set-val label (+ (* curr-bank 16) i)))
-                     (update-preset-buttons obj)))))
+           (let* ((idx idx))
+             (lambda () (let ((bank (get-val curr-bank)))
+                     (if (= idx bank)
+                         (progn
+                           (set-val (aref r-buttons idx) 1)
+                           (loop for i from 0 for label in button-labels
+                                 do (set-val label (+ (* bank 16) i)))
+                           (update-preset-buttons obj))
+                         (set-val (aref r-buttons idx) 0))))))
           unwatch))
     (let ((opcode (+ chan 176)))
       (loop for idx below 8 ;;; state change in any of the preset buttons
@@ -176,7 +181,7 @@
                 (if (zerop (get-val button)) 0 127)))
               (2 (pulse obj button cc-num))))))
        unwatch))
-    (setf curr-bank 0)
+    (set-val curr-bank 0)
     (set-val (aref r-buttons 0) 1)))
 
 (defun pulse (midi-controller slot cc-num &key (pulse-freq 2) (initial-flash nil))
@@ -197,7 +202,7 @@ off is determined by <initial-flash>."
 
 ;;; (initialize-instance :after)
 (defun update-preset-buttons (controller)
-  (let ((preset-offs (* 16 (curr-bank controller)))
+  (let ((preset-offs (* 16 (get-val (curr-bank controller))))
         (active-players (get-active-players controller)))
     (incudine.util:msg :info "update-preset-buttons")
     (dotimes (i 8)
@@ -243,8 +248,7 @@ off is determined by <initial-flash>."
 
 (defun handle-preset-bank-button-press (instance button-idx)
   (incudine.util:msg :info "preset-bank-button-press ~a" button-idx)
-  (with-slots (curr-bank button-labels r-buttons s-buttons m-buttons) instance
-    (set-val (aref r-buttons button-idx) 1)))
+  (set-val (curr-bank instance) button-idx))
 
 (defgeneric preset-state (instance preset-no active-players)
   (:method ((instance nanoktl2-preset-midi) preset-no active-players)

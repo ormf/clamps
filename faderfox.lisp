@@ -58,6 +58,7 @@ nanokontrol2.
     (setf note-state (make-array (length cc-nums)
                                :initial-contents
                                (loop for x below (length cc-nums) collect (make-ref 0))))
+    (format t "~&blah~%")
     (dotimes (idx 16)
       (push
        (watch
@@ -66,17 +67,7 @@ nanokontrol2.
                (opcode (+ 176 chan))
                (cc-state (aref cc-state idx)))
           (lambda () (osc-midi-write-short midi-output opcode cc-num (round (* 127 (get-val cc-state)))))))
-       unwatch))
-    ;; (dotimes (player-idx 4)
-    ;;   (push
-    ;;    (watch
-    ;;     (let* ((idx player-idx)
-    ;;            (cc-num (aref cc-nums idx))
-    ;;            (opcode (+ 176 chan))
-    ;;            (cc-state (aref cc-state idx)))
-    ;;       (lambda () (osc-midi-write-short midi-output opcode cc-num (round (get-val cc-state))))))
-    ;;    unwatch))
-    )
+       unwatch)))
   (update-state obj))
 
 (defun midi-delta->i (n)
@@ -117,28 +108,6 @@ nanokontrol2.
         ;;  midi-output
         ;;  (+ chan 144) cc-num (get-val (aref note-state local-idx)))
         ))))
-
-(defclass faderfox-midi-f.orm (faderfox-midi)
-  ((curr-player :initform 0 :type (integer 0 3) :accessor curr-player)))
-
-(defmethod initialize-instance :after ((controller faderfox-midi-f.orm) &rest args)
-  (declare (ignore args))
-  (with-slots (note-state curr-player unwatch) controller
-    (dotimes (player-idx 4)
-      (push
-       (watch ;;; handle player switch (radio behaviour of top 4 buttons)
-        (let* ((idx player-idx)
-               (button (aref note-state idx)))
-          (lambda ()
-            (if (= (get-val button) 127)
-                (unless (= curr-player idx)
-                  (let ((old curr-player))
-                    (setf curr-player idx)
-                    (set-val (aref note-state old) 0)))
-                (when (= curr-player idx)
-                  (set-val (aref note-state idx) 127))))))
-       unwatch))
-    (set-val (aref note-state 0) 127)))
 
 ;;; (cellctl:set-ref)
 #|

@@ -33,7 +33,7 @@
    (r-buttons :accessor r-buttons)
    (track-left :accessor track-left)
    (track-right :accessor track-right)
-   (cycle :accessor cycle)
+   (cycle :accessor nk-cycle)
    (set-marker :accessor set-marker)
    (marker-left :accessor marker-left)
    (marker-right :accessor marker-right)
@@ -53,7 +53,7 @@
           m-buttons
           track-left
           track-right
-          cycle
+          nk-cycle
           set-marker
           marker-left
           marker-right
