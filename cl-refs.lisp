@@ -13,7 +13,7 @@
 
 (defun next-id (ref-id)
   "Generate unique ids for use in scripts."
-  (sb-ext:atomic-incf (car ref-id)))
+  (atomics:atomic-incf (car ref-id)))
 
 (defun get-ref-id ()
   (format nil "ref~a" (next-id *ref-id*)))
