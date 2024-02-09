@@ -17,5 +17,6 @@
    #:watch
    #:clear-dependencies #:with-updating-deps
    #:on-deps-update
+   #:with-unwatched
    #:copy-ref
    ))

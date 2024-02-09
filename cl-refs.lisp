@@ -13,7 +13,7 @@
 
 (defun next-id (ref-id)
   "Generate unique ids for use in scripts."
-  (atomics:atomic-incf (car ref-id)))
+  (sb-ext:atomic-incf (car ref-id)))
 
 (defun get-ref-id ()
   (format nil "ref~a" (next-id *ref-id*)))
@@ -61,7 +61,7 @@ recalcuations and problems with circular dependencies."
     (unless (equal val old) ;;; unless is the opposite of when; when/unless
 ;;; don't need progn, because ther is no
 ;;; else clause.
-      (if *debug* (format t "~&%set-val called: ~a~%" (obj-print *refs-seen*)))
+;;;      (if *debug* (format t "~&%set-val called: ~a~%" (obj-print *refs-seen*)))
       (if setter
           (progn
             (push setter *refs-seen*)
@@ -70,6 +70,7 @@ recalcuations and problems with circular dependencies."
       (dolist (listener (ref-listeners ref))
         (unless (member listener *refs-seen*)
           (push listener *refs-seen*)
+;;;          (format t "%set-val: ~a, val: ~a, refs-seen: ~a" listener val *refs-seen*)
           (funcall listener old val)))))
   (ref-value ref))
 
@@ -120,6 +121,27 @@ to get-val (see #'make-computed and #'watch)."
   "return body if *update-deps* is non-nil, otherwise return nil."
   `(when *update-deps* ,@body))
  
+#|
+(defmacro with-unwatched (bindings &body body)
+  "all #'get-val forms contained in bindings are not watched."
+  (let ((tempvar (gensym)))
+    `(let ((,tempvar cl-refs::*curr-ref*))
+       (setf cl-refs::*curr-ref* nil)
+       (let* ,bindings
+         (setf cl-refs::*curr-ref* ,tempvar)
+         ,@body))))
+|#
+
+(defmacro with-unwatched (bindings &body body)
+  "all #'get-val forms contained in bindings are not watched."
+  (let ((tempvar (gensym)))
+    `(let* ((,tempvar cl-refs::*curr-ref*)
+            (cl-refs::*curr-ref* nil)
+            ,@bindings
+            (cl-refs::*curr-ref* ,tempvar))
+       ,@body)))
+
+
 ;;; this is another constructor but instead of a value we can add a function.
 ;;; Together with the getter it tracks which object was accessed and adds it to the dependencies.
 
