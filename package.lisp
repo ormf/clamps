@@ -37,6 +37,7 @@
    #:create-o-slider
    #:create-o-multislider
    #:create-o-vumeter
+   #:create-o-svg
    #:create-hide-button
    #:create-collection
    #:format-style

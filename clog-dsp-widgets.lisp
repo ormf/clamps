@@ -172,7 +172,7 @@ array of bindings, depending on the class."))
                                              (gethash attr data))))
                      (if (gethash "close" data)
                          (progn
-                           (format t "closing knob~%")
+;;;                           (format t "closing knob~%")
                            (setf (b-elist binding) (remove element (b-elist binding)))) ;;; cleanup: unregister elem.
                          (progn
                            (format t "~&knob recv value: ~a, ~a~%" (float (gethash attr data) 1.0) *refs-seen*)
@@ -199,7 +199,7 @@ array of bindings, depending on the class."))
                                (gethash attr data))))
        (if (gethash "close" data)
            (progn
-             (format t "closing numbox~%")
+;;;             (format t "closing numbox~%")
              (setf (b-elist binding) (remove element (b-elist binding)))) ;;; cleanup: unregister elem.
            (let ((*refs-seen* (list (list element attr))))
 ;;;             (format t "~&numbox recv value: ~a, ~a~%" (float (gethash attr data) 1.0) *refs-seen*)
@@ -222,7 +222,7 @@ array of bindings, depending on the class."))
 (defun opt-format-attr (attr val)
   (when val (format nil "~a='~(~a~)'" attr val)))
 
-(defun create-o-bang (parent binding &key label (background '("transparent" "orange")) color flash-time css)
+(defun create-o-bang (parent binding &key label (background '("transparent" "orange")) color flash-time css flash)
   (let ((var (b-ref binding))
         (attr (b-attr binding))
         (element (create-child
@@ -235,23 +235,26 @@ array of bindings, depending on the class."))
                            (opt-format-attr "background-on" (option-second background))
                            (opt-format-attr "color-off" (option-main color))
                            (opt-format-attr "color-on" (option-second color))
-                           (opt-format-attr "flash-time" flash-time))
+                           (opt-format-attr "flash-time" flash-time)
+                           (opt-format-attr "flash" flash))
                           (if css (format-style css))
                           (or (option-main label) "")))))
     (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
-                   (let ((*refs-seen* (list element)))
-                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                                         (or (if (gethash "close" data) "close")
-                                             (gethash attr data))))
-                     (cond ((gethash "close" data)
-                            (progn
-                              (format t "closing bang~%")
-                              (setf (b-elist binding) (remove element (b-elist binding))))) ;;; cleanup: unregister elem.
-                           ((gethash "bang" data)
-                            (let ((*refs-seen* (list obj "bang")))
-                              (%trigger var)))))))
+                   ;; (incudine.util:msg :info "~&~%clog event from ~a: ~a~%" element
+                   ;;                    (or (if (gethash "close" data) "close")
+                   ;;                        (gethash attr data)))
+                   (cond ((gethash "close" data)
+                          (progn
+;;;                              (format t "closing bang~%")
+                            (setf (b-elist binding) (remove element (b-elist binding))))) ;;; cleanup: unregister elem.
+                         (t (let ((*refs-seen* (list (list obj "bang"))))
+                              ;; (incudine.util:msg :info "~&triggering: ~a~%" var
+                              ;;                    (or (if (gethash "close" data) "close")
+                              ;;                        (gethash attr data)))
+                              
+                              (%trigger var))))))
     element))
 
 (defun array->attr (arr)
@@ -286,7 +289,7 @@ array of bindings, depending on the class."))
                                              (gethash attr data))))
                      (cond ((gethash "close" data)
                             (progn
-                              (format t "closing toggle~%")
+;;;                              (format t "closing toggle~%")
                               (setf (b-elist binding) (remove element (b-elist binding)))))
                            (t (%set-val var (read-from-string (gethash attr data))))
                            ))))
@@ -324,7 +327,7 @@ array of bindings, depending on the class."))
                                              (gethash attr data))))
                      (cond ((gethash "close" data)
                             (progn
-                              (format t "closing radio~%")
+;;;                              (format t "closing radio~%")
                               (setf (b-elist binding) (remove element (b-elist binding)))))
                            (t (%set-val var (gethash attr data)))))))
     element))
@@ -366,7 +369,7 @@ array of bindings, depending on the class."))
                                              (gethash attr data))))
                      (cond ((gethash "close" data)
                             (progn
-                              (format t "closing slider~%")
+;;;                              (format t "closing slider~%")
                               (setf (b-elist binding) (remove element (b-elist binding)))))
                            (t (%set-val var (gethash attr data)))))))
     element))
@@ -430,9 +433,44 @@ array of bindings, depending on the class."))
                                              (gethash attr data))))
                      (cond ((gethash "close" data)
                             (progn
-                              (format t "closing slider~%")
+;;;                              (format t "closing vumeter~%")
                               (setf (b-elist binding) (remove element (b-elist binding)))))))))
     element))
+
+(defun create-o-svg (parent svg &key padding css (translate 0) (background "#fff"))
+  (let* ((svg-container (create-div parent :style "display:flex;align-items: stretch;position: relative"))
+         (svg (create-child
+               svg-container
+               (format nil "<object ~{~@[~a ~]~}></object>"
+                       (list
+                        (format-style (append
+                                       `(:padding ,padding
+                                         :transform ,(format nil "translate(~apx)" translate)
+                                         :background ,background)
+                                       css))
+                        (opt-format-attr "class" "svg")
+                        (opt-format-attr "data" svg)
+                        (opt-format-attr "cursor-pos" 0.0)
+                        "type=\"image/svg+xml\"")))))
+    (create-div svg-container :class "cursor")
+    svg))
+
+(defun create-o-svg (parent svg &key padding css (background "#fff"))
+  (let* ((element (create-child
+                   parent
+                   (format nil "<o-svg ~{~@[~a ~]~}></object>"
+                           (list
+                            (opt-format-attr "data" svg)
+                            (opt-format-attr "cursor-pos" 0.0)
+                            (format-style (append
+                                           `(:padding ,padding
+                                             :background ,background)
+                                           css)))))))
+    element))
+
+
+
+
 
 (defun create-hide-button (parent element-to-hide
                            &key label (background '("transparent" "orange"))
@@ -463,7 +501,8 @@ array of bindings, depending on the class."))
                                              (gethash "value" data))))
                      (cond ((gethash "close" data)
                             (progn
-                              (format t "closing toggle~%")))
+;;;                              (format t "closing hide button~%")
+                              ))
                            (t (setf (hiddenp element-to-hide)
                                     (zerop (read-from-string
                                             (gethash "value" data)))))))))

@@ -186,11 +186,36 @@ o-vumeter {
     display: flex;
 //    padding: 0.5rem;
     justify-content: flex-start; /* flex-start, flex-end */
-    align-items: left; /* center flex-start, flex-end
-  outline: 0.1em solid black;
+    align-items: left; /* center flex-start, flex-end */
+    outline: 0.1em solid black;
 }
 
-/* Knob */
+o-svg {
+    width: 100%;
+    border: 0.13em solid black;
+    background: #fff;
+
+}
+
+.svg {
+    width: 100%;
+    border: 0.13em solid black;
+    background: #fff;
+
+}
+
+
+.cursor {
+    width: 0.13em;
+    height: 100%;
+    position: absolute;
+    background: black;
+    left: 30%;
+
+}
+
+
+    /* Knob */
 
 o-knob {
     font-size: 2em;
@@ -237,6 +262,9 @@ o-knob {
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
 }
+
+
+
 
 /* o-numbox */
 

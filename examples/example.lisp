@@ -4,12 +4,12 @@
 
 ;;; load depedencies
 
-(ql:quickload :clog-widgets)
+(ql:quickload :clog-dsp-widgets)
 
 ;;; define the package and tell it to use all dependencies
 
 (defpackage #:clog-widgets-example
-  (:use #:cl #:clog #:cl-refs #:clog-widgets))
+  (:use #:cl #:clog #:cl-refs #:clog-dsp-widgets))
 
 ;; then select everything from here down to the end of the file and
 ;; complire/evaluate it.
@@ -49,9 +49,11 @@
 
 ;;;(trigger x-bang)
 
+(set-val x 0.4)
 
+(defparameter niklas (watch (lambda () (format t "x geändert: ~a~%" (get-val x)))))
 
-(funcall (b-unwatch (gethash "ref52-value" *bindings*)))
+(funcall niklas)
 
 (progn
   (clear-bindings)
@@ -97,12 +99,13 @@
                     :background '(("#444" "#888") ("orange"))
                     :labels (list (loop for num below 8 collect num)))
     (create-o-slider collection (bind-ref-to-attr x "value") :background "transparent")
-    (create-o-slider collection (bind-ref-to-attr x "value") :background "transparent")
-    (create-o-slider collection (bind-ref-to-attr x "value") :background "transparent")
-    (create-o-slider collection (bind-ref-to-attr x "value") :background "transparent")
     (create-o-multislider collection (bind-ref-to-attr mslider "value")
                           :colors '("#8f8" "#f88" "#44f") :background "transparent")
+    (create-o-svg collection "/tmp/html-display.svg")
     ))
+
+
+
 
 ;;; We don't want to restart the server everytime when the new-window
 ;;; fun is canged thats why this proxy gets defined
@@ -117,7 +120,7 @@
   (clear-bindings) ;;; start from scratch
   (initialize #'on-new-window
               :port 8081
-              :static-root (merge-pathnames "www/" (asdf:system-source-directory :clog-widgets))
+              :static-root (merge-pathnames "www/" (asdf:system-source-directory :clog-dsp-widgets))
               :boot-file "/start.html")
   ;; Open a browser to http://127.0.0.1:8080 - the default for CLOG apps
   (open-browser))
@@ -126,8 +129,12 @@
 ;;; connected
 
 (start)
+(loop)
 
+(defun square (x)
+  (* x x))
 
+(symbol-function 'square)
 
 (defparameter jonathan (make-ref 0.5))
 
@@ -146,3 +153,49 @@ jonathan
 (set-val orm 3)
 
 (get-val jonathan)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(square)
