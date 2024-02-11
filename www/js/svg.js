@@ -27,7 +27,10 @@
 // **********************************************************************
 
 class SvgElement extends HTMLElement {
-    static observedAttributes = ['cursor-pos', 'shift'];
+    static observedAttributes = ['data',
+        'cursor-pos', 'shift-x',
+        'shift-y'
+    ];
 
   constructor() {
     // Always call super first in constructor
@@ -50,16 +53,20 @@ class SvgElement extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
+        case 'data':
+            this.setSVG(newValue);
+            break;
         case 'cursor-pos':
             this.setPos(newValue);
             break;
-        case 'shift':
-            this.shift(newValue);
+        case 'shift-x':
+            this.shiftX(newValue);
+            break;
+        case 'shift-y':
+            this.shiftY(newValue);
             break;
         }
     }
-
-    
 }
 
 
@@ -71,26 +78,27 @@ function svg(elem){
     // Settings
 
     var svg = elem;
-    async function getImage(url) {
-        return new Promise((resolve, reject) => {
-            let img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = reject;
-            img.src = url;
-        });
+
+    var svgContent
+    var svgCursor;
+
+    svg.setPos = function(pos) {
+        svgCursor.style.left = Math.round((pos*100)) + '%';
     }
 
-    async function start(svgContent) {
-        let svgURL = svgContent.data;
-        
-        let img = await getImage(svgURL);
-        let w = img.width;
-        let h = img.height;
-        console.log(img);
-//        svgContent.innerHTML=img;
+    svg.shiftX = function(translate) {
+        svgContent.style.transform = 'translate(' + translate + 'px)';
     }
 
+    svg.shiftY = function(translate) {
+        svgContent.style.transform = 'translate( 0px, ' + translate + 'px)';
+    }
 
+    svg.setSVG = function(url) {
+        svgContent.data = url;
+        loadSVG(svgContent);
+    }
+    
     async function loadSVG(svgContent) {
         let svgURL = svgContent.data;
         fetch(svgURL)
@@ -100,23 +108,13 @@ function svg(elem){
                 const doc = parser.parseFromString(text, "text/xml");
                 doc.documentElement.setAttribute('height', '100%');
                 doc.documentElement.setAttribute('width', '100%');
+                while (svgContent.firstChild) {
+                    svgContent.removeChild(svgContent.lastChild);
+                }           
                 svgContent.appendChild(doc.documentElement);
             });
     }
     
-    var svgContent
-    var svgCursor;
-
-    svg.setPos = function(pos) {
-        console.log('new pos: ', pos);
-        console.log(Math.round((pos*100)) + '%');
-        svgCursor.style.left = Math.round((pos*100)) + '%';
-        
-    }
-
-    svg.shift = function(translate) {
-        svgContent.style.transform = 'translate(' + translate + 'px)';
-    }
 
 
     

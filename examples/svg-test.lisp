@@ -58,17 +58,7 @@
 (progn
   (clear-bindings)
   (setf x (make-ref 0.5))
-  (setf x-bang (make-bang (lambda () (set-val x 0))))
-  (setf x-db
-        (make-computed
-         (lambda () (clip (round (rms->db (get-val x))) -40 0))
-         (lambda (val) (%set-val x (clip (float (if (<= val -40) 0 (db->rms val))) 0 1)))))
-  (setf radio
-        (make-computed
-         (lambda () (round (/ (+ 40 (get-val x-db)) 40/7)))
-         (lambda (val) (%set-val x-db (- (float (* val 40/7)) 40)))))
-  (setf mslider (make-array 8 :initial-contents (loop repeat 8 collect (make-ref 0))))
-  (setf (aref mslider 0) x)
+  (setf y (make-ref 0))
   nil)
 
 ;;; Define our CLOG application
@@ -79,6 +69,12 @@
 (funcall *meineaktion*)
 
 |#
+(set-val x 0.5)
+
+(set-val y 0)
+
+(cm:at)
+
 
 (defun new-window (body)
   "On-new-window handler."

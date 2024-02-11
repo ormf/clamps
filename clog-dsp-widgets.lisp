@@ -464,7 +464,7 @@ array of bindings, depending on the class."))
     svg))
 |#
 
-(defun create-o-svg (parent bindings &key svg padding css (background "#fff"))
+(defun create-o-svg (parent bindings &key svg padding css (cursor-pos 0) (shift-x 0) (shift-y 0) (background "#fff"))
   (let* (;;; (var (b-ref binding))
 ;;;         (attr (b-attr binding))
          (element (create-child
@@ -472,8 +472,9 @@ array of bindings, depending on the class."))
                    (format nil "<o-svg ~{~@[~a ~]~}></object>"
                            (list
                             (opt-format-attr "data" svg)
-                            (opt-format-attr "cursor-pos" 0.0)
-                            (opt-format-attr "shift" 0)
+                            (opt-format-attr "cursor-pos" cursor-pos)
+                            (opt-format-attr "shift-x" shift-x)
+                            (opt-format-attr "shift-y" shift-y)
                             (format-style (append
                                            `(:padding ,padding
                                              :background ,background)
