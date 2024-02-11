@@ -27,6 +27,7 @@
    #:binding-name
    #:define-watch
    #:bind-ref-to-attr
+   #:bind-refs-to-attrs
    #:b-unregister
    #:set-on-data
    #:create-o-knob
