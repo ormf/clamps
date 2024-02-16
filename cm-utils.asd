@@ -28,7 +28,6 @@
                #:fomus
                #:cm-fomus
                #:cm-svg.rts
-               #:cm-sfz
                #:cl-ppcre
                #:cl-coroutine
                #:cm-incudine
