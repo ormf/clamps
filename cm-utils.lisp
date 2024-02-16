@@ -336,29 +336,6 @@ be sorted."
 
 
 
-(defun region-play (name &key (absolute nil) (timescale 1) (region '(0 nil)) (durfac 1) (pstretchfn (lambda (x) (declare (ignore x)) 1)))
-  (let* ((obj (if absolute
-                  (import-events name :x-scale timescale)
-                  (import-events (format nil "/home/orm/work/kompositionen/heidelberg/grafik/~a.svg" name) :x-scale timescale)))
-         (evts (if obj (sort (subobjects obj) #'< :key #'object-time)))
-         (offs (get-first-in-region evts region timescale)))
-    (if evts
-        (progn
-          (free-all-voices)
-          (sprout (mapcar (lambda (evt) (let ((keynum (sv evt :keynum)))
-                                     (sv* evt :duration durfac)
-                                     (if (typep evt 'cm:sfz) (sv+ evt :amplitude 12)
-                                         (sv* evt :amplitude 2))
-                                     (setf (sv evt :keynum) (+ 36 (* (- keynum 36)
-                                                                     (funcall pstretchfn (1+ (* 1/16 (/ (object-time evt) timescale)))))))
-                                     evt))
-                          (apply #'trim-region evts
-                                 (mapcar (lambda (x) (if x (beat->time (* 16 (- x 1)) :factor timescale))) region))))
-;;          (browser-play (* offs 6.041) :tscale (/ 1/8 6.041))
-          )
-        (error "obj ~a not found!" (format nil "~a-seq" name)))))
-
-
 
 #|
 (defun time->speed-fn (min max end-time)
@@ -366,4 +343,4 @@ be sorted."
     (+ min (* (/ time end-time) (- max min)))))
 |#
 
-(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime-fn vstime->time-fn time->speed-fn vstime->speed-fn calc-dur chord-derive display play-midi play-svg cm-store g-export play-curr region zero-shift reverse-obj transform-obj region-pay) 'cm)
+(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime-fn vstime->time-fn time->speed-fn vstime->speed-fn calc-dur chord-derive display play-midi play-svg cm-store g-export play-curr region zero-shift reverse-obj transform-obj) 'cm)
