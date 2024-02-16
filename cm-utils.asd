@@ -27,12 +27,13 @@
                #:orm-utils
                #:fomus
                #:cm-fomus
-               #:cm-svg
+               #:cm-svg.rts
                #:cl-ppcre
                #:cl-coroutine
                #:cm-incudine
                #:cl-plot
-               #:incudine-plot)
+               #:incudine-plot
+               #:clog-dsp-widgets)
   :components ((:file "package")
                (:file "cm-utils")
                (:file "patterns")))
