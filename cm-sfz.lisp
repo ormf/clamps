@@ -20,7 +20,7 @@
 
 (in-package :cm)
 
-(defparameter *debug* nil)
+(export '(sfz sfz-keynum sfz-dur sfz-amp sfz-preset sfz-play-fn sfz-play-fn sfz-pan sfz-startpos svg->sfz) 'cm)
 
 (defobject sfz (event)
     ((keynum :initform 60 :accessor sfz-keynum)
@@ -119,4 +119,4 @@ svg-file."
                  marks)
                 (part-events part)))))
 
-(export '(sfz sfz-keynum sfz-dur sfz-amp sfz-preset sfz-play-fn sfz-play-fn sfz-pan sfz-startpos svg->sfz) 'cm)
+
