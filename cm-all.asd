@@ -9,10 +9,11 @@
   :license  "lgpl"
   :version "0.0.1"
   :serial t
-  :depends-on (#:cm-utils #:cl-ppcre #:of-incudine-dsps ;;; #:sol
-                          #:cl-sfz #:cm-sfz #:cm-poolplayer)
+  :depends-on (#:cl-ppcre #:of-incudine-dsps ;;; #:sol
+                          #:cl-sfz #:cm-sfz #:cm-poolplayer #:cm-utils)
   :components ((:module "src"
                 :serial t
                 :components
                 ((:file "package")
-                 (:file "cm-all")))))
+;;;                 (:file "cm-all")
+                 ))))

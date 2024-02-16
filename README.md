@@ -1,9 +1,9 @@
 # cm-all
-### _Your Name <your.name@example.com>_
+### Orm Finnendahl <orm-finnendahl@selma.hfmdk-frankfurt.de>
 
-This is a project to do ... something.
+Metapackage for common music, adding all sorts of extensions.
 
 ## License
 
-Specify license here
+GPL 2.0 or later.
 
