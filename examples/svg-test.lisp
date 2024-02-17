@@ -40,12 +40,7 @@
 
 (setf *debug* nil)
 
-(progn
-  (defparameter x-bang nil)
-  (defparameter x nil)
-  (defparameter x-db nil)
-  (defparameter radio nil)
-  (defparameter mslider nil))
+
 
 ;;;(trigger x-bang)
 
@@ -56,9 +51,17 @@
 (funcall niklas)
 
 (progn
+  (defparameter x nil)
+  (defparameter y nil)
+  (defparameter idx nil)
+  (defparameter data nil))
+
+(progn
   (clear-bindings)
   (setf x (make-ref 0.5))
   (setf y (make-ref 0))
+  (setf idx (make-ref 0))
+  (setf data (make-computed (lambda () (format nil "/josquin-mousse-~d.svg" (max 1 (min 6 (1+ (get-val idx)))))) ))
   nil)
 
 ;;; Define our CLOG application
@@ -69,34 +72,18 @@
 (funcall *meineaktion*)
 
 |#
-(set-val x 0.5)
-
-(set-val y 0)
-
-(cm:at)
-
 
 (defun new-window (body)
   "On-new-window handler."
   (setf (title (html-document body)) "SVG Test")
-  (create-o-svg body (bind-refs-to-attrs x "cursor-pos" y "shift") :svg "/html-display.svg")
+  (create-o-svg
+   body (bind-refs-to-attrs x "cursor-pos" y "shift-x" data "data") :svg "/html-display.svg")
+  (create-o-radio body (bind-refs-to-attrs idx "value") :css '(:width "6em") :labels (list (loop for idx from 1 to 6 collect idx)) :num 6)
+  (create-o-slider body (bind-refs-to-attrs y "value") :min -2000 :max 2000 :direction :right
+                                                       :css `(:display "inline-block" :height "1em" :width "100%"))
   (create-o-knob body (bind-refs-to-attrs x "value") 0 1 0.01 :precision 2)
+
     )
-
-(defparameter test (reduce #'bind-ref-to-attr '((x "cursor-pos") (y "shift"))))
-
-(defparameter test (reduce (lambda (prev x) (cons (apply #'bind-ref-to-attr x) prev))
-                           `((,x "cursor-pos") (,y "shift"))))
-
-
-
-
-(defparameter y (make-ref 0))
-
-(setf test (apply #'bind-ref-to-attr (list x "value")))
-
-(funcall test)
-(set-val x 0.4)
 
 
 ;;; We don't want to restart the server everytime when the new-window

@@ -28,8 +28,7 @@
 
 class SvgElement extends HTMLElement {
     static observedAttributes = ['data',
-        'cursor-pos', 'shift-x',
-        'shift-y'
+                                 'cursor-pos', 'shift-x', 'shift-y', 'scale', 'piano-roll', 'staff-systems', 'bar-lines'
     ];
 
   constructor() {
@@ -65,6 +64,18 @@ class SvgElement extends HTMLElement {
         case 'shift-y':
             this.shiftY(newValue);
             break;
+        case 'scale':
+            this.doScale(newValue);
+            break;
+        case 'piano-roll':
+            this.doPianoRoll(newValue);
+            break;
+        case 'staff-systems':
+            this.doStaffSystems(newValue);
+            break;
+        case 'bar-lines':
+            this.doBarLines(newValue);
+            break;
         }
     }
 }
@@ -87,18 +98,64 @@ function svg(elem){
     }
 
     svg.shiftX = function(translate) {
-        svgContent.style.transform = 'translate(' + translate + 'px)';
+        console.log((-120 + -1*parseFloat(translate)));
+        svgContent.style.transform = 'translate(' + (60 + -1*parseFloat(translate)) + 'em)';
     }
 
     svg.shiftY = function(translate) {
-        svgContent.style.transform = 'translate( 0px, ' + translate + 'px)';
+        svgContent.style.transform = 'translate( 0px, ' + -1*parseFloat(translate) + 'em)';
+    }
+
+    svg.doScale = function(scale) {
+        svg.scale = scale;
+        if (svgContent.firstChild) {
+            svgContent.firstChild.setAttribute('width', scale*100 + '%');
+            svgContent.firstChild.setAttribute('height', '100%');
+        }
+    }
+
+
+    svg.doPianoRoll = function(value) {
+        let svgImage = svgContent.firstChild;
+        if (svgImage && document.getElementById('layer-2')) {
+            if (value == 0)
+                document.getElementById('layer-2').style.display = 'none';
+            else
+                document.getElementById('layer-2').style.display = '';
+        }
+    }
+
+
+    svg.doStaffSystems = function(value) {
+        let svgImage = svgContent.firstChild;
+        if (svgImage && document.getElementById('layer-1')) {
+            if (value == 0)
+                document.getElementById('layer-1').style.display = 'none';
+            else
+                document.getElementById('layer-1').style.display = '';
+        }
+    }
+
+    svg.doBarLines = function(value) {
+        let svgImage = svgContent.firstChild;
+        if (svgImage && document.getElementById('layer3')) {
+            if (value == 0)
+                document.getElementById('layer3').style.display = 'none';
+            else
+                document.getElementById('layer3').style.display = '';
+        }
     }
 
     svg.setSVG = function(url) {
         svgContent.data = url;
         loadSVG(svgContent);
     }
-    
+
+    function parseViewBox(viewBoxString, asNumbers = false) {
+        let values = viewBoxString.split(/[ ,]/).filter(Boolean); // filter removes empty strings   
+        return asNumbers ? values.map(Number) : values;
+    }
+
     async function loadSVG(svgContent) {
         let svgURL = svgContent.data;
         fetch(svgURL)
@@ -106,12 +163,19 @@ function svg(elem){
             .then((text) => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(text, "text/xml");
-                doc.documentElement.setAttribute('height', '100%');
-                doc.documentElement.setAttribute('width', '100%');
                 while (svgContent.firstChild) {
                     svgContent.removeChild(svgContent.lastChild);
                 }           
                 svgContent.appendChild(doc.documentElement);
+                let [xmin, ymin, width, height]  = parseViewBox(svgContent.firstChild.getAttribute('viewBox'), true);
+//                console.log(xmin, ymin, width, height);
+                svg.doScale(svg.scale);
+                svg.setPos(svg.getAttribute('cursor-pos'));
+                svg.doPianoRoll(svg.getAttribute('piano-roll'));
+                svg.doStaffSystems(svg.getAttribute('staff-systems'));
+                svg.doBarLines(svg.getAttribute('bar-lines'));
+                console.log(svg.getAttribute('cursor-pos'));
+                $(svg).trigger("data", {width: (width/3.7179809)});
             });
     }
     
@@ -140,5 +204,3 @@ function svg(elem){
     init();
 
 }
-
-

@@ -32,17 +32,17 @@
 // Attributes: min, max, mapping, clip-zero, thumb-color, bar-color
 
 class SliderElement extends HTMLElement {
-//  static observedAttributes = ["color", "size"];
+    static observedAttributes = [ 'value', 'min', 'max', 'color', 'background' ];
 
     constructor() {
         // Always call super first in constructor
         super();
+        slider(this);
 //        console.log("o-slider constructed: " + this );
     }
 
     connectedCallback() {
 //        console.log("o-slider added to page: " + this );
-        slider(this);
     }
 
     disconnectedCallback() {
@@ -56,7 +56,24 @@ class SliderElement extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log(`Attribute ${name} has changed.`);
+//        console.log(`Attribute ${name} has changed: ~{newValue}`)
+        switch (name) {
+        case 'value':
+            this.setVal(parseFloat(newValue));
+            break;
+        case 'min':
+            this.setMin(parseFloat(newValue));
+            break;
+        case 'max':
+            this.setMax(parseFloat(newValue));
+            break;
+        case 'color':
+            this.setColor(newValue);
+            break;
+        case 'color':
+            this.setBackground(newValue);
+            break;
+        }
     }
 }
 
@@ -216,19 +233,17 @@ function slider(elem) {
     slider.externalValueChange = true;
 
     slider.bang = function () {
-        console.log('bang!');
+//        console.log('bang!');
         $(slider).trigger("data", {close: true})
     }
 
     
     // override setAttribute
 
-    const mySetAttribute = slider.setAttribute;
+//    const mySetAttribute = slider.setAttribute;
 
-    slider.setAttribute = function (key, value) {
-        mySetAttribute.call(slider, key, value);
+    function setVal(value) {
 //        console.log('attribute change: ' + key);
-        if (key == 'value') {
 //            console.log("val-change: " + value + ", oldValue: " + oldValue + ", external: " + slider.externalValueChange);
             if (slider.externalValueChange) {
                 if (value != oldValue) {
@@ -240,9 +255,36 @@ function slider(elem) {
             }
             else
                 $(slider).trigger("data", { value: parseFloat(value) });
-        }
     }
-    
+
+    function setMin(value) {
+        minValue = value;
+        let fraction = (parseFloat(slider.getAttribute('value'))-minValue) / (maxValue-minValue);
+        //                    console.log("value " + oldValue + ", minValue: " + minValue + ", maxValue: " + maxValue + ", fraction: " + fraction);
+        calcBarSize(fraction);
+        setMinMaxMapping();
+        console.log('setMin', fraction, slider.getAttribute('value'), value);
+    }
+
+    function setMax(value) {
+        maxValue = value;
+        console.log(value);
+        let fraction = (parseFloat(slider.getAttribute('value'))-minValue) / (maxValue-minValue);
+        //                    console.log("value " + parseFloat(slider.getAttribute('value')) + ", minValue: " + minValue + ", maxValue: " + maxValue + ", fraction: " + fraction);
+        calcBarSize(fraction);
+        setMinMaxMapping();
+        console.log('setMax', fraction, slider.getAttribute('value'), value);
+    }
+
+    function setColor(value) {
+        slider.style.color = value;
+    }
+
+    function setBackground(value) {
+        slider.style.background = value;
+    }
+
+
     // setup routines
 
     function setSliderBarStyle () {
@@ -415,14 +457,21 @@ function slider(elem) {
         if (thumbColor == 'transparent')
             thumb = false;
         setSliderBarStyle();
-        sliderHeight = parseFloat(style.height.match(pxRegex)[1]);
-        sliderWidth = parseFloat(style.width.match(pxRegex)[1]);
+        sliderHeight = parseFloat(slider.style.height.match(pxRegex)[1]);
+        sliderWidth = parseFloat(slider.style.width.match(pxRegex)[1]);
         setMinMaxMapping(sliderBar);
         slider.addEventListener('mousedown', mouseDownListener)
         addEventListener('beforeunload', (event) => {
             $(slider).trigger("data", {close: true})});
         slider.externalValueChange = true;
+
+        slider.setMin = setMin;
+        slider.setMax = setMax;
+        slider.setVal = setVal;
+        slider.setColor = setColor;
+        slider.setBackground = setBackground;
     }
 
     initSlider();
 }
+

@@ -276,8 +276,8 @@ function radio (elem) {
     
     var style = window.getComputedStyle(myRadio, null);
 
-    myRadio.height = parseFloat(style.height.match(pxRegex)[1]);
-    myRadio.width = parseFloat(style.width.match(pxRegex)[1]);
+//    myRadio.height = parseFloat(style.height.match(pxRegex)[1]);
+//    myRadio.width = parseFloat(style.width.match(pxRegex)[1]);
 
     // Utils
     
@@ -332,7 +332,7 @@ function radio (elem) {
     function getYFraction (event) {
         let rect = myRadio.getBoundingClientRect();
         let localYFrac = (rect.height + rect.top - event.clientY) / rect.height;
-        console.log(rect.height + ', ' + rect.top +  ', ' + event.clientY + ', ' + localYFrac)
+//        console.log(rect.height + ', ' + rect.top +  ', ' + event.clientY + ', ' + localYFrac)
         return clamp(localYFrac, 0, 1);
 
     }
@@ -352,10 +352,10 @@ function radio (elem) {
     }
     
     function mouseDownListener (event) {
-        console.log('mouseDown');
+//        console.log('mouseDown');
         moved = false;
         let Fraction = getFraction(event);
-        console.log(Fraction);
+//        console.log(Fraction);
         idx = clamp(Math.floor(Fraction*numButtons), 0, numButtons - 1);
         myRadio.externalValueChange = false;
         myRadio.setAttribute('value', idx);

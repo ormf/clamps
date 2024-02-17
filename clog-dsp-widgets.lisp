@@ -60,7 +60,7 @@
 ;;; (trigger x-bang)
 (defgeneric define-watch (refvar attr new)
   (:method ((refvar ref-object) attr new)
-    (watch ;;; watch registers an on-update function
+    (watch ;;; watch registers in an on-update function
      (lambda ()
        (let ((val (get-val refvar)))
          (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
@@ -169,7 +169,8 @@ array of bindings, depending on the class."))
                    parent
                    (format nil "<o-knob min=\"~a\" max=\"~a\" step=\"~a\" value=\"~a\" precision=\"~a\" unit=\"~a\"></o-knob>"
                            min max step (get-val var) precision unit)))) ;;; the get-val automagically registers the ref
-    (dolist (binding bindings) (push element (b-elist binding))) ;;; register the browser page's html elem for value updates.
+    (dolist (binding bindings) (push element (b-elist binding))
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
 		   (declare (ignore obj))
@@ -182,7 +183,6 @@ array of bindings, depending on the class."))
 ;;;                           (format t "closing knob~%")
                            (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding))))) ;;; cleanup: unregister elem.
                          (progn
-                           (format t "~&knob recv value: ~a, ~a~%" (float (gethash attr data) 1.0) *refs-seen*)
                            (%set-val var (float (gethash attr data) 1.0)))
                          ))))
     element))
@@ -196,7 +196,8 @@ array of bindings, depending on the class."))
                            min max (get-val var) precision
                            (format-style css))))
          ) ;;; the get-val automagically registers the ref
-    (dolist (binding bindings) (push element (b-elist binding))) ;;; register the browser page's html elem for value updates.
+    (dolist (binding bindings) (push element (b-elist binding))
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
     (set-on-data ;;; react to changes in the browser page
      element
      (lambda (obj data)
@@ -246,7 +247,8 @@ array of bindings, depending on the class."))
                             (opt-format-attr "flash" flash))
                            (if css (format-style css))
                            (or (option-main label) "")))))
-    (dolist (binding bindings) (push element (b-elist binding))) ;;; register the browser page's html elem for value updates.
+    (dolist (binding bindings) (push element (b-elist binding))
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    ;; (incudine.util:msg :info "~&~%clog event from ~a: ~a~%" element
@@ -286,7 +288,8 @@ array of bindings, depending on the class."))
                             (opt-format-attr "value-on" (or (second values) 1)))
                            (format-style css)
                            (or (option-main label) "")))))
-    (dolist (binding bindings) (push element (b-elist binding))) ;;; register the browser page's html elem for value updates.
+    (dolist (binding bindings) (push element (b-elist binding))
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
@@ -302,14 +305,16 @@ array of bindings, depending on the class."))
                            ))))
     element))
 
-(defun create-o-radio (parent bindings &key labels label (background '("transparent" "orange"))
-                                        color flash-time values (num 8) (direction :right))
+(option-main '("transparent" "orange"))
+
+(defun create-o-radio (parent bindings &key labels label (background '(("transparent") ("orange")))
+                                        color flash-time values (num 8) (direction :right) css)
   (declare (type (member :up :right :down :left) direction))
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings))) ;;; format nil "~{~a~^,~}"
          (element (create-child
                    parent
-                   (format nil "<o-radio ~{~@[~a ~]~}>~@[~a~]</o-radio>"
+                   (format nil "<o-radio ~{~@[~a ~]~}~@[~a~]>~@[~a~]</o-radio>"
                            (list
                             (opt-format-attr "value" (round (get-val var)))
                             (opt-format-attr "label-off" (if (option-main labels) (format nil "~{~a~^,~}" (option-main labels))))
@@ -323,8 +328,10 @@ array of bindings, depending on the class."))
                             (opt-format-attr "value-on" (or (second values) 1))
                             (opt-format-attr "data-num" (or num 8))
                             (opt-format-attr "direction" direction))
+                           (format-style css)
                            (or (option-main label) "")))))
-    (dolist (binding bindings) (push element (b-elist binding))) ;;; register the browser page's html elem for value updates.
+    (dolist (binding bindings) (push element (b-elist binding))
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
@@ -366,7 +373,9 @@ array of bindings, depending on the class."))
                             (opt-format-attr "mapping" mapping )
                             (opt-format-attr "clip-zero" clip-zero ))
                            (or (option-main label) "")))))
-    (dolist (binding bindings) (push element (b-elist binding))) ;;; register the browser page's html elem for value updates.
+    (dolist (binding bindings)
+      (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding))))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
@@ -430,7 +439,8 @@ array of bindings, depending on the class."))
                             (opt-format-attr "db-value" (float (get-val var) 1.0))
 
                             (opt-format-attr "type" type))))))
-    (dolist (binding bindings) (push element (b-elist binding))) ;;; register the browser page's html elem for value updates.
+    (dolist (binding bindings) (push element (b-elist binding))
+            (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
@@ -464,9 +474,9 @@ array of bindings, depending on the class."))
     svg))
 |#
 
-(defun create-o-svg (parent bindings &key svg padding css (cursor-pos 0) (shift-x 0) (shift-y 0) (background "#fff"))
-  (let* (;;; (var (b-ref binding))
-;;;         (attr (b-attr binding))
+(defun create-o-svg (parent bindings &key svg padding css (cursor-pos 0) (shift-x 0) (shift-y 0) (background "#fff") (scale 1))
+  (let* ((var (b-ref (first bindings)))
+         (attr (b-attr (first bindings)))
          (element (create-child
                    parent
                    (format nil "<o-svg ~{~@[~a ~]~}></object>"
@@ -475,20 +485,25 @@ array of bindings, depending on the class."))
                             (opt-format-attr "cursor-pos" cursor-pos)
                             (opt-format-attr "shift-x" shift-x)
                             (opt-format-attr "shift-y" shift-y)
+                            (opt-format-attr "scale" scale)
                             (format-style (append
                                            `(:padding ,padding
                                              :background ,background)
                                            css)))))))
-    (dolist (binding bindings) (push element (b-elist binding)))
+    (dolist (binding bindings) (push element (b-elist binding))
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding))))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    ;; (incudine.util:msg :info "~&~%clog event from ~a: ~a~%" element
                    ;;                    (or (if (gethash "close" data) "close")
                    ;;                        (gethash attr data)))
-                   (cond ((gethash "close" data)
-                          (progn
+                   (cond
+                      ((gethash attr data)
+                       (%set-val var (gethash attr data)))
+                      ((gethash "close" data)
+                       (progn
 ;;;                              (format t "closing o-svg~%")
-    (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding)))))) ;;; cleanup: unregister elem.
+                         (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding)))))) ;;; cleanup: unregister elem.
                          )))
     element))
 
