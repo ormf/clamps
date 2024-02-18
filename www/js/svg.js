@@ -88,6 +88,7 @@ function svg(elem){
 //    console.log(elem, Date.now())
     // Settings
 
+    var globalScale;
     var svg = elem;
 
     var svgContent
@@ -98,12 +99,12 @@ function svg(elem){
     }
 
     svg.shiftX = function(translate) {
-        console.log((-120 + -1*parseFloat(translate)));
-        svgContent.style.transform = 'translate(' + (60 + -1*parseFloat(translate)) + 'em)';
+//        console.log((-120 + -1*parseFloat(translate)));
+        svgContent.style.transform = 'translate(' + (60 + -1*globalScale*parseFloat(translate)) + 'em)';
     }
 
     svg.shiftY = function(translate) {
-        svgContent.style.transform = 'translate( 0px, ' + -1*parseFloat(translate) + 'em)';
+        svgContent.style.transform = 'translate( 0px, ' + -1*globalScale*parseFloat(translate) + 'em)';
     }
 
     svg.doScale = function(scale) {
@@ -146,6 +147,13 @@ function svg(elem){
         }
     }
 
+    function calcGlobalScale() {
+        let width = svg.getBoundingClientRect().width;
+        globalScale = ((((width-300) * 0.007) + 2390) / svg.width);
+        console.log('shift-x', svg.getAttribute('shift-x'), 'width', width, 'gloebalScale', globalScale);
+        svg.shiftX(parseFloat(svg.getAttribute('shift-x')));
+    }
+    
     svg.setSVG = function(url) {
         svgContent.data = url;
         loadSVG(svgContent);
@@ -169,18 +177,27 @@ function svg(elem){
                 svgContent.appendChild(doc.documentElement);
                 let [xmin, ymin, width, height]  = parseViewBox(svgContent.firstChild.getAttribute('viewBox'), true);
 //                console.log(xmin, ymin, width, height);
+                calcGlobalScale();
                 svg.doScale(svg.scale);
                 svg.setPos(svg.getAttribute('cursor-pos'));
                 svg.doPianoRoll(svg.getAttribute('piano-roll'));
                 svg.doStaffSystems(svg.getAttribute('staff-systems'));
                 svg.doBarLines(svg.getAttribute('bar-lines'));
-                console.log(svg.getAttribute('cursor-pos'));
-                $(svg).trigger("data", {width: (width/3.7179809)});
+                //                console.log(svg.getAttribute('cursor-pos'));
+                svg.width = width;
+                $(svg).trigger("data", {width: (width)});
             });
     }
     
-
-
+    const onresize = (dom_elem, callback) => {
+        const resizeObserver = new ResizeObserver(() => callback() );
+        resizeObserver.observe(dom_elem);
+    };
+    
+    function resize() {
+        console.log('resize', svg.getBoundingClientRect().width)
+        calcGlobalScale();
+    }
     
     function init() {
 //        svg.style.background = 'var(--vu-background)';
@@ -199,6 +216,7 @@ function svg(elem){
         svgCursor.className="cursor";
         svg.appendChild(svgCursor);
         loadSVG(svgContent);
+        onresize(svg, resize);
     }
     
     init();
