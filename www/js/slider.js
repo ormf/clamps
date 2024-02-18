@@ -262,17 +262,17 @@ function slider(elem) {
         //                    console.log("value " + oldValue + ", minValue: " + minValue + ", maxValue: " + maxValue + ", fraction: " + fraction);
         calcBarSize(fraction);
         setMinMaxMapping();
-        console.log('setMin', fraction, slider.getAttribute('value'), value);
+//        console.log('setMin', fraction, slider.getAttribute('value'), value);
     }
 
     function setMax(value) {
         maxValue = value;
-        console.log(value);
+//        console.log(value);
         let fraction = (parseFloat(slider.getAttribute('value'))-minValue) / (maxValue-minValue);
         //                    console.log("value " + parseFloat(slider.getAttribute('value')) + ", minValue: " + minValue + ", maxValue: " + maxValue + ", fraction: " + fraction);
         calcBarSize(fraction);
         setMinMaxMapping();
-        console.log('setMax', fraction, slider.getAttribute('value'), value);
+//        console.log('setMax', fraction, slider.getAttribute('value'), value);
     }
 
     function setColor(value) {
@@ -298,7 +298,7 @@ function slider(elem) {
         let direction = slider.getAttribute("direction") || 'up';
         let rect = slider.getBoundingClientRect(slider.parent);
 //        console.log(window.getComputedStyle(slider).height);
-        console.log(rect.height);
+//        console.log(rect.height);
         thumbWidth = 0; // will get reset below in case thumb == 'true';
         switch (direction) {
         case 'right':

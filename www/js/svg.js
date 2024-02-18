@@ -150,7 +150,7 @@ function svg(elem){
     function calcGlobalScale() {
         let width = svg.getBoundingClientRect().width;
         globalScale = ((((width-300) * 0.007) + 2390) / svg.width);
-        console.log('shift-x', svg.getAttribute('shift-x'), 'width', width, 'gloebalScale', globalScale);
+//        console.log('shift-x', svg.getAttribute('shift-x'), 'width', width, 'gloebalScale', globalScale);
         svg.shiftX(parseFloat(svg.getAttribute('shift-x')));
     }
     
@@ -195,7 +195,7 @@ function svg(elem){
     };
     
     function resize() {
-        console.log('resize', svg.getBoundingClientRect().width)
+//        console.log('resize', svg.getBoundingClientRect().width)
         calcGlobalScale();
     }
     
