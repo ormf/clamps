@@ -165,7 +165,7 @@ function slider(elem) {
 
     function calcBarHeight (YFraction) {
         let sliderRect =  slider.getBoundingClientRect();
-        let newBarSize = (YFraction * (sliderRect.height - (2 * thumbWidth))) + 'px';
+        let newBarSize = (YFraction * 100) + '%';
 //        console.log(thumbWidth + ', ' + newBarSize);
         if (newBarSize != oldBarSize) {
             oldBarSize = newBarSize;
@@ -175,7 +175,7 @@ function slider(elem) {
 
     function calcBarWidth (XFraction) {
         let sliderRect =  slider.getBoundingClientRect();
-        let newBarSize = (XFraction * (sliderRect.width - (2 * thumbWidth))) + 'px';
+        let newBarSize = (XFraction * 100) + '%';
         if (newBarSize != oldBarSize) {
             oldBarSize = newBarSize;
             sliderBar.style.width = newBarSize;
@@ -222,8 +222,7 @@ function slider(elem) {
     }
 
     // Attribute change handler
-
-
+    //
     // flag indicating whether a Value Change is triggered by an
     // external program or by mouse interaction/from multislider. In
     // case it is triggered by an external program (via setAttribute),
@@ -299,12 +298,12 @@ function slider(elem) {
         let direction = slider.getAttribute("direction") || 'up';
         let rect = slider.getBoundingClientRect(slider.parent);
 //        console.log(window.getComputedStyle(slider).height);
-//        console.log(rect.height);
+        console.log(rect.height);
         thumbWidth = 0; // will get reset below in case thumb == 'true';
         switch (direction) {
         case 'right':
             sliderBar.style.height = '100%';
-            sliderBar.style.width = (getValFraction(value) * sliderWidth) + 'px';
+            sliderBar.style.width = (getValFraction(value) * 100) + '%';
             sliderBar.style.left = '0px';
             sliderBar.style.right = '';
             sliderBar.style.top = '';
@@ -321,7 +320,7 @@ function slider(elem) {
             break;
         case 'left':
             sliderBar.style.height = '100%';
-            sliderBar.style.width = (getValFraction(value) * sliderWidth) + 'px';
+            sliderBar.style.width = (getValFraction(value) * 100) + '%';
             sliderBar.style.left = '';
             sliderBar.style.right = '0px';
             sliderBar.style.top = '';
@@ -338,7 +337,7 @@ function slider(elem) {
             break;
         case 'down':
             sliderBar.style.width = '100%';
-            sliderBar.style.height = (getValFraction(value) * sliderHeight) + 'px';
+            sliderBar.style.height = (getValFraction(value) * 100) + '%';
             sliderBar.style.left = '0px';
             sliderBar.style.right = '';
             sliderBar.style.top = '0px';
@@ -355,7 +354,7 @@ function slider(elem) {
             break;
         default: // 'up'
             sliderBar.style.width = '100%';
-            sliderBar.style.height = (getValFraction(value) * sliderHeight) + 'px';
+            sliderBar.style.height = (getValFraction(value) * 100) + '%';
             sliderBar.style.left = '0px';
             sliderBar.style.right = '';
             sliderBar.style.top = '';

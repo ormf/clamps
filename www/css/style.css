@@ -163,6 +163,7 @@ o-vumeter {
 .sliderbar {
     position: relative;
     width: 100%;
+    box-sizing: border-box;
 }
 
 
