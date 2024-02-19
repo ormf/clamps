@@ -100,11 +100,11 @@ function svg(elem){
 
     svg.shiftX = function(translate) {
 //        console.log((-120 + -1*parseFloat(translate)));
-        svgContent.style.transform = 'translate(' + (60 + -1*globalScale*parseFloat(translate)) + 'em)';
+        svgContent.style.transform = 'translate(' + (60 + -120*(svg.scale/100)*(parseFloat(translate)*100)/svg.width) + 'em)';
     }
 
     svg.shiftY = function(translate) {
-        svgContent.style.transform = 'translate( 0px, ' + -1*globalScale*parseFloat(translate) + 'em)';
+        svgContent.style.transform = 'translate( 0px, ' + -1*parseFloat(translate) + 'em)';
     }
 
     svg.doScale = function(scale) {
