@@ -185,6 +185,7 @@ function svg(elem){
                 svg.doBarLines(svg.getAttribute('bar-lines'));
                 //                console.log(svg.getAttribute('cursor-pos'));
                 svg.width = width;
+                svg.setAttribute('width', width);
                 $(svg).trigger("data", {width: (width)});
             });
     }
