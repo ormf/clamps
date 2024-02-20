@@ -100,7 +100,7 @@ function svg(elem){
 
     svg.shiftX = function(translate) {
 //        console.log((-120 + -1*parseFloat(translate)));
-        svgContent.style.transform = 'translate(' + (60 + -120*(svg.scale/100)*(parseFloat(translate)*100)/svg.width) + 'em)';
+        svgContent.style.transform = 'translate(' + (60 + -120*(svg.scale/100)*0.99815*(parseFloat(translate)*100)/svg.width) + 'em)';
     }
 
     svg.shiftY = function(translate) {
@@ -166,28 +166,33 @@ function svg(elem){
 
     async function loadSVG(svgContent) {
         let svgURL = svgContent.data;
-        fetch(svgURL)
-            .then((response) => response.text())
-            .then((text) => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, "text/xml");
-                while (svgContent.firstChild) {
-                    svgContent.removeChild(svgContent.lastChild);
-                }           
-                svgContent.appendChild(doc.documentElement);
-                let [xmin, ymin, width, height]  = parseViewBox(svgContent.firstChild.getAttribute('viewBox'), true);
-//                console.log(xmin, ymin, width, height);
-                calcGlobalScale();
-                svg.doScale(svg.scale);
-                svg.setPos(svg.getAttribute('cursor-pos'));
-                svg.doPianoRoll(svg.getAttribute('piano-roll'));
-                svg.doStaffSystems(svg.getAttribute('staff-systems'));
-                svg.doBarLines(svg.getAttribute('bar-lines'));
-                //                console.log(svg.getAttribute('cursor-pos'));
-                svg.width = width;
-                svg.setAttribute('width', width);
-                $(svg).trigger("data", {width: (width)});
-            });
+  //      console.log(svgURL);
+        if (svgURL) {
+            fetch(svgURL)
+                .then((response) => response.text())
+                .then((text) => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, "text/xml");
+                    while (svgContent.firstChild) {
+                        svgContent.removeChild(svgContent.lastChild);
+                    }
+                    svg.svgImage = doc.documentElement;
+                    svgContent.appendChild(svg.svgImage);
+                    let [xmin, ymin, width, height]  = parseViewBox(svgContent.firstChild.getAttribute('viewBox'), true);
+                    //                console.log(xmin, ymin, width, height);
+                    calcGlobalScale();
+                    svg.doScale(svg.scale);
+                    svg.setPos(svg.getAttribute('cursor-pos'));
+                    svg.doPianoRoll(svg.getAttribute('piano-roll'));
+                    svg.doStaffSystems(svg.getAttribute('staff-systems'));
+                    svg.doBarLines(svg.getAttribute('bar-lines'));
+                    //                console.log(svg.getAttribute('cursor-pos'));
+                    svg.width = width;
+//                    console.log('width: ', width);
+                    svg.setAttribute('width', width);
+                    $(svg).trigger("data", {width: (width)});
+                });
+        }
     }
     
     const onresize = (dom_elem, callback) => {
@@ -206,17 +211,19 @@ function svg(elem){
         svg.style.display = 'flex';
         svg.style.alignItems = 'stretch';
 
+        let data = svg.getAttribute('data') || false;
+//        console.log('svgContent.data: ', data);
         svgContent = document.createElement("object");
         svgContent.className="svg";
         svgContent.style.transform = 'translate(0px)';
         svgContent.style.background = '#fff';
-        svgContent.data = svg.getAttribute('data') || '/html-display.svg';
-        svgContent.type = 'image/svg.xml';
-        svg.appendChild(svgContent);
-        svgCursor  = document.createElement("object");
-        svgCursor.className="cursor";
-        svg.appendChild(svgCursor);
-        loadSVG(svgContent);
+            svgContent.data = data;
+            svgContent.type = 'image/svg.xml';
+            svg.appendChild(svgContent);
+            svgCursor  = document.createElement("object");
+            svgCursor.className="cursor";
+            svg.appendChild(svgCursor);
+        if (data) loadSVG(svgContent);
         onresize(svg, resize);
     }
     

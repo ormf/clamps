@@ -499,6 +499,7 @@ array of bindings, depending on the class."))
                    ;;                        (gethash attr data)))
                    (cond
                       ((gethash attr data)
+                       (format t "~&width: ~a~%" (gethash attr data))
                        (%set-val var (gethash attr data)))
                       ((gethash "close" data)
                        (progn
@@ -506,12 +507,6 @@ array of bindings, depending on the class."))
                          (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding)))))) ;;; cleanup: unregister elem.
                          )))
     element))
-
-
-
-
-
-
 
 (defun create-hide-button (parent element-to-hide
                            &key label (background '("transparent" "orange"))
