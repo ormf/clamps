@@ -486,6 +486,7 @@ array of bindings, depending on the class."))
                             (opt-format-attr "shift-x" shift-x)
                             (opt-format-attr "shift-y" shift-y)
                             (opt-format-attr "scale" scale)
+                            (opt-format-attr "data" svg)
                             (format-style (append
                                            `(:padding ,padding
                                              :background ,background)
@@ -494,6 +495,7 @@ array of bindings, depending on the class."))
       (setf (attribute element (b-attr binding)) (get-val (b-ref binding))))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
+                   (declare (ignorable obj))
                    ;; (incudine.util:msg :info "~&~%clog event from ~a: ~a~%" element
                    ;;                    (or (if (gethash "close" data) "close")
                    ;;                        (gethash attr data)))
