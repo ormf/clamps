@@ -1,6 +1,6 @@
 class SvgElement extends HTMLElement {
     static observedAttributes = ['data',
-                                 'cursor-pos', 'shift-x', 'shift-y', 'scale', 'piano-roll', 'staff-systems', 'bar-lines', 'global-x-scale'
+                                 'cursor-pos', 'shift-x', 'shift-y', 'scale', 'piano-roll', 'staff-systems', 'bar-lines', 'global-x-scale', 'inverse'
     ];
 
   constructor() {
@@ -48,6 +48,9 @@ class SvgElement extends HTMLElement {
         case 'bar-lines':
             this.doBarLines(newValue);
             break;
+        case 'inverse':
+            this.doInverse(newValue);
+            break;
         }
     }
 }
@@ -84,6 +87,19 @@ function svg(elem){
         svg.shiftX(parseFloat(svg.getAttribute('shift-x')));
     }
 
+    svg.doInverse = function(value) {
+        console.log('inverse: ', value);
+        if (value == 0) {
+            svgCursor.style.background = 'black';
+            svg.style.background = 'white';
+        }
+        else {
+            svgCursor.style.background = 'white';
+            svg.style.background = 'black';
+        }
+    }
+
+    
     svg.doScale = function(scale) {
         svg.scale = scale;
         if (svgContent.firstChild) {
