@@ -169,9 +169,10 @@ function svg(elem){
                     //                console.log(xmin, ymin, width, height);
                     svg.doScale(svg.scale);
                     svg.setPos(svg.getAttribute('cursor-pos'));
-                    svg.staffLines = Array.from(svg.querySelectorAll("g")).filter(g => g.getAttribute('inkscape:label') === 'Stafflines')[0];
-                    svg.pianoRoll = Array.from(svg.querySelectorAll("g")).filter(g => g.getAttribute('inkscape:label') === 'PianoRoll')[0];
-                    svg.barLines = Array.from(svg.querySelectorAll("g")).filter(g => g.getAttribute('inkscape:label') === 'Barlines')[0];
+                    let groups = Array.from(svg.querySelectorAll("g"));
+                    svg.staffLines = groups.filter(g => g.getAttribute('inkscape:label') === 'Stafflines')[0];
+                    svg.pianoRoll = groups.filter(g => g.getAttribute('inkscape:label') === 'PianoRoll')[0];
+                    svg.barLines = groups.filter(g => g.getAttribute('inkscape:label') === 'Barlines')[0];
                     svg.doPianoRoll(svg.getAttribute('piano-roll'));
                     svg.doStaffSystems(svg.getAttribute('staff-systems'));
                     svg.doBarLines(svg.getAttribute('bar-lines'));
