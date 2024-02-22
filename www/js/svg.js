@@ -1,34 +1,6 @@
-//
-// svg.js
-//
-// definition of a svg display.
-//
-//
-// WARNING: Currently only the db-value attribute can be changed after
-// initialization. All other attribute or style changes after
-// initialization probably have no or detrimental effects.
-//
-// **********************************************************************
-// Copyright (c) 2023/24 Orm Finnendahl
-// <orm.finnendahl@selma.hfmdk-frankfurt.de>
-//
-// Revision history: See git repository.
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the Gnu Public License, version 2 or
-// later. See https://www.gnu.org/licenses/gpl-2.0.html for the text
-// of this agreement.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// **********************************************************************
-
 class SvgElement extends HTMLElement {
     static observedAttributes = ['data',
-                                 'cursor-pos', 'shift-x', 'shift-y', 'scale', 'piano-roll', 'staff-systems', 'bar-lines'
+                                 'cursor-pos', 'shift-x', 'shift-y', 'scale', 'piano-roll', 'staff-systems', 'bar-lines', 'global-x-scale'
     ];
 
   constructor() {
@@ -100,11 +72,16 @@ function svg(elem){
 
     svg.shiftX = function(translate) {
 //        console.log((-120 + -1*parseFloat(translate)));
-        svgContent.style.transform = 'translate(' + (60 + -120*(svg.scale/100)*0.99815*(parseFloat(translate)*100)/svg.width) + 'em)';
+        svgContent.style.transform = 'translate(' + (60 + -120*(svg.scale/100)*svg.scaleXAdjust*(parseFloat(translate)*100)/svg.width) + 'em)';
     }
 
     svg.shiftY = function(translate) {
         svgContent.style.transform = 'translate( 0px, ' + -1*parseFloat(translate) + 'em)';
+    }
+
+    svg.doGlobalXScale = function(scale) {
+        svg.scaleXAdjust = scale;
+        svg.shiftX(parseFloat(svg.getAttribute('shift-x')));
     }
 
     svg.doScale = function(scale) {
@@ -146,13 +123,6 @@ function svg(elem){
                 document.getElementById('layer3').style.display = '';
         }
     }
-
-    function calcGlobalScale() {
-        let width = svg.getBoundingClientRect().width;
-        globalScale = ((((width-300) * 0.007) + 2390) / svg.width);
-//        console.log('shift-x', svg.getAttribute('shift-x'), 'width', width, 'gloebalScale', globalScale);
-        svg.shiftX(parseFloat(svg.getAttribute('shift-x')));
-    }
     
     svg.setSVG = function(url) {
         svgContent.data = url;
@@ -180,7 +150,6 @@ function svg(elem){
                     svgContent.appendChild(svg.svgImage);
                     let [xmin, ymin, width, height]  = parseViewBox(svgContent.firstChild.getAttribute('viewBox'), true);
                     //                console.log(xmin, ymin, width, height);
-                    calcGlobalScale();
                     svg.doScale(svg.scale);
                     svg.setPos(svg.getAttribute('cursor-pos'));
                     svg.doPianoRoll(svg.getAttribute('piano-roll'));
@@ -190,6 +159,7 @@ function svg(elem){
                     svg.width = width;
 //                    console.log('width: ', width);
                     svg.setAttribute('width', width);
+                    svg.shiftX(svg.getAttribute('shift-x'));
                     $(svg).trigger("data", {width: (width)});
                 });
         }
@@ -202,11 +172,11 @@ function svg(elem){
     
     function resize() {
 //        console.log('resize', svg.getBoundingClientRect().width)
-        calcGlobalScale();
     }
     
     function init() {
 //        svg.style.background = 'var(--vu-background)';
+        svg.scaleXAdjust = 1;
         svg.style.position = 'relative';
         svg.style.display = 'flex';
         svg.style.alignItems = 'stretch';
@@ -217,12 +187,12 @@ function svg(elem){
         svgContent.className="svg";
         svgContent.style.transform = 'translate(0px)';
         svgContent.style.background = '#fff';
-            svgContent.data = data;
-            svgContent.type = 'image/svg.xml';
-            svg.appendChild(svgContent);
-            svgCursor  = document.createElement("object");
-            svgCursor.className="cursor";
-            svg.appendChild(svgCursor);
+        svgContent.data = data;
+        svgContent.type = 'image/svg.xml';
+        svg.appendChild(svgContent);
+        svgCursor  = document.createElement("object");
+        svgCursor.className="cursor";
+        svg.appendChild(svgCursor);
         if (data) loadSVG(svgContent);
         onresize(svg, resize);
     }

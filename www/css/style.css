@@ -201,7 +201,7 @@ o-svg {
 
 .svg {
     width: 100%;
-    border: 0.13em solid black;
+//    border: 0.13em solid black;
     background: #fff;
     user-select: none;
 }
