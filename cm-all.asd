@@ -10,7 +10,12 @@
   :version "0.0.1"
   :serial t
   :depends-on (#:cl-ppcre #:of-incudine-dsps ;;; #:sol
-                          #:cl-sfz #:cm-sfz #:cm-poolplayer #:cm-utils)
+                          #:cl-refs
+                          #:incudine-bufs
+                          #:cl-sfz
+                          #:cm-sfz
+                          #:cm-poolplayer
+                          #:cm-utils)
   :components ((:module "src"
                 :serial t
                 :components
