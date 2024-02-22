@@ -88,14 +88,15 @@ function svg(elem){
     }
 
     svg.doInverse = function(value) {
-        console.log('inverse: ', value);
         if (value == 0) {
             svgCursor.style.background = 'black';
             svg.style.background = 'white';
+            svgContent.style.background = 'white';
         }
         else {
             svgCursor.style.background = 'white';
             svg.style.background = 'black';
+            svgContent.style.background = 'black';
         }
     }
 
@@ -111,32 +112,32 @@ function svg(elem){
 
     svg.doPianoRoll = function(value) {
         let svgImage = svgContent.firstChild;
-        if (svgImage && document.getElementById('layer-2')) {
+        if (svgImage && svg.pianoRoll) {
             if (value == 0)
-                document.getElementById('layer-2').style.display = 'none';
+                svg.pianoRoll.style.display = 'none';
             else
-                document.getElementById('layer-2').style.display = '';
+                svg.pianoRoll.style.display = '';
         }
     }
 
 
     svg.doStaffSystems = function(value) {
         let svgImage = svgContent.firstChild;
-        if (svgImage && document.getElementById('layer-1')) {
+        if (svgImage && svg.staffLines) {
             if (value == 0)
-                document.getElementById('layer-1').style.display = 'none';
+                svg.staffLines.style.display = 'none';
             else
-                document.getElementById('layer-1').style.display = '';
+                svg.staffLines.style.display = '';
         }
     }
 
     svg.doBarLines = function(value) {
         let svgImage = svgContent.firstChild;
-        if (svgImage && document.getElementById('layer3')) {
+        if (svgImage && svg.barLines) {
             if (value == 0)
-                document.getElementById('layer3').style.display = 'none';
+                svg.barLines.style.display = 'none';
             else
-                document.getElementById('layer3').style.display = '';
+                svg.barLines.style.display = '';
         }
     }
     
@@ -168,6 +169,9 @@ function svg(elem){
                     //                console.log(xmin, ymin, width, height);
                     svg.doScale(svg.scale);
                     svg.setPos(svg.getAttribute('cursor-pos'));
+                    svg.staffLines = Array.from(svg.querySelectorAll("g")).filter(g => g.getAttribute('inkscape:label') === 'Stafflines')[0];
+                    svg.pianoRoll = Array.from(svg.querySelectorAll("g")).filter(g => g.getAttribute('inkscape:label') === 'PianoRoll')[0];
+                    svg.barLines = Array.from(svg.querySelectorAll("g")).filter(g => g.getAttribute('inkscape:label') === 'Barlines')[0];
                     svg.doPianoRoll(svg.getAttribute('piano-roll'));
                     svg.doStaffSystems(svg.getAttribute('staff-systems'));
                     svg.doBarLines(svg.getAttribute('bar-lines'));
