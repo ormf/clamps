@@ -17,7 +17,7 @@
 ;;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 (defpackage #:cm-utils
-  (:use #:cl #:incudine #:cm #:orm-utils #:cl-coroutine #:cl-plot #:incudine-plot #:clog-dsp-widgets #:cl-refs)
+  (:use #:cl #:cl-refs #:incudine #:cm #:orm-utils #:cl-coroutine #:cl-plot #:incudine-plot #:clog-dsp-widgets)
   (:shadowing-import-from #:cm
                           :cd :pwd :at :now :tuning :*tempo* :play :rescale-envelope :quantize :stop :group :range)
 

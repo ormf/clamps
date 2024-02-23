@@ -25,6 +25,7 @@
   :depends-on (#:uiop
                #:incudine
                #:orm-utils
+               #:cl-refs
                #:fomus
                #:cm-fomus
                #:cm-svg.rts
@@ -33,7 +34,8 @@
                #:cm-incudine
                #:cl-plot
                #:incudine-plot
-               #:clog-dsp-widgets)
+               #:clog-dsp-widgets
+)
   :components ((:file "package")
                (:file "cm-utils")
                (:file "patterns")))
