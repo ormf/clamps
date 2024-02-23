@@ -7,4 +7,5 @@
   :version "0.0.1"
   :serial t
   :depends-on (#:cl-sfz #:cm-svg #:cm-utils)
-  :components ((:file "cm-sfz")))
+  :components ((:file "package")
+               (:file "cm-sfz")))

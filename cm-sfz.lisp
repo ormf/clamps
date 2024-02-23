@@ -70,8 +70,6 @@
    (play-sfz-one-shot . ,#'cl-sfz:play-sfz-one-shot)
    (play-sfz-loop . ,#'cl-sfz:play-sfz-loop)))
 
-
-
 (defmethod write-event ((obj sfz) (fil svg-file) scoretime)
   "convert a poolevt object into a freshly allocated svg-line object and
 insert it at the appropriate position into the events slot of
