@@ -28,8 +28,8 @@
 
 (defun sfz->lsample (sfz-entry dir &key (play-fn #'cl-sfz:play-sfz-loop))
   (let* ((abs-filepath (abs-path (getf sfz-entry :sample) dir))
-         (buffer (of-buffer-load abs-filepath)))
-    (make-lsample
+         (buffer (incudine-bufs:of-buffer-load abs-filepath)))
+    (of-incudine-dsps:make-lsample
      :filename abs-filepath
      :buffer buffer
      :play-fn play-fn

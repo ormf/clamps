@@ -147,7 +147,7 @@ all applicable sample-defs at the keynum's array-index."
 (defun sf-table-get-range (preset)
   (if (gethash preset *sf-tables*)
       (let ((keynums (loop for slist across (gethash preset *sf-tables*)
-                           append (mapcar (lambda (x) (round (incudine::lsample-keynum x))) slist))))
+                           append (mapcar (lambda (x) (round (of-incudine-dsps:lsample-keynum x))) slist))))
         (list (apply #'min keynums) (apply #'max keynums)))))
 
 ;;; (sf-table-get-range :altoflute-k)
@@ -179,10 +179,10 @@ to t."
 (defun db->amp (db)
   (expt 10 (/ db 20)))
 
-(defun sfz->lsample (sfz-entry dir &key (play-fn #'incudine::play-lsample*))
+(defun sfz->lsample (sfz-entry dir &key (play-fn #'of-incudine-dsps:play-lsample*))
   (let* ((abs-filepath (incudine::abs-path (getf sfz-entry :sample) dir))
          (buffer (of-buffer-load abs-filepath)))
-    (incudine::make-lsample
+    (of-incudine-dsps::make-lsample
      :filename abs-filepath
      :buffer buffer
      :play-fn play-fn
@@ -195,19 +195,19 @@ to t."
 (defun play-sample (pitch db dur &key (pan 0.5) (preset :flute-nv) (sf-tables *sf-tables*) (startpos 0))
   (let* ((map (gethash preset sf-tables))
          (sample (random-elem (aref map (round pitch))))
-         (amp (incudine::lsample-amp sample))
-         (play-fn (incudine::lsample-play-fn sample))
-         (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
-         (buffer (incudine::lsample-buffer sample)))
+         (amp (of-incudine-dsps:lsample-amp sample))
+         (play-fn (of-incudine-dsps:lsample-play-fn sample))
+         (rate (incudine::sample (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample)))))
+         (buffer (of-incudine-dsps:lsample-buffer sample)))
 ;;    (break "~a" (eql play-fn #'sample-play))
     (cond
       ((eql play-fn #'lsample-play)
-       (incudine::lsample-play buffer dur (db->amp db) rate pan
-                               (incudine::lsample-loopstart sample)
-                               (incudine::lsample-loopend sample)
+       (of-incudine-dsps:lsample-play buffer dur (db->amp db) rate pan
+                               (of-incudine-dsps:lsample-loopstart sample)
+                               (of-incudine-dsps:lsample-loopend sample)
                                startpos))
       ((eql play-fn #'sample-play)
-       (incudine::sample-play buffer dur (* amp (db->amp db)) rate pan
+       (of-incudine-dsps:sample-play buffer dur (* amp (db->amp db)) rate pan
                               startpos))
       (t
        (error "play-fn not found: ~a" play-fn)))))
@@ -220,16 +220,18 @@ to t."
     (if map 
         (let* ((out2 (or out2 (mod (1+ out1) 8)))
                (sample (random-elem (aref map (round pitch))))
-               (buffer (incudine::lsample-buffer sample))
-               (rate (incudine::sample (ct->fv (- pitch (incudine::lsample-keynum sample)))))
-               (play-fn (incudine::lsample-play-fn sample))
-               (amp (incudine::lsample-amp sample)))
+               (buffer (of-incudine-dsps:lsample-buffer sample))
+               (rate (incudine::sample (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample)))))
+               (play-fn (of-incudine-dsps:lsample-play-fn sample))
+               (amp (of-incudine-dsps:lsample-amp sample)))
 
           (cond
             ((eql play-fn #'play-sfz-loop)
-             (play-lsample* buffer dur (+ amp db) rate pan (lsample-loopstart sample) (lsample-loopend sample) startpos out1 out2))
+             (of-incudine-dsps:play-lsample* buffer dur (+ amp db) rate pan
+                                             (of-incudine-dsps:lsample-loopstart sample)
+                                             (of-incudine-dsps:lsample-loopend sample) startpos out1 out2))
             (t
-             (play-sample* buffer dur (+ amp db) rate pan startpos out1 out2))))
+             (of-incudine-dsps:play-sample* buffer dur (+ amp db) rate pan startpos out1 out2))))
         (error "preset ~S not loaded!" preset))))
 
 ;;; (play-sfz 60 0 1 :pan 0 :out1 0)

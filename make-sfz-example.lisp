@@ -35,4 +35,18 @@ Anschließend werden sfz Dateien folgendermaßen generiert:
 (write-sfz "~/work/snd/sfz/oud" "oud" "oud")
 (write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-f" "bassoboe-f")
 
+
+(dolist '()
+
+(dolist (dir (uiop/driver:subdirectories (pathname "~/work/snd/sfz/EiersheimerOrgel/")))
+  (let ((dirname  (first (last (pathname-directory dir)))))
+    (write-sfz dir dirname "")))
+
+(dolist (dir (uiop/driver:subdirectories (pathname "~/work/snd/sfz/NorrfjardenChurch/")))
+  (let ((dirname  (first (last (pathname-directory dir)))))
+    (write-sfz dir dirname "")))
 |#
+
+
+
+

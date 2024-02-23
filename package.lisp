@@ -1,7 +1,7 @@
 ;;;; package.lisp
 
 (defpackage #:cl-sfz
-  (:use #:cl #:cl-ppcre #:incudine)
+  (:use #:cl #:cl-ppcre #:incudine #:incudine-bufs)
 ;;;  (:shadowing-import-from #:incudine :sample-play :lsample-play)
   (:export
    #:load-sfz-preset
