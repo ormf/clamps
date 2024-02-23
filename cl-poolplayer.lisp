@@ -32,7 +32,6 @@ p1..p4 and args to produce the parameter value for the current call. x
 is the normalized local time within the total duration (dur) of the
 preset. The function returns a property list for a call of the synth
 issued in the #'perform function."
-  
   (let* ((p1 (apply (get-preset-fn preset :p1) x dur args))
          (p2 (apply (get-preset-fn preset :p2) x dur p1 args))
          (p3 (apply (get-preset-fn preset :p3) x dur p1 p2 args))
@@ -90,7 +89,7 @@ result."
                  ;;        (format t "x: ~a, preset: ~a" x prst)
                  ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
                  (let* ((next (+ time (getf params :dtime)))
-                        (keynum (+ (incudine:lsample-keynum (getf params :lsample)) (getf params :transp))))
+                        (keynum (+ (lsample-keynum (getf params :lsample)) (getf params :transp))))
                    (remf params :dtime)
                    (setf (getf params :keynum) keynum)
                    (remf params :transp)
@@ -121,7 +120,7 @@ sets the 'playing slot of the player to nil and returns."
       ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
       (if playing
           (let* ((next (+ time (getf params :dtime))))
-            (setf (getf params :buffer) (incudine:lsample-buffer (getf params :lsample)))
+            (setf (getf params :buffer) (lsample-buffer (getf params :lsample)))
             (remf params :dtime)
             (remf params :lsample)
 ;;            (format t "~&~a" params)
@@ -149,7 +148,7 @@ sets the 'playing slot of the player to nil and returns."
       ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
       (if playing
           (let* ((next (+ time (getf params :dtime))))
-            (setf (getf params :buffer) (incudine:lsample-buffer (getf params :lsample)))
+            (setf (getf params :buffer) (lsample-buffer (getf params :lsample)))
             (remf params :dtime)
             (remf params :lsample)
 ;;            (format t "~&~a" params)
@@ -209,7 +208,7 @@ sets the 'playing slot of the player to nil and returns."
       ;;        (format t "end: ~a, time: ~a, dur: ~a, x: ~a, playing: ~a~%" end time dur x playing)
       (if playing
           (let* ((next (+ time (getf params :dtime))))
-            (setf (getf params :buffer) (incudine:lsample-buffer (getf params :lsample)))
+            (setf (getf params :buffer) (lsample-buffer (getf params :lsample)))
             (remf params :dtime)
             (remf params :lsample)
 ;;;            (break "~S" params)

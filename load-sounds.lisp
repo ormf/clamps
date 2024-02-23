@@ -27,14 +27,14 @@ of the number of files and return the array."
     with snds = (directory dir)
     with buffers = (make-array (length snds)
                                :element-type 'incudine::buffer
-                               :initial-element (incudine:make-buffer 1))
+                               :initial-element (make-buffer 1))
     for idx from 0
     for filename in snds
     do (setf (aref buffers idx)
-             (make-instance 'incudine:lsample
+             (make-instance 'lsample
                             :filename filename
-                            :buffer (incudine:of-buffer-load filename)
-                            :play-fn #'incudine:play-sample*))
+                            :buffer (incudine-bufs:of-buffer-load filename)
+                            :play-fn #'play-sample*))
     finally (return buffers)))
 
 ;;; (cl-plot:plot (aref *buffers* 2))

@@ -98,6 +98,18 @@
        (setf *curr-poolplayer-preset-nr* ,ref)
        ,preset)))
 
+(defun fn-digest-poolplayer-preset (ref args)
+  (let ((preset (aref cl-poolplayer::*poolplayer-presets* ref)))
+    (loop
+       for (key val) on args by #'cddr
+       for idx = (cl-poolplayer::get-fn-idx key)
+       do (setf (aref preset idx)
+                (eval `(lambda (&optional x dur p1 p2 p3 p4 args)
+                         (declare (ignorable x dur p1 p2 p3 p4 args))
+                          ,val))))
+    (setf (aref preset 0) args)
+    preset))
+
 ;;; (get-fn-idx :ampfn)
 
 #|
@@ -168,11 +180,13 @@
 (defparameter *max-poolplayer-preset-nr* 99)
 
 (defun next-poolplayer-preset ()
-  (if (< *curr-poolplayer-preset-nr* *max-poolplayer-preset-nr*)
+  (when (< *curr-poolplayer-preset-nr* *max-poolplayer-preset-nr*)
+;;;      (format t "next~%")
       (edit-preset-in-emacs (incf *curr-poolplayer-preset-nr*))))
 
 (defun previous-poolplayer-preset ()
-  (if (> *curr-poolplayer-preset-nr* 0)
+  (when (> *curr-poolplayer-preset-nr* 0)
+;;;      (format t "previous~%")
       (edit-preset-in-emacs (decf *curr-poolplayer-preset-nr*))))
 
 (defun show-poolplayer-preset (num)

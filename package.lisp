@@ -1,8 +1,9 @@
 ;;;; package.lisp
 
 (defpackage #:cl-poolplayer
-  (:use #:cl #:orm-utils #:incudine #:of-incudine-dsps) ;;  #:incudine.scratch
-  (:shadowing-import-from #:cm :song #:new :range :cd :pwd :drunk-traverse :quantize
+  (:use #:cl #:orm-utils #:incudine #:of-incudine-dsps #:incudine-bufs) ;;  #:incudine.scratch
+  (:shadowing-import-from #:cm :song #:new :range :cd :pwd :drunk-traverse
+   :quantize
                           #:at #:rescale-envelope #:tuning #:play
                           #:now #:stop #:*tempo*
                           #:next #:cycle #:interp
@@ -21,12 +22,14 @@
    #:BUF-IDX
    #:PLAY-SONG
    #:STEREO-OUT
+   #:PERFORM
    #:P-SONG-PLAYFN
    #:P-SONG-DURFN
    #:P-SONG-NAME
    #:P-SONG-BEFOREFN
    #:P-SONG-AFTERFN
    #:DIGEST-POOLPLAYER-PRESET
+   #:FN-DIGEST-POOLPLAYER-PRESET
    #:DISTRIBUTED-PLAY
    #:GET-DTIME-FN
    #:GET-DTIME-FN-NO-X
