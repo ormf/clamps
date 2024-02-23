@@ -91,12 +91,12 @@ function svg(elem){
         if (value == 0) {
             svgCursor.style.background = 'black';
             svg.style.background = 'white';
-            svgContent.style.background = 'white';
+            if (svg.svgImage) svg.svgImage.style.backgroundColor = 'white';
         }
         else {
             svgCursor.style.background = 'white';
             svg.style.background = 'black';
-            svgContent.style.background = 'black';
+            if (svg.svgImage) svg.svgImage.style.backgroundColor = 'black';
         }
     }
 
@@ -104,8 +104,8 @@ function svg(elem){
     svg.doScale = function(scale) {
         svg.scale = scale;
         if (svgContent.firstChild) {
-            svgContent.firstChild.setAttribute('width', scale*100 + '%');
-            svgContent.firstChild.setAttribute('height', '100%');
+            svg.svgImage.setAttribute('width', scale*100 + '%');
+            svg.svgImage.setAttribute('height', '100%');
         }
     }
 
@@ -164,6 +164,7 @@ function svg(elem){
                         svgContent.removeChild(svgContent.lastChild);
                     }
                     svg.svgImage = doc.documentElement;
+//                    console.log(svg.svgImage);
                     svgContent.appendChild(svg.svgImage);
                     let [xmin, ymin, width, height]  = parseViewBox(svgContent.firstChild.getAttribute('viewBox'), true);
                     //                console.log(xmin, ymin, width, height);
@@ -176,6 +177,7 @@ function svg(elem){
                     svg.doPianoRoll(svg.getAttribute('piano-roll'));
                     svg.doStaffSystems(svg.getAttribute('staff-systems'));
                     svg.doBarLines(svg.getAttribute('bar-lines'));
+                    svg.doInverse(svg.getAttribute('inverse'));
                     //                console.log(svg.getAttribute('cursor-pos'));
                     svg.width = width;
 //                    console.log('width: ', width);
