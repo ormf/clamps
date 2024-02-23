@@ -18,7 +18,7 @@
 ;;;
 ;;; **********************************************************************
 
-(in-package :incudine)
+(in-package :of-incudine-dsps)
 
 (defparameter *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
 (defparameter *hanning1024* (make-buffer 1024 :fill-function (gen:hanning)))
@@ -73,7 +73,7 @@ contains a slot for the sample buffer data."
   (buffer-read buffer (line start-pos end-pos dur)
                :interpolation :cubic))
 
-(define-ugen envelope* frame ((env envelope) gate time-scale (done-action function))
+(define-ugen envelope* frame ((env incudine.vug:envelope) gate time-scale (done-action function))
   (with ((frm (make-frame (block-size))))
     (foreach-frame
       (setf (frame-ref frm current-frame)
@@ -247,9 +247,3 @@ contains a slot for the sample buffer data."
             (incf (audio-out out2) (* sig right))
             (incf (audio-out out1) (* sig left)))))))
 
-
-
-(export '(make-lsample lsample play-lsample* play-sample* lsample-filename lsample-buffer
-          lsample-play-fn lsample-keynum lsample-loopstart
-          lsample-amp lsample-loopend play-lsample play-sample)
-        'incudine)

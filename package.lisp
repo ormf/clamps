@@ -14,5 +14,18 @@
            #:PLAY-BUFFER*
            #:*HANNING1024*
            #:MAKE-OASR
-           #:*ENV1*))
+           #:*ENV1*
+           #:MAKE-LSAMPLE
+           #:LSAMPLE
+           #:PLAY-LSAMPLE*
+           #:PLAY-SAMPLE*
+           #:LSAMPLE-FILENAME
+           #:LSAMPLE-BUFFER
+           #:LSAMPLE-PLAY-FN
+           #:LSAMPLE-KEYNUM
+           #:LSAMPLE-LOOPSTART
+           #:LSAMPLE-AMP
+           #:LSAMPLE-LOOPEND
+           #:PLAY-LSAMPLE
+           #:PLAY-SAMPLE))
 
