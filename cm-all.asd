@@ -5,8 +5,8 @@
 
 (asdf:defsystem #:cm-all
   :description "cm with all additions loaded"
-  :author "Orm Finnendahl <ormfinnendahl@selmahfmdk-frankfurt.de"
-  :license  "lgpl"
+  :author "Orm Finnendahl <ormfinnendahl@selma.hfmdk-frankfurt.de"
+  :license  "gpl 2.0 or later"
   :version "0.0.1"
   :serial t
   :depends-on (
