@@ -9,13 +9,17 @@
   :license  "lgpl"
   :version "0.0.1"
   :serial t
-  :depends-on (#:cl-ppcre #:of-incudine-dsps ;;; #:sol
-                          #:cl-refs
-                          #:incudine-bufs
-                          #:cl-sfz
-                          #:cm-sfz
-                          #:cm-poolplayer
-                          #:cm-utils)
+  :depends-on (
+               #:incudine
+               #:of-incudine-dsps ;;; #:sol
+               #:incudine-bufs
+               #:cl-ppcre
+               #:cl-refs
+               #:cl-sfz
+               #:cm-sfz
+               #:cm-poolplayer
+               #:cm-utils
+               )
   :components ((:module "src"
                 :serial t
                 :components
