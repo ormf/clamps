@@ -17,7 +17,15 @@
                #:cl-refs
                #:cl-sfz
                #:cm-sfz
-               #:cm-poolplayer
+               #:cm-poolevt
+               #:cm-fomus
+               #:cm-svg
+               #:cm-svg.rts
+               #:cm-incudine
+               #:orm-utils
+               #:cl-plot
+               #:incudine-plot
+               #:clog-dsp-widgets
                #:cm-utils
                )
   :components ((:module "src"

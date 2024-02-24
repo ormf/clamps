@@ -9,12 +9,11 @@
 (shadow '(quantize at now tuning *tempo* buffer buffer-frames
           buffer-sample-rate
           lsample envelope
-          lsample-keynum lsample-play-fn lsample-amp
-          lsample-buffer))
+          lsample-keynum lsample-play-fn lsample-amp lsample-buffer
+          lsample-buffer remove-all-responders recv-stop))
 (shadowing-import '(node rescale-envelope
                     init stop bus group tempo
-                    control-value remove-all-responders
-                    recv-stop timestamp lsample-buffer
+                    control-value timestamp
 ;;; play-sample
 
                     )
