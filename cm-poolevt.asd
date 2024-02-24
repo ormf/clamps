@@ -24,6 +24,6 @@
   :license  "gpl 2.0 or later"
   :version "0.0.1"
   :serial t
-  :depends-on (:cm :cm-svg :of-incudine-dsps)
+  :depends-on (#:cm #:cm-svg #:incudine-bufs #:of-incudine-dsps)
   :components ((:file "package")
                (:file "cm-poolevt")))

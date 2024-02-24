@@ -210,10 +210,10 @@ svg-file."
            (amp (+ amp (of-incudine-dsps:lsample-amp lsample)))
 ;;;           (out (mod snd-id 8))
            )
-      (if *debug* (format t "~&liner: ~S~%" (list :lsample-amp (of-incudine-dsps:lsample-amp lsample) :buffer buffer :amp amp
-                                                       :transp transp :start start :end end
-                                                       :stretch stretch :wwidth wwidth :attack attack
-                                                       :release release :pan pan :out1 out1 :out2 out2)))
+      ;; (if *debug* (format t "~&liner: ~S~%" (list :lsample-amp (of-incudine-dsps:lsample-amp lsample) :buffer buffer :amp amp
+      ;;                                                  :transp transp :start start :end end
+      ;;                                                  :stretch stretch :wwidth wwidth :attack attack
+      ;;                                                  :release release :pan pan :out1 out1 :out2 out2)))
       (at time #'of-incudine-dsps::play-buffer-stretch-env-pan-out*
         :buffer buffer :amp amp
         :transp transp :start start :end end
