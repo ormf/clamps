@@ -13,15 +13,26 @@
       <!-- clog scripts to handle the websocket connection etc. -->
       <script src="/js/boot.js" type="text/javascript"></script>
       <!-- importmap is used in esm module syntax now we can import javascript files as modules-->
+      <!-- <script type="importmap"> -->
+      <!--   { -->
+      <!--     "imports": { -->
+      <!--       "preact": "https://esm.sh/preact", -->
+      <!--       "@preact/signals": "https://cdn.jsdelivr.net/npm/@preact/signals@1.2.2/dist/signals.module.js", -->
+      <!--       "@preact/signals-core": "https://cdn.jsdelivr.net/npm/@preact/signals-core@1.5.1/dist/signals-core.module.js", -->
+      <!--       "preact/": "https://esm.sh/preact/", -->
+      <!--       "htm/preact": "https://esm.sh/htm@3.1.1/preact?external=preact", -->
+      <!--       "preact-custom-element": "https://cdnjs.cloudflare.com/ajax/libs/preact-custom-element/4.3.0/preact-custom-element.esm.js" -->
+      <!--     } -->
+      <!--   } -->
       <script type="importmap">
         {
           "imports": {
-            "preact": "https://esm.sh/preact",
-            "@preact/signals": "https://cdn.jsdelivr.net/npm/@preact/signals@1.2.2/dist/signals.module.js",
-            "@preact/signals-core": "https://cdn.jsdelivr.net/npm/@preact/signals-core@1.5.1/dist/signals-core.module.js",
-            "preact/": "https://esm.sh/preact/",
-            "htm/preact": "https://esm.sh/htm@3.1.1/preact?external=preact",
-            "preact-custom-element": "https://cdnjs.cloudflare.com/ajax/libs/preact-custom-element/4.3.0/preact-custom-element.esm.js"
+            "preact": "/js/preact/preact.module.js",
+            "@preact/signals": "/js/preact/signals.module.js",
+        "@preact/signals-core": "/js/preact/signals-core.module.js",
+        "preact/hooks": "/js/preact/hooks.module.js",
+            "htm/preact": "/js/preact/standalone.module.js",
+            "preact-custom-element": "/js/preact/preact-custom-element.esm.js"
           }
         }
       </script>
