@@ -1,0 +1,13 @@
+* cm-poolevt
+*** _Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>_
+
+poolevt extension to Common Music
+
+** License
+
+gpl 2.0 or later
+
+
+Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
+
+
