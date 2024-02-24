@@ -13,7 +13,7 @@ Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 ** Dependencies
 
 *** [[https://github.com/ormf/cm][Common Music]]
-*** [[https:/github.com/ormf/cm-svg][cm-svg]]
+*** [[https://github.com/ormf/cm-svg][cm-svg]]
 *** [[https://github.com/ormf/of-incudine-dsps][of-incudine-dsps]]
 
     Please note that these packages might also have dendencies.
