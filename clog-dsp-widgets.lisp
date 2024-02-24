@@ -63,11 +63,11 @@
     (watch ;;; watch registers in an on-update function
      (lambda ()
        (let ((val (get-val refvar)))
-         (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
-         (if *debug* (format t "~&~%seen: ~a~%" (obj-print *refs-seen*)))
+         ;; (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
+         ;; (if *debug* (format t "~&~%seen: ~a~%" (obj-print *refs-seen*)))
          (dolist (obj (b-elist new)) ;;; iterate through all bound html elems
            (unless (member (list obj attr) *refs-seen* :test #'equal)
-             (if *debug* (format t "~&~%watch update: ~a~%-> ~a ~a~%" (obj-print *refs-seen*) obj val))
+             ;; (if *debug* (format t "~&~%watch update: ~a~%-> ~a ~a~%" (obj-print *refs-seen*) obj val))
              (push (list obj attr) *refs-seen*)
              (setf (attribute obj attr) val)))))))
   (:method ((refvar bang-object) attr new)
@@ -77,11 +77,11 @@
                                       ;; the watch function in the
                                       ;; listeners of the bang
        (declare (ignore val))
-       (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
-       (if *debug* (format t "~&~%seen: ~a~%" (obj-print *refs-seen*)))
+       ;; (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
+       ;; (if *debug* (format t "~&~%seen: ~a~%" (obj-print *refs-seen*)))
        (dolist (obj (b-elist new)) ;;; iterate through all bound html elems
          (unless (member (list obj attr) *refs-seen* :test #'equal)
-           (if *debug* (format t "~&~%watch update: ~a~%-> ~a~%" (obj-print *refs-seen*) obj))
+           ;; (if *debug* (format t "~&~%watch update: ~a~%-> ~a~%" (obj-print *refs-seen*) obj))
            (push obj *refs-seen*)
            (js-execute obj (format nil "~A.bang()" (script-id obj)))
            )))))))
@@ -175,9 +175,9 @@ array of bindings, depending on the class."))
                  (lambda (obj data)
 		   (declare (ignore obj))
                    (let ((*refs-seen* (list element)))
-                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                                         (or (if (gethash "close" data) "close")
-                                             (gethash attr data))))
+                     ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+                     ;;                     (or (if (gethash "close" data) "close")
+                     ;;                         (gethash attr data))))
                      (if (gethash "close" data)
                          (progn
 ;;;                           (format t "closing knob~%")
@@ -202,9 +202,9 @@ array of bindings, depending on the class."))
      element
      (lambda (obj data)
        (declare (ignore obj))
-       (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                           (or (if (gethash "close" data) "close")
-                               (gethash attr data))))
+       ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+       ;;                     (or (if (gethash "close" data) "close")
+       ;;                         (gethash attr data))))
        (if (gethash "close" data)
            (progn
 ;;;             (format t "closing numbox~%")
@@ -294,9 +294,9 @@ array of bindings, depending on the class."))
                  (lambda (obj data)
                    (declare (ignore obj))
                    (let ((*refs-seen* (list (list element attr))))
-                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                                         (or (if (gethash "close" data) "close")
-                                             (gethash attr data))))
+                     ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+                     ;;                     (or (if (gethash "close" data) "close")
+                     ;;                         (gethash attr data))))
                      (cond ((gethash "close" data)
                             (progn
 ;;;                              (format t "closing toggle~%")
@@ -304,8 +304,6 @@ array of bindings, depending on the class."))
                            (t (%set-val var (read-from-string (gethash attr data))))
                            ))))
     element))
-
-(option-main '("transparent" "orange"))
 
 (defun create-o-radio (parent bindings &key labels label (background '(("transparent") ("orange")))
                                         color flash-time values (num 8) (direction :right) css)
@@ -336,9 +334,9 @@ array of bindings, depending on the class."))
                  (lambda (obj data)
                    (declare (ignore obj))
                    (let ((*refs-seen* (list (list element attr))))
-                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                                         (or (if (gethash "close" data) "close")
-                                             (gethash attr data))))
+                     ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+                     ;;                     (or (if (gethash "close" data) "close")
+                     ;;                         (gethash attr data))))
                      (cond ((gethash "close" data)
                             (progn
 ;;;                              (format t "closing radio~%")
@@ -380,9 +378,9 @@ array of bindings, depending on the class."))
                  (lambda (obj data)
                    (declare (ignore obj))
                    (let ((*refs-seen* (list (list element attr)))) ;;; set context for %set-val below
-                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                                         (or (if (gethash "close" data) "close")
-                                             (gethash attr data))))
+                     ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+                     ;;                     (or (if (gethash "close" data) "close")
+                     ;;                         (gethash attr data))))
                      (cond ((gethash "close" data)
                             (progn
 ;;;                              (format t "closing slider~%")
@@ -445,9 +443,9 @@ array of bindings, depending on the class."))
                  (lambda (obj data)
                    (declare (ignore obj))
                    (let ((*refs-seen* (list (list element attr)))) ;;; set context for %set-val below
-                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                                         (or (if (gethash "close" data) "close")
-                                             (gethash attr data))))
+                     ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+                     ;;                     (or (if (gethash "close" data) "close")
+                     ;;                         (gethash attr data))))
                      (cond ((gethash "close" data)
                             (progn
 ;;;                              (format t "closing vumeter~%")
@@ -534,9 +532,9 @@ array of bindings, depending on the class."))
                  (lambda (obj data)
                    (declare (ignore obj))
                    (let ((*refs-seen* (list button)))
-                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" button
-                                         (or (if (gethash "close" data) "close")
-                                             (gethash "value" data))))
+                     ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" button
+                     ;;                     (or (if (gethash "close" data) "close")
+                     ;;                         (gethash "value" data))))
                      (cond ((gethash "close" data)
                             (progn
 ;;;                              (format t "closing hide button~%")
