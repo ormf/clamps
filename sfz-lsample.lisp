@@ -18,7 +18,7 @@
 ;;;
 ;;; **********************************************************************
 
-(in-package :incudine)
+(in-package :of-incudine-dsps)
 
 (defun abs-path (sample-path sfz-file-path)
   (merge-pathnames sample-path sfz-file-path))

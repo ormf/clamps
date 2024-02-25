@@ -18,7 +18,7 @@
 ;;;
 ;;; **********************************************************************
 
-(in-package :incudine)
+(in-package :of-incudine-dsps)
 
 (define-vug phasor-loop (rate start-pos loopstart loopend)
   (with-samples ((pos start-pos)
@@ -67,10 +67,6 @@ contains a slot for the sample buffer data."
 
 (defparameter *env1* (make-envelope '(0 1 1 0) '(0.1 .9 .1)))
 
-(declaim (inline get-lsample))
-(defun get-lsample (keynum map)
-  (aref map (min (round keynum) 127)))
-
 #|
 (define-ugen phasor* frame (freq init)
   (with ((frm (make-frame (block-size))))
@@ -80,19 +76,10 @@ contains a slot for the sample buffer data."
     frm))
 |#
 
-(define-vug phasor-loop (rate start-pos loopstart loopend)
-  (with-samples ((pos start-pos)
-                 (loopsize (- loopend loopstart)))
-    (prog1 pos
-      (incf pos rate)
-      (if (> pos loopend)
-          (decf pos loopsize)))))
-
 (define-vug buffer-loop-play ((buffer buffer) rate start-pos
                               loopstart loopend)
   (buffer-read buffer (phasor-loop rate start-pos loopstart loopend)
                :interpolation :cubic))
-
 
 (define-vug buffer-play ((buffer buffer) start-pos end-pos dur)
   (buffer-read buffer (line start-pos end-pos dur)
@@ -124,5 +111,5 @@ contains a slot for the sample buffer data."
 (export '(lsample sample-play lsample-play lsample-filename lsample-buffer
           lsample-play-fn lsample-keynum lsample-loopstart
           lsample-amp lsample-loopend)
-        'incudine)
+        'of-incudine-dsps)
 
