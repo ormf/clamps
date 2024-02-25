@@ -60,7 +60,7 @@
 
 (defun svg->sfz (&rest args)
   "recreate a sfz from the :attributes property and the coords of the svg element."
-  (if *debug* (format t "~&svg->sfz: ~a~%" args))
+;;;  (if *debug* (format t "~&svg->sfz: ~a~%" args))
   (apply #'make-instance 'sfz
          (list* :amplitude (opacity->db (getf args :amplitude))
                 (ou:get-props-list args '(:time :keynum :duration :preset :play-fn :pan :startpos)))))
@@ -74,7 +74,7 @@
   "convert a poolevt object into a freshly allocated svg-line object and
 insert it at the appropriate position into the events slot of
 svg-file."
-  (if *debug* (format t "~&sfz->svg: ~a, time: ~a~%" obj scoretime))
+;;;  (if *debug* (format t "~&sfz->svg: ~a, time: ~a~%" obj scoretime))
   (with-slots (keynum amplitude duration preset play-fn pan startpos chan) obj
     (let* ((id (sxhash preset))
            (x-scale (x-scale fil))
@@ -96,12 +96,12 @@ svg-file."
                                         preset play-fn pan startpos chan)
                     :id (new-id fil 'line-ids)))))
 ;;;      (break "line: ~a, obj: ~a ~a ~a" line buffer-file cl-poolplayer:*pool-hash* (gethash buffer-file cl-poolplayer:*pool-hash*))
-      (if *debug* (format t "~&obj: ~a, ~a~%" obj (db->opacity amplitude)))
+;;;      (if *debug* (format t "~&obj: ~a, ~a~%" obj (db->opacity amplitude)))
       (svg-file-insert-line line chan fil))))
 
 (defmethod write-event ((obj sfz) (to incudine-stream) scoretime)
   "output sfz object."
-  (if *debug* (format t "~&sfz->svg: ~a~%" obj))
+;;;  (if *debug* (format t "~&sfz->svg: ~a~%" obj))
   (with-slots (keynum amplitude duration preset play-fn pan startpos chan) obj
     (let ((time (+ (rts-now) (* *rt-scale* scoretime))))
       (at time (or play-fn #'cl-sfz:play-sfz) keynum amplitude duration :preset preset :pan pan :startpos startpos :out1 (mod (- chan 100) 8)))))

@@ -6,6 +6,6 @@
   :license  "GPL 2.0 or later"
   :version "0.0.1"
   :serial t
-  :depends-on (#:cl-sfz #:cm-svg #:cm-utils)
+  :depends-on (#:cl-sfz #:cm-svg #:cm-fomus)
   :components ((:file "package")
                (:file "cm-sfz")))
