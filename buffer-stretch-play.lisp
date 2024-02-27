@@ -1,17 +1,5 @@
 (in-package :of-incudine-dsps)
 
-#-sbcl
-(defparameter *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
-(defparameter *hanning1024* (make-buffer 1024 :fill-function (gen:hanning)))
-
-#+sbcl
-(sb-ext:defglobal *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
-(sb-ext:defglobal *hanning1024* (make-buffer 1024 :fill-function (gen:hanning)))
-
-(defun restore-envs ()
-  (setq *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
-  (setq *hanning1024* (make-buffer 1024 :fill-function (gen:hanning))))
-
 (defun db->lin (value)
   "Convert VALUE dB to linear value."
   (expt (sample 10) (* value (sample 0.05))))

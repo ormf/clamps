@@ -174,6 +174,17 @@ contains a slot for the sample buffer data."
         (setf (frame-ref frm current-frame) (buffer-read buffer p1 :interpolation :cubic))))
     frm))
 
+(define-ugen buffer-loop-play* frame ((buffer buffer) rate start-pos
+                                      loopstart loopend)
+  (with ((frm (make-frame (block-size)))
+         (ph1 (phasor-loop* rate start-pos loopstart loopend)))
+    (maybe-expand ph1)
+    (foreach-frame
+      (let ((p1 (frame-ref ph1 current-frame)))
+        (setf (frame-ref frm current-frame) (buffer-read buffer p1 :interpolation :cubic))))
+    frm))
+
+
 (dsp! play-sample* ((buffer buffer) (env incudine.vug:envelope) dur amp rate pan startpos (out1 fixnum) (out2 fixnum))
   (:defaults (incudine:incudine-missing-arg "BUFFER")
              (incudine:incudine-missing-arg "ENV")
@@ -189,7 +200,7 @@ contains a slot for the sample buffer data."
                            (* (+ start (* *sample-rate* dur)) rate)))
                  (duration (/ (- end start) (* rate *sample-rate*))))
   (with ((frm1 (envelope* env 1 dur #'free))
-         (frm2 (buffer-play* buffer start end duration)))
+         (frm2 (buffer-loop-play* buffer start end duration)))
     (maybe-expand frm1)
     (maybe-expand frm2)
     (foreach-frame
