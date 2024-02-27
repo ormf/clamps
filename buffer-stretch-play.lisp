@@ -1,5 +1,17 @@
 (in-package :of-incudine-dsps)
 
+#-sbcl
+(defparameter *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
+(defparameter *hanning1024* (make-buffer 1024 :fill-function (gen:hanning)))
+
+#+sbcl
+(sb-ext:defglobal *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
+(sb-ext:defglobal *hanning1024* (make-buffer 1024 :fill-function (gen:hanning)))
+
+(defun restore-envs ()
+  (setq *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
+  (setq *hanning1024* (make-buffer 1024 :fill-function (gen:hanning))))
+
 (defun db->lin (value)
   "Convert VALUE dB to linear value."
   (expt (sample 10) (* value (sample 0.05))))
@@ -11,7 +23,7 @@
 
 (define-vug stereo (in) (out in in))
 
-(define-ugen envelope* frame ((env envelope) gate time-scale (done-action function))
+(define-ugen envelope* frame ((env incudine.vug:envelope) gate time-scale (done-action function))
   (with ((frm (make-frame (block-size))))
     (foreach-frame
       (setf (frame-ref frm current-frame)
@@ -83,8 +95,10 @@
 
 |#
 
-(dsp! play-buffer-stretch* ((buffer buffer) amp transp start end stretch wwidth)
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137)
+(dsp! play-buffer-stretch* ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth)
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             (incudine:incudine-missing-arg "ENV")
+             0 0 0 0 1 137)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
                                            8.175798915643707d0)))
                  (ampl (db->linear amp)))
@@ -92,7 +106,7 @@
                              (/ (buffer-frames buffer) *sample-rate*)
                              end)))
       (with (
-             (frm1 (envelope* *env1* 1 (* stretch (- ende start)) #'free))
+             (frm1 (envelope* env 1 (* stretch (- ende start)) #'free))
              (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch))
              )
         (maybe-expand frm1)
@@ -136,8 +150,10 @@
 ;;; (play-sol-sample-preset-stretch 59 1 0 0 5 0.5 137)
 
 #|
-(dsp! play-buffer-stretch ((buffer buffer) amp transp start end stretch wwidth)
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0)
+(dsp! play-buffer-stretch ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth)
+(:defaults (incudine:incudine-missing-arg "BUFFER")
+           (incudine:incudine-missing-arg "ENV")
+           0 0 0 0 1 137 0)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
                                            8.175798915643707d0)))
                  (ampl (db->linear amp)))
@@ -145,14 +161,16 @@
                              (/ (buffer-frames buffer) *sample-rate*)
                              end)))
       (stereo (* ampl
-                 (envelope *env1* 1 (* stretch (- ende start)) #'free)
+                 (envelope env 1 (* stretch (- ende start)) #'free)
                  (buffer-stretch-play buffer rate wwidth start ende stretch))))))
 |#
 
 
 
-(dsp! play-buffer-stretch ((buffer buffer) amp transp start end stretch wwidth)
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137)
+(dsp! play-buffer-stretch ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth)
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             (incudine:incudine-missing-arg "ENV")
+             0 0 0 0 1 137)
   (with-samples ((rate (/ (* (buffer-sample-rate buffer) (keynum->hz transp))
                           (* *sample-rate* 8.175798915643707d0)))
                  (ampl (db->linear amp)))
@@ -160,13 +178,15 @@
                              (/ (buffer-frames buffer) *sample-rate*)
                              end))
                    (sig (* ampl
-                           (envelope *env1* 1 (* stretch (- ende start)) #'free)
+                           (envelope env 1 (* stretch (- ende start)) #'free)
                            (buffer-stretch-play buffer rate wwidth start ende stretch))))
       (stereo sig))))
 
 
-(dsp! play-buffer-stretch-out ((buffer buffer) amp transp start end stretch wwidth (out integer))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0)
+(dsp! play-buffer-stretch-out ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth (out integer))
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             (incudine:incudine-missing-arg "ENV")
+             0 0 0 0 1 137 0)
   (with-samples ((rate (/ (* (buffer-sample-rate buffer) (keynum->hz transp))
                           (* *sample-rate* 8.175798915643707d0)))
                  (ampl (db->linear amp)))
@@ -175,7 +195,7 @@
                              (/ (buffer-frames buffer) *sample-rate*)
                              end))
                    (sig (* ampl
-                           (envelope *env1* 1 (* stretch (- ende start)) #'free)
+                           (envelope env 1 (* stretch (- ende start)) #'free)
                            (buffer-stretch-play buffer rate wwidth start ende stretch))))
           (incf (audio-out out) sig))))
 
@@ -230,8 +250,10 @@ The curvature CURVE defaults to -4."
 ;;; (format t "~a , ~a ~a ~a ~a ~a ~a~%" (* stretch (- ende start)) buffer rate wwidth start ende stretch)
 
 (dsp! play-buffer-stretch-env-pan-out*
-    ((buffer buffer) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0 0 1)
+    ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum))
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             (incudine:incudine-missing-arg "ENV")
+             0 0 0 0 1 137 0 0.01 0 0 1)
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha))
@@ -241,7 +263,7 @@ The curvature CURVE defaults to -4."
                  (ende (if (zerop end)
                            (/ (buffer-frames buffer) *sample-rate*)
                            (min (/ (buffer-frames buffer) *sample-rate*) end))))
-    (with ((frm1 (envelope* *env1* 1 (* stretch (- ende start)) #'free))
+    (with ((frm1 (envelope* env 1 (* stretch (- ende start)) #'free))
            (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch)))
         (maybe-expand frm1)
         (maybe-expand frm2)
@@ -253,7 +275,8 @@ The curvature CURVE defaults to -4."
             (incf (audio-out out1) (* sig left)))))))
 
 (dsp! play-buffer-stretch-env-pan-out ((buffer buffer) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0 0 1)
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             0 0 0 0 1 137 0 0.01 0 0 1)
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha))
@@ -287,14 +310,16 @@ The curvature CURVE defaults to -4."
         frm)))
 
 
-(dsp! play-buffer* ((buffer buffer) amp rate start end (out fixnum))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 1 0 0 0)
+(dsp! play-buffer* ((buffer buffer) (env incudine.vug:envelope) amp rate start end (out fixnum))
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             (incudine:incudine-missing-arg "ENV")
+             0 1 0 0 0)
   (with-samples ((ampl (db->linear amp)))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) (buffer-sample-rate buffer))
                              end)))
       (with (
-             (frm1 (envelope* *env1* 1 (- ende start) #'free))
+             (frm1 (envelope* env 1 (- ende start) #'free))
              (frm2 (buffer-play* buffer rate start ende))
              )
         (maybe-expand frm1)

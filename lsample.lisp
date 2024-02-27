@@ -20,8 +20,7 @@
 
 (in-package :of-incudine-dsps)
 
-(defparameter *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
-(defparameter *hanning1024* (make-buffer 1024 :fill-function (gen:hanning)))
+;;; (defparameter *hanning1024* (make-buffer 1024 :fill-function (gen:hanning)))
 
 (defstruct lsample
   "structure for a sample with two loop-points. The structure also
@@ -119,8 +118,10 @@ contains a slot for the sample buffer data."
         (setf (frame-ref frm current-frame) (buffer-read buffer p1 :interpolation :cubic))))
     frm))
 
-(dsp! play-lsample* ((buffer buffer) dur amp rate pan loopstart loopend startpos (out1 fixnum) (out2 fixnum))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 0 1 0.5 0 0 0 0 1)
+(dsp! play-lsample* ((buffer buffer) (env incudine.vug:envelope) dur amp rate pan loopstart loopend startpos (out1 fixnum) (out2 fixnum))
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             (incudine:incudine-missing-arg "ENV")
+             1 0 1 0.5 0 0 0 0 1)
   (with-samples ((rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
                  (start (* startpos (buffer-sample-rate buffer)))
                  (ampl (db->linear amp))
@@ -129,7 +130,7 @@ contains a slot for the sample buffer data."
                  (alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha)))
-    (with ((frm1 (envelope* *env1* 1 ende #'free))
+    (with ((frm1 (envelope* env 1 ende #'free))
            (frm2 (buffer-loop-play* buffer rate start loopstart loopend)))
       (maybe-expand frm1)
       (maybe-expand frm2)
@@ -140,8 +141,11 @@ contains a slot for the sample buffer data."
           (incf (audio-out out2) (* sig right))
           (incf (audio-out out1) (* sig left)))))))
 
-(dsp! play-lsample-oneshot* ((buffer buffer) dur amp rate pan loopstart loopend startpos (out1 fixnum) (out2 fixnum))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 0 1 0.5 0 0 0 0 1)
+(dsp! play-lsample-oneshot* ((buffer buffer) (env incudine.vug:envelope)
+                             dur amp rate pan loopstart loopend startpos (out1 fixnum) (out2 fixnum))
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             (incudine:incudine-missing-arg "ENV")
+             1 0 1 0.5 0 0 0 0 1)
   (with-samples ((rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
                  (start (* startpos (buffer-sample-rate buffer)))
                  (ampl (db->linear amp))
@@ -150,7 +154,7 @@ contains a slot for the sample buffer data."
                  (alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha)))
-    (with ((frm1 (envelope* *env1* 1 ende #'free))
+    (with ((frm1 (envelope* env 1 ende #'free))
            (frm2 (buffer-loop-play* buffer rate start loopstart loopend)))
         (maybe-expand frm1)
         (maybe-expand frm2)
@@ -170,8 +174,10 @@ contains a slot for the sample buffer data."
         (setf (frame-ref frm current-frame) (buffer-read buffer p1 :interpolation :cubic))))
     frm))
 
-(dsp! play-sample* ((buffer buffer) dur amp rate pan startpos (out1 fixnum) (out2 fixnum))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 1 1 1 0.5 0 0 1)
+(dsp! play-sample* ((buffer buffer) (env incudine.vug:envelope) dur amp rate pan startpos (out1 fixnum) (out2 fixnum))
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             (incudine:incudine-missing-arg "ENV")
+             1 1 1 0.5 0 0 1)
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha))
@@ -182,7 +188,7 @@ contains a slot for the sample buffer data."
                  (end (min (- (buffer-frames buffer) 1.0d0)
                            (* (+ start (* *sample-rate* dur)) rate)))
                  (duration (/ (- end start) (* rate *sample-rate*))))
-  (with ((frm1 (envelope* *env1* 1 dur #'free))
+  (with ((frm1 (envelope* env 1 dur #'free))
          (frm2 (buffer-play* buffer start end duration)))
     (maybe-expand frm1)
     (maybe-expand frm2)
@@ -225,8 +231,10 @@ contains a slot for the sample buffer data."
         frm)))
 
 (dsp! play-buffer-stretch-env-pan-out*
-    ((buffer buffer) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum))
-  (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0 0 1)
+    ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum))
+  (:defaults (incudine:incudine-missing-arg "BUFFER")
+             (incudine:incudine-missing-arg "ENV")
+             0 0 0 0 1 137 0 0.01 0 0 1)
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha))
@@ -236,7 +244,7 @@ contains a slot for the sample buffer data."
                  (ende (if (zerop end)
                            (/ (buffer-frames buffer) *sample-rate*)
                            (min (/ (buffer-frames buffer) *sample-rate*) end))))
-    (with ((frm1 (envelope* *env1* 1 (* stretch (- ende start)) #'free))
+    (with ((frm1 (envelope* env 1 (* stretch (- ende start)) #'free))
            (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch)))
         (maybe-expand frm1)
         (maybe-expand frm2)

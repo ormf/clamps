@@ -27,5 +27,6 @@
            #:LSAMPLE-AMP
            #:LSAMPLE-LOOPEND
            #:PLAY-LSAMPLE
-           #:PLAY-SAMPLE))
+           #:PLAY-SAMPLE
+           #:RESTORE-ENVS))
 
