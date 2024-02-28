@@ -1,7 +1,7 @@
 class SvgElement extends HTMLElement {
-    static observedAttributes = ['data',
-                                 'cursor-pos', 'shift-x', 'shift-y', 'scale', 'piano-roll', 'staff-systems', 'bar-lines', 'global-x-scale', 'inverse'
-    ];
+    static observedAttributes = ['data', 'cursor-pos', 'shift-x', 'shift-y', 'scale',
+                                 'piano-roll', 'staff-systems', 'bar-lines',
+                                 'global-x-scale', 'inverse', 'crosshairs'];
 
   constructor() {
     // Always call super first in constructor
@@ -51,35 +51,38 @@ class SvgElement extends HTMLElement {
         case 'inverse':
             this.doInverse(newValue);
             break;
+        case 'crosshairs':
+            this.doCrossHairs(newValue);
+            break;
         }
     }
 }
 
-
 customElements.define("o-svg", SvgElement, { } );
-
 
 function svg(elem){
 //    console.log(elem, Date.now())
     // Settings
 
+    var externalValueChange = true;
+
     var globalScale;
     var svg = elem;
 
-    var svgContent
     var svgCursor;
+    var svgHCross;
+    var svgVCross;
 
     svg.setPos = function(pos) {
         svgCursor.style.left = Math.round((pos*100)) + '%';
     }
 
     svg.shiftX = function(translate) {
-//        console.log((-120 + -1*parseFloat(translate)));
-        svgContent.style.transform = 'translate(' + (60 + -120*(svg.scale/100)*svg.scaleXAdjust*(parseFloat(translate)*100)/svg.width) + 'em)';
+        svg.svgContent.style.transform = 'translate(' + (60 + -120*(svg.scale/100)*svg.scaleXAdjust*(parseFloat(translate)*100)/svg.width) + 'em)';
     }
 
     svg.shiftY = function(translate) {
-        svgContent.style.transform = 'translate( 0px, ' + -1*parseFloat(translate) + 'em)';
+        svg.svgContent.style.transform = 'translate( 0px, ' + -1*parseFloat(translate) + 'em)';
     }
 
     svg.doGlobalXScale = function(scale) {
@@ -103,15 +106,14 @@ function svg(elem){
     
     svg.doScale = function(scale) {
         svg.scale = scale;
-        if (svgContent.firstChild) {
+        if (svg.svgContent.firstChild) {
             svg.svgImage.setAttribute('width', scale*100 + '%');
             svg.svgImage.setAttribute('height', '100%');
         }
     }
 
-
     svg.doPianoRoll = function(value) {
-        let svgImage = svgContent.firstChild;
+        let svgImage = svg.svgContent.firstChild;
         if (svgImage && svg.pianoRoll) {
             if (value == 0)
                 svg.pianoRoll.style.display = 'none';
@@ -120,9 +122,8 @@ function svg(elem){
         }
     }
 
-
     svg.doStaffSystems = function(value) {
-        let svgImage = svgContent.firstChild;
+        let svgImage = svg.svgContent.firstChild;
         if (svgImage && svg.staffLines) {
             if (value == 0)
                 svg.staffLines.style.display = 'none';
@@ -132,7 +133,7 @@ function svg(elem){
     }
 
     svg.doBarLines = function(value) {
-        let svgImage = svgContent.firstChild;
+        let svgImage = svg.svgContent.firstChild;
         if (svgImage && svg.barLines) {
             if (value == 0)
                 svg.barLines.style.display = 'none';
@@ -141,9 +142,48 @@ function svg(elem){
         }
     }
     
+    svg.doCrossHairs = function(value) {
+        if (value == 0) {
+            svgVCross.style.display = 'none';
+            svgHCross.style.display = 'none';
+            svg.removeEventListener("dblclick", dblClickMouseHandler);
+        }
+        else {
+            svgVCross.style.display = '';
+            svgHCross.style.display = '';
+            svg.MouseActive = false;
+            svg.addEventListener("dblclick", dblClickMouseHandler);
+        }
+    }
+
+    function dblClickMouseHandler (e) {
+        if (svg.MouseActive) {
+            svg.removeEventListener("mousemove", crossHairsMouseHandler);
+            svg.style.cursor = '';
+            svg.MouseActive = false;
+        }
+        else {
+            svg.MouseActive = true;
+            svg.style.cursor = 'none';
+            svg.addEventListener("mousemove", crossHairsMouseHandler);
+            crossHairsMouseHandler(e);
+        }
+    }
+    
+    function crossHairsMouseHandler (e) {
+        var rect = svg.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width; //x position within the element.
+        var y = ((e.clientY - rect.top) / rect.height);  //y position within the element.
+//        console.log("Left? : " + x + " ; Top? : " + y + ".");
+        svgHCross.style.top = y * 100 + '%';
+        svgVCross.style.left = x * 100 + '%';
+        $(svg).trigger("data", { mousepos: [x, y]});
+
+    }
+    
     svg.setSVG = function(url) {
-        svgContent.data = url;
-        loadSVG(svgContent);
+        svg.svgContent.data = url;
+        loadSVG(svg.svgContent);
     }
 
     function parseViewBox(viewBoxString, asNumbers = false) {
@@ -153,7 +193,7 @@ function svg(elem){
 
     async function loadSVG(svgContent) {
         let svgURL = svgContent.data;
-  //      console.log(svgURL);
+        console.log(svgURL);
         if (svgURL) {
             fetch(svgURL)
                 .then((response) => response.text())
@@ -179,11 +219,13 @@ function svg(elem){
                     svg.doBarLines(svg.getAttribute('bar-lines'));
                     svg.doInverse(svg.getAttribute('inverse'));
                     //                console.log(svg.getAttribute('cursor-pos'));
-                    svg.width = width;
-//                    console.log('width: ', width);
-                    svg.setAttribute('width', width);
-                    svg.shiftX(svg.getAttribute('shift-x'));
-                    $(svg).trigger("data", {width: (width)});
+                    console.log('svg.width: ', svg.width, 'width: ', width);
+                    if (svg.width != width) {
+                        svg.width = width;
+                        svg.setAttribute('width', width);
+                        svg.shiftX(svg.getAttribute('shift-x'));
+                        $(svg).trigger("data", {width: (width)});
+                    }
                 });
         }
     }
@@ -206,17 +248,23 @@ function svg(elem){
 
         let data = svg.getAttribute('data') || false;
 //        console.log('svgContent.data: ', data);
-        svgContent = document.createElement("object");
-        svgContent.className="svg";
-        svgContent.style.transform = 'translate(0px)';
-        svgContent.style.background = '#fff';
-        svgContent.data = data;
-        svgContent.type = 'image/svg.xml';
-        svg.appendChild(svgContent);
-        svgCursor  = document.createElement("object");
+        svg.svgContent = document.createElement("object");
+        svg.svgContent.className="svg";
+        svg.svgContent.style.transform = 'translate(0px)';
+        svg.svgContent.style.background = '#fff';
+        svg.svgContent.data = data;
+        svg.svgContent.type = 'image/svg.xml';
+        svg.appendChild(svg.svgContent);
+        svgCursor  = document.createElement("div");
         svgCursor.className="cursor";
         svg.appendChild(svgCursor);
-        if (data) loadSVG(svgContent);
+        svgHCross  = document.createElement("div");
+        svgHCross.className="hcross";
+        svg.appendChild(svgHCross);
+        svgVCross  = document.createElement("div");
+        svgVCross.className="vcross";
+        svg.appendChild(svgVCross);
+        if (data) loadSVG(data);
         onresize(svg, resize);
     }
     

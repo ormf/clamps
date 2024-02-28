@@ -38,33 +38,34 @@
 
 ;;; define some variables
 
-(setf *debug* nil)
-
-
-
 ;;;(trigger x-bang)
-
-(set-val x 0.4)
-
-(defparameter niklas (watch (lambda () (format t "x geändert: ~a~%" (get-val x)))))
-
-(funcall niklas)
 
 (progn
   (defparameter x nil)
-  (defparameter y nil)
+  (defparameter shift-x nil)
+  (defparameter width nil)
   (defparameter idx nil)
-  (defparameter data nil))
+  (defparameter data nil)
+  (defparameter crosshairs nil)
+  (defparameter mousepos nil)
+  (defparameter scale 1)
+  )
 
 (progn
   (clear-bindings)
   (setf x (make-ref 0.5))
-  (setf y (make-ref 0))
+  (setf shift-x (make-ref 0))
+  (setf width (make-ref 4))
   (setf idx (make-ref 0))
   (setf data (make-computed (lambda () (format nil "/josquin-mousse-~d.svg" (max 1 (min 6 (1+ (get-val idx)))))) ))
+  (setf crosshairs (make-ref 0))
+  (setf mousepos (make-ref '(0 0)))
+  (setf scale (make-ref 1))
   nil)
 
 ;;; Define our CLOG application
+
+;;; (set-val scale 1)
 
 #|
 
@@ -77,19 +78,19 @@
   "On-new-window handler."
   (setf (title (html-document body)) "SVG Test")
   (create-o-svg
-   body (bind-refs-to-attrs x "cursor-pos" y "shift-x" data "data") :svg "/html-display.svg")
+   body (bind-refs-to-attrs width "width" x "cursor-pos" shift-x "shift-x" data "data"
+                            scale "scale" crosshairs "crosshairs" mousepos "mousepos"))
   (create-o-radio body (bind-refs-to-attrs idx "value") :css '(:width "6em") :labels (list (loop for idx from 1 to 6 collect idx)) :num 6)
-  (create-o-slider body (bind-refs-to-attrs y "value") :min -2000 :max 2000 :direction :right
-                                                       :css `(:display "inline-block" :height "1em" :width "100%"))
+  (create-o-slider body (bind-refs-to-attrs shift-x "value" width "max") :min 0 :direction :right
+                                                                         :css `(:display "inline-block" :height "1em" :width "100%"))
   (create-o-knob body (bind-refs-to-attrs x "value") 0 1 0.01 :precision 2)
-
-    )
-
+  )
 
 ;;; We don't want to restart the server everytime when the new-window
 ;;; fun is canged thats why this proxy gets defined
 (defun on-new-window (body)
   (new-window body))
+
 
 ;; Initialize the CLOG system with a boot file which contains the
 ;; static js files. For customized uses copy the "www" subdirectory of
@@ -102,9 +103,15 @@
               :static-root (merge-pathnames "www/" (asdf:system-source-directory :clog-dsp-widgets))
               :boot-file "/start.html")
   ;; Open a browser to http://127.0.0.1:8080 - the default for CLOG apps
-  (open-browser))
+  (open-browser :url "http://127.0.0.1:8080"))
 
 ;;; (start) should start a webserver with some gui widgets that are
 ;;; connected
 
 (start)
+
+#|
+(set-val crosshairs 1)
+(set-val scale 1)
+(get-val mousepos)
+|#
