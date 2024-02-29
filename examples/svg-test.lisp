@@ -91,6 +91,19 @@
 (defun on-new-window (body)
   (new-window body))
 
+(set-val data "test-data.svg")
+(set-val scale 0.5)
+(set-val scale 1)
+
+(funcall cursor-watch)
+
+(defparameter cursor-watch
+  (watch (lambda () (format t "~{~,2f~^, ~}~%" (get-val mousepos)))))
+
+
+(set-val shift-x (/ (get-val width) 2))
+
+(funcall (first (ref-listeners mousepos)))
 
 ;; Initialize the CLOG system with a boot file which contains the
 ;; static js files. For customized uses copy the "www" subdirectory of
@@ -110,6 +123,7 @@
 
 (start)
 
+(%set-val mousepos '(0.2 0.7))
 #|
 (set-val crosshairs 1)
 (set-val scale 1)

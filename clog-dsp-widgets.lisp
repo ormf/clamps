@@ -483,10 +483,15 @@ array of bindings, depending on the class."))
                         (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding))))))
                      (t
                       (dolist (binding bindings)
-                        (let ((val (gethash (b-attr binding) data)))
+                        (let* ((attr (b-attr binding))
+                               (*refs-seen* (list (list element attr)))
+                               (val (gethash attr data)))
                           (when val
-;;;                              (break "attr: ~a, val: ~a" (b-attr binding) val)
-                              (%set-val (b-ref binding) val)))
+                            ;; (if (listp val)
+                            ;;     (format t "attr: ~a, val: ~{~,2f~^, ~}, refs-seen: ~a~%" (b-attr binding) val *refs-seen*)
+                            ;;     (format t "attr: ~a, val: ~a, refs-seen: ~a~%" (b-attr binding) val *refs-seen*))
+                            (push (list element attr) *refs-seen*)
+                            (%set-val (b-ref binding) val)))
 
                         )) ;;; cleanup: unregister elem.
                      )))

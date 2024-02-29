@@ -78,7 +78,10 @@ function svg(elem){
     }
 
     svg.shiftX = function(translate) {
-        svg.svgContent.style.transform = 'translate(' + (60 + -120*(svg.scale/100)*svg.scaleXAdjust*(parseFloat(translate)*100)/svg.width) + 'em)';
+        svg.shiftXVal = parseFloat(translate);
+        svg.svgContent.style.transform =
+            'translate(' + (60 + -120*(svg.scale/100)*svg.scaleXAdjust
+                            *(svg.shiftXVal*100)/svg.width) + 'em)';
     }
 
     svg.shiftY = function(translate) {
@@ -105,10 +108,21 @@ function svg(elem){
 
     
     svg.doScale = function(scale) {
-        svg.scale = scale;
-        if (svg.svgContent.firstChild) {
-            svg.svgImage.setAttribute('width', scale*100 + '%');
-            svg.svgImage.setAttribute('height', '100%');
+        if (svg.contentData) {
+            console.log('doScale', scale);
+            svg.scale = scale;
+            if (svg.svgContent.firstChild) {
+                svg.svgImage.setAttribute('width', scale*100 + '%');
+                svg.svgImage.setAttribute('height', '100%');
+            }
+            
+            let shiftX = parseFloat(svg.getAttribute('shift-x'));
+            console.log('shiftX', shiftX, 'shiftXVal', svg.shiftXVal);
+            {
+                svg.shiftX(shiftX);
+                console.log('shiftX', shiftX, 'shiftXVal', svg.shiftXVal);
+                //        $(svg).trigger("data", {shift-x: shiftX});
+            }
         }
     }
 
@@ -177,12 +191,14 @@ function svg(elem){
 //        console.log("Left? : " + x + " ; Top? : " + y + ".");
         svgHCross.style.top = y * 100 + '%';
         svgVCross.style.left = x * 100 + '%';
-        $(svg).trigger("data", { mousepos: [x, y]});
+        $(svg).trigger("data", { mousepos: [x, 1-y]});
 
     }
     
     svg.setSVG = function(url) {
+        console.log('url: ', url);
         svg.svgContent.data = url;
+        svg.contentData = url;
         loadSVG(svg.svgContent);
     }
 
@@ -193,7 +209,7 @@ function svg(elem){
 
     async function loadSVG(svgContent) {
         let svgURL = svgContent.data;
-        console.log(svgURL);
+        console.log('svgURL: ', svgURL);
         if (svgURL) {
             fetch(svgURL)
                 .then((response) => response.text())
@@ -208,7 +224,7 @@ function svg(elem){
                     svgContent.appendChild(svg.svgImage);
                     let [xmin, ymin, width, height]  = parseViewBox(svgContent.firstChild.getAttribute('viewBox'), true);
                     //                console.log(xmin, ymin, width, height);
-                    svg.doScale(svg.scale);
+//                    svg.doScale(svg.scale);
                     svg.setPos(svg.getAttribute('cursor-pos'));
                     let groups = Array.from(svg.querySelectorAll("g"));
                     svg.staffLines = groups.filter(g => g.getAttribute('inkscape:label') === 'Stafflines')[0];
@@ -233,6 +249,7 @@ function svg(elem){
     const onresize = (dom_elem, callback) => {
         const resizeObserver = new ResizeObserver(() => callback() );
         resizeObserver.observe(dom_elem);
+//        console.log('resize');
     };
     
     function resize() {
@@ -247,12 +264,11 @@ function svg(elem){
         svg.style.alignItems = 'stretch';
 
         let data = svg.getAttribute('data') || false;
-//        console.log('svgContent.data: ', data);
+        console.log('svgContent.data: ', data);
         svg.svgContent = document.createElement("object");
         svg.svgContent.className="svg";
-        svg.svgContent.style.transform = 'translate(0px)';
+//        svg.svgContent.style.transform = 'translate(0px)';
         svg.svgContent.style.background = '#fff';
-        svg.svgContent.data = data;
         svg.svgContent.type = 'image/svg.xml';
         svg.appendChild(svg.svgContent);
         svgCursor  = document.createElement("div");
@@ -264,6 +280,8 @@ function svg(elem){
         svgVCross  = document.createElement("div");
         svgVCross.className="vcross";
         svg.appendChild(svgVCross);
+        console.log('data: ', data);
+        svg.contentData = data;
         if (data) loadSVG(data);
         onresize(svg, resize);
     }
