@@ -1,4 +1,22 @@
-;;;; cm-all.lisp
+;;;
+;;; cm-all.lisp
+;;;
+;;; **********************************************************************
+;;; Copyright (c) 2021 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
+;;;
+;;; Revision history: See git repository.
+;;;
+;;; This program is free software; you can redistribute it and/or
+;;; modify it under the terms of the Gnu Public License, version 2 or
+;;; later. See https://www.gnu.org/licenses/gpl-2.0.html for the text
+;;; of this agreement.
+;;; 
+;;; This program is distributed in the hope that it will be useful,
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+;;; GNU General Public License for more details.
+;;;
+;;; **********************************************************************
 
 (in-package #:clog)
 
@@ -8,6 +26,11 @@
   (add-class body "w3-blue-grey"))
 
 (set-on-new-window #'cm-gui :boot-file "/start.html")
+
+(set-on-new-window #'cm-gui :boot-file "/start.html")
+
+
+(set-on-new-window #'clog-dsp-widgets:levelmeter-full-gui :path "/meters" :boot-file "/start.html")
 
 (in-package #:cm)
 
@@ -87,6 +110,8 @@ supplied and gets interned as a parameter."
     (reinit-midi)))
 
 
+;; m21
+;; trevor
 #+swank
 ;; (progn
 ;;   (swank:eval-in-emacs
@@ -95,11 +120,11 @@ supplied and gets interned as a parameter."
 ;;   (swank:eval-in-emacs `(slime-repl-eval-string "(cm)")))
 
 #+slynk
-;; (progn
-;;   (slynk:eval-in-emacs
-;;    `(load ,(namestring
-;;             (asdf:system-relative-pathname :cm-all "elisp/incudine-hush-sly.el"))))
-;;       (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
+(progn
+  (slynk:eval-in-emacs
+   `(load ,(namestring
+            (asdf:system-relative-pathname :cm-all "elisp/incudine-hush-sly.el"))))
+      (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
 
 (defun start-cm-all (&key (qsynth nil))
   (start-inkscape-osc)
@@ -109,6 +134,7 @@ supplied and gets interned as a parameter."
   (if qsynth (restart-qsynth))
   ;;(setf *rts-out* *mt-out01*)
   (format t "~&midi initialized!~%")
+  (incudine:setup-io)
   (cm))
 
 #|

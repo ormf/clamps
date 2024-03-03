@@ -3,8 +3,8 @@
   (progn
     (sly-interactive-eval "(incudine:flush-pending)")
     (sly-interactive-eval "(dotimes (chan 16) (cm::sprout (cm::new cm::midi-control-change :time 0 :controller 123 :value 127 :channel chan)))")
-;;;    (sly-interactive-eval "(scratch::node-free-unprotected)")
-    (sly-interactive-eval "(scratch::node-free-all)")
+    (sly-interactive-eval "(of-incudine-dsps::node-free-unprotected)")
+;;;    (sly-interactive-eval "(scratch::node-free-all)")
 ;;;    (sly-interactive-eval "(uptothree02::osc-stop)")
 ;;;    (sly-interactive-eval "(uptothree02::osc-notes-off)")
     ))

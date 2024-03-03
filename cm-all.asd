@@ -29,6 +29,7 @@
                #:cm-utils
                #:clog-dsp-widgets
                #:ats-cuda
+               #:clog-cuda
                #:cl-midictl
                #:clog-midi-controller
                )

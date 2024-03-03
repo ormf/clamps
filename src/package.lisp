@@ -9,6 +9,7 @@
 (shadowing-import '(rescale-envelope
                     init stop bus group tempo
                     control-value timestamp
+                    responder
 ;;; play-sample
                     )
                   'incudine)
