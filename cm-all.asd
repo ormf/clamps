@@ -13,24 +13,30 @@
                #:incudine
                #:of-incudine-dsps ;;; #:sol
                #:incudine-bufs
+               #:orm-utils
+               #:cl-plot
+               #:incudine-plot
                #:cl-ppcre
                #:cl-refs
                #:cl-sfz
+               #:cm
                #:cm-sfz
                #:cm-poolevt
                #:cm-fomus
                #:cm-svg
                #:cm-svg.rts
                #:cm-incudine
-               #:orm-utils
-               #:cl-plot
-               #:incudine-plot
-               #:clog-dsp-widgets
                #:cm-utils
+               #:clog-dsp-widgets
+               #:ats-cuda
+               #:cl-midictl
+               #:clog-midi-controller
                )
   :components ((:module "src"
                 :serial t
                 :components
-                ((:file "package")
-;;;                 (:file "cm-all")
+                (
+                 (:file "package")
+                 (:file "cm-all")
+                 
                  ))))

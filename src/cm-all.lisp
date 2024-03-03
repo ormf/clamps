@@ -1,6 +1,17 @@
 ;;;; cm-all.lisp
 
+(in-package #:clog)
+
+(defun cm-gui (body)
+  "On-new-window handler."
+  (setf (title (html-document body)) "Common Music Gui")
+  (add-class body "w3-blue-grey"))
+
+(set-on-new-window #'cm-gui :boot-file "/start.html")
+
 (in-package #:cm)
+
+
 (defparameter *mt-out01* nil)
 
 (defmacro make-mt-stream (symbol-name midi-out-stream chan-tuning)
@@ -75,11 +86,6 @@ supplied and gets interned as a parameter."
     (sleep 1)
     (reinit-midi)))
 
-(unless (cm::rts?) (rts))
-;;(make-mt-stream *mt-out01* *midi-out1* '(4 0))
-(restart-qsynth)
-;;(setf *rts-out* *mt-out01*)
-(format t "~&midi initialized!~%")
 
 #+swank
 ;; (progn
@@ -89,11 +95,34 @@ supplied and gets interned as a parameter."
 ;;   (swank:eval-in-emacs `(slime-repl-eval-string "(cm)")))
 
 #+slynk
-(progn
-  (slynk:eval-in-emacs
-   `(load ,(namestring
-            (asdf:system-relative-pathname :cm-all "elisp/incudine-hush-sly.el"))))
-      (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
+;; (progn
+;;   (slynk:eval-in-emacs
+;;    `(load ,(namestring
+;;             (asdf:system-relative-pathname :cm-all "elisp/incudine-hush-sly.el"))))
+;;       (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
 
-(export '(reinit-midi restart-qsynth jack-connect-qsynth *mt-out01* *midi-out1*) 'cm)
+(defun start-cm-all (&key (qsynth nil))
+  (start-inkscape-osc)
+  (rts)
+  (unless (cm::rts?) (rts))
+  ;;(make-mt-stream *mt-out01* *midi-out1* '(4 0))
+  (if qsynth (restart-qsynth))
+  ;;(setf *rts-out* *mt-out01*)
+  (format t "~&midi initialized!~%")
+  (cm))
 
+#|
+  ;; (if (member :slynk *features*)
+  ;;     (progn
+  ;;       (slynk:eval-in-emacs
+  ;;        `(load ,(namestring
+  ;;                 (asdf:system-relative-pathname :cm-all "elisp/incudine-hush-sly.el"))))
+  ;;       (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
+  ;;     (if (member :swank *features*)
+  ;;         (progn
+  ;;           (swank:eval-in-emacs
+  ;;            `(load ,(namestring
+  ;;                     (asdf:system-relative-pathname :cm-all "elisp/incudine-hush.el"))))
+  ;;           (swank:eval-in-emacs `(slime-repl-eval-string "(cm)")))))
+
+|#
