@@ -21,7 +21,9 @@
 (in-package :clog-dsp-widgets)
 
 (defclass cuda-dsp ()
-  ((id :initarg :id :accessor dsp-id)))
+  ((id :initarg :id :accessor dsp-id)
+   (nodes :initform '() :accessor dsp-nodes)
+   (node-group :initform 300 :initarg :node-group :accessor node-group)))
 
 (defmethod initialize-instance :after ((instance cuda-dsp) &rest initargs)
   (declare (ignorable initargs))

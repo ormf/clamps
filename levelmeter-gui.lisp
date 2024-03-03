@@ -25,8 +25,6 @@
                :type (member :in :out :bus))
    (num :initform 2 :initarg :num :accessor num-meters)
    (refs :initform nil :initarg :refs :accessor refs)
-   (nodes :initform '() :accessor nodes)
-   (node-group :initform 300 :initarg :node-group :accessor node-group)
    (audio-bus :initform 0 :initarg :audio-bus :accessor audio-bus)))
 
 (defmethod initialize-instance :after ((instance levelmeter) &rest initargs)
@@ -36,11 +34,12 @@
       (setf refs (make-array num
                              :initial-contents
                              (loop repeat num collect (make-ref 0.0d0)))))
+    (incudine.util:msg :warn "heyho")
     (case meter-type
       (:bus
        (meters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group))
       (:in
-             (inmeters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group))
+       (inmeters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group))
       (:out
        (outmeters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group)))))
 
@@ -58,7 +57,7 @@
         (dotimes (idx num)
           (create-o-vumeter
            gui-container
-           (bind-ref-to-attr (aref refs idx) "db-value")
+           (bind-refs-to-attrs (aref refs idx) "db-value")
            :mapping :pd
            :css '(:height "90%" :width "0.5em" :min-width "0.1em" :margin "0.1em 0.25em" :border "0.1em solid black" :background "#222")))))))
 
@@ -75,9 +74,32 @@
         (dotimes (idx num)
           (create-o-vumeter
            gui-container
-           (bind-ref-to-attr (aref refs idx) "db-value")
+           (bind-refs-to-attrs (aref refs idx) "db-value")
            :mapping :pd
            :css `(:height "90%" :width ,(format nil "~a%" (/ 80 num)) :min-width "0.1em" :margin ,(format nil "2% 2%" ) :border "0.1em solid black" :background "#222")))))))
+
+
+(defparameter *in-refs* (coerce (loop repeat 8 collect (cl-refs:make-ref -100)) 'vector))
+(defparameter *out-refs* (coerce (loop repeat 8 collect (cl-refs:make-ref -100)) 'vector))
+
+(defun setup-meters ()
+  (dolist (id '(:lm-in :lm-out))
+    (remove-dsp id))
+  (setup-io)
+  (add-dsp 'levelmeter :id :lm-in :type :in :num 8 :node-group 100 :refs *in-refs*)
+  (add-dsp 'levelmeter :id :lm-out :type :out :num 8 :node-group 300 :refs *out-refs*)
+;;;  (add-dsp 'levelmeter :id :lm-out :type :bus :num 8 :audio-bus 8 :node-group 300 :refs *out-refs*)
+  )
+
+(defun meters-window (body)
+  "handler for /meters"
+  (setf (title (html-document body)) "Meters")
+  (levelmeter-gui :lm-in body :group 100 :num 8)
+  (levelmeter-gui :lm-out body :audio-bus 8 :group 300 :num 8))
+
+(set-on-new-window #'meters-window :path "/meters" :boot-file "/start.html")
+
+(defparameter *open-meter-guis* (make-ref 0))
 
 #|
 

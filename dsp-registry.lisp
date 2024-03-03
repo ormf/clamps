@@ -31,7 +31,7 @@
 (defun remove-dsp (id)
   (let ((dsp (find-dsp id)))
     (when dsp
-      (map '() #'free (nodes dsp))
+      (map '() #'free (dsp-nodes dsp))
       (remhash id *dsps*))))
 
 (defun find-dsp (id)

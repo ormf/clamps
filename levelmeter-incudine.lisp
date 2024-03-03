@@ -52,6 +52,14 @@
                 (/ (- 1 (cos (* 2 pi (/ i (1- size))))) (1- size))))
         (values c-array nil nil)))))
 
+(deftype non-negative-fixnum ()
+      `(integer 0 , most-positive-fixnum))
+
+(defun power->db (value)
+  "Convert the VALUE from linear to dB."
+  (let ((in (if (zerop value) least-positive-sample value)))
+    (* (log in) #.(/ (sample 10) (log (sample 10))))))
+
 (declaim (inline env-inmeter))
 (define-vug env-inmeter ((in channel-number) (freq fixnum) (ref cl-refs:ref-object)
                                (periods channel-number))
@@ -59,29 +67,48 @@
   (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
          (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
          (sums (make-frame periods :zero-p t))
-         (bufidx (make-array periods :element-type 'channel-number
-                             :initial-contents (loop for i below periods collect (floor (* i (round (/ size periods)))))))
-         (max +sample-zero+)
+         (phase-offs (make-array periods :element-type 'non-negative-fixnum :initial-contents
+                                 (loop for i below periods
+                                       collect (round (* (/ i periods) size)))))
+         (phases (make-array periods :element-type 'non-negative-fixnum
+                                     :initial-contents
+                                     (loop for i below periods
+                                           collect (round (* (/ i periods) size)))))
          (value 0)
-         (last-value #.most-positive-fixnum)
-         )
-    (declare  (fixnum size value last-value) (sample max))
+         (last-value #.most-positive-fixnum))
+    (declare (non-negative-fixnum size value last-value))
     (dotimes (i periods)
-      (let ((buf-idx (round-sample (%phasor 1 (aref bufidx i) size))))
-        (incf (smp-ref sums i) (* (audio-in in) (audio-in in) (buffer-value hanning buf-idx)))
-        (when (zerop buf-idx)
-          (progn
-            (setf value
-                  (round-sample
-                   (+ 100 (linear->db
-                           (sqrt (the non-negative-sample (smp-ref sums i)))))))
-            (if (/= last-value value)
-                (progn
-                  (nrt-funcall
-                   (lambda ()
-                     (cl-refs:set-val ref value)))
-                  (setf last-value value)))
-            (setf (smp-ref sums i) +sample-zero+)))))))
+      (incf (smp-ref sums i)
+            (* (audio-in in) (audio-in in)
+               (the sample (buffer-value hanning (aref phases i)))))
+      (when (>= (incf (aref phases i)) size)
+        (setf (aref phases i) (aref phase-offs i))
+        (setf value (reduce-warnings (+ 100 (max -100 (round (power->db (smp-ref sums i)))))))
+        (if (/= last-value value)
+            (progn
+              (nrt-funcall
+               (lambda ()
+                 (cl-refs:set-val ref (- value 100))))
+              (setf last-value value)))
+        (setf (smp-ref sums i) +sample-zero+)))))
+
+(dsp! env-monoinmeter ((freq fixnum) (ref cl-refs:ref-object) (chan channel-number)
+                     (hop-size channel-number))
+   (:defaults 10 nil 0 2)
+  (foreach-frame (env-inmeter chan freq ref hop-size)))
+
+(defun inmeters-dsp (&key (group 300) (num *number-of-input-bus-channels*)
+                     id-callback refs (freq 5) (hop-size 2) (audio-bus 0))
+  (loop
+    for idx below num
+    do (progn
+         (incudine.util:msg :warn "inmeter: ~a" idx)
+         (env-monoinmeter freq (aref refs idx)
+                        (+ audio-bus idx) hop-size
+                        :action (lambda (n)
+                                  (funcall id-callback (node-id n)))
+                        :tail group))))
+
 
 (declaim (inline env-outmeter))
 (define-vug env-outmeter ((out channel-number) (freq fixnum) (ref cl-refs:ref-object)
@@ -90,75 +117,74 @@
   (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
          (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
          (sums (make-frame periods :zero-p t))
-         (bufidx (make-array periods :element-type 'channel-number
-                             :initial-contents (loop for i below periods collect (floor (* i (round (/ size periods)))))))
-         (max +sample-zero+)
+         (phase-offs (make-array periods :element-type 'non-negative-fixnum :initial-contents
+                                 (loop for i below periods
+                                       collect (round (* (/ i periods) size)))))
+         (phases (make-array periods :element-type 'non-negative-fixnum
+                                     :initial-contents
+                                     (loop for i below periods
+                                           collect (round (* (/ i periods) size)))))
          (value 0)
-         (last-value #.most-positive-fixnum)
-         )
-    (declare  (fixnum size value last-value) (sample max))
+         (last-value #.most-positive-fixnum))
+    (declare (non-negative-fixnum size value last-value))
     (dotimes (i periods)
-      (let ((buf-idx (round-sample (%phasor 1 (aref bufidx i) size))))
-        (incf (smp-ref sums i) (* (audio-out out) (audio-out out) (buffer-value hanning buf-idx)))
-        (when (zerop buf-idx)
-          (progn
-            (setf value
-                  (round-sample
-                   (+ 100 (linear->db
-                           (sqrt (the non-negative-sample (smp-ref sums i)))))))
-            (if (/= last-value value)
-                (progn
-                  (nrt-funcall
-                   (lambda ()
-                     (cl-refs:set-val ref value)))
-                  (setf last-value value)))
-            (setf (smp-ref sums i) +sample-zero+)))))))
-
-(declaim (inline env-levelmeter))
-(define-vug env-levelmeter (in (freq fixnum) (ref cl-refs:ref-object)
-                               (periods channel-number))
-  (:defaults +sample-zero+ 10 nil 2)
-  (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
-         (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
-         (sums (make-frame periods :zero-p t))
-         (bufidx (make-array periods :element-type 'channel-number
-                             :initial-contents (loop for i below periods collect (floor (* i (round (/ size periods)))))))
-         (max +sample-zero+)
-         (value 0)
-         (last-value #.most-positive-fixnum)
-         )
-    (declare  (fixnum size value last-value) (sample max))
-    (dotimes (i periods)
-      (let ((buf-idx (round-sample (%phasor 1 (aref bufidx i) size))))
-        (incf (smp-ref sums i) (* in in (buffer-value hanning buf-idx)))
-        (when (zerop buf-idx)
-          (progn
-            (setf value
-                  (round-sample
-                   (+ 100 (linear->db
-                           (sqrt (the non-negative-sample (smp-ref sums i)))))))
-            (if (/= last-value value)
-                (progn
-                  (nrt-funcall
-                   (lambda ()
-                     (cl-refs:set-val ref value)))
-                  (setf last-value value)))
-            (setf (smp-ref sums i) +sample-zero+)))))))
-
-(dsp! env-monometer ((freq fixnum) (ref cl-refs:ref-object) (chan channel-number)
-                     (hop-size channel-number))
-   (:defaults 10 nil 0 2)
-  (foreach-frame (env-levelmeter (bus chan) freq ref hop-size)))
-
-(dsp! env-monoinmeter ((freq fixnum) (ref cl-refs:ref-object) (chan channel-number)
-                     (hop-size channel-number))
-   (:defaults 10 nil 0 2)
-  (foreach-frame (env-inmeter chan freq ref hop-size)))
+      (incf (smp-ref sums i)
+            (* (audio-out out) (audio-out out)
+               (the sample (buffer-value hanning (aref phases i)))))
+      (when (>= (incf (aref phases i)) size)
+        (setf (aref phases i) (aref phase-offs i))
+        (setf value (reduce-warnings (+ 100 (max -100 (round (power->db (smp-ref sums i)))))))
+        (if (/= last-value value)
+            (progn
+              (nrt-funcall
+               (lambda ()
+                 (cl-refs:set-val ref (- value 100))))
+              (setf last-value value)))
+        (setf (smp-ref sums i) +sample-zero+)))))
 
 (dsp! env-monooutmeter ((freq fixnum) (ref cl-refs:ref-object) (chan channel-number)
                      (hop-size channel-number))
    (:defaults 10 nil 0 2)
   (foreach-frame (env-outmeter chan freq ref hop-size)))
+
+(declaim (inline env-levelmeter))
+(define-vug env-levelmeter (in (freq fixnum) (ref cl-refs:ref-object)
+                              (periods channel-number))
+  (:defaults +sample-zero+ 10 nil 2)
+  (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
+         (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
+         (sums (make-frame periods :zero-p t))
+         (phase-offs (make-array periods :element-type 'non-negative-fixnum :initial-contents
+                                 (loop for i below periods
+                                       collect (round (* (/ i periods) size)))))
+         (phases (make-array periods :element-type 'non-negative-fixnum
+                                     :initial-contents
+                                     (loop for i below periods
+                                           collect (round (* (/ i periods) size)))))
+         (value 0)
+         (last-value #.most-positive-fixnum))
+    (declare (non-negative-fixnum size value last-value))
+    (dotimes (i periods)
+      (incf (smp-ref sums i)
+            (* in in
+               (the sample (buffer-value hanning (aref phases i)))))
+      (when (>= (incf (aref phases i)) size)
+        (setf (aref phases i) (aref phase-offs i))
+        (setf value (reduce-warnings (+ 100 (max -100 (round (power->db (smp-ref sums i)))))))
+        (if (/= last-value value)
+            (progn
+              (nrt-funcall
+               (lambda ()
+                 (cl-refs:set-val ref (- value 100))))
+              (setf last-value value)))
+        (setf (smp-ref sums i) +sample-zero+)))))
+
+#|
+(dsp! env-monometer ((freq fixnum) (ref cl-refs:ref-object) (chan channel-number)
+                     (hop-size channel-number))
+   (:defaults 10 nil 0 2)
+  (foreach-frame (env-levelmeter (incudine.bus::bus chan) freq ref hop-size)))
+|#
 
 (defparameter *node-ids* '())
 
@@ -175,16 +201,7 @@
                                   (funcall id-callback (node-id n)))
                         :tail group))))
 
-(defun inmeters-dsp (&key (group 300) (num *number-of-input-bus-channels*)
-                     id-callback refs (freq 5) (hop-size 2) (audio-bus 0))
-  (loop
-    for idx below num
-    do (progn
-         (env-monoinmeter freq (aref refs idx)
-                        (+ audio-bus idx) hop-size
-                        :action (lambda (n)
-                                  (funcall id-callback (node-id n)))
-                        :tail group))))
+
 
 (defun outmeters-dsp (&key (group 300) (num *number-of-input-bus-channels*)
                      id-callback refs (freq 5) (hop-size 2) (audio-bus 0))
