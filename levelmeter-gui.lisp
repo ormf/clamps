@@ -21,7 +21,9 @@
 (in-package :clog-dsp-widgets)
 
 (defclass levelmeter (cuda-dsp)
-  ((num :initform 2 :initarg :num :accessor num-meters)
+  ((meter-type :initform :bus :initarg :type :accessor meter-type
+               :type (member :in :out :bus))
+   (num :initform 2 :initarg :num :accessor num-meters)
    (refs :initform nil :initarg :refs :accessor refs)
    (nodes :initform '() :accessor nodes)
    (node-group :initform 300 :initarg :node-group :accessor node-group)
@@ -29,17 +31,25 @@
 
 (defmethod initialize-instance :after ((instance levelmeter) &rest initargs)
   (declare (ignorable initargs))
-  (with-slots (refs num nodes node-group audio-bus) instance
+  (with-slots (refs meter-type num nodes node-group audio-bus) instance
     (unless refs
       (setf refs (make-array num
                              :initial-contents
                              (loop repeat num collect (make-ref 0.0d0)))))
-    (meters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group)))
+    (case meter-type
+      (:bus
+       (meters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group))
+      (:in
+             (inmeters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group))
+      (:out
+       (outmeters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group)))))
 
-(defun levelmeter-gui (id gui-parent &key (group 300) refs (num 1) (audio-bus 0))
+
+(defun levelmeter-gui (id gui-parent &key (group 300) (type :bus) refs (num 1) (audio-bus 0))
+  (check-type type (member :bus :in :out))
   (let ((dsp
           (or (find-dsp id)
-              (add-dsp 'levelmeter :id id :node-group group
+              (add-dsp 'levelmeter :id id :type type :node-group group
                                    :audio-bus audio-bus :refs refs :num num))))
     (with-slots (refs) dsp
       (let* ((gui-container (create-div gui-parent
@@ -51,6 +61,23 @@
            (bind-ref-to-attr (aref refs idx) "db-value")
            :mapping :pd
            :css '(:height "90%" :width "0.5em" :min-width "0.1em" :margin "0.1em 0.25em" :border "0.1em solid black" :background "#222")))))))
+
+(defun levelmeter-full-gui (id gui-parent &key (group 300) (type :bus) refs (num 1) (audio-bus 0))
+  (check-type type (member :bus :in :out))
+  (let ((dsp
+          (or (find-dsp id)
+              (add-dsp 'levelmeter :id id :type type :node-group group
+                                   :audio-bus audio-bus :refs refs :num num))))
+    (with-slots (refs) dsp
+      (let* ((gui-container (create-div gui-parent
+                                        :class "levelmeter-panel"
+                                        :css `(:display "flex" :border "0.1em solid black" :background "#666" :height "100%" :width "100%"))))
+        (dotimes (idx num)
+          (create-o-vumeter
+           gui-container
+           (bind-ref-to-attr (aref refs idx) "db-value")
+           :mapping :pd
+           :css `(:height "90%" :width ,(format nil "~a%" (/ 80 num)) :min-width "0.1em" :margin ,(format nil "2% 2%" ) :border "0.1em solid black" :background "#222")))))))
 
 #|
 

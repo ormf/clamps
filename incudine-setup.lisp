@@ -43,40 +43,6 @@
 
 (defsetf aux set-aux)
 
-#|
-(defmacro foreach-input-channel (&body body)
-  (with-gensyms (i)
-    `(dochannels (,i *number-of-input-bus-channels*)
-       (let ((current-channel ,i))
-         (declare (type channel-number current-channel)
-                  (ignorable current-channel))
-         ,@body))))
-
-(declaim (inline bus))
-(defun bus (num &optional (frame 0))
-  "Return the value of the bus number NUM. Setfable."
-  (declare (type bus-number num)
-           (type non-negative-fixnum frame))
-  (smp-ref incudine::*bus-pointer*
-           (the non-negative-fixnum
-                (+ (the non-negative-fixnum
-                        (* frame *number-of-bus-channels*))
-                   num))))
-
-(declaim (inline set-bus))
-(defun set-bus (num frame value)
-  (declare (type bus-number num)
-           (type non-negative-fixnum frame))
-  (setf (smp-ref *bus-pointer*
-                 (the non-negative-fixnum
-                                (+ (the non-negative-fixnum
-                                        (* frame *number-of-bus-channels*))
-                                   num)))
-        (sample value)))
-
-(defsetf bus (num &optional (frame 0)) (value)
-  `(set-bus ,num ,frame ,value))
-|#
 
 (define-vug input-bus ((channel fixnum))
   (bus (the fixnum
@@ -84,13 +50,15 @@
               (* current-frame *number-of-input-bus-channels*))
             channel))))
 
-(dsp! cp-input-buses ((first-in-bus channel-number))
-  "cp all audio inputs to buses starting at first-in-bus."
-  (:defaults 0)
-  (foreach-frame
-    (dochannels (current-channel *number-of-input-bus-channels*)
-      (setf (input-bus (+ current-channel first-in-bus))
-            (audio-in (+ current-channel first-in-bus))))))
+(dsp! cp-input-buses ((first-input channel-number) (first-bus channel-number)
+                      (num-channels channel-number))
+  "cp all audio inputs to buses starting at first-in-bus + bus-offset."
+  (:defaults 0 0 *number-of-input-bus-channels*)
+  (let ((numchans (min num-channels *number-of-input-bus-channels*)))
+    (foreach-frame
+      (dochannels (current-channel numchans)
+        (setf (input-bus (+ current-channel first-bus))
+              (audio-in (+ current-channel first-input)))))))
 
 (dsp! cp-output-buses ((first-out-bus channel-number))
   "cp all audio outputs to buses starting at first-out-bus."
@@ -107,7 +75,7 @@
             (input-bus (+ current-channel startidx))))))
 
 (dsp! mix-bus-to-out ((startidx channel-number) (numchannels channel-number))
-  (:defaults 16 8)
+  (:defaults 8 8)
   (foreach-frame
     (dochannels (current-channel numchannels)
       (incf (audio-out current-channel) (input-bus (+ current-channel startidx))))))
@@ -125,10 +93,11 @@
   (make-group 200 :after 100)
   (make-group 300 :after 200)
   (make-group 400 :after 300)
-  (clear-buses 0 32 :id 1 :head 100)
-  (cp-input-buses :id 2 :tail 100)
-  (mix-bus-to-out :id 3 :startidx 16 :head 300)
-  (cp-output-buses :id 4 :tail 300))
+;;  (clear-buses 0 32 :id 1 :head 100)
+;;  (cp-input-buses :id 2 :tail 100)
+;;  (mix-bus-to-out :id 3 :startidx 0 :head 300)
+;;  (cp-output-buses :id 4 :tail 300)
+  )
 
 (defun node-free-unprotected ()
  (dogroup (n (node 200))

@@ -26,4 +26,6 @@
 
 (use-package :incudine)
 
-(export '(cuda-dsp dsp-id levelmeter num-meters refs nodes node-group audio-bus levelmeter-gui) 'clog-dsp-widgets)
+(export '(cuda-dsp dsp-id levelmeter num-meters refs nodes node-group audio-bus levelmeter-gui
+          levelmeter-full-gui)
+        'clog-dsp-widgets)
