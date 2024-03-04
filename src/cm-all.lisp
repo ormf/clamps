@@ -27,11 +27,9 @@
 
 (set-on-new-window #'cm-gui :boot-file "/start.html")
 
-(set-on-new-window #'cm-gui :boot-file "/start.html")
+(set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
 
-
-(set-on-new-window #'clog-dsp-widgets:levelmeter-full-gui :path "/meters" :boot-file "/start.html")
-
+;;; (clog-dsp-widgets::setup-meters)
 (in-package #:cm)
 
 
