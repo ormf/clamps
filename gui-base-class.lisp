@@ -28,4 +28,4 @@
 (defmethod initialize-instance :after ((instance cuda-dsp) &rest initargs)
   (declare (ignorable initargs))
   (with-slots (id) instance
-    (format t "~&adding dsp: ~S~%" id)))
+    (incudine.util:msg :info "~&adding dsp: ~S~%" id)))

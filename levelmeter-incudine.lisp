@@ -203,9 +203,18 @@
                                   (funcall id-callback (node-id n)))
                         :tail group))))
 
+(defun inmeters-dsp (&key (group 100) (num *number-of-input-bus-channels*)
+                     id-callback refs (freq 5) (hop-size 2) (audio-bus 0))
+  (loop
+    for idx below num
+    do (progn
+         (env-monoinmeter freq (aref refs idx)
+                        (+ audio-bus idx) hop-size
+                        :action (lambda (n)
+                                  (funcall id-callback (node-id n)))
+                        :tail group))))
 
-
-(defun outmeters-dsp (&key (group 300) (num *number-of-input-bus-channels*)
+(defun outmeters-dsp (&key (group 300) (num *number-of-output-bus-channels*)
                      id-callback refs (freq 5) (hop-size 2) (audio-bus 0))
   (loop
     for idx below num

@@ -34,7 +34,7 @@
       (setf refs (make-array num
                              :initial-contents
                              (loop repeat num collect (make-ref 0.0d0)))))
-    (incudine.util:msg :warn "heyho")
+;;;    (incudine.util:msg :warn "heyho")
     (case meter-type
       (:bus
        (meters-dsp :id-callback (lambda (id) (push id nodes)) :freq 10 :num num :refs refs :audio-bus audio-bus :group node-group))
@@ -94,8 +94,8 @@
 (defun meters-window (body)
   "handler for /meters"
   (setf (title (html-document body)) "Meters")
-  (levelmeter-gui :lm-in body :group 100 :num 8)
-  (levelmeter-gui :lm-out body :audio-bus 8 :group 300 :num 8))
+  (levelmeter-gui :lm-in body :type :in :group 100 :num 8)
+  (levelmeter-gui :lm-out body :type :out :group 300 :num 8))
 
 (set-on-new-window #'meters-window :path "/meters" :boot-file "/start.html")
 
