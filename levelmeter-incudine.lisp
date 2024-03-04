@@ -33,7 +33,7 @@
 
 (defun hanning ()
   (lambda (c-array size)
-    (declare (type foreign-pointer c-array) (type non-negative-fixnum size))
+    (declare (type foreign-pointer c-array) (type alexandria:non-negative-fixnum size))
     (with-foreign-array (tmp 'sample)
       (with-samples (value abs-value (max 0.0))
         (dotimes (i size)
@@ -44,7 +44,7 @@
 (defun hanning-rms ()
   "(/ size) weighted version of (* 2 hanning)"
   (lambda (c-array size)
-    (declare (type foreign-pointer c-array) (type non-negative-fixnum size))
+    (declare (type foreign-pointer c-array) (type alexandria:non-negative-fixnum size))
     (with-foreign-array (tmp 'sample)
       (with-samples (value abs-value (max 0.0))
         (dotimes (i size)
@@ -52,8 +52,10 @@
                 (/ (- 1 (cos (* 2 pi (/ i (1- size))))) (1- size))))
         (values c-array nil nil)))))
 
-(deftype non-negative-fixnum ()
+#|
+(deftype alexandria:non-negative-fixnum ()
       `(integer 0 , most-positive-fixnum))
+|#
 
 (defun power->db (value)
   "Convert the VALUE from linear to dB."
@@ -67,16 +69,16 @@
   (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
          (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
          (sums (make-frame periods :zero-p t))
-         (phase-offs (make-array periods :element-type 'non-negative-fixnum :initial-contents
+         (phase-offs (make-array periods :element-type 'alexandria:non-negative-fixnum :initial-contents
                                  (loop for i below periods
                                        collect (round (* (/ i periods) size)))))
-         (phases (make-array periods :element-type 'non-negative-fixnum
+         (phases (make-array periods :element-type 'alexandria:non-negative-fixnum
                                      :initial-contents
                                      (loop for i below periods
                                            collect (round (* (/ i periods) size)))))
          (value 0)
          (last-value #.most-positive-fixnum))
-    (declare (non-negative-fixnum size value last-value))
+    (declare (alexandria:non-negative-fixnum size value last-value))
     (dotimes (i periods)
       (incf (smp-ref sums i)
             (* (audio-in in) (audio-in in)
@@ -117,16 +119,16 @@
   (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
          (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
          (sums (make-frame periods :zero-p t))
-         (phase-offs (make-array periods :element-type 'non-negative-fixnum :initial-contents
+         (phase-offs (make-array periods :element-type 'alexandria:non-negative-fixnum :initial-contents
                                  (loop for i below periods
                                        collect (round (* (/ i periods) size)))))
-         (phases (make-array periods :element-type 'non-negative-fixnum
+         (phases (make-array periods :element-type 'alexandria:non-negative-fixnum
                                      :initial-contents
                                      (loop for i below periods
                                            collect (round (* (/ i periods) size)))))
          (value 0)
          (last-value #.most-positive-fixnum))
-    (declare (non-negative-fixnum size value last-value))
+    (declare (alexandria:non-negative-fixnum size value last-value))
     (dotimes (i periods)
       (incf (smp-ref sums i)
             (* (audio-out out) (audio-out out)
@@ -154,16 +156,16 @@
   (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
          (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
          (sums (make-frame periods :zero-p t))
-         (phase-offs (make-array periods :element-type 'non-negative-fixnum :initial-contents
+         (phase-offs (make-array periods :element-type 'alexandria:non-negative-fixnum :initial-contents
                                  (loop for i below periods
                                        collect (round (* (/ i periods) size)))))
-         (phases (make-array periods :element-type 'non-negative-fixnum
+         (phases (make-array periods :element-type 'alexandria:non-negative-fixnum
                                      :initial-contents
                                      (loop for i below periods
                                            collect (round (* (/ i periods) size)))))
          (value 0)
          (last-value #.most-positive-fixnum))
-    (declare (non-negative-fixnum size value last-value))
+    (declare (alexandria:non-negative-fixnum size value last-value))
     (dotimes (i periods)
       (incf (smp-ref sums i)
             (* in in
