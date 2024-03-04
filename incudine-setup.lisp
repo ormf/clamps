@@ -19,7 +19,8 @@
 ;;; **********************************************************************
 
 (in-package #:incudine)
-(export '(setup-io
+(export '(setup-meters
+          setup-io
           input-bus
           node-free-unprotected
           clear-buses
