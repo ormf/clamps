@@ -51,9 +51,11 @@
     (:parameters time lsample keynum amp duration start out)
     (:event-streams)))
 
+#|
 (declaim (inline get-lsample))
 (defun get-lsample (keynum map)
   (aref map (min (round keynum) 127)))
+|#
 
 (defun function-name (fn)
   (cl-ppcre:regex-replace
@@ -101,8 +103,6 @@ an external package, a leading <package-name>: has to be provided."
       :end end
       :stretch (/ rate))))
 
-(svg-ie:add-svg-attr-props-to-quote :lsample)
-
 (defun svg->poolevt (&rest args)
   "recreate a poolevt from the :attributes property of the svg element."
 ;;;  (if *debug* (format t "~&svg->poolevent: ~a~%" args))
@@ -142,6 +142,8 @@ an external package, a leading <package-name>: has to be provided."
 #|
 (opacity->db -9)
 |#
+
+(svg-ie:add-svg-attr-props-to-quote :lsample)
 
 (add-svg-assoc-fns
  `((poolevt . ,#'svg->poolevt)))
@@ -197,10 +199,8 @@ svg-file."
         (if *debug* (break "line: ~a ~a ~a" line incudine::buffer stretch))
         (svg-file-insert-line line (if (numberp myid) myid 2) fil)))))
 
-(defmethod write-event ((obj poolevt) (to incudine-stream) scoretime)
-  "convert a poolevt object into a freshly allocated svg-line object and
-insert it at the appropriate position into the events slot of
-svg-file."
+(defun rt-write-poolevt (obj scoretime)
+  "realtime-output of poolevt"
   (with-slots (lsample amp keynum start end
                stretch wwidth attack release pan out1 out2 snd-id)
       obj
@@ -215,14 +215,24 @@ svg-file."
       ;;                                                  :stretch stretch :wwidth wwidth :attack attack
       ;;                                                  :release release :pan pan :out1 out1 :out2 out2)))
       (at time #'of-incudine-dsps::play-buffer-stretch-env-pan-out*
-        :buffer buffer :amp amp
-        :transp transp :start start :end end
-        :stretch stretch :wwidth wwidth :attack attack
-        :release release :pan pan :out1 out1 :out2 out2)
+          :buffer buffer :env of-incudine-dsps:*env1* :amp amp
+          :transp transp :start start :end end
+          :stretch stretch :wwidth wwidth :attack attack
+          :release release :pan pan :out1 out1 :out2 out2)
 
       ;; (at time #'cl-poolplayer::distributed-play (list :buffer buffer :amp amp
       ;;                                                  :transp transp :start start :end end
       ;;                                                  :stretch stretch :wwidth wwidth :attack attack
       ;;                                                  :release release :pan pan :out1 out :out2 (1+ out)))
       )))
+
+(defmethod write-event ((obj poolevt) (to incudine-stream) scoretime)
+  "realtime-output of poolevt"
+  (declare (ignore to))
+  (rt-write-poolevt obj scoretime))
+
+(defmethod write-event ((obj poolevt) (to jackmidi:output-stream) scoretime)
+  "realtime-output of poolevt"
+  (declare (ignore to))
+  (rt-write-poolevt obj scoretime))
 
