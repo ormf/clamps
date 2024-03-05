@@ -99,12 +99,23 @@ svg-file."
 ;;;      (if *debug* (format t "~&obj: ~a, ~a~%" obj (db->opacity amplitude)))
       (svg-file-insert-line line chan fil))))
 
+(defun rt-write-sfz-evt (obj scoretime)
+  (with-slots (keynum amplitude duration preset play-fn pan startpos chan) obj
+    (let ((time (+ (rts-now) (* *rt-scale* scoretime))))
+      (at time (or play-fn #'cl-sfz:play-sfz) keynum amplitude duration :preset preset :pan pan :startpos startpos :out1 (mod (- chan 100) 8))))
+  )
+
 (defmethod write-event ((obj sfz) (to incudine-stream) scoretime)
   "output sfz object."
 ;;;  (if *debug* (format t "~&sfz->svg: ~a~%" obj))
-  (with-slots (keynum amplitude duration preset play-fn pan startpos chan) obj
-    (let ((time (+ (rts-now) (* *rt-scale* scoretime))))
-      (at time (or play-fn #'cl-sfz:play-sfz) keynum amplitude duration :preset preset :pan pan :startpos startpos :out1 (mod (- chan 100) 8)))))
+  (declare (ignore to))
+  (rt-write-sfz-evt obj scoretime))
+
+(defmethod write-event ((obj sfz) (to jackmidi:output-stream) scoretime)
+  "output sfz object."
+;;;  (if *debug* (format t "~&sfz->svg: ~a~%" obj))
+  (declare (ignore to))
+  (rt-write-sfz-evt obj scoretime))
 
 (defmethod write-event ((obj sfz) (fil fomus-file) scoretime)
   "output sfz object to fomus."
