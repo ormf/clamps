@@ -224,7 +224,7 @@ function svg(elem){
                     svgContent.appendChild(svg.svgImage);
                     let [xmin, ymin, width, height]  = parseViewBox(svgContent.firstChild.getAttribute('viewBox'), true);
                     //                console.log(xmin, ymin, width, height);
-//                    svg.doScale(svg.scale);
+                    svg.doScale(svg.scale);
                     svg.setPos(svg.getAttribute('cursor-pos'));
                     let groups = Array.from(svg.querySelectorAll("g"));
                     svg.staffLines = groups.filter(g => g.getAttribute('inkscape:label') === 'Stafflines')[0];
@@ -253,7 +253,7 @@ function svg(elem){
     };
     
     function resize() {
-//        console.log('resize', svg.getBoundingClientRect().width)
+        console.log('resize', svg.getBoundingClientRect().width)
     }
     
     function init() {

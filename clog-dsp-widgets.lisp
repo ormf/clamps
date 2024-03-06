@@ -606,7 +606,7 @@ event."))
   (setf (title (html-document body)) "Clog Test")
   (add-class body "w3-blue-grey"))
 
-(defun start (&key (port 8080))
+(defun start-gui (&key (port 8080))
   (clear-bindings) ;;; start from scratch
   (initialize #'on-new-window
               :port port
@@ -615,4 +615,4 @@ event."))
   ;; Open a browser to http://127.0.0.1:8080 - the default for CLOG apps
   (open-browser))
 
-;;; (start) should start a webserver
+;;; (start-gui) should start a webserver

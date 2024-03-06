@@ -49,7 +49,7 @@
    #:pulse-on
    #:pulse-off
    #:highlight
-   #:start
+   #:start-gui
    #:new-window
 
    #:clog-dsp-widgets-initialize))

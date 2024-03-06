@@ -180,9 +180,9 @@ function vumeter(elem){
         let leds = document.createElement("div");
         leds.setAttribute("class", "vubar");
         leds.style.width = "100%";
-//        leds.style.height = "100%";
-        leds.style.backgroundSize = "0.5em 8em";
-        leds.style.backgroundImage = "repeating-linear-gradient(to top, #000 0%, rgba(0,0,0,0) 0.1em, rgba(0,0,0,0) 0.25em),linear-gradient(to top, rgba(0, 85, 100, 1.0) 0%, rgba(0, 102, 128, 1.0) 2%, rgba(0, 136, 170, 1.0) 10%, rgba(0, 170, 212, 1.0) 17.5%, rgba(0, 190, 245, 1.0) 25.0%, rgba(50, 202, 255, 1.0) 32.5%, rgba(85, 211, 255, 1.0) 40.0%, rgba(128, 222, 255, 1.0) 47.5%, rgba(170, 235, 255, 1.0) 55.0%, rgba(213, 246, 255, 1.0) 62.5%, rgba(255, 170, 170, 1.0) 70.0%, rgba(255, 128, 128, 1.0) 77.5%, rgba(255, 85, 85, 1.0) 85.0%, rgba(255, 42, 42, 1.0) 92.5%, rgba(255, 0, 42, 1.0) 100%)";
+        leds.style.height = "100%";
+        leds.style.backgroundSize = "100% 100%";
+        leds.style.backgroundImage = "repeating-linear-gradient(to top, rgb(0, 0, 0) 0%, #000 0.2em, transparent 0.2em, transparent 3.33333%), linear-gradient(to top, rgb(0, 85, 100) 0%, rgb(0, 102, 128) 2%, rgb(0, 136, 170) 10%, rgb(0, 170, 212) 17.5%, rgb(0, 190, 245) 25%, rgb(50, 202, 255) 32.5%, rgb(85, 211, 255) 40%, rgb(128, 222, 255) 47.5%, rgb(170, 235, 255) 55%, rgb(213, 246, 255) 62.5%, rgb(255, 170, 170) 70%, rgb(255, 128, 128) 77.5%, rgb(255, 85, 85) 85%, rgb(255, 42, 42) 92.5%, rgb(255, 0, 42) 100%))";
         leds.style.backgroundPosition = "bottom";
 
         leds.style.border = "thin solid var(--vu-background)";
@@ -193,6 +193,12 @@ function vumeter(elem){
         
         parent.appendChild(leds);
         parent.vuBar = leds;
+        let vuBarCover = document.createElement("div");
+        leds.appendChild(vuBarCover);
+        vuBarCover.style.background = 'rgb(34, 34, 34)';
+        vuBarCover.style.width = '100%';
+        vuBarCover.style.height = '100%';
+        parent.vuBarCover = vuBarCover;
     }
 
 
@@ -209,16 +215,21 @@ function vumeter(elem){
 //        vuBar.style.justifyContent = "space-between";
         parent.appendChild(vuBar);
         parent.vuBar = vuBar;
-
+        let vuBarCover = document.createElement("div");
+        vuBar.appendChild(vuBarCover);
+        vuBarCover.style.background = 'rgb(34, 34, 34)';
+        vuBarCover.style.width = '100%';
+        vuBarCover.style.height = '100%';
+        parent.vuBarCover = vuBarCover;
     }
 
     function setBarSizeY(db) {
 //        console.log(((db/112)*vuHeight) + 'px');
-        vuMeter.vuBar.style.height = dbLedIdxLookup[Math.round(db)] + '%';
+        vuMeter.vuBarCover.style.height = 100-dbLedIdxLookup[Math.round(db)] + '%';
     }
     
     function setBarSizeX(db) {
-        vuMeter.vuBar.style.width = dbLedIdxLookup[Math.round(db)] + '%';
+        vuMeter.vuBarCover.style.width = 100-dbLedIdxLookup[Math.round(db)] + '%';
     }
     
     function drawBar () {

@@ -95,10 +95,9 @@
 (set-val scale 0.5)
 (set-val scale 1)
 
-(funcall cursor-watch)
 
-(defparameter cursor-watch
-  (watch (lambda () (format t "~{~,2f~^, ~}~%" (get-val mousepos)))))
+
+
 
 
 (set-val shift-x (/ (get-val width) 2))
