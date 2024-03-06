@@ -182,7 +182,7 @@ function vumeter(elem){
         leds.style.width = "100%";
         leds.style.height = "100%";
         leds.style.backgroundSize = "100% 100%";
-        leds.style.backgroundImage = "repeating-linear-gradient(to top, rgb(0, 0, 0) 0%, #000 0.2em, transparent 0.2em, transparent 3.33333%), linear-gradient(to top, rgb(0, 85, 100) 0%, rgb(0, 102, 128) 2%, rgb(0, 136, 170) 10%, rgb(0, 170, 212) 17.5%, rgb(0, 190, 245) 25%, rgb(50, 202, 255) 32.5%, rgb(85, 211, 255) 40%, rgb(128, 222, 255) 47.5%, rgb(170, 235, 255) 55%, rgb(213, 246, 255) 62.5%, rgb(255, 170, 170) 70%, rgb(255, 128, 128) 77.5%, rgb(255, 85, 85) 85%, rgb(255, 42, 42) 92.5%, rgb(255, 0, 42) 100%))";
+        leds.style.backgroundImage = 'repeating-linear-gradient(to top, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 0.2em, transparent 0.2em, transparent 2.5%, #000 2.5%), linear-gradient(to top, rgb(0, 85, 100) 0%, rgb(0, 102, 128) 2%, rgb(0, 136, 170) 10%, rgb(0, 170, 212) 17.5%, rgb(0, 190, 245) 25%, rgb(50, 202, 255) 32.5%, rgb(85, 211, 255) 40%, rgb(128, 222, 255) 47.5%, rgb(170, 235, 255) 55%, rgb(213, 246, 255) 62.5%, rgb(255, 170, 170) 70%, rgb(255, 128, 128) 77.5%, rgb(255, 85, 85) 85%, rgb(255, 42, 42) 92.5%, rgb(255, 0, 42) 100%';
         leds.style.backgroundPosition = "bottom";
 
         leds.style.border = "thin solid var(--vu-background)";
