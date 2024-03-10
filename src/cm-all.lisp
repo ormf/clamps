@@ -26,10 +26,8 @@
   (add-class body "w3-blue-grey"))
 
 (set-on-new-window #'cm-gui :boot-file "/start.html")
-
 (set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
 
-;;; (clog-dsp-widgets::setup-meters)
 (in-package #:cm)
 
 
@@ -110,19 +108,17 @@ supplied and gets interned as a parameter."
 
 ;; m21
 ;; trevor
-#+swank
-;; (progn
-;;   (swank:eval-in-emacs
-;;    `(load ,(namestring
-;;             (asdf:system-relative-pathname :cm-all "elisp/incudine-hush.el"))))
-;;   (swank:eval-in-emacs `(slime-repl-eval-string "(cm)")))
+(defun install-slime-hooks ()
+  (swank:eval-in-emacs
+   `(load ,(namestring
+            (asdf:system-relative-pathname :cm-all "elisp/incudine-hush.el"))))
+  (swank:eval-in-emacs `(slime-repl-eval-string "(cm)")))
 
-#+slynk
-(progn
+(defun install-sly-hooks ()
   (slynk:eval-in-emacs
    `(load ,(namestring
             (asdf:system-relative-pathname :cm-all "elisp/incudine-hush-sly.el"))))
-      (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
+  (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
 
 (defun start-cm-all (&key (qsynth nil))
   (start-inkscape-osc)
@@ -132,7 +128,9 @@ supplied and gets interned as a parameter."
   (if qsynth (restart-qsynth))
   ;;(setf *rts-out* *mt-out01*)
   (format t "~&midi initialized!~%")
+  ;; (install-sly-hooks)
   (incudine:setup-io)
+  (start-gui)
   (cm))
 
 #|

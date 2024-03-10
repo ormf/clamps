@@ -7,7 +7,7 @@
 (shadowing-import '(trigger) 'cl-refs)
 
 (shadowing-import '(rescale-envelope
-                    init stop bus group tempo
+                    init stop group tempo
                     control-value timestamp
                     responder
 ;;; play-sample
@@ -16,7 +16,7 @@
 
 (shadow '(quantize at now tuning *tempo* buffer buffer-frames
           buffer-sample-rate
-          node
+          node bus
           lsample envelope
           lsample-keynum lsample-play-fn lsample-amp lsample-buffer
           lsample-buffer remove-all-responders recv-stop
@@ -49,6 +49,9 @@
 
 (defvar node nil)
 (setf (fdefinition 'node) #'incudine:node)
+(defvar bus nil)
+(setf (fdefinition 'bus) #'incudine:bus)
+(defsetf bus incudine::set-bus)
 
 (export '(reinit-midi restart-qsynth jack-connect-qsynth
           *mt-out01* *midi-in1* *midi-out1*
