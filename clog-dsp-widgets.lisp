@@ -119,7 +119,9 @@ array of bindings, depending on the class."))
 (defun bind-refs-to-attrs (&rest refs-and-attrs)
   (loop
     for (ref attr) on refs-and-attrs by #'cddr
-    collect (bind-ref-to-attr ref attr)))
+    collect (cond
+              ((arrayp ref) (loop for r across ref collect (bind-ref-to-attr r attr)))
+              (t (bind-ref-to-attr ref attr)))))
 
 (defun obj-print (seq)
   (format nil "(~{~a~^ ~})"
@@ -154,6 +156,16 @@ array of bindings, depending on the class."))
           (funcall handler obj (parse-data-event data)))))
     :call-back-script *data-event-script*))
 
+#|
+(defun format-style (css)
+  (if css (format nil "style=\"~@[~{~(~A~): ~(~a~);~}~]\"" css)))
+|#
+
+(defun format-style (css)
+  (if css (format nil "style=\"~{~a: ~a~^; ~}\"" css)))
+
+;;; (format-style '(:width 1em :height 2em))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; creation functions for gui widgets
@@ -162,13 +174,14 @@ array of bindings, depending on the class."))
 
 ;;; o-knob is a custom html element defined in js:
 
-(defun create-o-knob (parent bindings min max step &key (unit "") (precision 2))
+(defun create-o-knob (parent bindings min max step &key (unit "") (precision 2) css)
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
                    parent
-                   (format nil "<o-knob min=\"~a\" max=\"~a\" step=\"~a\" value=\"~a\" precision=\"~a\" unit=\"~a\"></o-knob>"
-                           min max step (get-val var) precision unit)))) ;;; the get-val automagically registers the ref
+                   (format nil "<o-knob min=\"~a\" max=\"~a\" step=\"~a\" value=\"~a\" precision=\"~a\" unit=\"~a\" ~@[~a~]></o-knob>"
+                           min max step (get-val var) precision unit
+                           (format-style css))))) ;;; the get-val automagically registers the ref
     (dolist (binding bindings) (push element (b-elist binding))
       (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
@@ -186,6 +199,8 @@ array of bindings, depending on the class."))
                            (%set-val var (float (gethash attr data) 1.0)))
                          ))))
     element))
+
+(format-style '(:width 2em))
 
 (defun create-o-numbox (parent bindings min max &key (precision 2) css)
   (let* ((var (b-ref (first bindings)))
@@ -245,7 +260,7 @@ array of bindings, depending on the class."))
                             (opt-format-attr "color-on" (option-second color))
                             (opt-format-attr "flash-time" flash-time)
                             (opt-format-attr "flash" flash))
-                           (if css (format-style css))
+                           (format-style css)
                            (or (option-main label) "")))))
     (dolist (binding bindings) (push element (b-elist binding))
       (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
@@ -344,9 +359,6 @@ array of bindings, depending on the class."))
                            (t (%set-val var (gethash attr data)))))))
     element))
 
-(defun format-style (css)
-  (format nil "style=\"~@[~{~(~A~): ~(~a~);~}~]\"" css))
-
 (defun create-o-slider (parent bindings &key (direction :up) (min 0) (max 1)
                                          label background thumb-color bar-color
                                          (mapping :lin) (clip-zero nil)
@@ -390,13 +402,13 @@ array of bindings, depending on the class."))
 
 ;;; min, max, mapping, clip-zero, thumb-color, bar-color
 
-(defun create-o-multislider (parent binding-array
+(defun create-o-multislider (parent bindings
                              &key (direction :up) (value 0) (min 0) (max 1)
                                label background colors (thumb-color "transparent")
                                (mapping :lin) (clip-zero nil))
   (declare (type (member :lin :log) mapping)
            (type (member :up :right :down :left) direction))
-  (let* ((num-sliders (length binding-array))
+  (let* ((num-sliders (length (first bindings)))
          (element (create-child
                       parent
                       (format nil "<o-multislider ~{~@[~a ~]~}>~@[~a~]</o-multislider>"
@@ -412,8 +424,8 @@ array of bindings, depending on the class."))
                                (opt-format-attr "mapping" mapping )
                                (opt-format-attr "clip-zero" clip-zero ))
                               (or (option-main label) "")))))
-    (loop for binding across binding-array
-          collect (create-o-slider element binding
+    (loop for binding in (first bindings)
+          collect (create-o-slider element (list binding)
                                    :thumb-color (or thumb-color "transparent")
                                    :direction direction))
     (execute element (format nil "initSliders(~a)" num-sliders) )
@@ -594,23 +606,24 @@ event."))
 ;;; We don't want to restart the server everytime when the new-window
 ;;; fun is canged thats why this proxy gets defined
 (defun on-new-window (body)
-  (new-window body))
+  (new-gui-window body))
 
 ;; Initialize the CLOG system with a boot file which contains the
 ;; static js files. For customized uses copy the "www" subdirectory of
 ;; the repository to your local project and adjust :static-root
 ;; accordingly
 
-(defun new-window (body)
+(defun new-gui-window (body)
   "On-new-window handler."
-  (setf (title (html-document body)) "Clog Test")
+  (setf (title (html-document body)) "Clog Gui")
   (add-class body "w3-blue-grey"))
 
-(defun start-gui (&key (port 8080))
+(defun start-gui (&key (port 8080) (directory (asdf:system-source-directory :clog-dsp-widgets)))
   (clear-bindings) ;;; start from scratch
+  (format t "starting webserver at ~A" (merge-pathnames directory "/www"))
   (initialize #'on-new-window
               :port port
-              :static-root (merge-pathnames "www/" (asdf:system-source-directory :clog-dsp-widgets))
+              :static-root (merge-pathnames directory "/www")
               :boot-file "/start.html")
   ;; Open a browser to http://127.0.0.1:8080 - the default for CLOG apps
   (open-browser))

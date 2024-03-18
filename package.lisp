@@ -50,6 +50,6 @@
    #:pulse-off
    #:highlight
    #:start-gui
-   #:new-window
+   #:new-gui-window
 
    #:clog-dsp-widgets-initialize))
