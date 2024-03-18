@@ -30,9 +30,32 @@
 
 (in-package #:cm)
 
+(defun ensure-directory (dir)
+  (if (stringp dir) (format nil "~A/" dir) dir))
+
+(defun cm-restart-gui (directory)
+  (let* ((dir (pathname (ensure-directory directory)))
+         (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
+    (when (clog:is-running-p) (clog:shutdown))
+    (uiop:run-program (format nil "mkdir -p ~a" svg-dir-path))
+    (setf *ats-snd-directory* svg-dir-path)
+    (let ((targetpath (namestring (merge-pathnames dir "/www"))))
+      (dolist (dir-or-file '("js" "css" "favicon.ico" "start.html"))
+        (let* ((subdirpath (format nil "www/~a" dir-or-file))
+               (srcpath (namestring (asdf:system-relative-pathname :clog-dsp-widgets subdirpath))))
+          (unless (uiop:probe-file* (merge-pathnames (format nil "~a~a" dir subdirpath)))
+            (uiop:run-program (format nil "ln -s ~A ~A" srcpath targetpath))))))
+    (clog:set-on-new-window #'clog::cm-gui :boot-file "/start.html")
+    (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
+    (clog-dsp-widgets:start-gui :directory (namestring dir))
+    (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
+    (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")))
+
+;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))
 
 (defparameter *mt-out01* nil)
 
+#|
 (defmacro make-mt-stream (symbol-name midi-out-stream chan-tuning)
   "Define, open and initialize a microtonal midistream. The name of
 the stream and an already initialized midi-port-stream has to be
@@ -46,6 +69,7 @@ supplied and gets interned as a parameter."
               :output ,midi-out-stream)
      (initialize-io ,symbol-name)
      (values ',symbol-name)))
+|#
 
 ;;; Initialisierung der Mikrotöne:
 
@@ -123,14 +147,14 @@ supplied and gets interned as a parameter."
 (defun start-cm-all (&key (qsynth nil))
   (start-inkscape-osc)
   (rts)
-  (unless (cm::rts?) (rts))
+;;;  (unless (cm::rts?) (rts))
   ;;(make-mt-stream *mt-out01* *midi-out1* '(4 0))
   (if qsynth (restart-qsynth))
   ;;(setf *rts-out* *mt-out01*)
   (format t "~&midi initialized!~%")
   ;; (install-sly-hooks)
   (incudine:setup-io)
-  (start-gui)
+  (cm-restart-gui "/tmp")
   (cm))
 
 #|

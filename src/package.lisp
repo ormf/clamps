@@ -4,7 +4,7 @@
 
 ;;; (shadowing-import '(play-sfz-one-shot play-sfz-loop) 'cl-sfz)
 ;; (shadowing-import '(at now) 'cm)
-(shadowing-import '(trigger) 'cl-refs)
+1(shadowing-import '(trigger) 'cl-refs)
 
 (shadowing-import '(rescale-envelope
                     init stop group tempo
@@ -13,6 +13,9 @@
 ;;; play-sample
                     )
                   'incudine)
+
+(shadowing-import '(clip)
+                  'of-incudine-dsps)
 
 (shadow '(quantize at now tuning *tempo* buffer buffer-frames
           buffer-sample-rate
@@ -55,6 +58,6 @@
 
 (export '(reinit-midi restart-qsynth jack-connect-qsynth
           *mt-out01* *midi-in1* *midi-out1*
-          start-cm-all)
+          start-cm-all cm-restart-gui)
         'cm)
 
