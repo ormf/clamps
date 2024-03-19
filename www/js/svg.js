@@ -25,9 +25,9 @@ class SvgElement extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
         case 'data':
-            console.log('resetting svg...');
+//            console.log('resetting svg...');
             this.setSVG("svg/" + newValue);
-            console.log('done');
+//            console.log('done');
             break;
         case 'cursor-pos':
             this.setPos(newValue);
@@ -126,7 +126,7 @@ function svg(elem){
     
     svg.doScale = function(scale) {
         if (svg.contentData) {
-            console.log('doScale', scale);
+//            console.log('doScale', scale);
             svg.scale = scale;
             if (svg.svgContent.firstChild) {
                 svg.svgImage.setAttribute('width', scale*100 + '%');
@@ -134,10 +134,10 @@ function svg(elem){
             }
             
             let shiftX = parseFloat(svg.getAttribute('shift-x'));
-            console.log('shiftX', shiftX, 'shiftXVal', svg.shiftXVal);
+//            console.log('shiftX', shiftX, 'shiftXVal', svg.shiftXVal);
             {
                 svg.shiftX(shiftX);
-                console.log('shiftX', shiftX, 'shiftXVal', svg.shiftXVal);
+//                console.log('shiftX', shiftX, 'shiftXVal', svg.shiftXVal);
                 //        $(svg).trigger("data", {shift-x: shiftX});
             }
         }
@@ -179,15 +179,14 @@ function svg(elem){
             svgHCross.style.display = 'none';
             svgUpperReject.style.display = 'none';
             svgLowerReject.style.display = 'none';
+            svgLeftReject.style.display = 'none';
+            svgRightReject.style.display = 'none';
+            svgAtsRect.style.display = 'none';
             svg.removeEventListener("dblclick", dblClickMouseHandler);
         }
         else {
-            svgVCross.style.display = '';
-            svgHCross.style.display = '';
-            svgUpperReject.style.display = '';
-            svgLowerReject.style.display = '';
             svg.MouseActive = false;
-            svg.addEventListener("dblclick", dblClickMouseHandler);
+            svg.addEventListener("dblclick", startDblClickMouseHandler);
         }
     }
 
@@ -203,6 +202,20 @@ function svg(elem){
         svgLeftReject.style.opacity = svg.contrast;        
         svgRightReject.style.opacity = svg.contrast;        
 //        redrawCoords();
+    }
+
+
+    function startDblClickMouseHandler (e) {
+        if (svg.getAttribute("crosshairs") != 0) {
+            svgVCross.style.display = '';
+            svgHCross.style.display = '';
+            svgUpperReject.style.display = '';
+            svgLowerReject.style.display = '';
+            svgLeftReject.style.display = '';
+            svgRightReject.style.display = '';
+            svgAtsRect.style.display = '';
+            dblClickMouseHandler(e);
+        }
     }
 
     
@@ -256,7 +269,7 @@ function svg(elem){
     }
     
     svg.setSVG = function(url) {
-        console.log('url: ', url);
+//        console.log('url: ', url);
         svg.svgContent.data = url;
         svg.contentData = url;
         svg.reload = true;
@@ -264,7 +277,7 @@ function svg(elem){
     }
     
     svg.setSVG = function(url) {
-        console.log('url: ', url);
+//        console.log('url: ', url);
         svg.svgContent.data = url;
         svg.contentData = url;
         svg.reload = true;
@@ -279,7 +292,7 @@ function svg(elem){
 
     async function loadSVG(svgContent) {
         let svgURL = svgContent.data;
-        console.log('svgURL: ', svgURL);
+//        console.log('svgURL: ', svgURL);
         if (svgURL) {
             fetch(svgURL)
                 .then((response) => response.text())
@@ -305,7 +318,7 @@ function svg(elem){
                     svg.doBarLines(svg.getAttribute('bar-lines'));
                     svg.doInverse(svg.getAttribute('inverse'));
                     //                console.log(svg.getAttribute('cursor-pos'));
-                    console.log('svg.width: ', svg.width, 'width: ', width);
+//                    console.log('svg.width: ', svg.width, 'width: ', width);
                     if (svg.width != width) {
                         svg.width = width;
                         svg.setAttribute('width', width);
@@ -323,7 +336,7 @@ function svg(elem){
     };
     
     function resize() {
-        console.log('resize', svg.getBoundingClientRect().width)
+//        console.log('resize', svg.getBoundingClientRect().width)
     }
     
     function init() {
@@ -335,7 +348,7 @@ function svg(elem){
         svg.style.alignItems = 'stretch';
 
         let data = svg.getAttribute('data') || false;
-        console.log('svgContent.data: ', data);
+//        console.log('svgContent.data: ', data);
         svg.svgContent = document.createElement("object");
         svg.svgContent.className="svg";
 //        svg.svgContent.style.transform = 'translate(0px)';
@@ -368,6 +381,11 @@ function svg(elem){
         svg.appendChild(svgLeftReject);
         svg.appendChild(svgRightReject);
         svg.appendChild(svgAtsRect);
+        svgRightReject.style.display = 'none';
+        svgLeftReject.style.display = 'none';
+        svgUpperReject.style.display = 'none';
+        svgLowerReject.style.display = 'none';
+        svgAtsRect.style.display = 'none';
         svg.contentData = data;
         if (data) loadSVG(data);
         onresize(svg, resize);
