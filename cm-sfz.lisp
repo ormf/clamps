@@ -48,6 +48,11 @@
     (:parameters time keynum amplitude duration preset play-fn pan startpos chan)
     (:event-streams)))
 
+(defmethod schedule-object ((obj sfz) start sched)
+  (ensure-sfz-preset (sfz-preset obj))
+  (enqueue *qentry-object* obj (+ start (object-time obj))
+           nil sched))
+
 (declaim (inline get-lsample))
 (defun get-lsample (keynum map)
   (aref map (min (round keynum) 127)))
@@ -102,6 +107,7 @@ svg-file."
 (defun rt-write-sfz-evt (obj scoretime)
   (with-slots (keynum amplitude duration preset play-fn pan startpos chan) obj
     (let ((time (+ (rts-now) (* *rt-scale* scoretime))))
+      (ensure-sfz-preset preset)
       (at time (or play-fn #'cl-sfz:play-sfz) keynum amplitude duration :preset preset :pan pan :startpos startpos :out1 (mod (- chan 100) 8))))
   )
 
