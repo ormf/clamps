@@ -110,34 +110,34 @@ an external package, a leading <package-name>: has to be provided."
   (ou:with-props (lsample lsample-keynum lsample-amp lsample-play-fn saved-keynum keynum
                        amp amplitude duration start end stretch loopstart loopend adjust-stretch)
       args
-    (let* ((buf (incudine-bufs:find-buffer lsample))
-           (buffer (if (consp buf) (first buf) buf))
-           (new-lsample (of-incudine-dsps::make-lsample
-                         :buffer buffer
-                         :filename lsample
-                         :keynum (float lsample-keynum 1.0d0)
-                         :amp lsample-amp
-                         :loopstart loopstart
-                         :loopend loopend
-                         :play-fn (svg-symbol->fn lsample-play-fn)))
-           (bufdur (- (/ (incudine:buffer-frames buffer)
-                         (incudine:buffer-sample-rate buffer))
-                      start))
-           (saved-dur (max 0.001 (* (- (if (zerop end) bufdur end) start) stretch)))
-           (new-stretch (float (max 0.0001
-                                    (* stretch (/ duration (max 0.001 saved-dur))
-                                       (if adjust-stretch
-                                           (expt 2 (/ (- keynum saved-keynum) -12))
-                                           1)))
-                               1.0d0)))
-      (apply #'make-instance 'poolevt
-             (list* :lsample new-lsample
-                    :stretch new-stretch
-                    :keynum keynum
-                    :amp (+ amp (opacity->db amplitude))
-                    (ou:delete-props args :lsample :lsample-keynum :lsample-amp :lsample-play-fn
-                                          :loopstart :loopend :amp
-                                          :saved-keynum :amplitude :duration :channel))))))
+    (let ((buf (ensure-buffer lsample)))
+      (let* ((buffer (if (consp buf) (first buf) buf))
+             (new-lsample (of-incudine-dsps::make-lsample
+                           :buffer buffer
+                           :filename lsample
+                           :keynum (float lsample-keynum 1.0d0)
+                           :amp lsample-amp
+                           :loopstart loopstart
+                           :loopend loopend
+                           :play-fn (svg-symbol->fn lsample-play-fn)))
+             (bufdur (- (/ (incudine:buffer-frames buffer)
+                           (incudine:buffer-sample-rate buffer))
+                        start))
+             (saved-dur (max 0.001 (* (- (if (zerop end) bufdur end) start) stretch)))
+             (new-stretch (float (max 0.0001
+                                      (* stretch (/ duration (max 0.001 saved-dur))
+                                         (if adjust-stretch
+                                             (expt 2 (/ (- keynum saved-keynum) -12))
+                                             1)))
+                                 1.0d0)))
+        (apply #'make-instance 'poolevt
+               (list* :lsample new-lsample
+                      :stretch new-stretch
+                      :keynum keynum
+                      :amp (+ amp (opacity->db amplitude))
+                      (ou:delete-props args :lsample :lsample-keynum :lsample-amp :lsample-play-fn
+                                            :loopstart :loopend :amp
+                                                     :saved-keynum :amplitude :duration :channel)))))))
 
 #|
 (opacity->db -9)
@@ -218,7 +218,8 @@ svg-file."
           :buffer buffer :env of-incudine-dsps:*env1* :amp amp
           :transp transp :start start :end end
           :stretch stretch :wwidth wwidth :attack attack
-          :release release :pan pan :out1 out1 :out2 out2)
+          :release release :pan pan :out1 out1 :out2 out2
+          :head 200)
 
       ;; (at time #'cl-poolplayer::distributed-play (list :buffer buffer :amp amp
       ;;                                                  :transp transp :start start :end end
