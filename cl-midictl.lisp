@@ -186,6 +186,7 @@ controller actions."))
 
 (defmethod handle-midi-in ((instance midi-controller) opcode d1 d2)
   (with-slots (cc-fns cc-map cc-state note-state note-fn last-note-on) instance
+    (format t "midi-controller-handle-midi-in~%")
     (case opcode
       (:cc (progn
              (set-val (aref cc-state (aref cc-map d1)) d2)
@@ -316,15 +317,16 @@ controller's channel."
   (remove-all-responders input)
   (make-responder input
      (lambda (st d1 d2)
-       (incudine::msg :info "~&~S ~a ~a ~a" (status->opcode st) d1 d2 (status->channel st))
        (let ((chan (status->channel st))
              (opcode (status->opcode st)))
          (generic-midi-handler opcode d1 d2 chan)
          (dolist (controller (gethash input *midi-controllers*))
+           (declare (type midi-controller controller))
            (if (= chan (chan controller))
                (handle-midi-in controller opcode d1 d2))))))
   (recv-start input)
-  (update-all-controllers input))
+  (update-all-controllers input)
+  :midi-rcv-started)
 
 (defun stop-midi-receive (input)
   "remove all responders of input and stop general receiver/dispatcher
@@ -340,11 +342,29 @@ of the input."
 
 (defun start-midi-engine ()
   "open midi ports and start realtime thread."
-  (when *midi-in1* (jackmidi:close *midi-in1*))
+  (when *midi-in1*
+    (recv-stop *midi-in1*)
+    (remove-all-responders *midi-in1*)
+    (jackmidi:close *midi-in1*))
+  (incudine.util:msg :warn "closing midi streams~%")
+  (mapcar #'jackmidi:close jackmidi::*streams*)
+  (sleep 0.1)
   (when *midi-out1* (jackmidi:close *midi-out1*))
   (setf *midi-in1* (jackmidi:open :direction :input
-                                  :port-name "midi_in_1"))
+                                     :port-name "midi_in_1"))
+  (loop repeat 20 until *midi-in1* do (progn
+                                        (incudine.util:msg :warn "waiting for *midi-in1*")
+                                        (sleep 0.1)))
   (setf *midi-out1* (jackmidi:open :direction :output
                                    :port-name "midi_out_1"))
+  (loop repeat 20 until *midi-out1* do (progn
+                                        (incudine.util:msg :warn "waiting for *midi-out1*")
+                                        (sleep 0.1)))
   (start-midi-receive *midi-in1*)
-  (incudine:rt-start))
+;;;  (incudine:rt-start)
+  (if (and *midi-in1* *midi-out1*)
+      (progn
+        (incudine.util:msg :warn "~a" *midi-in1*)
+        (incudine.util:msg :warn "~a" *midi-out1*)
+        (list *midi-in1* *midi-out1*))
+      (error "midi didn't start properly")))
