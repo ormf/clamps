@@ -20,12 +20,50 @@
 ;;;
 ;;; **********************************************************************
 
-(in-package :incudine)
+(in-package :incudine-bufs)
 
 (defparameter *buffers* (make-hash-table))
 (defparameter *buffer-ids* (make-hash-table :test #'equal))
 (defparameter *buffer-max-id* -1)
 (defparameter *buffer-next-id* '())
+
+;;; 
+
+(defun get-sndfile-path (fname path)
+  (let ((pname (pathname fname)))
+    (if (and (uiop:absolute-pathname-p pname)
+             (uiop:file-exists-p pname))
+        pname
+        (or (path-find-file (format nil "~a.~a"
+                                    (pathname-name pname)
+                                    (pathname-type pname))
+                            path)
+            (warn "couldn't find file ~S in path" fname)))))
+
+#+linux
+(defun path-find-file (fname path)
+  (let ((fname (pathname fname)))
+    (if (uiop:file-exists-p fname)
+        (namestring fname)
+        (loop
+          for dir in path
+          for result = (string-trim
+                        '(#\NEWLINE)
+                        (with-output-to-string (str)
+                          (uiop:run-program (format nil "find ~a -name ~a" dir fname) :output str)))
+          while (string= result "")
+          finally (return (unless (string= result "") result))))))
+
+#-linux
+(defun path-find-file (fname path)
+  (let ((fname (pathname fname)))
+    (if (uiop:file-exists-p fname)
+        (namestring fname)
+        (loop
+          for dir in path
+          for result = (first (directory (format nil "~a/**/~a" dir fname)))
+          until result
+          finally (return result)))))
 
 (defun buffer-id (buffer)
   "get index of buffer from registry."
@@ -42,6 +80,8 @@
 
 (defun get-buffer-file (buffer)
   (canonicalize-name (buffer-file buffer)))
+
+
 
 (defun find-buffer (name)
   "find all buffers with a name being a full pathname or the
@@ -95,13 +135,17 @@ matching."
        ((consp buf) (or (bufname= (first buf) file) (bufname= (rest buf) file)))
        (t (and (string= (format nil "~a" (buffer-file buf)) (format nil "~a" file)) buf))))
 
-(defun of-buffer-load (file)
+(defun of-buffer-load (file &key (path cl-user:*sfile-path*))
   "load and register buffer from file if not loaded already. Return
 buffer."
   (let ((buf (find-buffer file)))
     (if (bufname= buf file)
         buf
-        (add-buffer (buffer-load file)))))
+        (alexandria:if-let (fname (path-find-file file path))
+          (add-buffer (buffer-load fname))
+          (warn "couldn't find soundfile in sfile-path: ~A" file)))))
 
-(export '(of-buffer-load buffer-id get-buffer find-buffer add-buffer remove-buffer
-          remove-all-buffers) 'incudine)
+(setf (fdefinition 'ensure-buffer) #'of-buffer-load)
+
+;;; (of-buffer-load "/home/orm/work/kompositionen/letzte-worte/snd/fl-s01-line01.wav")
+
