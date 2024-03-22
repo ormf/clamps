@@ -22,20 +22,10 @@
   :author "Orm Finnendahl <orm.finnendahl@selma-hfmdk-frankfurt.de>"
   :license "LLGPL"
   :serial t
-  :depends-on (#:uiop
-               #:incudine
+  :depends-on (#:cm
                #:orm-utils
-               #:cl-refs
-               #:fomus
-               #:cm-fomus
-               #:cm-svg.rts
-               #:cl-ppcre
                #:cl-coroutine
-               #:cm-incudine
-               #:cl-plot
-               #:incudine-plot
-               #:clog-dsp-widgets
-)
+               #:cm-fomus)
   :components ((:file "package")
                (:file "cm-utils")
                (:file "patterns")))

@@ -22,11 +22,13 @@
 
 (defun testmidi () (output (new midi)))
 
+;;; (testmidi)
+
 (defun jbmf ()
   "midi-rendering of \"Jesu bleibet meine Freude of J.S.Bach (Hommage
   to the Video Series of \"Structures and Interpretation of Computer
   Programs\")"
-  (output (new midi-program-change :program 24))
+  (output (new midi-program-change :program 24) :at 0)
   (sprout
    (let ((tscale 0.3))
      (process
@@ -56,7 +58,10 @@
                        :amplitude 0.3
                        :duration (* tscale 1 (third event))))
        wait (* tscale (first event))
-       finally (output (new midi-program-change :program 0))))))
+       ;; finally (output (new midi-program-change :program 0) :to *midi-out1*)
+       ))))
+
+;;; (jbmf)
 
 ;;; extension for a more general process type than in cm
 
@@ -84,6 +89,7 @@
 
 ;;; channel-tuning utility
 
+#|
 (defmacro make-mt-stream (symbol-name midi-out-stream chan-tuning)
   "Define, open and initialize a microtonal midistream. The name of
 the stream and an already initialized midi-port-stream has to be
@@ -97,6 +103,7 @@ supplied and gets interned as a parameter."
                      `(:channel-tuning ,,chan-tuning)) :output ,midi-out-stream)
      (initialize-io ,symbol-name)
      (values ',symbol-name)))
+|#
 
 (defun drunk-traverse (seq &key (weight 0.5))
   "shuffle an ordered list slightly by randomly swapping the positions

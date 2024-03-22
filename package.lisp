@@ -16,11 +16,7 @@
 ;;; along with this program; if not, write to the Free Software
 ;;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-(defpackage #:cm-utils
-  (:use #:cl #:cl-refs #:incudine #:cm #:orm-utils #:cl-coroutine #:cl-plot #:incudine-plot #:clog-dsp-widgets)
-  (:shadowing-import-from #:cm
-                          :cd :pwd :at :now :tuning :*tempo* :play :rescale-envelope :quantize :stop :group :range)
+(in-package :cm)
 
-;;;   (:export #:rt-proc #:rt-sub #:rt-wait #:rt-sprout #:make-mt-stream #:drunk-traverse)
-  )
+(use-package :cl-coroutine)
 
