@@ -330,24 +330,54 @@ be sorted."
     (mapcar (lambda (evt) (sv evt :time (+ offset (* -1 (object-time evt)))) evt)
             seq)))
 
-(defun transform-obj (obj &key (scale 1) (shift 0))
-  ""
-  (let* ((seq (copy-tree
-               (cond
-                 ((consp obj) obj)
-                 ((typep obj cm::<container>) (subobjects obj))
-                 (t (error "can't extract region from ~a" obj)))))
-         (offset (* -1 (object-time (first seq)))))
-    (mapcar (lambda (evt) (sv evt :time (+ (- shift offset) (* scale (+ offset (object-time evt))))) evt)
-            seq)))
+(defun scale-shift-transform (scale shift)
+  "return a function timescaling and timeshifting a supplied evt by
+scale and shift."
+  (lambda (evt)
+    (sv evt :time (+ shift (* scale (object-time evt))))
+    (sv* evt :duration scale)
+    evt))
 
+(defun scale-amp (scale)
+  "return a function amplitude scaling a supplied evt by scale."
+  (lambda (evt) (sv* evt :amplitunde scale)))
 
+(defun transpose-evt (transp)
+  "return a function transposing a supplied evt by transposition."
+  (lambda (evt) (sv+ evt :keynum transp)))
 
+;;; (scale-shift-transform 0 2)
+
+(defun transform-obj (fn obj)
+  "destructively transform obj by applying fn to all evts."
+  (cond
+    ((typep obj cm::<event>) (apply fn obj))
+    ((typep obj cm::<container>) fn obj)
+    (t (error "can't transform obj ~a" obj))))
+
+(defun scale-obj-time (obj scale)
+  "in place scaling of time and duration of object. Returns object"
+  (sv* obj :time scale)
+  (sv* obj :duration scale)
+  obj)
+
+(defun scale-seq (seq scale)
+  (mapcar (scale-shift-transform scale 0)
+          (mapcar #'copy-object (subobjects seq))))
 
 #|
+
+(typep (new seq) cm::<event>)
+
+(map-objects
+ (lambda (obj) (let ((time (object-time obj)))
+            (sv obj :time (+ shift (* time shift))))))
+
 (defun time->speed-fn (min max end-time)
   (lambda (time)
     (+ min (* (/ time end-time) (- max min)))))
 |#
 
-(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime-fn vstime->time-fn time->speed-fn vstime->speed-fn calc-dur chord-derive display play-midi play-svg cm-store g-export play-curr region zero-shift reverse-obj transform-obj) 'cm)
+(export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime-fn vstime->time-fn time->speed-fn vstime->speed-fn calc-dur chord-derive display play-midi play-svg cm-store g-export play-curr region zero-shift reverse-obj transform-obj
+          scale-shift-transform scale-amp transpose-evt)
+        'cm)
