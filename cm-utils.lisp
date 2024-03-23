@@ -340,7 +340,7 @@ scale and shift."
 
 (defun scale-amp (scale)
   "return a function amplitude scaling a supplied evt by scale."
-  (lambda (evt) (sv* evt :amplitunde scale)))
+  (lambda (evt) (sv* evt :amplitude scale)))
 
 (defun transpose-evt (transp)
   "return a function transposing a supplied evt by transposition."
