@@ -293,20 +293,15 @@ updating the cc-state in the controller when the incoming midi values
 agree to the values to avoid jumps in the cc-state of the controller
 instance."
   (case opcode
-    (:cc (progn
-           (setf (aref (aref *midi-cc-state* channel) d1) d2)
-           (mapcar (lambda (fn) (funcall fn d2)) (aref (aref *midi-cc-fns* channel) d1))))
-    (:note-on (progn
-                (setf (aref (aref *midi-note-state* channel) d1) d2)
-                (mapcar (lambda (fn) (funcall fn d2)) (aref (aref *midi-note-fns* channel) d1))))
-    (:note-off (progn
-                (setf (aref (aref *midi-note-state* channel) d1) 0)
-                (mapcar (lambda (fn) (funcall fn 0)) (aref (aref *midi-note-fns* channel) d1))))
-    ;; (:note-on (progn
-    ;;             (mapcar (lambda (fn) (funcall fn d1 d2)) (note-fns instance))
-    ;;             (setf last-note-on d1)))
-    ;; (:note-off (mapcar (lambda (fn) (funcall fn d1 0)) (note-fns instance)))
-    ))
+    (:cc
+     (setf (aref (aref *midi-cc-state* channel) d1) d2)
+     (dolist (fn (aref (aref *midi-cc-fns* channel) d1)) (funcall fn d2)))
+    (:note-on
+     (setf (aref (aref *midi-note-state* channel) d1) d2)
+     (dolist (fn (aref (aref *midi-note-fns* channel) d1)) (funcall fn d2)))
+    (:note-off
+     (setf (aref (aref *midi-note-state* channel) d1) 0)
+     (dolist (fn (aref (aref *midi-note-fns* channel) d1)) (funcall fn 0)))))
 
 (defun start-midi-receive (input)
   "general receiver/dispatcher for all midi input of input arg. On any
@@ -328,17 +323,21 @@ controller's channel."
   (update-all-controllers input)
   :midi-rcv-started)
 
+;;; (start-midi-receive *midi-in1*)
+
 (defun stop-midi-receive (input)
   "remove all responders of input and stop general receiver/dispatcher
 of the input."
   (remove-all-responders input)
   (recv-stop input))
 
+;;; (stop-midi-receive *midi-in1*)
+
 (defun update-all-controllers (midi-in-port)
   (dolist (controller (gethash midi-in-port *midi-controllers*))
     (update-state controller)))
 
-;;; (start-midi-receive *midi-in1*)
+;;; (start-midi-engine)
 
 (defun start-midi-engine ()
   "open midi ports and start realtime thread."
