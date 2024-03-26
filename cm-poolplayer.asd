@@ -6,8 +6,8 @@
   :license  "GPL 2.0 or later"
   :version "0.0.1"
   :serial t
-  :depends-on (#:cl-poolplayer #:cm-utils  #:cm-svg)
-  :components ((:file "cm-poolplayer")
+  :depends-on (#:cm-poolevt #:cl-poolplayer #:cm-utils  #:cm-svg)
+  :components (;;; (:file "cm-poolplayer")
                (:file "cm-sampleevt")
                (:file "cl-poolplayer-extra")
                (:file "cm-songplayer")

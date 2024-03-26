@@ -127,7 +127,7 @@ svg-file."
 
 
 (add-svg-assoc-fns
- `((sampleevt . ,#'svg->sampleevt)))
+ '((sampleevt . svg->sampleevt)))
 
 ;;; (new sampleevt)#i(sampleevt lsample nil keynum nil amp 0.0 duration 1 start 0 out 0)
 

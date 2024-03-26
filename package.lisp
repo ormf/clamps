@@ -1,4 +1,5 @@
 ;;;; package.lisp
 
 (defpackage #:cm-poolplayer
-  (:use #:cl))
+  (:use #:cl)
+  (:shadowing-import-from #:cm #:*DEBUG*))
