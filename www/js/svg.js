@@ -1,7 +1,7 @@
 class SvgElement extends HTMLElement {
-    static observedAttributes = ['data', 'cursor-pos', 'shift-x', 'shift-y', 'scale',
+    static observedAttributes = ['svg-file', 'cursor-pos', 'shift-x', 'shift-y', 'scale',
                                  'piano-roll', 'staff-systems', 'bar-lines',
-                                 'global-x-scale', 'inverse', 'crosshairs', 'bandwidth', 'ats-contrast'];
+                                 'global-x-scale', 'inverse', 'crosshairs', 'bandwidth', 'ats-contrast', 'mousepos'];
 
   constructor() {
     // Always call super first in constructor
@@ -24,8 +24,8 @@ class SvgElement extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
-        case 'data':
-//            console.log('resetting svg...');
+        case 'svg-file':
+            console.log('resetting svg...', newValue);
             this.setSVG("svg/" + newValue);
 //            console.log('done');
             break;
@@ -62,6 +62,9 @@ class SvgElement extends HTMLElement {
         case 'ats-contrast':
             this.doAtsContrast(newValue);
             break;
+        case 'mousepos' :
+            let newPos = JSON.parse('[' + newValue.replace(/[()]/g, '').replace(/ +/g, ', ').replace(/d0/g, '') + ']');
+            this.doMousePos(newPos);
         }
     }
 }
@@ -204,6 +207,18 @@ function svg(elem){
 //        redrawCoords();
     }
 
+    svg.doMousePos = function(value) {
+//        console.log('doMousePos: ', value);
+        if (externalValueChange) {
+            svg.XPos = value[0];
+            svg.YPos = value[1];
+        }
+        else {
+            $(svg).trigger("data", { mousepos: [svg.XPos, svg.YPos]});
+        }
+        redrawCoords ();
+    }
+    
 
     function startDblClickMouseHandler (e) {
         if (svg.getAttribute("crosshairs") != 0) {
@@ -235,7 +250,7 @@ function svg(elem){
 
     function redrawCoords () {
         let x = svg.XPos;
-        let y = svg.YPos;
+        let y = 1-svg.YPos;
         let upperHeight = (svg.bandWidth >= 1)? 0 : 100*clamp((y - (svg.bandWidth/2)), 0, 1);
         let lowerHeight = (svg.bandWidth >= 1)? 0 : 100*clamp(1 - (y + (svg.bandWidth/2)), 0, 1);
         let rejectHeight = (svg.bandWidth >= 1)? 100 : (y < svg.bandWidth/2)? 100 * (y + (svg.bandWidth/2)) : 100 * svg.bandWidth;
@@ -260,12 +275,11 @@ function svg(elem){
     function crossHairsMouseHandler (e) {
         let rect = svg.getBoundingClientRect();
         svg.XPos = (e.clientX - rect.left) / rect.width; //x position within the element.
-        svg.YPos = ((e.clientY - rect.top) / rect.height);  //y position within the element.
+        svg.YPos = 1-((e.clientY - rect.top) / rect.height);  //y position within the element.
 //        console.log("Left? : " + x + " ; Top? : " + y + ".");
-        redrawCoords ();
-        
-        $(svg).trigger("data", { mousepos: [svg.XPos, 1-svg.YPos]});
-
+        externalValueChange = false;
+        svg.setAttribute("mousepos", [svg.XPos, svg.YPos]);        
+        externalValueChange = true;
     }
     
     svg.setSVG = function(url) {
