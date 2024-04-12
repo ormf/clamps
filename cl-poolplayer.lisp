@@ -4,21 +4,7 @@
 
 (setf *print-case* :downcase)
 ;;; (defparameter *pool-hash* (make-hash-table :test #'equal))
-(defparameter *events* nil)
-
-#|
-(defparameter *audio-fn-id-lookup*
-  (let ((hash (make-hash-table)))
-    (loop for key in '(:preset-form :p1 :p2 :p3 :p4 :dtimefn :lsamplefn
-                       :ampfn :transpfn :startfn :endfn :stretchfn
-                       :wwidthfn :attackfn :releasefn :panfn :outfn)
-       for id from 0
-       do (setf (gethash key hash) id))
-    hash))
-
-(defun get-fn-idx (key)
-  (gethash key *audio-fn-id-lookup*))
-|#
+(defparameter *poolplayer-events* nil)
 
 (defun get-preset-fn (preset key)
   (aref preset (get-fn-idx key)))
@@ -122,17 +108,18 @@ sets the 'playing slot of the player to nil and returns."
           (let* ((next (+ time (getf params :dtime))))
             (setf (getf params :buffer) (lsample-buffer (getf params :lsample)))
             (remf params :dtime)
+            (incf (getf params :amp) *master-amp-db*)
+            (push (cons (now) (copy-list params)) *poolplayer-events*)
             (remf params :lsample)
 ;;            (format t "~&~a" params)
-            (incf (getf params :amp) *master-amp-db*)
-;;            (break "params: ~S" params)
-            (if *debug* (format t "~&~S" params))
-            (apply #'play-buffer-stretch-env-pan-out* params)
+            (incudine.util:msg :info "params: ~a ~a ~S" next end params)
+            (apply #'play-buffer-stretch-env-pan-out* :env *env1* params)
 ;;;            (distributed-play params)
             (if (and dur (> next end))
                 (setf playing nil)
                 (at next #'perform player next args)))))))
 
+#|
 (defmethod perform ((player eventplayer) time args)
   "central (tail call) recursive perform routine used by
 #'preset-play: It calculates params according to the preset definition
@@ -153,15 +140,15 @@ sets the 'playing slot of the player to nil and returns."
             (remf params :lsample)
 ;;            (format t "~&~a" params)
             (incf (getf params :amp) *master-amp-db*)
-;;            (break "params: ~S" params)
+;;;            (break "params: ~S" params)
             (if *debug* (format t "~&~S" params))
-            (apply #'play-buffer-stretch-env-pan-out* params)
+            (apply #'play-buffer-stretch-env-pan-out* :env *env1* params)
 ;;;            (distributed-play params)
             (if (and dur (> next end))
                 (setf playing nil)
                 (at next #'perform player next args)))))))
-
-;;; (collect-argvals 0 nil (aref *poolplayer-presets* 15))
+|#
+;;; (collect-argvals 0 nil (aref *poolplayer-presets* 0))
 
 (defmethod perform ((player eventplotter) time args)
   "central perform routine used by #'preset-play: It calculates params
@@ -294,3 +281,7 @@ sets the 'playing slot of the player to nil and returns."
     :preset preset)
 ;;;  (break "~a, ~a" p args)
   (funcall #'nperform p (getf args :time) args))
+
+;;; should be moved to cm-poolplayer:
+
+

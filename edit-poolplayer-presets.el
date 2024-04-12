@@ -1,5 +1,5 @@
 (defun edit-poolplayer-preset (str ref)
-  (set-buffer (find-file-noselect orgel-preset-file))
+  (set-buffer (find-file-noselect poolplayer-preset-file))
   (delete-region (point-min) (point-max))
   (insert "(in-package :cl-poolplayer)\n\n;;; preset: ")
   (insert (format "%s\n\n" ref))

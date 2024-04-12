@@ -76,9 +76,10 @@ keyword determines a threshold for [minb..maxb], below which no
 [mina..maxa] values are returned."
   (let* ((rep-stream (new weighting :of distribution))
          (curr-rep (next rep-stream)))
-    (lambda (x)
-      (let* ((minb (funcall minbfn x))
-             (maxb (funcall maxbfn x)))
+    (lambda (x &rest args)
+      (declare (ignorable args))
+      (let* ((minb (if (numberp minbfn) minbfn (funcall minbfn x)))
+             (maxb (if (numberp maxbfn) maxbfn (funcall maxbfn x))))
         (decf curr-rep)
         (if (or (<= (max minb maxb) thresh) (minusp curr-rep))
             (progn

@@ -20,6 +20,8 @@
 
 (in-package :cl-poolplayer)
 
+(defparameter slynk::*send-counter* 0)
+
 ;;; a preset defines the parameters of calls to buff-stretch-play.
 ;;;
 ;;; The parameters in a preset are given in the form of envelopes
@@ -76,7 +78,7 @@
     for n from 3
     collect `(setf (aref ,preset ,idx)
                    (lambda ,(append (subseq '(&optional x dur p1 p2 p3 p4) 0 (min n 7)) '(args))
-                     (declare (ignorable ,@(append (subseq '(&optional x dur p1 p2 p3 p4) 1 (min n 7)) '(args))))
+                 (get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)    (declare (ignorable ,@(append (subseq '(&optional x dur p1 p2 p3 p4) 1 (min n 7)) '(args))))
                      ,val))))
 
 (defun canonisize-arg-list (args)
@@ -133,7 +135,8 @@
 ;;; (make-preset)
 
 (defparameter *poolplayer-presets-file*
-  (namestring (merge-pathnames "presets/cl-poolplayer-01.lisp" (asdf:system-source-directory :cl-poolplayer)))) 
+  (namestring (merge-pathnames "presets/cl-poolplayer-01.lisp"
+                               (asdf:system-source-directory :cl-poolplayer)))) 
 
 ;;; (defparameter *audio-presets-file* "presets/schwarm01-audio-presets.lisp")
 
@@ -179,25 +182,31 @@
 (defparameter *curr-poolplayer-preset-nr* 0)
 (defparameter *max-poolplayer-preset-nr* 99)
 
-(defun next-poolplayer-preset ()
-  (when (< *curr-poolplayer-preset-nr* *max-poolplayer-preset-nr*)
-;;;      (format t "next~%")
-      (edit-preset-in-emacs (incf *curr-poolplayer-preset-nr*))))
-
-(defun previous-poolplayer-preset ()
-  (when (> *curr-poolplayer-preset-nr* 0)
-;;;      (format t "previous~%")
-      (edit-preset-in-emacs (decf *curr-poolplayer-preset-nr*))))
-
-(defun show-poolplayer-preset (num)
-  (setf *curr-poolplayer-preset-nr* (max (min num *max-poolplayer-preset-nr*) 0))
-  (edit-preset-in-emacs *curr-poolplayer-preset-nr*))
-
-
-#+swank
+#-slynk
 (defparameter *emcs-conn* swank::*emacs-connection*)
 
-#+swank
+#+slynk
+(defparameter *emcs-conn* slynk::*emacs-connection*)
+
+
+(defun next-poolplayer-preset ()
+  (let ((slynk::*emacs-connection* *emcs-conn*))
+    (when (< *curr-poolplayer-preset-nr* *max-poolplayer-preset-nr*)
+      (format t "next~%")
+      (edit-preset-in-emacs (incf *curr-poolplayer-preset-nr*)))))
+
+(defun previous-poolplayer-preset ()
+  (let ((slynk::*emacs-connection* *emcs-conn*))
+    (when (> *curr-poolplayer-preset-nr* 0)
+      (format t "previous~%")
+      (edit-preset-in-emacs (decf *curr-poolplayer-preset-nr*)))))
+
+(defun show-poolplayer-preset (num)
+  (setf *curr-poolplayer-preset-nr* (max (min (round num) *max-poolplayer-preset-nr*) 0))
+  (let ((slynk::*emacs-connection* *emcs-conn*))
+    (edit-preset-in-emacs *curr-poolplayer-preset-nr*)))
+
+#-slynk
 (defun define-elisp-code ()
   (let ((swank::*emacs-connection* *emcs-conn*))
     (swank::eval-in-emacs
@@ -212,26 +221,27 @@
                 (merge-pathnames
                  "edit-poolplayer-presets.el"
                  (asdf:system-source-directory :cl-poolplayer))))
-        ) t)))
+        )
+     t)))
 
 #+slynk
-(defun define-elisp-code ()
-  (slynk::eval-in-emacs
-   `(progn
-      (setq poolplayer-preset-file
-            ,(namestring
-              (merge-pathnames
-               "curr-preset.lisp"
-               (asdf:system-source-directory :cl-poolplayer))))
-      (find-file poolplayer-preset-file)
-      (set-window-dedicated-p (get-buffer-window "curr-preset.lisp" t) t)
-      (load ,(namestring
-              (merge-pathnames
-               "sly-edit-poolplayer-presets.el"
-               (asdf:system-source-directory :cl-poolplayer)))))
-   t))
+(defun define-elisp-code (&key (basedir (asdf:system-source-directory :cl-poolplayer)))
+  (let ((slynk::*emacs-connection* *emcs-conn*))
+    (slynk::eval-in-emacs
+     `(progn
+        (setq poolplayer-preset-file
+              ,(namestring
+                (merge-pathnames
+                 "curr-preset.lisp"
+                 basedir)))
+        (find-file poolplayer-preset-file)
+        (set-window-dedicated-p (get-buffer-window "curr-preset.lisp" t) t)
+        (load ,(namestring
+                (merge-pathnames
+                 "sly-edit-poolplayer-presets.el" basedir))))
+     t)))
 
-#+swank
+#-slynk
 (defun edit-preset-in-emacs (ref)
   "send the preset form referenced by <ref> to emacs for display in the
 curr-preset.lisp buffer."
@@ -257,11 +267,19 @@ curr-preset.lisp buffer."
        `(edit-poolplayer-preset
          ,(progn
             (in-package :cl-poolplayer)
+            (defparameter slynk::*send-counter* 0)
             (preset->string ref))
          ,ref) t)
       (slynk::eval-in-emacs
        `(save-excursion
          (switch-to-buffer (get-buffer "curr-preset.lisp"))) t)))
+
+(defun set-basedir (basedir)
+  (setf *poolplayer-presets-file*
+        (namestring (merge-pathnames "presets/cl-poolplayer-01.lisp" basedir)))
+  (load-poolplayer-presets)
+  (setf *curr-preset-no* 0)
+  (cl-poolplayer::define-elisp-code :basedir basedir))
 
 ;;; into init-file: (define-elisp-code)
 ;;;

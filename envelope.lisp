@@ -22,12 +22,12 @@
 
 #| 
 
-An envelope is a special data-structure defineing an asr envelope:
+An envelope is a special data-structure defining an asr envelope:
 
    ______|______
   /      |      \ 
- /       |       _
-/        |         \
+ /       |       \
+/        |        \
 
 the two fields suswidth and pan define the envelope:
 

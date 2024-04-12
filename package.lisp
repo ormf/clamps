@@ -2,7 +2,8 @@
 
 (defpackage #:cl-poolplayer
   (:use #:cl #:orm-utils #:incudine #:of-incudine-dsps #:incudine-bufs) ;;  #:incudine.scratch
-  (:shadowing-import-from #:cm :song #:new :range :cd :pwd :drunk-traverse
+  (:shadowing-import-from #:cm :song #:new :range :cd :pwd
+;;;                                                  :drunk-traverse
    :quantize
                           #:at #:rescale-envelope #:tuning #:play
                           #:now #:stop #:*tempo*
@@ -46,7 +47,12 @@
    #:EVENTPLAYER
    #:EVENTPLOTTER
    #:*POOLPLAYER-PRESETS-FILE*
+   #:PREVIOUS-POOLPLAYER-PRESET
+   #:NEXT-POOLPLAYER-PRESET
    #:SHOW-POOLPLAYER-PRESET
    #:LOAD-POOLPLAYER-PRESETS
    #:SAVE-POOLPLAYER-PRESETS
-   #:SERIALIZE-SCORE))
+   #:SERIALIZE-SCORE
+   #:SET-BASEDIR
+   #:*POOLPLAYER-EVENTS*
+   ))
