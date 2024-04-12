@@ -78,7 +78,7 @@
     for n from 3
     collect `(setf (aref ,preset ,idx)
                    (lambda ,(append (subseq '(&optional x dur p1 p2 p3 p4) 0 (min n 7)) '(args))
-                 (get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)(get-preset-fn preset :outfn)    (declare (ignorable ,@(append (subseq '(&optional x dur p1 p2 p3 p4) 1 (min n 7)) '(args))))
+                     (declare (ignorable ,@(append (subseq '(&optional x dur p1 p2 p3 p4) 1 (min n 7)) '(args))))
                      ,val))))
 
 (defun canonisize-arg-list (args)
@@ -192,19 +192,21 @@
 (defun next-poolplayer-preset ()
   (let ((slynk::*emacs-connection* *emcs-conn*))
     (when (< *curr-poolplayer-preset-nr* *max-poolplayer-preset-nr*)
-      (format t "next~%")
+      (incudine.util:msg :info "next")
       (edit-preset-in-emacs (incf *curr-poolplayer-preset-nr*)))))
 
 (defun previous-poolplayer-preset ()
   (let ((slynk::*emacs-connection* *emcs-conn*))
     (when (> *curr-poolplayer-preset-nr* 0)
-      (format t "previous~%")
+      (incudine.util:msg :info "previous")
       (edit-preset-in-emacs (decf *curr-poolplayer-preset-nr*)))))
 
 (defun show-poolplayer-preset (num)
-  (setf *curr-poolplayer-preset-nr* (max (min (round num) *max-poolplayer-preset-nr*) 0))
-  (let ((slynk::*emacs-connection* *emcs-conn*))
-    (edit-preset-in-emacs *curr-poolplayer-preset-nr*)))
+  (let ((new (max (min (round num) *max-poolplayer-preset-nr*) 0)))
+    (when (/= new *curr-poolplayer-preset-nr*)
+      (setf *curr-poolplayer-preset-nr* new)
+      (let ((slynk::*emacs-connection* *emcs-conn*))
+        (edit-preset-in-emacs *curr-poolplayer-preset-nr*)))))
 
 #-slynk
 (defun define-elisp-code ()
@@ -269,7 +271,7 @@ curr-preset.lisp buffer."
             (in-package :cl-poolplayer)
             (defparameter slynk::*send-counter* 0)
             (preset->string ref))
-         ,ref) t)
+         ,(cl-refs:get-val (if (cl-midictl:find-controller :ff01) (cl-midictl::curr-player (cl-midictl:find-controller :ff01)) (cl-refs:make-ref 0)))) t)
       (slynk::eval-in-emacs
        `(save-excursion
          (switch-to-buffer (get-buffer "curr-preset.lisp"))) t)))

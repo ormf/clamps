@@ -11,20 +11,20 @@
   (goto-char 34)
   (forward-line)
   (forward-line)
-  (slime-reindent-defun)
+  (sly-reindent-defun)
   (forward-line)
   (forward-line)
   (forward-line)
   (forward-line)
-  (save-buffer))
+  (set-buffer-modified-p nil))
 
 (defun next-poolplayer-preset ()
     (interactive)
-    (slime-repl-send-string "(cl-poolplayer::next-poolplayer-preset)"))
+    (sly-mrepl-send-string "(cl-poolplayer::next-poolplayer-preset)"))
 
 (defun previous-poolplayer-preset ()
     (interactive)
-    (slime-repl-send-string "(cl-poolplayer::previous-poolplayer-preset)")
+    (sly-mrepl-send-string "(cl-poolplayer::previous-poolplayer-preset)")
     (save-excursion
       (switch-to-buffer (get-buffer "curr-preset.lisp"))))
 
