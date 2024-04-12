@@ -56,7 +56,7 @@
            :documentation "idx of current preset bank")
    (cp-src :initform nil :initarg :cp-src :accessor cp-src
            :documentation "idx of src preset to copy")
-   (presets :initform (make-array 4 :initial-contents (loop repeat 4 collect (make-array 128 :initial-element nil)))
+   (presets :initform (make-array 128 :initial-contents (loop repeat 128 collect (make-array 4 :initial-element nil)))
             :initarg :presets :accessor presets)))
 
 (defmethod initialize-instance :after ((obj nanoktl2-preset-midi) &rest args)
@@ -212,15 +212,17 @@ off is determined by <initial-flash>."
 (defun handle-preset-button-press (instance button-idx)
   (incudine.util:msg :info "preset-button-press ~a" button-idx)
   (with-slots (curr-bank cp-src tr-rec) instance
-    (let ((preset-no (+ (* 16 curr-bank) button-idx)))
+    (let ((preset-no (+ (* 16 (get-val curr-bank)) button-idx)))
       (case (get-val tr-rec)
         (0 (unless (zerop (get-val (aref (slot-value instance (if (< button-idx 8) 's-buttons 'm-buttons))
                                          (mod button-idx 8))))
              (recall-preset instance preset-no)
              (update-preset-buttons instance)))
-        (1 (store-preset instance preset-no)
+        (1
+         (store-preset instance preset-no)
          (set-val tr-rec 0)
-         (update-preset-buttons instance))
+         (update-preset-buttons instance)
+         )
         (2 (if cp-src
                (let* ((src-idx (mod cp-src 16))
                       (slot-name (if (< src-idx 8) 's-buttons 'm-buttons))
@@ -255,7 +257,7 @@ off is determined by <initial-flash>."
     (or
      (block nil
        (dolist (p active-players)
-         (when (aref (aref (presets instance) p) preset-no)
+         (when (aref (aref (presets instance) preset-no) p)
            (return 1))))
      0)))
 
@@ -298,7 +300,7 @@ off is determined by <initial-flash>."
                   (:scale
                    (progn
                      (unless hide-fader
-                       (set-val gui-slot (buchla-scale val last-cc (get-val gui-slot))))
+                       (set-val gui-slot (buchla-scale val last-cc (get-val gui-slot) :max 1.0)))
                      (setf (aref nk2-fader-last-cc fader-idx) val)))
                   (:jump (unless hide-fader (set-val gui-slot val)))
                   (:catch (unless hide-fader
@@ -333,7 +335,7 @@ off is determined by <initial-flash>."
 
 (defgeneric copy-preset (instance src dest)
   (:method ((controller nanoktl2-preset-midi) src dest)
-    (format t "copy preset from ~a to ~a~%" src dest)
+    (incudine.util:msg :info "copy preset from ~a to ~a~%" src dest)
     (unless (= src dest)
       (with-slots (presets) controller
         (loop
@@ -345,7 +347,7 @@ off is determined by <initial-flash>."
 (defgeneric store-preset (instance dest)
   (:method ((controller nanoktl2-preset-midi) dest)
     (with-slots (presets) controller
-      (format t "store preset to ~a~%" dest)
+      (incudine.util:msg :info "store preset to ~a~%" dest)
       (loop
         for player in (get-active-players controller)
         do (setf (aref (aref presets player) dest)
@@ -354,7 +356,7 @@ off is determined by <initial-flash>."
 
 (defgeneric recall-preset (instance src)
   (:method ((controller nanoktl2-preset-midi) src)
-    (format t "recall preset from ~a~%" src)
+    (incudine.util:msg :info "recall preset from ~a~%" src)
     (with-slots (presets) controller
       (loop
         for player in (get-active-players controller)

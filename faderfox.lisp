@@ -58,7 +58,6 @@ nanokontrol2.
     (setf note-state (make-array (length cc-nums)
                                :initial-contents
                                (loop for x below (length cc-nums) collect (make-ref 0))))
-    (format t "~&blah~%")
     (dotimes (idx 16)
       (push
        (watch
@@ -80,20 +79,22 @@ nanokontrol2.
   (with-slots (cc-fns cc-nums ff-fader-update-fns echo
                cc-map cc-state note-state note-fn last-note-on midi-output chan)
       instance
+    (incudine.util:msg :debug "faderfox ~S ~a ~a" opcode d1 d2)
     (case opcode
-      (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
+      (:cc 
        (cond
          ((< (aref cc-map d1) 16)
           (let* ((fader-idx (aref cc-map d1))
                  (fader-slot (aref cc-state fader-idx))
                  (old-value (get-val fader-slot))
                  (new-value (max 0 (min 1 (float (+ old-value (/ (midi-delta->i d2) 127)) 1.0)))))
-            (incudine.util:msg :info "old-value: ~a, new-value: ~a" old-value new-value)
+            (incudine.util:msg :debug "old-value: ~a, new-value: ~a" old-value new-value)
             (when (/= old-value new-value)
               (set-val fader-slot new-value))))))
-      (:note-on (incudine.util:msg :info "notein: ~a ~a" d1 d2)
+      (:note-on
        (let ((button-idx (aref cc-map d1)))
-         (cond ((and (< button-idx 16) (= d2 127))
+         (incudine.util:msg :debug "button-idx ~a" button-idx)
+         (cond ((and (< 3 button-idx 16))
                 (let ((button-slot (aref note-state button-idx)))
                   (toggle-slot button-slot)))))))))
 

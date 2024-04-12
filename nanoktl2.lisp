@@ -160,7 +160,7 @@ nanokontrol2.
                   (:jump (unless hide-fader (set-val gui-slot d2)))
                   (:catch (unless hide-fader
                             (if fn
-                                (when (funcall fn d2 (val gui-slot))
+                                (when (funcall fn d2 (get-val gui-slot))
                                   (set-val gui-slot d2)
                                   (setf (aref nk2-fader-update-fns fader-idx) nil))
                                 (set-val gui-slot d2)))))))

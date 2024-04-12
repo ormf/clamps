@@ -213,15 +213,16 @@ controller actions."))
 
 (defmethod initialize-instance :after ((instance midi-controller) &rest args)
   (declare (ignorable args))
-  (with-slots (id) instance
+  (with-slots (id midi-input midi-output) instance
 ;;    (format t "~&midictl-id: ~a ~%" id)
     (if (gethash id *midi-controllers*)
         (warn "id already used: ~a" id)
         (progn
           (format t "adding controller ~S~%" id)
-          (unless (midi-input instance) (error "no midi-input specified for ~a" instance))
-          (unless (midi-output instance) (error "no midi-output specified for ~a" instance))
-          (push instance (gethash (midi-input instance) *midi-controllers*))
+          (unless midi-input (error "no midi-input specified for ~a" instance))
+          (unless midi-output (error "no midi-output specified for ~a" instance))
+;;;          (setf midi-output (cm:ensure-jackmidi midi-output))
+          (push instance (gethash midi-input *midi-controllers*))
           (setf (gethash id *midi-controllers*) instance)))))
 
 ;;; central registry for midi controllers:
@@ -292,6 +293,7 @@ controller instance using mouse interaction or presets and only
 updating the cc-state in the controller when the incoming midi values
 agree to the values to avoid jumps in the cc-state of the controller
 instance."
+  (incudine.util:msg :debug "~S ~a ~a ~a" opcode d1 d2 channel)
   (case opcode
     (:cc
      (setf (aref (aref *midi-cc-state* channel) d1) d2)
@@ -367,3 +369,4 @@ of the input."
         (incudine.util:msg :warn "~a" *midi-out1*)
         (list *midi-in1* *midi-out1*))
       (error "midi didn't start properly")))
+
