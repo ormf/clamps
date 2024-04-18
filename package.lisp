@@ -5,18 +5,19 @@
 (defpackage #:cl-refs
   (:use #:cl)
   (:export
-   #:ref-object-super
-   #:*refs-seen*
-   #:*debug*
-   #:ref-object #:bang-object
-   #:ref-listeners
-   #:ref-id
-   #:make-ref #:set-val #:%set-val #:get-val
-   #:make-bang #:trigger #:%trigger
-   #:make-computed
-   #:watch
-   #:clear-dependencies #:with-updating-deps
-   #:on-deps-update
-   #:with-unwatched
-   #:copy-ref
+   #:REF-OBJECT-SUPER
+   #:*REFS-SEEN*
+   #:REF-OBJECT #:BANG-OBJECT
+   #:REF-LISTENERS
+   #:REF-ID
+   #:MAKE-REF #:SET-VAL #:%SET-VAL #:GET-VAL
+   #:MAKE-BANG #:TRIGGER #:%TRIGGER
+   #:MAKE-COMPUTED
+   #:WATCH
+   #:CLEAR-DEPENDENCIES #:WITH-UPDATING-DEPS
+   #:ON-DEPS-UPDATE
+   #:WITH-UNWATCHED
+   #:COPY-REF
+   #:TRIGGER
+   #:%TRIGGER
    ))

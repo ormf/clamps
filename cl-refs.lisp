@@ -8,7 +8,7 @@
 
 (in-package #:cl-refs)
 
-(defparameter *debug* nil)
+;;; (defparameter *debug* nil)
 (defparameter *ref-id* '(0))
 
 (defun next-id (ref-id)
@@ -44,21 +44,21 @@
    (update :initarg :update  :initform '() :accessor ref-update)))
 
 (defmethod print-object ((obj ref-object) stream)
-  (format stream "#<ref ~a>" (ref-value obj)))
+  (format stream "#<ref ~S>" (ref-value obj)))
 
 ;;; constructor
 (defun make-ref (val &rest args)
   (apply #'make-instance 'ref-object :value val args))
 
 ;;; this is the setter. It updates the value and calls all listeners.
-(defun %set-val (ref val)
+(defun %set-val (ref val &key (force nil))
   "don't use this directly in the top-level, rather use set-val.
 %set-val sets the ref to val and triggers the computation of related
 objects in the context of the dynamic variable *refs-seen*, which
 tracks the references already updated to avoid unnecessary
 recalcuations and problems with circular dependencies."
   (let ((old (ref-value ref)) (setter (ref-setter ref)))
-    (unless (equal val old) ;;; unless is the opposite of when; when/unless
+    (when (or force (not (equal val old))) ;;; 
 ;;; don't need progn, because ther is no
 ;;; else clause.
 ;;;      (if *debug* (format t "~&%set-val called: ~a~%" (obj-print *refs-seen*)))
@@ -74,10 +74,10 @@ recalcuations and problems with circular dependencies."
           (funcall listener old val)))))
   (ref-value ref))
 
-(defun set-val (ref value)
+(defun set-val (ref value &key (force nil))
   "set the value of ref in the context of a freshly cleared *refs-seen*."
   (let ((*refs-seen* nil))
-    (%set-val ref value))
+    (%set-val ref value :force force))
   (setf *refs-seen* nil) ;;; just to make sure that the global variable is cleared (not really necessary).
   value)
 
