@@ -340,6 +340,10 @@ scale and shift."
 
 (defun scale-amp (scale)
   "return a function amplitude scaling a supplied evt by scale."
+  (lambda (evt) (sv* evt :amp scale)))
+
+(defun scale-amplitude (scale)
+  "return a function amplitude scaling a supplied evt by scale."
   (lambda (evt) (sv* evt :amplitude scale)))
 
 (defun transpose-evt (transp)
@@ -379,5 +383,5 @@ scale and shift."
 |#
 
 (export '(make-mt-stream new-permutation jbmf rt-wait rt-sprout rt-proc drunk-traverse r-interpl time->vstime-fn vstime->time-fn time->speed-fn vstime->speed-fn calc-dur chord-derive display play-midi play-svg cm-store g-export play-curr region zero-shift reverse-obj transform-obj
-          scale-shift-transform scale-amp transpose-evt)
+          scale-shift-transform scale-amp scale-amplitude transpose-evt)
         'cm)
