@@ -186,7 +186,7 @@ controller actions."))
 
 (defmethod handle-midi-in ((instance midi-controller) opcode d1 d2)
   (with-slots (cc-fns cc-map cc-state note-state note-fn last-note-on) instance
-    (format t "midi-controller-handle-midi-in~%")
+    (incudine.util:msg :debug "midi-controller-handle-midi-in: ~a ~a ~a" opcode d1 d2)
     (case opcode
       (:cc (progn
              (set-val (aref cc-state (aref cc-map d1)) d2)

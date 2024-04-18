@@ -285,6 +285,7 @@ off is determined by <initial-flash>."
                nk2-fader-modes nk2-fader-last-cc
                hide-fader cc-map cc-state note-fn last-note-on midi-output chan)
       instance
+    (incudine.util:msg :info "~a: ~a ~a" opcode d1 d2)
     (case opcode
       (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
        (let ((fader-idx (aref cc-map d1)))
