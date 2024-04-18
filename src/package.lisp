@@ -4,7 +4,7 @@
 
 ;;; (shadowing-import '(play-sfz-one-shot play-sfz-loop) 'cl-sfz)
 ;; (shadowing-import '(at now) 'cm)
-1(shadowing-import '(trigger) 'cl-refs)
+;;; (shadowing-import '(trigger) 'cl-refs)
 
 (shadowing-import '(rescale-envelope
                     init stop group tempo
@@ -23,11 +23,10 @@
           lsample envelope
           lsample-keynum lsample-play-fn lsample-amp lsample-buffer
           lsample-buffer remove-all-responders recv-stop
-          cycle))
+          cycle without-interrupts))
 (shadowing-import '(*midi-in1* *midi-out1*
                     chan id)
                   'cl-midictl)
-
 
 (use-package '(
                #:incudine
@@ -56,8 +55,18 @@
 (setf (fdefinition 'bus) #'incudine:bus)
 (defsetf bus incudine::set-bus)
 
+(defmacro imsg (type format-control &rest format-arguments)
+  "Produce a formatted log message controlled by FORMAT-CONTROL and
+FORMAT-ARGUMENTS.
+
+TYPE should be one of ERROR, WARN, INFO or DEBUG."
+  `(incudine.util::%msg ',(incudine::ensure-symbol type "INCUDINE.UTIL")
+         ,format-control (list ,@format-arguments)))
+
 (export '(reinit-midi restart-qsynth jack-connect-qsynth
           *mt-out01* *midi-in1* *midi-out1*
-          start-cm-all cm-restart-gui)
+          start-cm-all cm-restart-gui imsg reset-logger-stream
+          *sly-connected-hooks* call-sly-connected-hooks
+          install-standard-sly-hooks)
         'cm)
 

@@ -25,6 +25,8 @@
                #:cm-fomus
                #:cm-svg
                #:cm-svg.rts
+               #:cm-poolevt
+               #:cm-poolplayer
                #:cm-incudine
                #:cm-utils
                #:clog-dsp-widgets

@@ -30,15 +30,21 @@
 
 (in-package #:cm)
 
+(defparameter *svg-dir* nil)
+
 (defun ensure-directory (dir)
   (if (stringp dir) (format nil "~A/" dir) dir))
 
-(defun cm-restart-gui (directory)
+(defun cm-restart-gui (directory &key (start-gui t))
   (let* ((dir (pathname (ensure-directory directory)))
          (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
     (when (clog:is-running-p) (clog:shutdown))
     (uiop:run-program (format nil "mkdir -p ~a" svg-dir-path))
-    (setf *ats-snd-directory* svg-dir-path)
+    (uiop:run-program (format nil "mkdir -p ~Asnd" (namestring dir)))
+    (uiop:run-program (format nil "mkdir -p ~Aats" (namestring dir)))
+    (setf ats-cuda:*ats-snd-dir* (merge-pathnames "snd/" dir))
+    (setf ats-cuda:*ats-file-dir* (merge-pathnames "ats/" dir))
+    (setf cm.svgd:svg-dir (merge-pathnames "www/svg/" dir))
     (let ((targetpath (namestring (merge-pathnames dir "/www"))))
       (dolist (dir-or-file '("js" "css" "favicon.ico" "start.html"))
         (let* ((subdirpath (format nil "www/~a" dir-or-file))
@@ -47,7 +53,7 @@
             (uiop:run-program (format nil "ln -s ~A ~A" srcpath targetpath))))))
     (clog:set-on-new-window #'clog::cm-gui :boot-file "/start.html")
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
-    (clog-dsp-widgets:start-gui :directory (namestring dir))
+    (when start-gui (clog-dsp-widgets:start-gui :directory (namestring dir)))
     (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
     (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")))
 
@@ -144,7 +150,36 @@ supplied and gets interned as a parameter."
             (asdf:system-relative-pathname :cm-all "elisp/incudine-hush-sly.el"))))
   (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
 
-(defun start-cm-all (&key (qsynth nil))
+(defun incudine-rts-hush ()
+  (incudine:flush-pending)
+  (dotimes (chan 16) (cm::sprout
+                      (cm::new cm::midi-control-change :time 0
+                        :controller 123 :value 127 :channel chan)))
+  (incudine::node-free-unprotected)
+;;;  (scratch::node-free-all)
+  )
+
+(defun install-standard-sly-hooks ()
+  (cm::set-standard-hush)
+  (slynk:eval-in-emacs
+   '(progn
+     (defun incudine-hush ()
+       (interactive)
+       (progn
+         (sly-interactive-eval "(cm::rts-hush)"))
+       "hush"))
+   t))
+
+(defun reset-logger-stream ()
+  (setf incudine.util:*logger-stream* *error-output*))
+
+(defparameter *sly-connected-hooks*
+  (list #'cm::install-standard-sly-hooks #'cm::reset-logger-stream))
+
+(defun cl-user::call-sly-connected-hooks ()
+  (dolist (fn *sly-connected-hooks*) (funcall fn)))
+
+(defun start-cm-all (&key (qsynth nil) (start-gui t))
   (start-inkscape-osc)
   (rts)
 ;;;  (unless (cm::rts?) (rts))
@@ -154,7 +189,8 @@ supplied and gets interned as a parameter."
   (format t "~&midi initialized!~%")
   ;; (install-sly-hooks)
   (incudine:setup-io)
-  (cm-restart-gui "/tmp")
+  (cm-restart-gui "/tmp" :start-gui start-gui)
+  (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (cm))
 
 #|
@@ -170,5 +206,4 @@ supplied and gets interned as a parameter."
   ;;            `(load ,(namestring
   ;;                     (asdf:system-relative-pathname :cm-all "elisp/incudine-hush.el"))))
   ;;           (swank:eval-in-emacs `(slime-repl-eval-string "(cm)")))))
-
 |#
