@@ -9,6 +9,8 @@
    #:load-sfz-preset
    #:show-sfz-presets
    #:remove-sfz-preset
+   #:ensure-sfz-preset
+   #:get-sfz-preset
    #:sfz-get-range
    #:sf-table-get-range
    #:play-sfz

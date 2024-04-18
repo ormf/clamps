@@ -25,6 +25,9 @@
 
 (rt-start)
 
+(ensure-sfz-preset :flute-nv)
+(ensure-sfz-preset :bassoboe-f)
+
 (load-sfz-preset "/home/orm/work/snd/sfz/bassoboe/bassoboe-f.sfz" :bassoboe-f :force t)
 (load-sfz-preset "/home/orm/work/snd/sfz/bassoboe/bassoboe-pp.sfz" :bassoboe-pp :force t)
 
