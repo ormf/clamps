@@ -44,7 +44,6 @@
 
 (defsetf aux set-aux)
 
-
 (define-vug input-bus ((channel fixnum))
   (bus (the fixnum
          (+ (the fixnum

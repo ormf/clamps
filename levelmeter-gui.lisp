@@ -53,13 +53,13 @@
     (with-slots (refs) dsp
       (let* ((gui-container (create-div gui-parent
                                         :class "levelmeter-panel"
-                                        :css `(:display "flex" :border "0.1em solid black" :background "#666" :height "16em" :width ,(format nil "~aem" (* 2 num))))))
+                                        :css `(:display "flex" :border "0.1em solid black" :background "#666" :height "100%" :width "50%"))))
         (dotimes (idx num)
           (create-o-vumeter
            gui-container
            (bind-refs-to-attrs (aref refs idx) "db-value")
            :mapping :pd
-           :css '(:height "90%" :width "0.5em" :min-width "0.1em" :margin "0.1em 0.25em" :border "0.1em solid black" :background "#222")))))))
+           :css '(:height "90%" :width "7%" :min-width "0.1em" :margin "2.75% 2.75%" :border "0.1em solid black" :background "#222")))))))
 
 (defun levelmeter-full-gui (id gui-parent &key (group 300) (type :bus) refs (num 1) (audio-bus 0))
   (check-type type (member :bus :in :out))
@@ -94,6 +94,7 @@
 (defun meters-window (body)
   "handler for /meters"
   (setf (title (html-document body)) "Meters")
+  (setf (style body :display) "flex")
   (levelmeter-gui :lm-in body :type :in :group 100 :num 8)
   (levelmeter-gui :lm-out body :type :out :group 300 :num 8))
 
@@ -106,7 +107,9 @@
 (dump (node 0))
 *in-refs*
 *out-refs*
-
+(setup-meters)
+(find-dsp :lm-out)
+(node-free-all)
 
 (incudine::sin-test 411 0.05 :id 101 :head 200)
 
