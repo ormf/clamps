@@ -166,7 +166,7 @@
         (define-momentary-button gui-track-left track-left "<" gui-ctl-subpanel)
         (define-momentary-button gui-track-right track-right ">" gui-ctl-subpanel)
         (dotimes (n 3) (create-div gui-ctl-subpanel))
-        (define-momentary-button gui-cycle cycle "cycle" gui-ctl-subpanel)
+        (define-momentary-button gui-cycle nk-cycle "cycle" gui-ctl-subpanel)
         (create-div gui-ctl-subpanel)
         (define-momentary-button gui-set-marker set-marker "set" gui-ctl-subpanel)
         (define-momentary-button gui-marker-left marker-left "<" gui-ctl-subpanel)
@@ -302,7 +302,7 @@
 
     (dolist (syms '((track-left gui-track-left 40)
                     (track-right gui-track-right 41)
-                    (cycle gui-cycle 42)
+                    (cl-midictl:cycle gui-cycle 42)
                     (set-marker gui-set-marker 43)
                     (marker-left gui-marker-left 44)
                     (marker-right gui-marker-right 45)))

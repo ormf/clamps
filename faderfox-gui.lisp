@@ -57,7 +57,6 @@
 
 (in-package :cl-midictl)
 
-
 #|
 
 (defun set-player-enable (idx state)
@@ -73,7 +72,7 @@
 (defun faderfox-gui (id gui-parent &key (chan 4))
   (let ((midi-controller
           (or (find-controller id)
-              (add-midi-controller 'faderfox-midi-f.orm
+              (add-midi-controller 'faderfox-midi
                                    :id id
                                    :chan chan
                                    :midi-input *midi-in1*
@@ -102,3 +101,6 @@
            :background '("#888" "#f88")
            :css '(:font-size "2em" :margin 2px )
            :values '(0 127)  ))))))
+
+;;; (set-val (aref (cc-state (find-controller :ff01)) 2) 0.6)
+

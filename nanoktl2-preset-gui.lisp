@@ -53,9 +53,9 @@
                  (lambda (obj data)
 		   (declare (ignore obj))
                    (let ((*refs-seen* (list element)))
-                     (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                                         (or (if (gethash "close" data) "close")
-                                             (gethash attr data))))
+                     (incudine.util:msg :debug "~&~%clog event from ~a: ~a~%" element
+                              (or (if (gethash "close" data) "close")
+                                  (gethash attr data)))
                      (if (gethash "close" data)
                          (progn
 ;;;                           (format t "closing numbox~%")
@@ -87,33 +87,7 @@
                             (opt-format-attr "value-off" 0)
                             (opt-format-attr "value-on" 1))
                            (format-style css)
-                           label)))
-         ;; (unwatch
-         ;;   (with-slots (preset-buttons cp-src s-buttons m-buttons tr-rec curr-bank) midi-controller
-         ;;     (watch (let ((idx idx) ;;; preset-button-press behaviour
-         ;;                  (btn (aref preset-buttons idx)))
-         ;;              (lambda ()
-         ;;                (get-val btn)
-         ;;                (let ((cl-refs::*curr-ref* nil))
-         ;;                  (format t "preset-button-pressed: ~a, ~a~%" (+ idx (* 16 curr-bank)) (get-val tr-rec))
-         ;;                  (case (get-val tr-rec)
-         ;;                    (0 (if cp-src
-         ;;                           (progn
-         ;;                             (format t "copy preset from ~a to ~a~%" cp-src (+ idx (* 16 curr-bank)))
-         ;;                             (setf cp-src nil))
-         ;;                           (format t "recall preset: ~a~%" (+ idx (* 16 curr-bank)))))
-         ;;                    (1 (format t "store to preset: ~a~%" (+ idx (* 16 curr-bank))))
-         ;;                    (2 (progn
-         ;;                         (setf cp-src (+ idx (* 16 curr-bank)))
-         ;;                         (if (< idx 8)
-         ;;                             (set-val (aref s-buttons idx) 2)
-         ;;                             (set-val (aref m-buttons (- idx 8)) 2))
-         ;;                         (format t "set-cp-src to  ~a, ~a~%" (+ idx (* 16 curr-bank))
-         ;;                         (if (< idx 8)
-         ;;                             (get-val (aref s-buttons idx))
-         ;;                             (get-val (aref m-buttons (- idx 8)))))
-         ;;                         )))))))))
-         )
+                           label))))
     (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
     (push element (b-elist label-off-binding)) ;;; register the browser page's html elem for value updates.
     (push element (b-elist label-on-binding)) ;;; register the browser page's html elem for value updates.
@@ -133,6 +107,47 @@
                            (t (let ((*refs-seen* (list (list element attr))))
                                 (trigger bang)))))))
     element))
+
+(defun create-nk2-preset-bank-button (parent controller idx margin)
+  (let* ((binding (bind-ref-to-attr (aref (r-buttons controller) idx) "highlight"))
+         (var (b-ref binding))
+         (css `(:text-align "center" :user-select "none" :font-size "2em" :height "1.3em" :margin ,margin))
+         (bang (aref (bank-buttons controller) idx))
+         (label (format nil "bank ~a" (1+ idx)))
+         (attr (b-attr binding))
+         (element (create-child
+                   parent
+                   (format nil "<o-bang ~{~@[~a ~]~}~@[~a~]>~@[~a~]</o-bang>"
+                           (list
+                            (opt-format-attr "value" (get-val var))
+                            (opt-format-attr "flash" 0)
+                            (opt-format-attr "label-off" label)
+                            (opt-format-attr "label-on" label)
+                            (opt-format-attr "background-off" "#888")
+                            (opt-format-attr "background-on" "#f88")
+                            (opt-format-attr "color-off" "black")
+                            (opt-format-attr "color-on" "black")
+                            (opt-format-attr "value-off" 0)
+                            (opt-format-attr "value-on" 1))
+                           (if css (format-style css))
+                           label))))
+    (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
+    (set-on-data element ;;; react to changes in the browser page
+                 (lambda (obj data)
+                   (incudine.util:msg :info "~&~%clog event from ~a: ~a~%" element
+                                      (or (if (gethash "close" data) "close")
+                                          (gethash attr data)))
+                   (cond ((gethash "close" data)
+                          (progn
+;;;                              (format t "closing bang~%")
+                            (setf (b-elist binding) (remove element (b-elist binding))))) ;;; cleanup: unregister elem.
+                         (t (let ((*refs-seen* (list (list obj "bang"))))
+                              (incudine.util:msg :info "~&triggering: ~a~%" bang
+                                                 (or (if (gethash "close" data) "close")
+                                                     (gethash attr data)))                              
+                              (%trigger bang))))))
+    element))
+
 
 (defun create-nk2-store-button (parent midi-controller button margin)
   (let* ((binding (bind-ref-to-attr button "highlight"))
@@ -191,13 +206,13 @@
                        tr-rewind tr-ffwd tr-stop tr-play tr-rec)
         do (case type
              (bang
-              (create-o-bang control-buttons (bind-ref-to-attr button "bang")
+              (create-o-bang control-buttons (bind-refs-to-attrs button "bang")
                              :background '("gray" "#ff8888") :label label
                              :css `(:height "1.3em" :font-size "1.5em" :text-align "center" :margin ,margin)))
              (bang2
               (create-nk2-store-button control-buttons midi-controller button margin))
              (toggle
-              (create-o-toggle control-buttons (bind-ref-to-attr button "value")
+              (create-o-toggle control-buttons (bind-refs-to-attrs button "value")
                                :background '("gray" "#ff8888") :label label
                                :css `(:height "1.3em" :font-size 2em :text-align "center" :margin ,margin)))
              (otherwise (create-div control-buttons)))))))
