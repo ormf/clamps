@@ -21,7 +21,6 @@
 (in-package :cm)
 
 (shadow '(play-sfz-one-shot play-sfz-loop) 'cm)
-
 (export '(svg->poolevt poolevt poolevt-lsample poolevt-keynum poolevt-buffer-idx
           poolevt-amp poolevt-start poolevt-end poolevt-stretch poolevt-wwidth
           poolevt-attack poolevt-release poolevt-pan poolevt-out1 poolevt-out2 lsample->poolevt))

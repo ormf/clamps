@@ -110,7 +110,7 @@ an external package, a leading <package-name>: has to be provided."
   (ou:with-props (lsample lsample-keynum lsample-amp lsample-play-fn saved-keynum keynum
                        amp amplitude duration start end stretch loopstart loopend adjust-stretch)
       args
-    (let ((buf (ensure-buffer lsample)))
+    (let ((buf (incudine-bufs:ensure-buffer lsample)))
       (let* ((buffer (if (consp buf) (first buf) buf))
              (new-lsample (of-incudine-dsps::make-lsample
                            :buffer buffer
@@ -135,7 +135,7 @@ an external package, a leading <package-name>: has to be provided."
                       :stretch new-stretch
                       :keynum keynum
                       :amp (+ amp (opacity->db amplitude))
-                      (ou:delete-props args :lsample :lsample-keynum :lsample-amp :lsample-play-fn
+                      (ou:delete-props args :y2 :lsample :lsample-keynum :lsample-amp :lsample-play-fn
                                             :loopstart :loopend :amp
                                                      :saved-keynum :amplitude :duration :channel)))))))
 
@@ -146,7 +146,7 @@ an external package, a leading <package-name>: has to be provided."
 (svg-ie:add-svg-attr-props-to-quote :lsample)
 
 (add-svg-assoc-fns
- `((poolevt . ,#'svg->poolevt)))
+ '((poolevt . svg->poolevt)))
 
 (defmethod write-event ((obj poolevt) (fil svg-file) scoretime)
   "convert a poolevt object into a freshly allocated svg-line object and
@@ -196,7 +196,6 @@ svg-file."
                                           adjust-stretch)
                       :id (new-id fil 'line-ids)))))
 
-        (if *debug* (break "line: ~a ~a ~a" line incudine::buffer stretch))
         (svg-file-insert-line line (if (numberp myid) myid 2) fil)))))
 
 (defun rt-write-poolevt (obj scoretime)
@@ -207,7 +206,7 @@ svg-file."
     (let* ((buffer (of-incudine-dsps:lsample-buffer lsample))
            (time (+ (rts-now) (* *rt-scale* scoretime)))
            (transp (- keynum (of-incudine-dsps:lsample-keynum lsample)))
-           (amp (+ amp (of-incudine-dsps:lsample-amp lsample)))
+           (amp (+ (ou:amp->db amp) (of-incudine-dsps:lsample-amp lsample)))
 ;;;           (out (mod snd-id 8))
            )
       ;; (if *debug* (format t "~&liner: ~S~%" (list :lsample-amp (of-incudine-dsps:lsample-amp lsample) :buffer buffer :amp amp
