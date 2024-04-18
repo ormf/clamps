@@ -9,5 +9,7 @@
   :components ((:file "package")
                (:file "utils")
                (:file "buffer-stretch-play")
-               (:file "lsample")))
+               (:file "lsample")
+;;;               (:file "basic-dsps")
+               ))
 
