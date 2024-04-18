@@ -287,6 +287,7 @@ with nil if list-length is not a multiple of count."
    -> ((a b) (c d) (e f) (g h) (i k))
    "
   (cond ((null seq) nil)
+        ((funcall test (funcall key seq)) seq)
         ((funcall test (funcall key (first seq)))
          (cons (first seq)
                (flatten-fn (rest seq) :test test :key key)))
@@ -674,6 +675,9 @@ calls. If collect is t return all results in a list."
 ;;; (db->amp -6) -> 0.5
 ;;; (db->amp 6) -> 1.9952623
 ;;; (db->amp -60) -> 1/100
+
+(defun clip (val minvalue maxvalue)
+  (min maxvalue (max minvalue val)))
 
 ;;; (dolis   q(x (sv evt elems))
 ;;;   (print x))
@@ -1314,7 +1318,7 @@ values, the key and the value of each property in the proplist."
 
 (defun n-exp (x min max)
   "linear interpolation for normalized x."
-  (* min (expt (/ max min) x)))
+  (float (* min (expt (/ max min) x))))
 
 ;;; (n-exp 0 10 1000) -> 10
 ;;; (n-exp 0.5 10 1000) -> 100.0
@@ -1322,7 +1326,7 @@ values, the key and the value of each property in the proplist."
 
 (defun n-lin (x min max)
   "linear interpolation for normalized x."
-  (+ min (* (- max min) x)))
+  (float (+ min (* (- max min) x))))
 
 ;;; (n-lin 0 10 1000) -> 10
 ;;; (n-lin 0.5 10 1000) -> 505.0
@@ -1330,12 +1334,17 @@ values, the key and the value of each property in the proplist."
 
 (defun m-exp (x min max)
   "exp interpolation for midivalues (x = [0..127])"
-  (float (* min (expt (/ max min) (/ x 127)))))
+  (n-exp (/ x 127) min max))
+
+(defun n-exp-zero (x min max)
+  "exp interpolation for normalized values (x = [0..1]) with 0 for x = 0"
+  (float
+   (if (zerop x) 0
+       (* min (expt (/ max min) x)))))
 
 (defun m-exp-zero (x min max)
   "exp interpolation for midivalues (x = [0..127]) with 0 for x = 0"
-  (if (zerop x) 0
-      (* min (expt (/ max min) (/ x 127)))))
+  (n-exp-zero (/ x 127) min max))
 
 ;;; (n-exp 0 10 1000) -> 10
 ;;; (n-exp 0.5 10 1000) -> 100.0
@@ -1357,11 +1366,11 @@ values, the key and the value of each property in the proplist."
 
 (defun mcn-lin (x min max)
   "linear interpolation for midivalues (x = [0..127])"
-  (+ min (* (- max min) (/ x 127))))
+  (n-lin (/ x 127) min max))
 
 (defun mcn-exp (x min max)
   "exponential interpolation for midivalues (x = [0..127])"
-  (* min (expt (* max min) (/ x 127))))
+  (n-exp (/ x 127) min max))
 
 (defun r-exp (min max)
   "random value between [min..max] with exponential distribution."
@@ -1603,3 +1612,25 @@ Unix with lsof installed."
                           (uiop::run-program (format nil "lsof -i:~d" portno)
                                              :ignore-error-status t
                                              :output out)))))
+
+(defmacro defparameter* (&rest pairs)
+  `(progn
+     ,@(loop for entry in pairs
+             collect (cond
+                       ((symbolp entry)
+                        `(defparameter ,entry nil))
+                       ((third entry)
+                        `(defparameter ,(first entry) ,(second entry) ,(third entry)))
+                       (t
+                        `(defparameter ,(first entry) ,(second entry)))))))
+
+(defmacro defvar* (&rest pairs)
+  `(progn
+     ,@(loop for entry in pairs
+             collect (cond
+                       ((symbolp entry)
+                        `(defvar ,entry nil))
+                       ((third entry)
+                        `(defvar ,(first entry) ,(second entry) ,(third entry)))
+                       (t
+                        `(defvar ,(first entry) ,(second entry)))))))

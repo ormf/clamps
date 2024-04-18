@@ -81,6 +81,7 @@
    #:N-LIN-REV-FN
    #:N-EXP-REV-FN
    #:M-EXP
+   #:N-EXP-ZERO
    #:M-EXP-ZERO
    #:M-LIN
    #:R-EXP
@@ -125,4 +126,7 @@
    #:QUANTIZE-TIME
    #:RANDOM-ELEM
    #:PORT-AVAILABLE-P
+   #:DEFPARAMETER*
+   #:DEFVAR*
+   #:CLIP
    ))
