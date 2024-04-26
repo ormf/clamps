@@ -235,7 +235,7 @@ to t."
 (defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (sfz-tables *sfz-tables*) (startpos 0) (out1 0) out2)
   "general function: Plays sample looping or one-shot depending on the
 'play-fn slot in the lsample definition."
-  (let ((map (get-preset preset sfz-tables)))
+  (let ((map (get-sfz-preset preset sfz-tables)))
     (if map 
         (let* ((out2 (or out2 (mod (1+ out1) 8)))
                (sample (random-elem (aref map (round pitch))))
