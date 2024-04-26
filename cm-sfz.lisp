@@ -71,9 +71,9 @@
                 (ou:get-props-list args '(:time :keynum :duration :preset :play-fn :pan :startpos)))))
 
 (add-svg-assoc-fns
- `((sfz . ,#'svg->sfz)
-   (play-sfz-one-shot . ,#'cl-sfz:play-sfz-one-shot)
-   (play-sfz-loop . ,#'cl-sfz:play-sfz-loop)))
+ `((sfz . svg->sfz)
+   (play-sfz-one-shot . cl-sfz:play-sfz-one-shot)
+   (play-sfz-loop . cl-sfz:play-sfz-loop)))
 
 (defmethod write-event ((obj sfz) (fil svg-file) scoretime)
   "convert a poolevt object into a freshly allocated svg-line object and
@@ -110,6 +110,8 @@ svg-file."
       (ensure-sfz-preset preset)
       (at time (or play-fn #'cl-sfz:play-sfz) keynum amplitude duration :preset preset :pan pan :startpos startpos :out1 (mod (- chan 100) 8))))
   )
+
+(sprout (new sfz :time 0 :preset :flute-nv))
 
 (defmethod write-event ((obj sfz) (to incudine-stream) scoretime)
   "output sfz object."
