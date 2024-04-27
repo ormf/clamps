@@ -10,6 +10,8 @@
                (:file "utils")
                (:file "buffer-stretch-play")
                (:file "lsample")
+               (:file "bus")
+               (:file "levelmeter")
 ;;;               (:file "basic-dsps")
                ))
 
