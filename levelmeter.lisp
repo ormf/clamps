@@ -155,9 +155,6 @@
   (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
          (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
          (sums (make-frame periods :zero-p t))
-         (phase-offs (make-array periods :element-type 'alexandria:non-negative-fixnum :initial-contents
-                                 (loop for i below periods
-                                       collect (round (* (/ i periods) size)))))
          (phases (make-array periods :element-type 'alexandria:non-negative-fixnum
                                      :initial-contents
                                      (loop for i below periods
@@ -175,18 +172,62 @@
           (when (>= (incf (aref phases i)) size)
             (setf (aref phases i) 0)
             (setf value (reduce-warnings (+ 100 (max -100 (round (power->db (smp-ref sums i)))))))
-            (if (/= last-value value)
-                (progn
-                  (nrt-funcall
-                   (lambda ()
-                     (cl-refs:set-val ref (- value 100))))
-                  (setf last-value value)))
+            (when (/= last-value value)
+              (progn
+                (nrt-funcall
+                 (lambda ()
+                   (cl-refs:set-val ref (- value 100))))
+                (setf last-value value)))
             (setf (smp-ref sums i) +sample-zero+)))))))
 
 (dsp! env-monometer ((freq fixnum) (ref cl-refs:ref-object) (chan channel-number)
                      (hop-size channel-number))
    (:defaults 10 nil 0 2)
   (foreach-frame (env-levelmeter chan freq ref hop-size)))
+
+(declaim (inline env-levelmultimeter))
+(define-vug env-levelmultimeter ((in channel-number) (num channel-number)
+                                 (freq fixnum) (ref (simple-array cl-refs:ref-object))
+                                 (periods channel-number))
+  (:defaults +sample-zero+ 1 10 nil 2)
+  (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
+         (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
+         (sums (make-frame (* num periods) :zero-p t))
+         (phases (make-array periods
+                             :element-type 'alexandria:non-negative-fixnum
+                             :initial-contents
+                             (loop for i below periods
+                                   collect (round (* (/ i periods) size)))))
+         (value (make-array num :initial-element 0))
+         (last-value (make-array num :initial-element #.most-positive-fixnum)))
+    (declare (type alexandria:non-negative-fixnum size))
+    (reduce-warnings
+      (foreach-frame
+        (dotimes (ch num)
+          (dotimes (i periods)
+            (incf (smp-ref sums (+ ch (* i num)))
+                  (* (the sample (audio-bus (+ in ch) current-frame))
+                     (the sample (audio-bus (+ in ch) current-frame))
+                     (the sample (buffer-value hanning (aref phases i)))))
+            (reduce-warnings
+              (when (>= (incf (aref phases i)) size)
+                (setf (aref phases i) 0)
+                (setf (aref value ch) (reduce-warnings
+                                        (+ 100 (max -100 (round (power->db (smp-ref sums (+ ch (* i num)))))))))
+                (when (/= (aref last-value ch) (aref value ch))
+                  (progn
+                    (nrt-funcall
+                     (lambda ()
+                       (cl-refs:set-val (aref ref ch) (- (aref value ch) 100))))
+                    (setf (aref last-value ch) (aref value ch))))
+                (setf (smp-ref sums (+ ch (* i num))) +sample-zero+)))))))))
+
+(dsp! env-multimeter ((freq fixnum) (num channel-number)
+                      (ref (simple-array cl-refs:ref-object))
+                      (chan channel-number)
+                      (hop-size channel-number))
+   (:defaults 10 1 nil 0 2)
+  (foreach-frame (env-levelmultimeter chan num freq ref hop-size)))
 
 
 (defparameter *node-ids* '())
