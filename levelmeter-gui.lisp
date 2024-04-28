@@ -1,6 +1,8 @@
 ;;; 
 ;;; levelmeter-gui.lisp
 ;;;
+;;; cuda-dsp and gui defs for levelmeter
+;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 ;;;
@@ -35,7 +37,7 @@
       (setf refs (make-array num
                              :initial-contents
                              (loop repeat num collect (make-ref 0.0d0)))))
-    (incudine.util:msg :warn "adding levelmeter ~S" id)
+    (incudine.util:msg :warn "creating levelmeter ~S" id)
     (case meter-type
       (:bus
        (meters-dsp :id-callback (lambda (id) (setf meter-node id))
@@ -52,12 +54,23 @@
     (free meter-node)
     (mapc #'funcall unwatch)))
 
+;;; Levelmeter with bus initialization
+
+(defclass master-bus-levelmeter (levelmeter named-bus)
+  ())
+
+(defmethod initialize-instance :after ((instance master-bus-levelmeter) &rest initargs)
+  (declare (ignorable initargs))
+  (with-slots (nodes meter-node) instance    
+    (loop until (and nodes meter-node))
+    (dolist (n nodes) (move n :after meter-node))))
 
 ;;; Levelmeter with bus initialization and amp control.
 
 (defclass master-amp-bus-levelmeter (levelmeter named-amp-bus)
   ((meter-display :initarg :meter-display :initform :post :accessor meter-display :type (member :pre :post))))
 
+;;; (defparameter *test* (make-instance 'master-bus-levelmeter :id :test))
 ;;; (defparameter *test* (make-instance 'master-amp-bus-levelmeter :id :test))
 
 (dump (node 0))
@@ -98,15 +111,46 @@
            :mapping :pd
            :css '(:height "97%" :width "9%" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.1em solid black" :background "#222")))))))
 
-(defun master-bus-levelmeter-gui (id gui-parent &key (group 300) (amp (make-ref 1.0d0)) refs (num 1) (audio-bus 0) (channel-offset 0) (create-bus t)
-                                                  (bus-name ""))
+(defun master-bus-levelmeter-gui (id gui-parent &key (group 300) refs (num 1) (audio-bus 0) (channel-offset 0) (create-bus t) (bus-name ""))
+  "audio bus based levelmeter (group 300) routing NUM audio buses
+starting at AUDIO-BUS to audio-out CHANNEL-OFFSET. If CREATE-BUS is
+nil just create the levelmeter."
+  ;;; TODO:  If create-bus is nil BUS-NAME should get used to move the levelmeter node before the bus node.
   (let* ((dsp
            (or (find-dsp id)
-               (let ((new (add-dsp 'master-bus-levelmeter :id id :node-group group
-                                                          :audio-bus audio-bus :refs refs :num num
-                                                          :channel-offset channel-offset
-                                                          :create-bus create-bus
-                                                          :bus-name bus-name)))
+               (let ((new (if create-bus
+                              (add-dsp 'master-bus-levelmeter :id id :node-group group :type :bus
+                                                              :audio-bus audio-bus :refs refs :num num
+                                                              :channel-offset channel-offset
+                                                              :bus-name bus-name)
+                              (add-dsp 'levelmeter :id id :node-group group :type :bus
+                                                   :audio-bus audio-bus :refs refs :num num
+                                                   :channel-offset channel-offset))))
+                 new))))
+    (with-slots (refs bus-node) dsp
+      (let* ((gui-container (create-div gui-parent
+                                        :class "levelmeter-panel"
+                                        :css `(:display "flex" :border "0.1em solid black" :background "transparent"
+                                               :height "12em" :width "6em" :margin-left "0.1em" :margin-right "0.1em"))))
+        (dotimes (idx num)
+          (create-o-vumeter
+           gui-container
+           (bind-refs-to-attrs (aref refs idx) "db-value")
+           :mapping :pd
+           :css '(:height "97%" :width "0.25em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.1em solid black" :background "#222")))))))
+
+(defun master-amp-bus-levelmeter-gui (id gui-parent &key (group 300) (amp (make-ref 1.0d0)) refs (num 1) (audio-bus 0) (channel-offset 0) (create-bus t)
+                                                      (bus-name ""))
+  (let* ((dsp
+           (or (find-dsp id)
+               (let ((new (if create-bus
+                              (add-dsp 'master-amp-bus-levelmeter :id id :node-group group
+                                                                  :audio-bus audio-bus :refs refs :num num
+                                                                  :channel-offset channel-offset
+                                                                  :bus-name bus-name)
+                              (add-dsp 'levelmeter :id id :node-group group :type :bus
+                                                   :audio-bus audio-bus :refs refs :num num
+                                                   :channel-offset channel-offset))))
                  (loop until (amp-node new))
                  (push (watch (lambda () (set-control (amp-node new) :amp (get-val amp)))) (unwatch new))
                  new))))

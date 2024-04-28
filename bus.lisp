@@ -95,11 +95,11 @@
   (declare (ignorable initargs))
   (with-slots (meter-type num nodes node-group audio-bus amp-node channel-offset create-bus unwatch cleanup) instance
     (when create-bus
-      (incudine.util:msg :warn "creating named bus with amp control")
+      (incudine.util:msg :warn "creating amp control")
       (bus-amp-dsp :id-callback (lambda (id) (setf amp-node id))
                    :num-channels num :group node-group)
-      (loop until nodes)
-      (dolist (n nodes) (move amp-node :before n)))))
+      (loop until (and nodes amp-node))
+      (dolist (n nodes) (move n :after amp-node)))))
 
 (defmethod cuda-dsp-cleanup ((instance named-amp-bus))
   (with-slots (amp-node) instance
