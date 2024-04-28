@@ -23,9 +23,16 @@
 (defclass cuda-dsp ()
   ((id :initarg :id :accessor dsp-id)
    (nodes :initform '() :accessor dsp-nodes)
-   (node-group :initform 300 :initarg :node-group :accessor node-group)))
+   (node-group :initform 300 :initarg :node-group :accessor node-group)
+   (unwatch :initform nil :accessor unwatch)))
 
 (defmethod initialize-instance :after ((instance cuda-dsp) &rest initargs)
   (declare (ignorable initargs))
   (with-slots (id) instance
     (incudine.util:msg :info "~&adding dsp: ~S~%" id)))
+
+(defgeneric cuda-dsp-cleanup (instance)
+  (:method ((instance cuda-dsp))
+    (with-slots (nodes unwatch) instance
+      (mapc #'free nodes)
+      (mapc #'funcall unwatch))))

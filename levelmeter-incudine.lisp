@@ -181,16 +181,11 @@
               (setf last-value value)))
         (setf (smp-ref sums i) +sample-zero+)))))
 
-#|
+
 (dsp! env-monometer ((freq fixnum) (ref cl-refs:ref-object) (chan channel-number)
                      (hop-size channel-number))
    (:defaults 10 nil 0 2)
-  (foreach-frame (env-levelmeter (incudine.bus::bus chan) freq ref hop-size)))
-|#
-
-(defparameter *node-ids* '())
-
-(export *node-ids* :incudine)
+  (foreach-frame (env-levelmeter (incudine::bus chan) freq ref hop-size)))
 
 (defun meters-dsp (&key (group 300) (num *number-of-input-bus-channels*)
                      id-callback refs (freq 5) (hop-size 2) (audio-bus 0))

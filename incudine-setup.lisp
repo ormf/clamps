@@ -27,6 +27,7 @@
           cp-input-buses
           cp-output-buses
           clear-buses
+          bus-value
           mix-bus-to-out
           bus-to-out)
         :incudine)
@@ -49,6 +50,14 @@
          (+ (the fixnum
               (* current-frame *number-of-input-bus-channels*))
             channel))))
+
+(define-vug bus-value ((channel fixnum))
+  "if blocksize > 1 returns the value of bus for current-frame."
+  (with ((frames (block-size)))
+    (bus (the fixnum
+              (+ (the fixnum
+                      (* current-frame frames))
+                 channel)))))
 
 (dsp! cp-input-buses ((first-input channel-number) (first-bus channel-number)
                       (num-channels channel-number))

@@ -26,6 +26,13 @@
 
 (use-package :incudine)
 
-(export '(cuda-dsp dsp-id levelmeter num-meters refs dsp-nodes node-group audio-bus levelmeter-gui
-          levelmeter-full-gui *in-refs* *out-refs*)
+(export '(cuda-dsp dsp-id levelmeter num-meters refs dsp-nodes node-group
+          audio-bus levelmeter-gui
+          master-bus-levelmeter-gui levelmeter-full-gui *in-refs* *out-refs*
+          named-bus
+          bus-name num-channels audio-bus amp-node
+;;;          bus-amp
+          channel-offs
+
+          find-bus add-bus remove-bus list-buses bus-channel)
         'clog-dsp-widgets)
