@@ -55,6 +55,11 @@
 
 (export '(master-out bus-amp bus-amp-dsp master-out-dsp) 'incudine)
 
+;;; audio buses start after the control buses. Reserve the maximum
+;;; number of them here. If the number needs to be changed, first free
+;;; all nodes using audio buses, then change the number and restart
+;;; the dsps using audio buses.
+
 (defvar *number-of-ctl-bus-channels* 1024)
 
 #|
@@ -80,7 +85,8 @@ No bounds checking."
                   (+ (the non-negative-fixnum
                           (* channel frames))
                      *number-of-ctl-bus-channels*
-                     frame)))))
+                     frame)))
+    ))
 
 (declaim (inline set-audio-bus))
 (defun set-audio-bus (channel frame value)
@@ -101,16 +107,15 @@ No bounds checking."
 (defsetf audio-bus (channel &optional (frame 0)) (value)
   `(set-audio-bus ,channel ,frame ,value))
 
-;;; 
-
 (dsp! bus-amp-synth ((bus channel-number) amp (num-channels channel-number))
   (:DEFAULTS 0 1 0)
   "Control AMP of NUM-CHANNELS consecutive buses starting at BUS."
   (reduce-warnings
-    (foreach-frame
-      (dotimes (current-channel num-channels)
-        (setf (audio-bus (+ current-channel bus) current-frame)
-              (* (lag amp 0.5) (audio-bus (+ current-channel bus) current-frame)))))))
+    (let ((lag-amp (lag amp 0.05)))
+      (foreach-frame
+        (dochannels (current-channel num-channels)
+          (setf (audio-bus (+ current-channel bus) current-frame)
+                (* lag-amp (audio-bus (+ current-channel bus) current-frame))))))))
 
 (dsp! master-out ((bus channel-number) (num-channels channel-number)
                   (channel-offset channel-number))
@@ -120,7 +125,7 @@ bus numbers starting at BUS, routed to hardware audio outputs starting
 at CHANNEL-OFFSET."
   (reduce-warnings
     (foreach-frame
-      (dotimes (current-channel num-channels)
+      (dochannels (current-channel num-channels)
         (incf (audio-out current-channel) (audio-bus (+ current-channel bus) current-frame))
         (setf (audio-bus (+ current-channel bus) current-frame) +sample-zero+))))) ;;; reset audio-bus before next audiograph run.
     
@@ -131,7 +136,7 @@ at CHANNEL-OFFSET."
                            (funcall id-callback (node-id n)))
                  :tail group))
 
-(defun master-out-dsp (&key (group 300) id-callback (num-channels 1) (channel-offset 0) (amp 1) (audio-bus 0))
+(defun master-out-dsp (&key (group 300) id-callback (num-channels 1) (channel-offset 0) (audio-bus 0))
   "wrapper around master-out with a callback to register the node id after instantiation."
   (master-out audio-bus num-channels channel-offset
               :action (lambda (n)
@@ -169,13 +174,16 @@ example:
          (frames (block-size)))
     (declare (channel-number frames))
     (maybe-expand ph)
-    (foreach-frame
-      (with-samples ((sig (* amp 0.1 (sin (* +twopi+ (frame-ref ph current-frame))))))
+     (foreach-frame
+      (with-samples ((sig (* amp 1 (sin (* +twopi+ (frame-ref ph current-frame))))))
         (incf (audio-bus bus current-frame) sig)
         (incf (audio-bus (1+ bus) current-frame) sig)))))
 
 (master 0 1 :tail 200)
 (simple-bus 440 1 0 :tail 200)
+(simple-bus 440 1 2 :tail 200)
+(simple-bus 660 1 4 :tail 200)
+(simple-bus 230 1 2 :tail 200)
 
 (dump (node 0))
 
