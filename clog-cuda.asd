@@ -33,6 +33,7 @@
                (:file "dsp-registry")
                (:file "gui-base-class")
 ;;;               (:file "levelmeter-incudine")
+               (:file "utils")
                (:file "bus")
                (:file "levelmeter-gui")
                (:file "scope-incudine")

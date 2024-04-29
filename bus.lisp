@@ -63,7 +63,7 @@
 |#
 
 (defclass named-bus (cuda-dsp)
-  ((name :initarg :name :initform "" :accessor bus-name)
+  ((name :initarg :bus-name :initform "" :accessor bus-name)
    (num :initform 2 :initarg :num :accessor num-channels)
    (audio-bus :initform 0 :initarg :audio-bus :accessor audio-bus)
    (create-bus :initform t :initarg :create-bus :type boolean)
@@ -96,8 +96,8 @@
   (with-slots (meter-type num nodes node-group audio-bus amp-node channel-offset create-bus unwatch cleanup) instance
     (when create-bus
       (incudine.util:msg :warn "creating amp control")
-      (bus-amp-dsp :id-callback (lambda (id) (setf amp-node id))
-                   :num-channels num :group node-group)
+      (bus-amp-dsp :audio-bus audio-bus :num-channels num :group node-group
+                   :id-callback (lambda (id) (setf amp-node id)))
       (loop until (and nodes amp-node))
       (dolist (n nodes) (move n :after amp-node)))))
 

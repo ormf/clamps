@@ -36,7 +36,7 @@
     (unless refs
       (setf refs (make-array num
                              :initial-contents
-                             (loop repeat num collect (make-ref 0.0d0)))))
+                             (loop repeat num collect (make-ref -100.0d0)))))
     (incudine.util:msg :warn "creating levelmeter ~S" id)
     (case meter-type
       (:bus
@@ -73,10 +73,6 @@
 ;;; (defparameter *test* (make-instance 'master-bus-levelmeter :id :test))
 ;;; (defparameter *test* (make-instance 'master-amp-bus-levelmeter :id :test))
 
-(dump (node 0))
-(dogroup (n (node 300))
-  (free n))
-
 (defmethod initialize-instance :after ((instance master-amp-bus-levelmeter) &rest initargs)
   (declare (ignorable initargs))
   (with-slots (meter-display amp-node meter-node) instance    
@@ -90,7 +86,43 @@
     (free amp-node)
     (mapc #'funcall unwatch)))
 
-;;; TODO: master-bus-scope
+;;; TODO: master-bus-scope and master-amp-bus-scope
+
+(defclass master-amp-meter-bus (cuda-dsp)
+  ((name :initarg :bus-name :initform "" :accessor bus-name)
+   (audio-bus :initform 0 :initarg :audio-bus :accessor audio-bus)
+   (out-chan :initform 0 :initarg :out-chan :accessor out-chan)
+   (num-channels :initform 2 :initarg :num-channels :accessor num-channels)
+   (meter-refs :initform nil :initarg :meter-refs :accessor meter-refs)
+   (amp :initform 1 :initarg :amp :accessor amp)
+   (meter-display :initarg :meter-display :initform (cl-refs:make-ref :post)
+                  :accessor meter-display)))
+
+;;; (defparameter *test* (make-instance 'master-bus-levelmeter :id :test))
+;;; (defparameter *test* (make-instance 'master-amp-bus-levelmeter :id :test))
+
+(defmethod initialize-instance :after ((instance master-amp-meter-bus) &rest initargs)
+  (declare (ignorable initargs))
+  (with-slots (id meter-refs audio-bus out-chan num-channels amp meter-display node-group
+               nodes unwatch)
+      instance    
+    (unless meter-refs
+      (setf meter-refs (make-array num-channels
+                                   :initial-contents
+                                   (loop repeat num-channels collect (make-ref -100.0d0)))))
+    (incudine.util:msg :warn "creating levelmeter ~S" id)
+    (master-amp-meter-bus-dsp
+     :id-callback (lambda (id) (push id nodes))
+     :freq 10 :num-channels num-channels :meter-refs meter-refs
+     :bus-num audio-bus
+     :audio-out out-chan :pre (eq :pre (get-val meter-display)) :hop-size 2 :group node-group)
+    (loop until nodes)
+    (let ((node (first nodes)))
+      (push (watch (lambda () (set-control node :amp (get-val amp)))) unwatch)
+      (push (watch (lambda () (set-control node
+                                      :meter-display (eq :pre (get-val meter-display)))))
+            unwatch))))
+
 
 (defun levelmeter-gui (id gui-parent &key (group 300) (type :bus) refs (num 1) (audio-bus 0))
   (check-type type (member :bus :in :out))
@@ -110,6 +142,7 @@
            (bind-refs-to-attrs (aref refs idx) "db-value")
            :mapping :pd
            :css '(:height "97%" :width "9%" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.1em solid black" :background "#222")))))))
+
 
 (defun master-bus-levelmeter-gui (id gui-parent &key (group 300) refs (num 1) (audio-bus 0) (channel-offset 0) (create-bus t) (bus-name ""))
   "audio bus based levelmeter (group 300) routing NUM audio buses
@@ -139,36 +172,83 @@ nil just create the levelmeter."
            :mapping :pd
            :css '(:height "97%" :width "0.25em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.1em solid black" :background "#222")))))))
 
-(defun master-amp-bus-levelmeter-gui (id gui-parent &key (group 300) (amp (make-ref 1.0d0)) refs (num 1) (audio-bus 0) (channel-offset 0) (create-bus t)
-                                                      (bus-name ""))
+
+
+(defun master-amp-bus-levelmeter-gui (id gui-parent &key (group 300) (amp (make-ref (amp->db-slider 1))) refs (num 1) (audio-bus 0) (channel-offset 0)
+                                                      (bus-name "") nb-ampdb)
+  (declare (ignorable nb-ampdb))
   (let* ((dsp
-           (or (find-dsp id)
-               (let ((new (if create-bus
-                              (add-dsp 'master-amp-bus-levelmeter :id id :node-group group
-                                                                  :audio-bus audio-bus :refs refs :num num
-                                                                  :channel-offset channel-offset
-                                                                  :bus-name bus-name)
-                              (add-dsp 'levelmeter :id id :node-group group :type :bus
-                                                   :audio-bus audio-bus :refs refs :num num
-                                                   :channel-offset channel-offset))))
-                 (loop until (amp-node new))
-                 (push (watch (lambda () (set-control (amp-node new) :amp (get-val amp)))) (unwatch new))
-                 new))))
+              (or (find-dsp id)
+                  (let* ((new (add-dsp 'master-amp-meter-bus :id id :node-group group
+                                                             :audio-bus audio-bus :refs refs :num num
+                                                             :channel-offset channel-offset
+                                                             :bus-name bus-name)))
+                    (loop until (and (amp-node new) (refs new)))
+                    (push (watch (lambda () (set-control (amp-node new) :amp (db-slider->amp (get-val amp))))) (unwatch new))
+                    new))))
     (with-slots (refs bus-node) dsp
       (let* ((gui-container (create-div gui-parent
-                                        :class "levelmeter-panel"
-                                        :css `(:display "flex" :border "0.1em solid black" :background "transparent"
-                                               :height "12em" :width "6em" :margin-left "0.1em" :margin-right "0.1em"))))
+                                        :content bus-name
+                                        :css `(:display "flex" :color "white" :width "8em"
+                                               :flex-direction :column :border "none" :background "transparent")))
+             (meter-container (create-div gui-container
+                                          :class "levelmeter-panel"
+                                          :css `(:display "flex" :border "none" :background "transparent"
+                                                 :height "12em" :width "100%"))))
+        (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value") -40 12 :css '(:font-size "1em" :color "white" :background "transparent" :border none))
         (dotimes (idx num)
           (create-o-vumeter
-           gui-container
+           meter-container
            (bind-refs-to-attrs (aref refs idx) "db-value")
            :mapping :pd
-           :css '(:height "97%" :width "0.25em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.1em solid black" :background "#222")))
+           :css '(:height "97%" :width "0.25em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#222")))
         (create-o-slider
-         gui-container
+         meter-container
          (bind-refs-to-attrs amp "value")
-         :css '(:height "97%" :width "0.5em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.1em solid black" :background "#999"))))))
+         :css '(:height "97%" :width "0.5em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#999"))))))
+
+(defun master-amp-bus-levelmeter-gui (id gui-parent &key (group 300)
+                                                      (audio-bus 0)
+                                                      (out-chan 0)
+                                                      (num-channels 1)
+;;                                                      (freq 10)
+                                                      (amp (make-ref (amp->db-slider 1)))
+                                                      meter-refs
+                                                      (meter-display (make-ref :post))
+                                                      (bus-name "")
+                                                      nb-ampdb)
+  (declare (ignorable nb-ampdb))
+  (let* ((dsp
+              (or (find-dsp id)
+                  (add-dsp 'master-amp-meter-bus
+                           :id id :node-group group
+                           :audio-bus audio-bus
+                           :out-chan out-chan
+                           :num-channels num-channels
+                           :amp amp
+                           :meter-refs meter-refs
+                           :meter-display meter-display
+                           :bus-name bus-name))))
+    (with-slots (meter-refs bus-node) dsp
+      (let* ((gui-container (create-div gui-parent
+                                        :content bus-name
+                                        :css `(:display "flex" :color "white" :width "8em"
+                                               :flex-direction :column :border "none" :background "transparent")))
+             (meter-container (create-div gui-container
+                                          :class "levelmeter-panel"
+                                          :css `(:display "flex" :border "none" :background "transparent"
+                                                 :height "12em" :width "100%"))))
+        (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value") -40 12 :css '(:font-size "1em" :color "white" :background "transparent" :border none))
+        (dotimes (idx num-channels)
+          (create-o-vumeter
+           meter-container
+           (bind-refs-to-attrs (aref meter-refs idx) "db-value")
+           :mapping :pd
+           :css '(:height "97%" :width "0.25em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#222")))
+        (create-o-slider
+         meter-container
+         (bind-refs-to-attrs amp "value")
+         :css '(:height "97%" :width "0.5em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#999"))))))
 
 (defun levelmeter-full-gui (id gui-parent &key (group 300) (type :bus) refs (num 1) (audio-bus 0))
   (check-type type (member :bus :in :out))

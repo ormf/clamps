@@ -28,11 +28,12 @@
 
 (export '(cuda-dsp dsp-id levelmeter num-meters refs dsp-nodes node-group
           audio-bus levelmeter-gui
-          master-bus-levelmeter-gui levelmeter-full-gui *in-refs* *out-refs*
-          named-bus
+          master-amp-bus-levelmeter-gui master-bus-levelmeter-gui levelmeter-full-gui *in-refs* *out-refs*
+          master-amp-meter-bus
+          named-amp-bus named-bus
           bus-name num-channels audio-bus amp-node
 ;;;          bus-amp
           channel-offs
-
+          amp->db-slider db-slider->amp db-slider->db db->db-slider
           find-bus add-bus remove-bus list-buses bus-channel)
         'clog-dsp-widgets)
