@@ -304,9 +304,12 @@ curr-preset.lisp buffer."
 
 ;;; (get-preset-string 0)
 
+(defmacro set-poolplayer-preset-form (idx form)
+  `(setf (aref (aref *poolplayer-presets* ,idx) 0) ',form))
+
 (defun get-preset-load-form (preset-no)
   (with-output-to-string (out)
-    (format out "(digest-poolplayer-preset~%~d~%~A)~%"
+    (format out "(set-poolplayer-preset-form~%~d~%~A)~%"
             preset-no
             (get-preset-string preset-no))))
 

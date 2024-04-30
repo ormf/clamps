@@ -22,7 +22,7 @@
 ;;; Thomas S. Kuhn: Die Struktur wissenschaftlicher Revolutionen
 (defparameter *snd-type-hash* (make-hash-table)) ;;; snd-type-key -> seq of buffer-idxs
 (defparameter *players* nil)
-(defparameter *master-amp-db* -6)
+(defparameter *master-amp-db* 0)
 ;;; (defparameter *remote-ip* "localhost")
 (defparameter *remote-ip* "192.168.113.15")
 (defparameter *port* 5000)
