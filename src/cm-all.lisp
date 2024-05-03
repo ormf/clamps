@@ -53,9 +53,9 @@
             (uiop:run-program (format nil "ln -s ~A ~A" srcpath targetpath))))))
     (clog:set-on-new-window #'clog::cm-gui :boot-file "/start.html")
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
-    (when start-gui (clog-dsp-widgets:start-gui :directory (namestring dir)))
     (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
-    (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")))
+    (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")
+    (when start-gui (clog-dsp-widgets:start-gui :directory (namestring dir)))))
 
 ;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))
 
@@ -159,16 +159,33 @@ supplied and gets interned as a parameter."
 ;;;  (scratch::node-free-all)
   )
 
+#+slynk
 (defun install-standard-sly-hooks ()
-  (cm::set-standard-hush)
   (slynk:eval-in-emacs
    '(progn
      (defun incudine-hush ()
        (interactive)
        (progn
          (sly-interactive-eval "(cm::rts-hush)"))
-       "hush"))
-   t))
+       "hush")
+     (defun set-std-incudine-hush ()
+       (interactive)
+       (setq incudine-hush (symbol-function 'std-incudine-hush)))
+     (defun set-cm-incudine-hush ()
+       (interactive)
+       (setq incudine-hush (symbol-function 'cm-incudine-hush)))
+     (defun incudine-rt-start ()
+       (interactive)
+       (sly-interactive-eval "(incudine:rt-start)"))
+
+     (defun incudine-rt-stop ()
+       (interactive)
+       (sly-interactive-eval "(incudine:rt-stop)"))
+     (define-key lisp-mode-map (kbd "C-.") 'incudine-hush)
+     (define-key lisp-mode-map (kbd "C-c C-.") 'incudine-rt-stop)
+     (define-key lisp-mode-map (kbd "C-c M-.") 'incudine-rt-start))
+   t)
+  (cm::set-standard-hush))
 
 (defun reset-logger-stream ()
   (setf incudine.util:*logger-stream* *error-output*))

@@ -11,9 +11,10 @@
   :serial t
   :depends-on (
                #:incudine
-               #:of-incudine-dsps ;;; #:sol
+               #:of-incudine-dsps
                #:incudine-bufs
                #:orm-utils
+               #:cm-svg
                #:cl-plot
                #:incudine-plot
                #:cl-ppcre
@@ -23,7 +24,6 @@
                #:cm-sfz
                #:cm-poolevt
                #:cm-fomus
-               #:cm-svg
                #:cm-svg.rts
                #:cm-poolevt
                #:cm-poolplayer
