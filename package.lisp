@@ -28,7 +28,8 @@
 
 (export '(cuda-dsp dsp-id levelmeter num-meters refs dsp-nodes node-group
           audio-bus levelmeter-gui
-          master-amp-bus-levelmeter-gui master-bus-levelmeter-gui levelmeter-full-gui *in-refs* *out-refs*
+          master-amp-bus-levelmeter-gui
+          master-amp-out-levelmeter-gui master-bus-levelmeter-gui levelmeter-full-gui *in-refs* *out-refs*
           master-amp-meter-bus
           named-amp-bus named-bus
           bus-name num-channels audio-bus amp-node
