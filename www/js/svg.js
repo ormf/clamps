@@ -14,19 +14,19 @@ class SvgElement extends HTMLElement {
     }
 
   disconnectedCallback() {
-      $(svg).trigger("data", {close: true});
-      console.log("svg removed from page.");
+      $(svg).trigger('data', {close: true});
+      console.log('svg removed from page.');
   }
 
   adoptedCallback() {
-    console.log("Custom element moved to new page.");
+    console.log('Custom element moved to new page.');
   }
 
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
         case 'svg-file':
             console.log('resetting svg...', newValue);
-            this.setSVG("svg/" + newValue);
+            this.setSVG('svg/' + newValue);
 //            console.log('done');
             break;
         case 'cursor-pos':
@@ -69,7 +69,7 @@ class SvgElement extends HTMLElement {
     }
 }
 
-customElements.define("o-svg", SvgElement, { } );
+customElements.define('o-svg', SvgElement, { } );
 
 function svg(elem){
 //    console.log(elem, Date.now())
@@ -141,7 +141,7 @@ function svg(elem){
             {
                 svg.shiftX(shiftX);
 //                console.log('shiftX', shiftX, 'shiftXVal', svg.shiftXVal);
-                //        $(svg).trigger("data", {shift-x: shiftX});
+                //        $(svg).trigger('data', {shift-x: shiftX});
             }
         }
     }
@@ -185,11 +185,11 @@ function svg(elem){
             svgLeftReject.style.display = 'none';
             svgRightReject.style.display = 'none';
             svgAtsRect.style.display = 'none';
-            svg.removeEventListener("dblclick", dblClickMouseHandler);
+            svg.removeEventListener('dblclick', dblClickMouseHandler);
         }
         else {
             svg.MouseActive = false;
-            svg.addEventListener("dblclick", startDblClickMouseHandler);
+            svg.addEventListener('dblclick', startDblClickMouseHandler);
         }
     }
 
@@ -214,14 +214,14 @@ function svg(elem){
             svg.YPos = value[1];
         }
         else {
-            $(svg).trigger("data", { mousepos: [svg.XPos, svg.YPos]});
+            $(svg).trigger('data', { mousepos: [svg.XPos, svg.YPos]});
         }
         redrawCoords ();
     }
     
 
     function startDblClickMouseHandler (e) {
-        if (svg.getAttribute("crosshairs") != 0) {
+        if (svg.getAttribute('crosshairs') != 0) {
             svgVCross.style.display = '';
             svgHCross.style.display = '';
             svgUpperReject.style.display = '';
@@ -236,14 +236,14 @@ function svg(elem){
     
     function dblClickMouseHandler (e) {
         if (svg.MouseActive) {
-            svg.removeEventListener("mousemove", crossHairsMouseHandler);
+            svg.removeEventListener('mousemove', crossHairsMouseHandler);
             svg.style.cursor = '';
             svg.MouseActive = false;
         }
         else {
             svg.MouseActive = true;
             svg.style.cursor = 'none';
-            svg.addEventListener("mousemove", crossHairsMouseHandler);
+            svg.addEventListener('mousemove', crossHairsMouseHandler);
             crossHairsMouseHandler(e);
         }
     }
@@ -276,9 +276,9 @@ function svg(elem){
         let rect = svg.getBoundingClientRect();
         svg.XPos = (e.clientX - rect.left) / rect.width; //x position within the element.
         svg.YPos = 1-((e.clientY - rect.top) / rect.height);  //y position within the element.
-//        console.log("Left? : " + x + " ; Top? : " + y + ".");
+//        console.log('Left? : ' + x + ' ; Top? : ' + y + '.');
         externalValueChange = false;
-        svg.setAttribute("mousepos", [svg.XPos, svg.YPos]);        
+        svg.setAttribute('mousepos', [svg.XPos, svg.YPos]);        
         externalValueChange = true;
     }
     
@@ -312,7 +312,7 @@ function svg(elem){
                 .then((response) => response.text())
                 .then((text) => {
                     const parser = new DOMParser();
-                    const doc = parser.parseFromString(text, "text/xml");
+                    const doc = parser.parseFromString(text, 'text/xml');
                     while (svgContent.firstChild) {
                         svgContent.removeChild(svgContent.lastChild);
                     }
@@ -323,7 +323,7 @@ function svg(elem){
                     //                console.log(xmin, ymin, width, height);
                     svg.doScale(svg.scale);
                     svg.setPos(svg.getAttribute('cursor-pos'));
-                    let groups = Array.from(svg.querySelectorAll("g"));
+                    let groups = Array.from(svg.querySelectorAll('g'));
                     svg.staffLines = groups.filter(g => g.getAttribute('inkscape:label') === 'Stafflines')[0];
                     svg.pianoRoll = groups.filter(g => g.getAttribute('inkscape:label') === 'PianoRoll')[0];
                     svg.barLines = groups.filter(g => g.getAttribute('inkscape:label') === 'Barlines')[0];
@@ -337,7 +337,7 @@ function svg(elem){
                         svg.width = width;
                         svg.setAttribute('width', width);
                         svg.shiftX(svg.getAttribute('shift-x'));
-                        $(svg).trigger("data", {width: (width)});
+                        $(svg).trigger('data', {width: (width)});
                     }
                 });
         }
@@ -363,33 +363,33 @@ function svg(elem){
 
         let data = svg.getAttribute('data') || false;
 //        console.log('svgContent.data: ', data);
-        svg.svgContent = document.createElement("object");
-        svg.svgContent.className="svg";
+        svg.svgContent = document.createElement('object');
+        svg.svgContent.className='svg';
 //        svg.svgContent.style.transform = 'translate(0px)';
         svg.svgContent.style.background = '#fff';
         svg.svgContent.type = 'image/svg.xml';
         svg.appendChild(svg.svgContent);
-        svgCursor  = document.createElement("div");
-        svgCursor.className="cursor";
+        svgCursor  = document.createElement('div');
+        svgCursor.className='cursor';
         svg.appendChild(svgCursor);
-        svgHCross  = document.createElement("div");
-        svgHCross.className="hcross";
+        svgHCross  = document.createElement('div');
+        svgHCross.className='hcross';
         svg.appendChild(svgHCross);
-        svgVCross  = document.createElement("div");
-        svgVCross.className="vcross";
+        svgVCross  = document.createElement('div');
+        svgVCross.className='vcross';
         svg.appendChild(svgVCross);
         svgVCross.style.display = 'none';
         svgHCross.style.display = 'none';
-        svgUpperReject  = document.createElement("div");
-        svgUpperReject.className="upperreject";
-        svgLowerReject  = document.createElement("div");
-        svgLowerReject.className="lowerreject";
-        svgLeftReject  = document.createElement("div");
-        svgLeftReject.className="leftreject";
-        svgRightReject  = document.createElement("div");
-        svgRightReject.className="rightreject";
-        svgAtsRect  = document.createElement("div");
-        svgAtsRect.className="atsrect";
+        svgUpperReject  = document.createElement('div');
+        svgUpperReject.className='upperreject';
+        svgLowerReject  = document.createElement('div');
+        svgLowerReject.className='lowerreject';
+        svgLeftReject  = document.createElement('div');
+        svgLeftReject.className='leftreject';
+        svgRightReject  = document.createElement('div');
+        svgRightReject.className='rightreject';
+        svgAtsRect  = document.createElement('div');
+        svgAtsRect.className='atsrect';
         svg.appendChild(svgUpperReject);
         svg.appendChild(svgLowerReject);
         svg.appendChild(svgLeftReject);

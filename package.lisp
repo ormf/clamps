@@ -20,6 +20,7 @@
 
 (defpackage #:clog-dsp-widgets
   (:use #:cl #:clog #:cl-refs)
+  (:shadowing-import-from #:incudine :buffer :buffer-size :buffer-value)
   (:export
    #:*bindings*
    #:clear-bindings
@@ -39,6 +40,7 @@
    #:create-o-multislider
    #:create-o-vumeter
    #:create-o-svg
+   #:create-o-scope
    #:create-hide-button
    #:create-collection
    #:format-style

@@ -88,7 +88,7 @@
     (create-o-numbox collection (bind-ref-to-attr x "value") 0 1 :precision 2
                      :css '(:height 1em))
     (create-o-knob collection (bind-ref-to-attr x "value") 0 1 0.01)
- (create-o-knob collection (bind-ref-to-attr x "value") 0 1 0.01)
+    (create-o-knob collection (bind-ref-to-attr x "value") 0 1 0.01)
     (create-o-knob collection (bind-ref-to-attr x-db "value") -40 0 1 :unit "dB" :precision 0)
     (create-o-bang collection (bind-ref-to-attr x-bang "bang")
                    :css '(:height 1em))

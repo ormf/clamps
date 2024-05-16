@@ -200,8 +200,6 @@ array of bindings, depending on the class."))
                          ))))
     element))
 
-(format-style '(:width 2em))
-
 (defun create-o-numbox (parent bindings min max &key (precision 2) css)
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
@@ -228,6 +226,55 @@ array of bindings, depending on the class."))
 ;;;             (format t "~&numbox recv value: ~a, ~a~%" (float (gethash attr data) 1.0) *refs-seen*)
              (%set-val var (float (gethash attr data) 1.0))
              ))))
+    element))
+
+(defun array->js-string (array)
+  (with-output-to-string (str)
+    (format str "[~a" (aref array 0))
+    (map '() (lambda (x) (format str ", ~a" x))
+         (make-array (1- (length array))
+                     :displaced-to array
+                     :displaced-index-offset 1))
+    (format str "]")))
+
+(defun buffer->js-string (buffer)
+  (with-output-to-string (str)
+    (if (> (incudine:buffer-size buffer) 0)
+        (progn
+          (format str "[~,2f" (incudine:buffer-value buffer 0))
+          (dotimes (i (1- (incudine:buffer-size buffer)))
+            (format str ", ~,2f" (incudine:buffer-value buffer (1+ i))))
+          (format str "]")))
+    "[0]"))
+
+(defun create-o-scope (parent bindings &key css buffer)
+  (let* ((var (b-ref (first bindings)))
+         (attr (b-attr (first bindings)))
+         (element (create-child
+                   parent
+                   (format nil "<o-scope ~@[~a~]></o-scope>"
+                           (format-style css))))
+         (unwatch (watch (lambda ()
+                           (execute element (format nil "setValues(~a)"
+                                                    (buffer->js-string (get-val buffer)))))))) ;;; the get-val automagically registers the ref
+    (dolist (binding bindings) (push element (b-elist binding))
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
+    (set-on-data element ;;; react to changes in the browser page
+                 (lambda (obj data)
+		   (declare (ignore obj))
+                   (let ((*refs-seen* (list element)))
+                     ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+                     ;;                     (or (if (gethash "close" data) "close")
+                     ;;                         (gethash attr data))))
+                     (if (gethash "close" data)
+                         (progn
+;;;                           (format t "closing scope~%")
+                           (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding)))) ;;; cleanup: unregister elem.
+                           (funcall unwatch)
+                           )
+                         (progn
+                           (%set-val var (float (gethash attr data) 1.0)))
+                         ))))
     element))
 
 ;;; (setf *refs-seen* nil)
@@ -428,7 +475,7 @@ array of bindings, depending on the class."))
           collect (create-o-slider element (list binding)
                                    :thumb-color (or thumb-color "transparent")
                                    :direction direction))
-    (execute element (format nil "initSliders(~a)" num-sliders) )
+    (execute element (format nil "initSliders(~a)" num-sliders))
     element))
 
 (defun create-o-vumeter (parent bindings &key (direction :up)

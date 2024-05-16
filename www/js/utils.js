@@ -19,7 +19,7 @@ function changer(props) {
       const newX = anchorProps.x + deltaX;
       const newY = anchorProps.y + deltaY;
 
-    if ("x" in props){
+    if ('x' in props){
       props.x = newX;
       props.y = newY;
     } else {
@@ -32,8 +32,8 @@ function changer(props) {
 
 export function cancelMouse(move) {
   function cancel(e) {
-    window.removeEventListener("mousemove", move);
-    window.removeEventListener("mouseup", cancel);
+    window.removeEventListener('mousemove', move);
+    window.removeEventListener('mouseup', cancel);
     anchorPoint = undefined;
     anchorProps = undefined;
   }
@@ -47,7 +47,7 @@ export function onMouseDownHandler(pt) {
           y: event.clientY
       };
       anchorProps = {}
-      if ("x" in pt){
+      if ('x' in pt){
           anchorProps.x = pt.x;
           anchorProps.y = pt.y;
       } else {
@@ -55,17 +55,17 @@ export function onMouseDownHandler(pt) {
           anchorProps.y = pt[1];
       }
       const fun = changer(pt);
-      window.addEventListener("mousemove", fun);
-      window.addEventListener("mouseup", cancelMouse(fun));
+      window.addEventListener('mousemove', fun);
+      window.addEventListener('mouseup', cancelMouse(fun));
   }
   return f;
 }
 
 function cancelTouch(move) {
   function cancel(e) {
-    window.removeEventListener("touchmove", move);
-    window.removeEventListener("touchend", cancel);
-    window.removeEventListener("touchcancel", cancel);
+    window.removeEventListener('touchmove', move);
+    window.removeEventListener('touchend', cancel);
+    window.removeEventListener('touchcancel', cancel);
     anchorPoint = undefined;
     anchorProps = undefined;
   }
@@ -77,9 +77,9 @@ export function onTouchStartHandler(pt) {
       anchorPoint = [event.clientX, event.clientY];
       anchorProps = pt;
       const fun = changer(pt);
-      window.addEventListener("touchmove", fun);
-      window.addEventListener("touchend", cancelTouch(fun));
-      window.addEventListener("touchcancel", cancelTouch(fun));
+      window.addEventListener('touchmove', fun);
+      window.addEventListener('touchend', cancelTouch(fun));
+      window.addEventListener('touchcancel', cancelTouch(fun));
   }
   return f;
 }

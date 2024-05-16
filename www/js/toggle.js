@@ -352,7 +352,7 @@ function radio (elem) {
     }
     
     function mouseDownListener (event) {
-//        console.log('mouseDown');
+//        console.log('mousedown');
         moved = false;
         let Fraction = getFraction(event);
 //        console.log(Fraction);

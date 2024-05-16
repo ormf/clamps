@@ -426,6 +426,7 @@ function slider(elem) {
     function mouseDownListener (event) {
         moved = false;
         oldFraction = false;
+        console.log('mousedown');
         mouseMoveListener(event);
         document.addEventListener('mousemove', mouseMoveListener);
         document.addEventListener('mouseup', mouseUpListener);
@@ -453,6 +454,7 @@ function slider(elem) {
 // initialization
 
     function initSlider () {
+        console.log('initialising Slider');
         if (thumbColor == 'transparent')
             thumb = false;
         setSliderBarStyle();
