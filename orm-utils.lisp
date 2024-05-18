@@ -1316,6 +1316,22 @@ values, the key and the value of each property in the proplist."
   (or (second (member key proplist :test #'equal)) default))
 
 
+(defun n-lin (x min max)
+  "linear interpolation for normalized x."
+  (float (+ min (* (- max min) x))))
+
+;;; (n-lin 0 10 1000) -> 10
+;;; (n-lin 0.5 10 1000) -> 505.0
+;;; (n-lin 1 10 1000) -> 1000
+
+(defun lin-n (val min max)
+  "return normalized val linearly between min and max.
+
+(lin-n min min max) -> 0
+(lin-n max min max) -> 1
+"
+  (/ (- val min) (- max min)) 1.0)
+
 (defun n-exp (x min max)
   "linear interpolation for normalized x."
   (float (* min (expt (/ max min) x))))
@@ -1324,13 +1340,14 @@ values, the key and the value of each property in the proplist."
 ;;; (n-exp 0.5 10 1000) -> 100.0
 ;;; (n-exp 1 10 1000) -> 1000
 
-(defun n-lin (x min max)
-  "linear interpolation for normalized x."
-  (float (+ min (* (- max min) x))))
+(defmacro exp-n (val min max)
+  "return normalized val exponentially between min and max:
 
-;;; (n-lin 0 10 1000) -> 10
-;;; (n-lin 0.5 10 1000) -> 505.0
-;;; (n-lin 1 10 1000) -> 1000
+(exp-n min min max) -> 0
+(exp-n max min max) -> 1
+"
+  (let ((quot (if (zerop min) 0 (/ max min))))
+    `(log ,(/ val min) ,quot)))
 
 (defun m-exp (x min max)
   "exp interpolation for midivalues (x = [0..127])"
