@@ -1330,7 +1330,7 @@ values, the key and the value of each property in the proplist."
 (lin-n min min max) -> 0
 (lin-n max min max) -> 1
 "
-  (/ (- val min) (- max min)) 1.0)
+  (/ (- val min) (- max min)))
 
 (defun n-exp (x min max)
   "linear interpolation for normalized x."
