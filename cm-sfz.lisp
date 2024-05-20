@@ -111,8 +111,6 @@ svg-file."
       (at time (or play-fn #'cl-sfz:play-sfz) keynum amplitude duration :preset preset :pan pan :startpos startpos :out1 (mod (- chan 100) 8))))
   )
 
-(sprout (new sfz :time 0 :preset :flute-nv))
-
 (defmethod write-event ((obj sfz) (to incudine-stream) scoretime)
   "output sfz object."
 ;;;  (if *debug* (format t "~&sfz->svg: ~a~%" obj))
