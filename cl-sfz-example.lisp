@@ -19,11 +19,11 @@
 ;;; **********************************************************************
 
 (unless (find-package :cl-sfz) (ql:quickload "cl-sfz"))
-(unless (find-package :cm-utils) (ql:quickload "cm-utils"))
+(unless (find-package :cm-utils) (ql:quickload "cm-all"))
 
 (in-package :cl-sfz)
 
-(rt-start)
+(cm:start-cm-all)
 
 (ensure-sfz-preset :flute-nv)
 (ensure-sfz-preset :bassoboe-f)

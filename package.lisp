@@ -7,7 +7,7 @@
 ;;;  (:shadowing-import-from #:incudine :sample-play :lsample-play)
   (:export
    #:load-sfz-preset
-   #:show-sfz-presets
+   #:list-sfz-presets
    #:remove-sfz-preset
    #:ensure-sfz-preset
    #:get-sfz-preset

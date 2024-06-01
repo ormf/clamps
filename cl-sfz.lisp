@@ -169,8 +169,9 @@ to t."
 
 ;;; (load-sfz-preset "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv)
 
-(defun show-sfz-presets ()
-  (sort (loop for k being each hash-key of *sfz-tables* collect k) #'string<))
+(defun list-sfz-presets (&key (loaded t))
+  (if loaded (sort (loop for k being each hash-key of *sfz-tables* collect k) #'string<)
+      (sort (loop for k being each hash-key of cl-user:*sfz-preset-lookup* collect k) #'string<)))
 
 (defun remove-sfz-preset (name)
   (remhash name *sfz-tables*))
