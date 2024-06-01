@@ -3,7 +3,9 @@
 ;;;
 ;;; transform a file with multiple instruments, exported from
 ;;; polyphone into single folders with their .sfz files and samples to
-;;; be used individually.
+;;; be used individually. Sample names in the destination folder are
+;;; cleaned from some special characters, spaces are replaced by
+;;; dashes and the filename is converted to lower case.
 ;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
@@ -25,6 +27,8 @@
 (in-package :cm)
 
 (defun sanitize-filename (name)
+  "remove ' and & from filename, replace (, ) and Space into dashes and
+convert to lower case."
   (string-downcase (remove
                     #\'
                     (remove #\& (substitute #\- #\)
