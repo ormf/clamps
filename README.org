@@ -1,0 +1,45 @@
+* CLAMPS
+
+  Common Lisp Aided Music Production System
+
+** Overview
+
+   clamps is a system for realtime and non-realtime music production
+   written in Common Lisp. It enables a seamless workflow between
+   high-level structures to define musical processes all the way down
+   to low level dsp definitions for sound creation including browser
+   based interfaces for interactive work and control useable for live
+   performances. In that respect it combines features of systems like
+   OpenMusic, SuperCollider or the Pure Data/Max family of software.
+
+   The components rely on and extend software not written by the
+   author. The most important are listed under Dependencies.
+
+** Prerequisites
+
+   - Jack
+
+   - SBCL
+
+   - Quicklisp
+
+   - preferably Emacs & Sly
+     
+** Dependencies
+
+   - Incudine
+
+     Used for sample accurate scheduling, the definition of the DSP
+     parts and realtime IO (Audio, MIDI, OSC...).
+
+   - Common Music (including FOMUS)
+
+     Used as a high level interface for algorithmic composition,
+     im/export from/to MIDI, SVG, Notation and realtime output (using
+     incudine).
+
+   - CLOG
+
+     Used for browser based interactive GUI definitions.
+
+** Installation
