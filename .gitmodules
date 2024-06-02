@@ -1,0 +1,27 @@
+[submodule "submodules/cl-poolplayer"]
+	path = submodules/cl-poolplayer
+	url = https://github.com/ormf/cl-poolplayer.git
+[submodule "submodules/cl-sfz"]
+	path = submodules/cl-sfz
+	url = https://github.com/ormf/cl-sfz.git
+[submodule "submodules/cm-incudine"]
+	path = submodules/cm-incudine
+	url = https://github.com/ormf/cm-incudine.git
+[submodule "submodules/cm-poolplayer"]
+	path = submodules/cm-poolplayer
+	url = https://github.com/ormf/cm-poolplayer.git
+[submodule "submodules/cm-sfz"]
+	path = submodules/cm-sfz
+	url = https://github.com/ormf/cm-sfz.git
+[submodule "submodules/cm-svg"]
+	path = submodules/cm-svg
+	url = https://github.com/ormf/cm-svg.git
+[submodule "submodules/of-incudine-dsps"]
+	path = submodules/of-incudine-dsps
+	url = https://github.com/ormf/of-incudine-dsps.git
+[submodule "submodules/orm-utils"]
+	path = submodules/orm-utils
+	url = https://github.com/ormf/orm-utils.git
+[submodule "submodules/svg-import-export"]
+	path = submodules/svg-import-export
+	url = https://github.com/ormf/svg-import-export.git
