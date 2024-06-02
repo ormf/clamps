@@ -126,7 +126,7 @@ nanokontrol2.
          (v-collect (n 11) (+ n 40)))
     (dotimes (i (length cc-nums))
       (unless (<= 40 i 45)
-        (set-val (aref cc-state i) (aref (aref *midi-cc-state* chan) (aref cc-nums i))))))
+        (set-val (aref cc-state i) (get-val (aref (aref *midi-cc-state* chan) (aref cc-nums i)))))))
   (update-state obj))
 
 

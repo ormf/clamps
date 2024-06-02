@@ -20,12 +20,19 @@
 
 (in-package :cl-midictl)
 
+(defun ccin (ccnum &optional (channel *global-midi-channel*))
+  (get-val (aref (aref *midi-cc-state* channel) ccnum)))
+
+(defsetf ccin (ccnum &optional (channel *global-midi-channel*)) (value)
+  `(progn
+     (set-val (aref (aref *midi-cc-state* ,channel) ,ccnum)) ,value
+     ,value))
+
 (defun get-ref (controller ref-idx)
   "return the ref-object of a midi-controller given the idx according to
 cc-nums."
   (with-slots (cc-nums cc-state) controller
     (aref cc-state (aref cc-nums ref-idx))))
-
 
 (defmacro toggle-slot (slot)
   `(set-val ,slot

@@ -34,7 +34,8 @@
           handle-preset-bank-button-press
           handle-player-button-press
           handle-store-button-press
-          handle-midi-in)
+          handle-midi-in
+          digest-nanoktl2-presets)
         'cl-midictl)
 
 ;;; preset buttons are special: they have labels which change
@@ -56,7 +57,8 @@
            :documentation "idx of current preset bank")
    (cp-src :initform nil :initarg :cp-src :accessor cp-src
            :documentation "idx of src preset to copy")
-   (presets :initform (make-array 128 :initial-contents (loop repeat 128 collect (make-array 4 :initial-element nil)))
+   (presets :initform (make-array 128 :initial-contents
+                                  (loop repeat 128 collect (make-array 4 :initial-element nil)))
             :initarg :presets :accessor presets)))
 
 (defmethod initialize-instance :after ((obj nanoktl2-preset-midi) &rest args)
@@ -108,7 +110,7 @@
          (v-collect (n 11) (+ n 40)))
     (dotimes (i (length cc-nums))
       (unless (<= 40 i 45)
-        (set-val (aref cc-state i) (aref (aref *midi-cc-state* chan) (aref cc-nums i)))))
+        (set-val (aref cc-state i) (get-val (aref (aref *midi-cc-state* chan) (aref cc-nums i))))))
     (update-state obj)
     (mapcar #'funcall unwatch)
     (loop for idx below 8
@@ -235,6 +237,12 @@ off is determined by <initial-flash>."
                (let* ((slot-name (if (< button-idx 8) 's-buttons 'm-buttons)))
                  (set-val (aref (slot-value instance slot-name) (mod button-idx 8)) 2)
                  (setf cp-src preset-no))))))))
+
+(defun set-player-buttons (controller button-state)
+  (with-slots (tr-rewind tr-ffwd tr-stop tr-play) controller
+    (mapc #'set-val
+          (list tr-rewind tr-ffwd tr-stop tr-play)
+          button-state)))
 
 #|
 (defun handle-preset-bank-button-press (instance button-idx)
@@ -365,3 +373,61 @@ off is determined by <initial-flash>."
 ;;;                 (copy-structure (aref (aref presets player) src))
                  (aref (aref presets player) src))))))
 
+(defvar *nanoktl2-presets-file* "/tmp/nanoktl2-presets.lisp")
+(defvar *curr-nk2-controller* nil)
+
+#|
+
+(defun format-player-preset (preset stream)
+  (declare (ignorable stream))
+;;;  (format stream "~&(")
+  (if preset
+      (format stream "~&(:num ~a :cc-state ~a~%:form ~a)~%"
+              (f.orm::controller-preset-num preset)
+              (f.orm::controller-preset-cc-state preset)
+              (aref (f.orm::controller-preset-fns preset) 0) )
+      (format stream "nil "))
+;;;  (format stream ")~%")
+  )
+|#
+(defun format-player-preset (preset stream)
+  (declare (ignorable stream))
+;;;  (format stream "~&(")
+  (if preset
+      (format stream preset)
+      (format stream "nil "))
+;;;  (format stream ")~%")
+  )
+
+(defgeneric save-presets (instance &optional file)
+  (:method ((controller nanoktl2-preset-midi) &optional (file *nanoktl2-presets-file*))
+    (incudine.util:msg :info "saving nanoktl2 preset to ~S~%" file)
+    (with-open-file (out file :direction :output :if-exists :supersede)
+      (format out "(in-package :f.orm)~%~%(digest-nanoktl2-presets cl-midictl::*curr-nk2-controller*~%'(")
+      (map nil
+           (lambda (preset)
+             (format out "(")
+             (map nil
+                  (lambda (player-preset) (format-player-preset player-preset out))
+                  preset)
+             (format out ")~%"))
+           (presets controller))
+      (format out "))"))
+    file))
+
+(defun digest-nanoktl2-presets (controller data)
+  (declare (ignorable data))
+  (format t "digesting presets from: ~a ~%" controller))
+
+(defgeneric load-presets (instance &optional file)
+    (:method ((controller nanoktl2-preset-midi) &optional (file *nanoktl2-presets-file*))
+    (incudine.util:msg :warn "loading nanoktl2 preset from ~S~%" file)
+      (let ((*curr-nk2-controller* controller))
+        (load file)
+        (update-preset-buttons controller))))
+
+(defgeneric init-nk2 (instance &optional file)
+  (:method ((controller nanoktl2-preset-midi) &optional (file *nanoktl2-presets-file*))
+    (set-player-buttons controller '(1 1 1 1))
+    (load-presets controller file)
+    (handle-preset-button-press controller 0)))

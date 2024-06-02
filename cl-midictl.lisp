@@ -296,13 +296,13 @@ instance."
   (incudine.util:msg :debug "~S ~a ~a ~a" opcode d1 d2 channel)
   (case opcode
     (:cc
-     (setf (aref (aref *midi-cc-state* channel) d1) d2)
+     (set-val (aref (aref *midi-cc-state* channel) d1) d2)
      (dolist (fn (aref (aref *midi-cc-fns* channel) d1)) (funcall fn d2)))
     (:note-on
-     (setf (aref (aref *midi-note-state* channel) d1) d2)
+     (set-val (aref (aref *midi-note-state* channel) d1) d2)
      (dolist (fn (aref (aref *midi-note-fns* channel) d1)) (funcall fn d2)))
     (:note-off
-     (setf (aref (aref *midi-note-state* channel) d1) 0)
+     (set-val (aref (aref *midi-note-state* channel) d1) 0)
      (dolist (fn (aref (aref *midi-note-fns* channel) d1)) (funcall fn 0)))))
 
 (defun start-midi-receive (input)
@@ -369,4 +369,3 @@ of the input."
         (incudine.util:msg :warn "~a" *midi-out1*)
         (list *midi-in1* *midi-out1*))
       (error "midi didn't start properly")))
-

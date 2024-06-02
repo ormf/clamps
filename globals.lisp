@@ -22,11 +22,12 @@
 
 (defparameter *midi-in1* nil)
 (defparameter *midi-out1* nil)
+(defparameter *global-midi-channel* 0)
 
 (defparameter *midi-cc-state*
   (make-array 16 :initial-contents
               (loop repeat 16
-                    collect (make-array 128 :initial-contents (loop repeat 128 collect 0)))))
+                    collect (make-array 128 :initial-contents (loop repeat 128 collect (make-ref 0))))))
 
 (defparameter *midi-cc-fns*
   (make-array 16 :initial-contents
@@ -36,7 +37,7 @@
 (defparameter *midi-note-state*
   (make-array 16 :initial-contents
               (loop repeat 16
-                    collect (make-array 128 :initial-contents (loop repeat 128 collect 0)))))
+                    collect (make-array 128 :initial-contents (loop repeat 128 collect (make-ref 0))))))
 
 (defparameter *midi-note-fns*
   (make-array 16 :initial-contents
