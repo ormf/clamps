@@ -179,7 +179,8 @@ automagic update whenever any ref value in fn changes."
                         (funcall listener old (ref-value new-ref)))))))
               new-ref))
       ;; call the update function once to register all callbacks.
-      (funcall (ref-update new-ref)))))
+      (funcall (ref-update new-ref))
+      new-ref)))
 
 ;;; watch is similar to make-computed. In contrast to make-computed it
 ;;; mainly implements behaviour. Like computed it uses a ref-object
