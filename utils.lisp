@@ -25,7 +25,7 @@
 
 (defsetf ccin (ccnum &optional (channel *global-midi-channel*)) (value)
   `(progn
-     (set-val (aref (aref *midi-cc-state* ,channel) ,ccnum)) ,value
+     (set-val (aref (aref *midi-cc-state* ,channel) ,ccnum) ,value)
      ,value))
 
 (defun get-ref (controller ref-idx)
