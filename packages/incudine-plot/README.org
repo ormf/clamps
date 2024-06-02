@@ -1,0 +1,74 @@
+* incudine-plot
+** License
+
+#+BEGIN_SRC
+**********************************************************************
+Copyright (c) 2018 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
+
+Revision history: See git repository.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the Gnu Public License, version 2 or
+later. See https://www.gnu.org/licenses/gpl-2.0.html for the text
+of this agreement.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+**********************************************************************
+#+END_SRC
+
+incudine-plot is a plot program for incudine data. Currently it
+supports envelopes and buffers.
+
+As it is based on [[https://github.com/ormf/cl-plot][cl-plot]] it can also be used to plot functions or
+sequences.
+
+** INSTALLATION
+   incudine-plot depends on incudine, cl-plot and uiop. Like cl-plot
+   the #'plot function returns its argument unchanged. This enables to
+   wrap the (plot ...) around suitable subexpressions within code to
+   graphically monitor intermediate results of larger code blocks
+   without changing the outcome of the code.
+
+   The recommended way is to use quicklisp and put the incudine-plot folder
+   into <home>/quicklisp/local-projects/.
+
+   Then load it with
+
+   #+BEGIN_SRC lisp
+     CL-USER> (ql:quickload "incudine-plot")
+     To load "incudine-plot":
+     Load 1 ASDF system:
+     incudine-plot
+     ; Loading "incudine-plot"
+     ..................................................
+     [package incudine-plot]........
+     ("incudine-plot")
+     CL-USER> (in-package :incudine-plot)
+     #<PACKAGE "INCUDINE-PLOT">
+     INCUDINE-PLOT> 
+   #+END_SRC
+*** Plotting Envelopes
+    #+BEGIN_SRC lisp
+      INCUDINE-PLOT> (plot (make-envelope '(0 1 1 0)'(1 2 1)))
+              peak amps:     1.000  
+              samples out of range:         0  
+      NIL
+      INCUDINE-PLOT> 
+    #+END_SRC
+*** Plotting Buffers
+    First copy a soundfile to /tmp/test.wav. 
+
+    Then
+    #+BEGIN_SRC lisp
+      (defparameter *my-buffer* (buffer-load "/tmp/test.wav"))
+
+      (plot *my-buffer*)
+
+      (plot *my-buffer* :x-axis :seconds)
+
+   #+END_SRC
+
