@@ -298,22 +298,23 @@ The curvature CURVE defaults to -4."
         frm)))
 
 
-(dsp! play-buffer* ((buffer buffer) (env incudine.vug:envelope) amp rate start end (out fixnum))
+(dsp! play-buffer* ((buffer buffer) (env incudine.vug:envelope) ampdb rate start end (out fixnum))
   (:defaults (incudine:incudine-missing-arg "BUFFER")
              (incudine:incudine-missing-arg "ENV")
              0 1 0 0 0)
-  (with-samples ((ampl (db->linear amp)))
+  (with-samples ((ampl (db->linear ampdb)))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) (buffer-sample-rate buffer))
                              end)))
-      (with (
-             (frm1 (envelope* env 1 (- ende start) #'free))
-             (frm2 (buffer-play* buffer rate start ende))
-             )
+      (with ((frm1 (envelope* env 1 (- ende start) #'free))
+             (frm2 (buffer-play* buffer rate start ende)))
         (maybe-expand frm1)
         (maybe-expand frm2)
         (foreach-frame
-          (incf (audio-out out)
-                (* ampl (frame-ref frm1 current-frame)
+          (incf (audio-out out current-frame)
+                (* (frame-ref frm1 current-frame)
+                   (frame-ref frm2 current-frame)))
+          (incf (audio-out (1+ out) current-frame)
+                (* (frame-ref frm1 current-frame)
                    (frame-ref frm2 current-frame))))))))
 

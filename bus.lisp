@@ -85,8 +85,7 @@ No bounds checking."
                   (+ (the non-negative-fixnum
                           (* channel frames))
                      *number-of-ctl-bus-channels*
-                     frame)))
-    ))
+                     frame)))))
 
 (declaim (inline set-audio-bus))
 (defun set-audio-bus (channel frame value)
