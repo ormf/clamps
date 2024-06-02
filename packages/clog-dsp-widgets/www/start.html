@@ -1,0 +1,55 @@
+<!-- This file is the boot file. Try to bring in as much framework code as possible, as it does not need to get transfered via websockets -->
+<!doctype HTML>
+<html>
+   <head>
+      <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+      <meta http-equiv="Pragma" content="no-cache" />
+      <meta http-equiv="Expires" content="0" />
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script src="js/jquery.min.js"></script>
+      <!-- very importent for debugging -->
+      <script>var clog_debug = false;</script>
+      <!-- clog scripts to handle the websocket connection etc. -->
+      <script src="/js/boot.js" type="text/javascript"></script>
+      <!-- importmap is used in esm module syntax now we can import javascript files as modules-->
+      <!-- <script type="importmap"> -->
+      <!--   { -->
+      <!--     "imports": { -->
+      <!--       "preact": "https://esm.sh/preact", -->
+      <!--       "@preact/signals": "https://cdn.jsdelivr.net/npm/@preact/signals@1.2.2/dist/signals.module.js", -->
+      <!--       "@preact/signals-core": "https://cdn.jsdelivr.net/npm/@preact/signals-core@1.5.1/dist/signals-core.module.js", -->
+      <!--       "preact/": "https://esm.sh/preact/", -->
+      <!--       "htm/preact": "https://esm.sh/htm@3.1.1/preact?external=preact", -->
+      <!--       "preact-custom-element": "https://cdnjs.cloudflare.com/ajax/libs/preact-custom-element/4.3.0/preact-custom-element.esm.js" -->
+      <!--     } -->
+      <!--   } -->
+      <script type="importmap">
+        {
+          "imports": {
+            "preact": "/js/preact/preact.module.js",
+            "@preact/signals": "/js/preact/signals.module.js",
+        "@preact/signals-core": "/js/preact/signals-core.module.js",
+        "preact/hooks": "/js/preact/hooks.module.js",
+            "htm/preact": "/js/preact/standalone.module.js",
+            "preact-custom-element": "/js/preact/preact-custom-element.esm.js"
+          }
+        }
+      </script>
+      <!-- the script that contains all the cool new components (html elements) -->
+      <script src="/js/components.js" type="module"></script>
+      <script src="/js/numbox.js" type="module"></script>
+      <script src="/js/bang.js" type="module"></script>
+      <script src="/js/toggle.js" type="module"></script>
+      <script src="/js/slider.js" type="module"></script>
+      <script src="/js/multislider.js" type="module"></script>
+      <script src="/js/vumeter.js" type="module"></script>
+      <script src="/js/scope.js" type="module"></script>
+      <script src="/js/svg.js" type="module"></script>
+       <!-- custom CSS -->
+      <link rel="stylesheet" href="css/style.css">
+   </head>
+   <body>
+   </body>
+    <noscript>Your browser must support JavaScript and be HTML 5 compilant to see this site.</noscript>
+</html>

@@ -1,0 +1,34 @@
+* clog-dsp-widgets
+*** Orm Finnendahl
+
+Widgets for DSP related interactive Guis using [[https://github.com/rabbibotton/clog][clog]].
+
+** Note
+   
+   This package is a complete (incompatible) rewrite of an older
+   package with the same name. The change took place on
+   2024-01-27. You can still find the old package on github with the
+   name [[https://githb.com/ormf/clog-orgel-widgets][clog-orgel-widgets]]. Either rename all references to
+   clog-dsp-widgets in your code to the new name or check out out an
+   older commit (up to 763a913f2f53e7795574f3b9e049f2baa19efcd9).
+
+** License
+
+gpl 2.0 or later
+
+
+Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
+
+** Install
+
+   - clone [[https://github.com/rabbibotton/clog/][clog]] and all its dependencies into =$HOME/quicklisp/local-projects=
+
+   - clone [[https://github.com/ormf/cl-refs][cl-refs]] into =$HOME/quicklisp/local-projects=
+   
+   - clone this Repository into =$HOME/quicklisp/local-projects=
+
+   - Startup a lisp and issue =(ql:quickload :clog-dsp-widgets)=
+
+** Usage
+
+   - see =examples/example.lisp= in this repository
