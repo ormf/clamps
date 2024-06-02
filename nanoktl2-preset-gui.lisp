@@ -37,9 +37,10 @@
            (with-slots (cc-state cc-nums chan nk2-fader-modes) midi-controller
              (watch (lambda ()
                       (let ((fader-value (get-val (aref cc-state i)))
-                            (hw-value (/ (aref
-                                          (aref cl-midictl::*midi-cc-state* chan)
-                                          (aref cc-nums i))
+                            (hw-value (/ (get-val
+                                          (aref
+                                           (aref cl-midictl::*midi-cc-state* chan)
+                                           (aref cc-nums i)))
                                          127.0)))
                         (setf (style element :background-color)
                               (case (aref nk2-fader-modes i)
