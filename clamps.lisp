@@ -23,7 +23,7 @@
 (push (asdf:system-relative-pathname :clamps "packages/")
       asdf:*central-registry*)
 
-(dolist (system '(:cm-all
+(dolist (system '(:fudi-incudine
                   :of-incudine-dsps
                   :incudine-bufs
                   :orm-utils
@@ -42,7 +42,8 @@
                   :clog-dsp-widgets
                   :clog-cuda
                   :cl-midictl
-                  :clog-midi-controller))
+                  :clog-midi-controller
+                  :cm-all))
   (asdf:operate 'asdf:load-op system))
 
 (setf asdf:*central-registry*
