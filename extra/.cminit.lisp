@@ -1,3 +1,11 @@
+;;; Personal initialization file for common music/clamps, setting up
+;;; paths for soundfiles and sfz files and associations between
+;;; keywords and sfz files.
+;;;
+;;; Put this file into your home directory (at "$HOME/.cminit.lisp")
+;;; and adjust as needed. It will be executed each time, cm ist loaded
+;;; into lisp.
+
 (in-package :cl-user)
 
 (export '(*sfz-preset-lookup* *sfz-preset-path* *sfile-path*) 'cl-user)
@@ -13,7 +21,8 @@
 ;;; preset keyword and an sfz file should be added using the
 ;;; "add-sfz-assoc" function.
 ;;;
-;;; Example:
+;;; Example (you can add the example code at the end of this file to
+;;; load it each time, cm/clamps is loaded):
 ;;;
 ;;; Soundfiles in "$HOME/snd", an sfz file of the name "clarinet.sfz"
 ;;; in "$HOME/snd/sfz" :

@@ -22,13 +22,14 @@
 
 (defun clamps-gui (body)
   "On-new-window handler."
+  (format t "Bhal ~a" body)
   (setf (title (html-document body)) "Clamps Gui")
   (add-class body "w3-blue-grey"))
 
 (set-on-new-window #'clamps-gui :boot-file "/start.html")
 (set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
 
-(in-package #:clamps)
+(in-package #:cm)
 
 (defparameter *svg-dir* nil)
 
@@ -51,11 +52,11 @@
                (srcpath (namestring (asdf:system-relative-pathname :clog-dsp-widgets subdirpath))))
           (unless (uiop:probe-file* (merge-pathnames (format nil "~a~a" dir subdirpath)))
             (uiop:run-program (format nil "ln -s ~A ~A" srcpath targetpath))))))
-    (clog:set-on-new-window #'clog::clamps-gui :boot-file "/start.html")
+    (clog:set-on-new-window #'clog::clamps-gui :path "/" :boot-file "/start.html")
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
     (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
     (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")
-    (when start-gui (clog-dsp-widgets:start-gui :directory (namestring dir)))))
+    (when start-gui (progn (sleep 0.5) (clog-dsp-widgets:start-gui :directory (namestring dir))))))
 
 ;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))
 
@@ -194,7 +195,7 @@ supplied and gets interned as a parameter."
 (defun cl-user::call-sly-connected-hooks ()
   (dolist (fn *sly-connected-hooks*) (funcall fn)))
 
-(defun start-clamps (&key (qsynth nil) (start-gui t))
+(defun start-clamps (&key (qsynth nil) (gui-root "/tmp") (start-gui t))
   (start-inkscape-osc)
   (rts)
 ;;;  (unless (cm::rts?) (rts))
@@ -204,11 +205,13 @@ supplied and gets interned as a parameter."
   (format t "~&midi initialized!~%")
   ;; (install-sly-hooks)
   (incudine:setup-io)
-  (clamps-restart-gui "/tmp" :start-gui start-gui)
+  (clamps-restart-gui gui-root :start-gui start-gui)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (cm))
 
 #|
+
+(clamps-restart-gui "/tmp")
   ;; (if (member :slynk *features*)
   ;;     (progn
   ;;       (slynk:eval-in-emacs
