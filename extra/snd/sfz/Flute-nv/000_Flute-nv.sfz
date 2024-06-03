@@ -1,0 +1,437 @@
+// Sfz exported from a sf2 file with Polyphone
+// Name      : Flute-nv
+// Author    : Orm Finnendahl
+// Copyright : public domain
+// Date      : 2021/07/10
+// Comment   : IOWA samples Flute ff with loop points
+
+<group>
+lokey=0 hikey=127
+lovel=0 hivel=127
+loop_mode=no_loop
+ampeg_attack=0.001
+amplfo_freq=8.176
+fillfo_freq=8.176
+pitchlfo_freq=8.176
+fil_type=lpf_2p
+cutoff=19913
+
+<region>
+sample=samples/59-Flute.nv.ff.B3.wav
+volume=0
+lokey=0 hikey=59
+pitch_keycenter=59
+tune=-3
+offset=0
+end=100610
+loop_start=56636
+loop_end=57797
+
+<region>
+sample=samples/60-Flute.nv.ff.C4.wav
+volume=0
+lokey=60 hikey=60
+pitch_keycenter=60
+offset=0
+end=114209
+loop_start=40981
+loop_end=41164
+
+<region>
+sample=samples/61-Flute.nv.ff.Db4.wav
+volume=0
+lokey=61 hikey=61
+pitch_keycenter=61
+tune=8
+offset=0
+end=119554
+loop_start=63429
+loop_end=64472
+
+<region>
+sample=samples/62-Flute.nv.ff.1D4.wav
+volume=0
+lokey=62 hikey=62
+pitch_keycenter=62
+tune=6
+offset=0
+end=122764
+loop_start=45470
+loop_end=49073
+
+<region>
+sample=samples/63-Flute.nv.ff.1Eb4.wav
+volume=0
+lokey=63 hikey=63
+pitch_keycenter=63
+tune=-3
+offset=0
+end=137316
+loop_start=39149
+loop_end=43005
+
+<region>
+sample=samples/64-Flute.nv.ff.1E4.wav
+volume=0
+lokey=64 hikey=64
+pitch_keycenter=64
+tune=-7
+offset=0
+end=128430
+loop_start=26318
+loop_end=27626
+
+<region>
+sample=samples/65-Flute.nv.ff.F4.wav
+volume=0
+lokey=65 hikey=65
+pitch_keycenter=65
+offset=0
+end=128993
+loop_start=85500
+loop_end=85636
+
+<region>
+sample=samples/66-Flute.nv.ff.1Gb4.wav
+volume=0
+lokey=66 hikey=66
+pitch_keycenter=66
+offset=0
+end=129976
+loop_start=84685
+loop_end=84942
+
+<region>
+sample=samples/67-Flute.nv.ff.1G4.wav
+volume=0
+lokey=67 hikey=67
+pitch_keycenter=67
+offset=0
+end=130770
+loop_start=97049
+loop_end=98027
+
+<region>
+sample=samples/68-Flute.nv.ff.1Ab4.wav
+volume=0
+lokey=68 hikey=68
+pitch_keycenter=68
+offset=0
+end=117523
+loop_start=91182
+loop_end=91411
+
+<region>
+sample=samples/69-Flute.nv.ff.1A4.wav
+volume=0
+lokey=69 hikey=69
+pitch_keycenter=69
+tune=1
+offset=0
+end=112344
+loop_start=68350
+loop_end=72584
+
+<region>
+sample=samples/70-Flute.nv.ff.1Bb4.wav
+volume=0
+lokey=70 hikey=70
+pitch_keycenter=70
+tune=-16
+offset=0
+end=118658
+loop_start=42658
+loop_end=43167
+
+<region>
+sample=samples/71-Flute.nv.ff.1B4.wav
+volume=0
+lokey=71 hikey=71
+pitch_keycenter=71
+tune=-21
+offset=0
+end=116218
+loop_start=51317
+loop_end=52182
+
+<region>
+sample=samples/72-Flute.nv.ff.1C5.wav
+volume=0
+lokey=72 hikey=72
+pitch_keycenter=72
+tune=-14
+offset=0
+end=116508
+loop_start=41886
+loop_end=44971
+
+<region>
+sample=samples/73-Flute.nv.ff.1Db5.wav
+volume=0
+lokey=73 hikey=73
+pitch_keycenter=73
+tune=-12
+offset=0
+end=114209
+loop_start=87813
+loop_end=89016
+
+<region>
+sample=samples/74-Flute.nv.ff.1D5.wav
+volume=0
+lokey=74 hikey=74
+pitch_keycenter=74
+tune=-15
+offset=0
+end=121451
+loop_start=75509
+loop_end=77860
+
+<region>
+sample=samples/75-Flute.nv.ff.1Eb5.wav
+volume=0
+lokey=75 hikey=75
+pitch_keycenter=75
+tune=-3
+offset=0
+end=124458
+loop_start=75111
+loop_end=95589
+
+<region>
+sample=samples/76-Flute.nv.ff.1E5.wav
+volume=0
+lokey=76 hikey=76
+pitch_keycenter=88
+tune=-8
+offset=0
+end=115727
+loop_start=83480
+loop_end=85000
+
+<region>
+sample=samples/77-Flute.nv.ff.1F5.wav
+volume=0
+lokey=77 hikey=77
+pitch_keycenter=77
+tune=-18
+offset=0
+end=129390
+loop_start=62737
+loop_end=63622
+
+<region>
+sample=samples/78-Flute.nv.ff.1Gb5.wav
+volume=0
+lokey=78 hikey=78
+pitch_keycenter=78
+tune=-23
+offset=0
+end=127376
+loop_start=42552
+loop_end=99832
+
+<region>
+sample=samples/79-Flute.nv.ff.1G5.wav
+volume=0
+lokey=79 hikey=79
+pitch_keycenter=79
+tune=-35
+offset=0
+end=114041
+loop_start=79284
+loop_end=79705
+
+<region>
+sample=samples/80-Flute.nv.ff.1Ab5.wav
+volume=0
+lokey=80 hikey=80
+pitch_keycenter=80
+offset=0
+end=112622
+loop_start=56691
+loop_end=57147
+
+<region>
+sample=samples/81-Flute.nv.ff.1A5.wav
+volume=0
+lokey=81 hikey=81
+pitch_keycenter=81
+tune=-17
+offset=0
+end=101101
+loop_start=31883
+loop_end=33071
+
+<region>
+sample=samples/82-Flute.nv.ff.1Bb5.wav
+volume=0
+lokey=82 hikey=82
+pitch_keycenter=82
+tune=-20
+offset=0
+end=118490
+loop_start=89229
+loop_end=91061
+
+<region>
+sample=samples/83-Flute.nv.ff.1B5.wav
+volume=0
+lokey=83 hikey=83
+pitch_keycenter=83
+tune=-21
+offset=0
+end=97109
+loop_start=65443
+loop_end=67829
+
+<region>
+sample=samples/84-Flute.nv.ff.1C6.wav
+volume=0
+lokey=84 hikey=84
+pitch_keycenter=84
+tune=-24
+offset=0
+end=96880
+loop_start=69863
+loop_end=71173
+
+<region>
+sample=samples/85-Flute.nv.ff.1Db6.wav
+volume=0
+lokey=85 hikey=85
+pitch_keycenter=85
+tune=-33
+offset=0
+end=92586
+loop_start=69412
+loop_end=72306
+
+<region>
+sample=samples/86-Flute.nv.ff.1D6.wav
+volume=0
+lokey=86 hikey=86
+pitch_keycenter=86
+tune=-37
+offset=0
+end=114509
+loop_start=60641
+loop_end=61730
+
+<region>
+sample=samples/87-Flute.nv.ff.1Eb6.wav
+volume=0
+lokey=87 hikey=87
+pitch_keycenter=87
+tune=-26
+offset=0
+end=104324
+loop_start=38819
+loop_end=39424
+
+<region>
+sample=samples/88-Flute.nv.ff.1E6.wav
+volume=0
+lokey=88 hikey=88
+pitch_keycenter=88
+tune=-17
+offset=0
+end=111094
+loop_start=24339
+loop_end=34341
+
+<region>
+sample=samples/89-Flute.nv.ff.1F6.wav
+volume=0
+lokey=89 hikey=89
+pitch_keycenter=90
+offset=0
+end=93453
+loop_start=58870
+loop_end=59505
+
+<region>
+sample=samples/90-Flute.nv.ff.1Gb6.wav
+volume=0
+lokey=90 hikey=90
+pitch_keycenter=90
+tune=-30
+offset=0
+end=99849
+loop_start=31296
+loop_end=36540
+
+<region>
+sample=samples/91-Flute.nv.ff.1G6.wav
+volume=0
+lokey=91 hikey=91
+pitch_keycenter=91
+tune=-31
+offset=0
+end=103265
+loop_start=80624
+loop_end=81940
+
+<region>
+sample=samples/92-Flute.nv.ff.1Ab6.wav
+volume=0
+lokey=92 hikey=92
+pitch_keycenter=92
+tune=-32
+offset=0
+end=108508
+loop_start=71310
+loop_end=72984
+
+<region>
+sample=samples/93-Flute.nv.ff.1A6.wav
+volume=0
+lokey=93 hikey=93
+pitch_keycenter=93
+tune=-22
+offset=0
+end=112549
+loop_start=33920
+loop_end=67471
+
+<region>
+sample=samples/94-Flute.nv.ff.1Bb6.wav
+volume=0
+lokey=94 hikey=94
+pitch_keycenter=94
+tune=-24
+offset=0
+end=122519
+loop_start=0
+loop_end=122518
+
+<region>
+sample=samples/95-Flute.nv.ff.B6.wav
+volume=0
+lokey=95 hikey=95
+pitch_keycenter=95
+offset=0
+end=121007
+loop_start=86203
+loop_end=86773
+
+<region>
+sample=samples/96-Flute.nv.ff.C7.wav
+volume=0
+lokey=96 hikey=96
+pitch_keycenter=96
+offset=0
+end=105410
+loop_start=36400
+loop_end=40403
+
+<region>
+sample=samples/97-Flute.nv.ff.1Db7.wav
+volume=0
+lokey=97 hikey=127
+pitch_keycenter=97
+tune=-39
+offset=0
+end=118825
+loop_start=94748
+loop_end=95657

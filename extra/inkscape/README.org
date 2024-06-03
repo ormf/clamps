@@ -1,0 +1,22 @@
+* Inkscape Play Selection Plugin
+
+** Requirements
+
+   - python 3
+
+   - [[https://pypi.org/project/python-osc/][python-osc]]
+
+** Install
+   - On linux copy =play-selection.inx= and =play-selection.py= into
+     =$HOME/.config/inkscape/extensions= and (re)start inkscape
+
+** Usage
+
+   In a SVG file exported with clamps, select some lines and choose
+   =Extensions/Play Selection= from inkscape's menu. When clamps is
+   running and Audio (or Midi, depending on the object type in the SVG
+   document) started and connected, the objects should play through
+   the speakers.
+
+   The timescale of the playback can be changed in clamps with the
+   parameter =*svg-x-scale*=

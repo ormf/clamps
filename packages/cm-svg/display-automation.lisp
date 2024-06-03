@@ -147,7 +147,7 @@
   (setf cm.svgd:shift (make-ref 0))
   (setf cm.svgd:seq (make-ref nil))
   (setf cm.svgd:width (make-ref 0))
-  (setf cm.svgd:scale (make-ref 9.5))
+  (setf cm.svgd:scale (make-ref 1))
   (setf cm.svgd:timescale (make-ref (get-timescale 1/4 96)))
   (setf cm.svgd:piano-roll (make-ref 1))
   (setf cm.svgd:staff-systems (make-ref 1))

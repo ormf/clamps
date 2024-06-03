@@ -6,5 +6,12 @@
   :license  "Gnu Public license, version 2.0 or later."
   :version "0.0.1"
   :serial t
-  :depends-on (#:cl-refs #:orm-utils #:incudine #:cm #:ats-cuda)
-  :components ((:file "clamps")))
+  :depends-on (#:cl-ppcre
+               #:cl-refs
+               #:orm-utils
+               #:incudine
+               #:cm
+               #:fomus
+               #:ats-cuda)
+  :components ((:file "load-packages")
+               (:file "clamps")))

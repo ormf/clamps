@@ -1,0 +1,3 @@
+#!/bin/sh
+sbcl --load create-clamps-image.lisp
+sudo cp clamps /usr/local/bin
