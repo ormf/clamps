@@ -33,12 +33,12 @@
                   :incudine-plot
                   :cl-refs
                   :cl-sfz
+                  :cl-poolplayer
                   :cm-sfz
                   :cm-poolevt
                   :cm-fomus
                   :cm-svg
                   :cm-svg.rts
-                  :cm-poolevt
                   :cm-poolplayer
                   :cm-incudine
                   :cm-utils
