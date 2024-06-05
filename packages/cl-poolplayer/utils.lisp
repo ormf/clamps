@@ -48,6 +48,7 @@
 (defmacro toggle (p)
   `(setf ,p (if ,p nil t)))
 
+#|
 (defun get-dtime-fn (mina maxa minb maxb &key (distribution '(0 0 0 0 1 2 3)) (thresh 0.5))
   "return a function calculating a delta-time on each call. The
 distribution specifies a random distribution (using cm's weighting) to
@@ -66,6 +67,7 @@ returned."
             (setf curr-rep (next rep-stream))
             (r-exp minb maxb))
           (r-exp mina maxa)))))
+|#
 
 (defun get-dtime-fn (mina maxa minbfn maxbfn &key (distribution '((0 :weight 9) (1 :weight 3) 2 3 4)) (thresh 0.5))
   "return a function calculating a delta-time on each call. The
