@@ -22,9 +22,12 @@
 
 (defun clamps-gui (body)
   "On-new-window handler."
-  (format t "Bhal ~a" body)
   (setf (title (html-document body)) "Clamps Gui")
   (add-class body "w3-blue-grey"))
+
+(defun clog-dsp-widgets::on-new-window (body)
+  "On-new-window handler."
+  (funcall #'clamps-gui body))
 
 (set-on-new-window #'clamps-gui :boot-file "/start.html")
 (set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
@@ -39,6 +42,7 @@
 (defun clamps-restart-gui (directory &key (start-gui t))
   (let* ((dir (pathname (ensure-directory directory)))
          (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
+    (format t "(re)starting gui...~%")
     (when (clog:is-running-p) (clog:shutdown))
     (uiop:run-program (format nil "mkdir -p ~a" svg-dir-path))
     (uiop:run-program (format nil "mkdir -p ~Asnd" (namestring dir)))
@@ -52,7 +56,8 @@
                (srcpath (namestring (asdf:system-relative-pathname :clog-dsp-widgets subdirpath))))
           (unless (uiop:probe-file* (merge-pathnames (format nil "~a~a" dir subdirpath)))
             (uiop:run-program (format nil "ln -s ~A ~A" srcpath targetpath))))))
-    (clog:set-on-new-window #'clog::clamps-gui :path "/" :boot-file "/start.html")
+    ;;    (clog:set-on-new-window #'clog::clamps-gui :path "/" :boot-file "/start.html")
+    (setf (fdefinition 'clog-dsp-widgets::on-new-window) #'clog::clamps-gui)
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
     (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
     (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")

@@ -241,7 +241,7 @@
              (unless (zerop (get-val cm.svgd:transport))
                (when (> (get-val cm.svgd:shift) (+ 2 (get-val cm.svgd:width))) (set-val cm.svgd:transport 0))
                (set-val cm.svgd:shift (+ (get-val cm.svgd:shift)
-                                         (* 1.067 (float (/ 1/64 (get-val cm.svgd:timescale))))))
+                                         (* 1.067 (float (/ 1/32 (get-val cm.svgd:timescale))))))
                  (let ((next (+ time 1/60)))
                    (cm:at next #'inner next)))))
     (inner (cm:now))))

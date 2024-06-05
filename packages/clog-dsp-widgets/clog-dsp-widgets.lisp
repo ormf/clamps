@@ -653,14 +653,14 @@ event."))
 ;;; We don't want to restart the server everytime when the new-window
 ;;; fun is canged thats why this proxy gets defined
 (defun on-new-window (body)
-  (new-gui-window body))
+  (new-base-gui-window body))
 
 ;; Initialize the CLOG system with a boot file which contains the
 ;; static js files. For customized uses copy the "www" subdirectory of
 ;; the repository to your local project and adjust :static-root
 ;; accordingly
 
-(defun new-gui-window (body)
+(defun new-base-gui-window (body)
   "On-new-window handler."
   (setf (title (html-document body)) "Clog Gui")
   (add-class body "w3-blue-grey"))

@@ -25,7 +25,7 @@
 
 (in-package :cl-user)
 
-(mapc 'require '(slynk cm-all))
+(mapc 'require '(slynk clamps))
 
 (setf sb-ext:*init-hooks* (append sb-ext:*init-hooks* (list #'of-incudine-dsps:restore-envs #'cm::start-clamps)))
 
