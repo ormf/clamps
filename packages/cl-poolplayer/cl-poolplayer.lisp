@@ -30,6 +30,7 @@ issued in the #'perform function."
                             (:wwidth :wwidthfn) (:attack :attackfn)
                             (:pan :panfn)
                             (:release :releasefn))
+;;;       do (format t "~S~%" key)
        append (list key (apply (get-preset-fn preset fnkey) x dur p1 p2 p3 p4 args)))
      ;;; speaker output is different from the general method to
      ;;; generate args as we want to be able to get phantom sources
