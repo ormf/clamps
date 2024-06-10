@@ -32,7 +32,7 @@
 (set-on-new-window #'clamps-gui :boot-file "/start.html")
 (set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
 
-(in-package #:cm)
+(in-package #:clamps)
 
 (defparameter *svg-dir* nil)
 
@@ -212,7 +212,7 @@ supplied and gets interned as a parameter."
   (incudine:setup-io)
   (clamps-restart-gui gui-root :start-gui start-gui)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
-  (cm))
+  (clamps))
 
 #|
 
