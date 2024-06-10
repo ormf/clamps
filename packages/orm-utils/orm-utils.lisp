@@ -2,6 +2,12 @@
 
 (in-package :orm-utils)
 
+(defun system-version (system-designator)
+  "Retrieve the version of an asdf system or nil if not bound/existent."
+  (let ((system (asdf:find-system system-designator nil)))
+    (when (and system (slot-boundp system 'asdf:version))
+      (asdf:component-version system))))
+
 ;;(ql:quickload "cm2")
 
 (proclaim '(optimize (speed 0) (debug 3)))

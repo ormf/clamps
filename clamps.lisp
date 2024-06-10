@@ -212,7 +212,7 @@ supplied and gets interned as a parameter."
   (incudine:setup-io)
   (clamps-restart-gui gui-root :start-gui start-gui)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
-  (clamps))
+  (clamps-logo))
 
 #|
 
