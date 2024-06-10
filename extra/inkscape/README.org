@@ -6,9 +6,25 @@
 
    - [[https://pypi.org/project/python-osc/][python-osc]]
 
+     Python osc needs to be installed systemwide for inkscape to find it.
+
+     On arch linux this can be accomplished with =sudo pacman -S
+     python-osc= and relogging in.
+
+     On OSX 
+     
 ** Install
+
    - On linux copy =play-selection.inx= and =play-selection.py= into
      =$HOME/.config/inkscape/extensions= and (re)start inkscape
+
+   - On osx copy =play-selection.inx= and =play-selection.py= into
+     =$HOME/Library/Application\
+     Support/org.inkscape.Inkscape/config/inkscape/extensions= and
+     (re)start inkscape. Alternatively the location of these files can
+     be set in the Inkscape Application using the Menu "Inkscape" ->
+     "Settings..." and then change the entry "User extensions" to a
+     path of your choice.
 
 ** Usage
 

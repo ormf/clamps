@@ -21,8 +21,8 @@ redefinitions of the functions into the framework.")
 
 (defparameter *svg-fn-assoc* nil
   "the assoc list associationg 'type in the attribute of a svg line to
-the function which digests it and turns it into a cm object. This Lit
-gets generataed from *svg-fn-assoc-syms* using #'create-svg-fn-assoc")
+the function which digests it and turns it into a cm object. This list
+gets generated from *svg-fn-assoc-syms* using #'create-svg-fn-assoc")
 
 ;;; xml is picky with quotes in attributes, therefore we keep a list
 ;;; of properties in an attribute of an svg element which should get
@@ -30,13 +30,12 @@ gets generataed from *svg-fn-assoc-syms* using #'create-svg-fn-assoc")
 ;;; reader. The property needs to be registered with
 ;;; #'add-svg-attribute-prop-to quote
 
-
-
 (defun svg-symbol->fn (sym)
   "retrieve the function object from sym. We can't use
 #'symbol-function as the package of the function is unspecified in the svg."
+;;;  (break "~a ~%~a~%~a" (intern (string-upcase (format nil "~S" sym)) 'cm) *svg-fn-assoc* (assoc (intern (string-upcase (format nil "~S" sym)) 'cm) *svg-fn-assoc*))
   (cdr
-   (assoc sym *svg-fn-assoc*)))
+   (assoc (intern (string-upcase (format nil "~S" sym)) 'cm) *svg-fn-assoc*)))
 
 (defun add-svg-assoc-fns (fn-assoc-seq)
   (mapc (lambda (fn-assoc)
@@ -50,7 +49,8 @@ gets generataed from *svg-fn-assoc-syms* using #'create-svg-fn-assoc")
 (defun create-svg-fn-assoc ()
   (mapcar (lambda (fn-assoc)
             (destructuring-bind (type . fn-sym) fn-assoc
-              (pushnew (cons type (symbol-function fn-sym)) *svg-fn-assoc* :test #'equal :key #'first)))
+              (pushnew (cons type (symbol-function fn-sym))
+                       *svg-fn-assoc* :test #'equal :key #'first)))
         *svg-fn-assoc-syms*))
 
 (defun remove-svg-assoc-fn (sym)

@@ -34,12 +34,12 @@
                   :cl-refs
                   :cl-sfz
                   :cl-poolplayer
-                  :cm-sfz
-                  :cm-poolevt
-                  :cm-fomus
                   :cm-svg
                   :cm-svg.rts
+                  :cm-sfz
+                  :cm-poolevt
                   :cm-poolplayer
+                  :cm-fomus
                   :cm-incudine
                   :cm-utils
                   :clog-dsp-widgets
