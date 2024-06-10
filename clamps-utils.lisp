@@ -31,9 +31,15 @@
           (ldb (byte 8 8) %clamps-version%)
           (ldb (byte 8 0) %clamps-version%)))
 
+(defun system-version (system-designator)
+  (let ((system (asdf:find-system system-designator nil)))
+    (when (and system (slot-boundp system 'asdf:version))
+      (asdf:component-version system))))
+
+
 (defun clamps-version (&rest fmat)
   (cond ((null fmat)
-         (format nil "Common Music ~a" (clamps-version-name)))
+         (format nil "Clamps ~a" (system-version :clamps)))
         ((not (null (cdr fmat)))
          (error "clamps-version: more than one arg: ~s." fmat))
         ((eq (car fmat) ':number) %clamps-version%)
