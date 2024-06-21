@@ -27,24 +27,24 @@
 ;;; play-sample
 )
 
-  (:shadowing-import-from #:of-incudine-dsps #:clip
-                  )
+  (:shadowing-import-from #:of-incudine-dsps #:clip)
 
-  (:shadow #:quantize #:at #:now #:tuning #:*tempo* #:buffer #:buffer-frames
+  (:use #:cl #:cl-user #:cm)
+  (:shadow #:*tempo* #:buffer #:buffer-frames
            #:buffer-sample-rate
            #:node #:bus
            #:lsample #:envelope
            #:lsample-keynum #:lsample-play-fn #:lsample-amp #:lsample-buffer
            #:lsample-buffer #:remove-all-responders #:recv-stop
-           #:cycle #:without-interrupts
+            #:without-interrupts
            #:play)
 
   (:shadowing-import-from #:cl-midictl
                           #:*midi-in1* #:*midi-out1*
                           #:chan #:id)
 
-  (:use #:cl #:cl-user #:cm
-        #:incudine
+  (:shadowing-import-from #:cm #:quantize #:at #:now #:tuning #:cycle)
+  (:use #:incudine
         #:cl-midictl
         #:of-incudine-dsps
         #:incudine-bufs
@@ -54,5 +54,5 @@
         #:ats-cuda
         #:ats-cuda-display
         #:clog-midi-controller
+        #:cm
         ))
-

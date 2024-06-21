@@ -153,8 +153,6 @@
                  (buffer-stretch-play buffer rate wwidth start ende stretch))))))
 |#
 
-
-
 (dsp! play-buffer-stretch ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth)
   (:defaults (incudine:incudine-missing-arg "BUFFER")
              (incudine:incudine-missing-arg "ENV")
