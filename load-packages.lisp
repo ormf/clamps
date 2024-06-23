@@ -34,6 +34,7 @@
                   :cl-refs
                   :cl-sfz
                   :cl-poolplayer
+                  :cuda-usocket-osc
                   :cm-svg
                   :cm-svg.rts
                   :cm-sfz

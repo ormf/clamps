@@ -36,7 +36,7 @@
            #:lsample #:envelope
            #:lsample-keynum #:lsample-play-fn #:lsample-amp #:lsample-buffer
            #:lsample-buffer #:remove-all-responders #:recv-stop
-            #:without-interrupts
+           #:without-interrupts
            #:play)
 
   (:shadowing-import-from #:cl-midictl

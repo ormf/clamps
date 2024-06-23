@@ -200,8 +200,27 @@ supplied and gets interned as a parameter."
 (defun cl-user::call-sly-connected-hooks ()
   (dolist (fn *sly-connected-hooks*) (funcall fn)))
 
+(defun clamps-start-inkscape-osc ()
+  (if (ou:port-available-p 1337)
+       (progn
+         (setf *osc-inkscape-export-in* (incudine.osc:open :port 1337 :host "127.0.0.1" :direction :input :protocol :udp))
+         (incudine:make-osc-responder *osc-inkscape-export-in* "/inkscape/play" ""
+                                      (lambda () (load #P"/tmp/incudine-export.lisp")
+;;;                           (format t "~&~S~%~%" cl-user::*tmpsnd*)
+                                        )
+                                      )
+         (incudine:recv-start *osc-inkscape-export-in*)
+         :inkscape-osc-rcv-started)
+       (warn "port 1337 already open!")))
+
+(defun clamps-stop-inkscape-osc ()
+  (incudine:remove-all-responders *osc-inkscape-export-in*)
+  (if *osc-inkscape-export-in* (incudine.osc:close *osc-inkscape-export-in*))
+  (setf *osc-inkscape-export-in* nil))
+
+
 (defun start-clamps (&key (qsynth nil) (gui-root "/tmp") (start-gui t))
-  (start-inkscape-osc)
+  (restart-inkscape-osc)
   (rts)
 ;;;  (unless (cm::rts?) (rts))
   ;;(make-mt-stream *mt-out01* *midi-out1* '(4 0))
@@ -216,6 +235,7 @@ supplied and gets interned as a parameter."
 
 #|
 
+(stop-inkscape-osc)
 (clamps-restart-gui "/tmp")
   ;; (if (member :slynk *features*)
   ;;     (progn

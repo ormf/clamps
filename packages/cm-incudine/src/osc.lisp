@@ -31,6 +31,28 @@
      (:parameters time path message)
      (:event-streams))
 
+#+linux
+(defun osc-open-default (&key (host "127.0.0.1") (port 3001)
+                           (protocol :udp)
+                           (direction :input))
+  (case direction
+    (:output
+     (progn
+       (if *osc-out* (osc-close-default))
+       (setf *osc-out* (incudine.osc:open :host host
+                                          :port port
+                                          :protocol protocol
+                                          :direction direction))
+       (setf (incudine.osc:broadcast *osc-out*) t)
+       *osc-out*))
+    (t (progn
+         (if *osc-in* (osc-close-default))
+         (setf *osc-in* (incudine.osc:open :host host
+                                           :port port
+                                           :protocol protocol
+                                           :direction :input))))))
+
+#+darwin
 (defun osc-open-default (&key (host "127.0.0.1") (port 3001)
                            (protocol :udp)
                            (direction :input))
@@ -101,8 +123,6 @@ To a specifiable stream."
      ,@(loop for val in values for i from 0
              collect `(incudine.osc::set-value ,stream ,i ,val))
      (incudine.osc:send ,stream)))
-
-
 
 (defmethod write-event ((obj osc) (str incudine-stream) scoretime)
   (alexandria:if-let (stream (osc-output-stream))
