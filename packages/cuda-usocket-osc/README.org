@@ -1,0 +1,76 @@
+* OVERVIEW
+
+cuda-usocket-osc is a common lisp package which replaces the osc
+implementation of incudine using the usocket package from Common Lisp.
+
+It is not a full implementation of incudine's OSX implementation and
+was made primarily because OSX input to incudine doesn't work on OSX
+(seemingly due to a bug in the implementation of bsd sockets in OSX).
+
+Written by Orm Finnendahl 2024, GPL2 , no warranties whatsoever.
+
+* PREREQUISITES
+
+Lisp with quicklisp installed. Pure Data installed.
+
+* INSTALL
+
+1. link the folder "cuda-usocket-osc" into
+   "~/quicklisp/local-projects/".
+
+* USAGE
+
+ - Load Incudine: 
+
+#+BEGIN_SRC lisp
+   (ql:quickload :incudine)
+#+END_SRC
+
+ - On linux, before launching cuda-usocket-osc, execute:
+
+#+BEGIN_SRC lisp
+   (pushnew :cuda-usocket-osc *features*)
+#+END_SRC
+
+   (this is done automatically on OSX)
+
+ - Load cuda-usocket-osc
+
+#+BEGIN_SRC lisp
+   (ql:quickload :cuda-usocket-osc)
+#+END_SRC
+
+ - Start inbound and outbound connections and send an OSC message from
+   =*osc-out*= to =*osc-in*=:
+
+#+BEGIN_SRC lisp
+  (in-package :incudine.scratch)
+
+  (defvar *osc-in* (incudine.osc:open :port 3015))
+
+  (recv-start *osc-in*)
+
+  (defvar *osc-responder*
+    (incudine::make-osc-responder
+     ,*osc-in*
+     "/osc/test"
+     "ff"
+     (lambda (f1 f2)
+       (msg :warn "~a ~a" f1 f2))))
+
+  (defvar *osc-out* (incudine.osc:open
+                           :port 3015 :direction :output))
+
+  (incudine.osc:message *osc-out* "/osc/test" "ff" 1.0 2.0)
+
+  ;;; output in the REPL:
+  ;;;
+  ;;; SCRATCH> WARN: 1.0 2.0
+
+  ;;; cleanup
+
+  (incudine:remove-responder *osc-responder*)
+  (incudine:recv-stop *osc-in*)
+  (incudine.osc:close *osc-in*)
+  (incudine.osc:close *osc-out*)
+#+END_SRC

@@ -25,7 +25,8 @@
 
 ;;; (push (asdf:system-relative-pathname :clamps "packages/fudi/") asdf:*central-registry*)
 
-(dolist (system '(:fudi
+(dolist (system '(:cuda-usocket-osc
+                  :fudi
                   :of-incudine-dsps
                   :incudine-bufs
                   :orm-utils
@@ -34,7 +35,6 @@
                   :cl-refs
                   :cl-sfz
                   :cl-poolplayer
-                  :cuda-usocket-osc
                   :cm-svg
                   :cm-svg.rts
                   :cm-sfz
