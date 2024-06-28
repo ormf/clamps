@@ -8,7 +8,6 @@
   :serial t
   :depends-on (#:cl-ppcre
                #:cl-refs
-               #:orm-utils
                #:incudine
                #:cm
                #:fomus
