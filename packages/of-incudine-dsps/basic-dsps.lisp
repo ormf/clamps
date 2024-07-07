@@ -20,9 +20,11 @@
 
 (in-package #:of-incudine-dsps)
 
-(define-vug input-bus ((channel fixnum))
-  (bus (the fixnum
-         (+ (the fixnum
+(deftype non-negative-fixnum () `(integer 0 ,most-positive-fixnum))
+
+(define-vug input-bus ((channel channel-number))
+  (bus (the channel-number
+         (+ (the channel-number
               (* current-frame *number-of-input-bus-channels*))
             channel))))
 
@@ -57,7 +59,32 @@
     (dochannels (current-channel numchannels)
       (setf (input-bus (+ current-channel startidx)) +sample-zero+))))
 
+(define-vug counter ((start non-negative-fixnum) (end non-negative-fixnum) (done-action function))
+  (:defaults 0 0 #'identity)
+  (with ((i (clip start 0 end)))
+    (declare (non-negative-fixnum i))
+    (if (< i end)
+        (prog1 i (incf i))
+        (progn
+          (funcall done-action (node))
+          i))))
 
+(dsp! buffer-record ((buf buffer) (env incudine.vug:envelope) (in channel-number)
+                     (start fixnum) (frames fixnum))
+  (:defaults
+   (incudine:incudine-missing-arg "BUFFER")
+   *env1*
+   0 0 0)
+  (with ((real-start (max 0 (min start (buffer-size buf))))
+         (end (if (zerop frames)
+                  (- (buffer-size buf) real-start)
+                  (max 0 (min (+ start frames) (buffer-size buf)))))
+         (frm1 (envelope* env 1 (/ (- end real-start) *sample-rate*) #'free)))
+    (declare (fixnum real-start end))
+    (maybe-expand frm1)
+    (foreach-frame
+      (buffer-write buf (counter start end :done-action #'free)
+                    (* (frame-ref frm1 current-frame) (audio-in in))))))
 
 #|
 (defvar *aux* (incudine.external:foreign-alloc-sample

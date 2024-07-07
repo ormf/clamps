@@ -43,7 +43,7 @@
 (let ((sfz-assoc
         '(:flute-nv "000_Flute-nv.sfz"
           :yamaha-grand-piano "yamaha-grand-piano.sfz")))
-  (format t "~&registering ~a sfz files" (/ sfz-assoc 2))
+  (format t "~&registering ~a sfz-files" (/ (length sfz-assoc) 2))
   (loop for (sym fname) on sfz-assoc by #'cddr
         do (progn
              (format t ".")
