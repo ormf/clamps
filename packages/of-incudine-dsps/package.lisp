@@ -6,6 +6,7 @@
   (:shadowing-import-from #:incudine #:GROUP)
   (:shadow #:clip)
   (:export #:BUFFER-STRETCH-PLAY
+           #:BUFFER-RECORD
            #:PLAY-BUFFER-STRETCH*
            #:PLAY-BUFFER-STRETCH
            #:PLAY-BUFFER-STRETCH-OUT
@@ -21,6 +22,7 @@
            #:PLAY-LSAMPLE*
            #:PLAY-SAMPLE*
            #:ENVELOPE*
+           #:COUNTER
            #:PHASOR*
            #:LINE*
            #:PHASOR-LOOP*
