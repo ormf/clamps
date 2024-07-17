@@ -15,6 +15,7 @@
            #:PLAY-BUFFER-STRETCH-ENV-PAN-OUT*
            #:PLAY-BUFFER*
            #:*HANNING1024*
+           #:*SINE1024*
            #:MAKE-OASR
            #:*ENV1*
            #:MAKE-LSAMPLE
@@ -25,6 +26,7 @@
            #:COUNTER
            #:PHASOR*
            #:LINE*
+           #:OSC~
            #:PHASOR-LOOP*
            #:BUFFER-LOOP-PLAY*
            #:LSAMPLE-FILENAME
