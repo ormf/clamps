@@ -229,6 +229,7 @@ supplied and gets interned as a parameter."
   (format t "~&midi initialized!~%")
   ;; (install-sly-hooks)
   (incudine:setup-io)
+  (ats-cuda-display:ats-display-init)
   (clamps-restart-gui gui-root :start-gui start-gui)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (clamps-logo))

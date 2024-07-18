@@ -22,26 +22,11 @@
 
 (deftype non-negative-fixnum () `(integer 0 ,most-positive-fixnum))
 
-(incudine::dsp! sine (freq amp)
-  (:defaults 440 0.1)
-  (incudine.vug:foreach-frame
-    (let* ((sig (* amp (incudine.vug:phasor freq 0))))
-      (incudine::out sig sig))))
-
 (dsp! osc~ (freq amp (buf buffer))
   (:defaults 440 0.1 *SINE1024*)
   (foreach-frame
     (let ((sig (osc buf freq amp 0 :linear)))
       (out sig sig))))
-
-
-(dsp! osc~ (freq amp init)
-  (:defaults 440 0.1 0)
-  (foreach-frame
-    (let* ((sig (* amp () (* 1024 (incudine.vug:phasor freq 0))))))
-    )
-
-  )
 
 (define-vug input-bus ((channel channel-number))
   (bus (the channel-number
