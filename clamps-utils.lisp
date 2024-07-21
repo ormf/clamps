@@ -76,3 +76,8 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
                             (:else #\ ))))))
         (format t e)))
   (values))
+
+(defun clamps:idump (node)
+  (unless incudine.util:*logger-stream*
+    (reset-logger-stream))
+  (dump (incudine:node node)))

@@ -19,7 +19,7 @@
 ;;; **********************************************************************
 
 (defpackage :clamps
-  (:export)
+  (:export #:reset-logger-stream #:idump #:clamps #:clamps-restart-gui)
   (:shadowing-import-from #:incudine
                           #:rescale-envelope #:init #:stop
                           #:group #:tempo #:control-value
