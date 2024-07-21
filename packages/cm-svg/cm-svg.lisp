@@ -394,7 +394,7 @@ svg-file."
          (x-scale (x-scale fil))
          (stroke-width 0.5)
          (line (let ((x1 (* x-scale scoretime))
-                     (y1 (* 1 (midi-keynum obj)))
+                     (y1 (* 1 (keynum (midi-keynum obj))))
                      (width (* x-scale (midi-duration obj)))
                      (color (chan->color myid))
                      (opacity (midi-amplitude obj)))
