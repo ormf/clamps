@@ -6,4 +6,5 @@
   :version "0.0.1"
   :serial t
   :depends-on (#:ats-cuda)
-  :components ((:file "browser-gui")))
+  :components ((:file "package")
+               (:file "browser-gui")))
