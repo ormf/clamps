@@ -20,17 +20,17 @@
 
 (in-package :cl-user)
 
-(push (asdf:system-relative-pathname :clamps "packages/")
+(pushnew (asdf:system-relative-pathname :clamps "packages/")
       asdf:*central-registry*)
 
 ;;; (push (asdf:system-relative-pathname :clamps "packages/fudi/") asdf:*central-registry*)
 
 (dolist (system '(:cuda-usocket-osc
+                  :ats-cuda-display
                   :fudi
                   :of-incudine-dsps
                   :incudine-bufs
                   :orm-utils
-                  :ats-cuda-display
                   :cl-plot
                   :incudine-plot
                   :cl-refs

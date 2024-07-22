@@ -1,6 +1,5 @@
 (asdf:defsystem #:ats-cuda-display
-  :description "ATS file parser for Common Lisp
-  and port of Juan Pampin's ats lisp code, incudine version."
+  :description "Browser display for ATS files."
   :author "Orm Finnendahl"
   :license  "Public Domain"
   :version "0.0.1"

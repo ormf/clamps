@@ -19,7 +19,7 @@
 ;;; **********************************************************************
 
 (defpackage #:ats-cuda-display
-  (:use :cl :incudine :cudere-clm :sb-loop :ieee-floats :alexandria
+  (:use :cl :incudine :sb-loop :ieee-floats :alexandria
 ;;;        :ats-cuda
    :clog-dsp-widgets :cl-refs :clog :clog-dsp-widgets
 ;;;        :de.finnendahl.binary-data :de.finnendahl.binary-data.common-datatypes
