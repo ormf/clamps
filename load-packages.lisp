@@ -30,6 +30,7 @@
                   :of-incudine-dsps
                   :incudine-bufs
                   :orm-utils
+                  :ats-cuda-display
                   :cl-plot
                   :incudine-plot
                   :cl-refs
