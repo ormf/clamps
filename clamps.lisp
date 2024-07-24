@@ -44,11 +44,14 @@
 (defun clamps-gui-root ()
   *clamps-gui-root*)
 
+(defun svg-gui-path (str)
+  (namestring (merge-pathnames (format nil "www/svg/~a" str) (clamps-gui-root))))
+
 (defun clamps-restart-gui (directory &key (start-gui t))
   (let* ((dir (pathname (ensure-directory directory)))
          (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
     (format t "(re)starting gui...~%")
-    (setf *clamps-gui-root* dir)
+    (setf *clamps-gui-root* (merge-pathnames "www/" dir))
     (when (clog:is-running-p) (clog:shutdown))
     (uiop:run-program (format nil "mkdir -p ~a" svg-dir-path))
     (uiop:run-program (format nil "mkdir -p ~Asnd" (namestring dir)))

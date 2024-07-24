@@ -1,0 +1,122 @@
+#+TITLE: Clamps Dictionary
+#+AUTHOR: Orm Finnendahl
+#+LANGUAGE: en
+#+OPTIONS: html5-fancy:t
+#+OPTIONS: num:nil
+#+OPTIONS: toc:2 h:3 html-multipage-join-empty-bodies:t
+#+OPTIONS: html-multipage-split:toc
+#+OPTIONS: html-multipage-toc-to-top:t
+#+OPTIONS: html-multipage-export-directory:dictionary
+#+OPTIONS: html-multipage-open:nil
+# #+OPTIONS: html-multipage-include-default-style:t
+#+HTML_DOCTYPE: xhtml5
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/of-doc.css" />
+#+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+#+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
+#+INFOJS_OPT: path:./js/of-doc.js
+# #+SETUPFILE: theme-readtheorg-local.setup
+# \[\[\([^\[]+\)\]\] → [[\1][\1]]
+
+* A
+
+** ats->browser
+   #+BEGIN_SRC lisp
+   (ats->browser ats)
+   #+END_SRC
+   Display the =ats= struct graphically in the interactive ATS Player
+   located at =/ats-display= in the Gui.
+* B
+* C
+** clamps
+   #+BEGIN_SRC lisp
+     (clamps &key (gui-base "/tmp/") (start-gui t))
+   #+END_SRC
+   Start clamps including the gui.
+
+   =gui-base= ist the path where to put the =www= subfolder for files
+   accessible by the gui. In the given path the following directories
+   will be created:
+
+   - =gui-base/www/svg=
+
+     file path for svg files used in the =svg-display= page of the
+     Gui.
+
+     Any files which need to be accessible by the Gui have to be put
+     into the =gui-base/www= subdirectory with their filenames relative
+     to this directory.
+   
+*** See also
+
+    [[clamps-restart-gui][clamps-restart-gui]], [[clamps-gui-root][clamps-gui-root]]
+
+** clamps-restart-gui
+   #+BEGIN_SRC lisp
+     (clamps-restart-gui gui-base &key  (start-gui t))
+   #+END_SRC
+   Reset the gui-root to =gui-base/www/=, optionally starting the
+   Gui.
+
+   =gui-base= ist the path where to put the =www= subfolder for files
+   accessible by the Gui. In the given path the following directories
+   will be created:
+
+   - =gui-base/www/svg=
+
+     file path for svg files used in the =svg-display= page of the
+     Gui.
+
+   Any files which need to be accessible by the Gui have to be put
+   into the =gui-base/www= subdirectory with their filenames relative
+   to this directory.
+
+   
+*** See also
+
+    [[clamps][clamps]], [[clamps-gui-root][clamps-gui-root]]
+
+** clamps-gui-root
+   #+BEGIN_SRC lisp
+     (clamps-gui-root)
+   #+END_SRC
+   Return the pathname of the gui root.
+*** See also
+    [[clamps-restart-gui][clamps-restart-gui]]
+* D
+* E
+* F
+* G
+* H
+* I
+* J
+* K
+* L
+* M
+* N
+* O
+* P
+* Q
+* R
+* S
+** set-bpm
+   #+BEGIN_SRC lisp
+   (set-bpm bpm)
+   #+END_SRC
+   Synonym for [[set-tempo][set-tempo]]
+** set-tempo
+   #+BEGIN_SRC lisp
+   (set-tempo bpm)
+   #+END_SRC
+   Set the tempo in beats per minute for both, cm and incudine.
+** svg->browser
+   #+BEGIN_SRC lisp
+   (svg->browser svg-file)
+   #+END_SRC
+   Display the svg file =svg-file= in the SVG Player Gui, located at =/svg-display=
+* T
+* U
+* V
+* W
+* X
+* Y
+* Z

@@ -249,8 +249,8 @@
 ;;; (funcall my-watch)
 
 (defun svg->browser (svg-file &key (bar-lines 1) (staff-systems 1)
-                                (piano-roll 0) (scale 9.5)
-                                (timescale 5/32) (inverse 0) (ampoffs 0))
+                                (piano-roll 0) (scale 1)
+                                (timescale 1/32) (inverse 0))
   "display svg file in browser at \"https://localhost:8080/svg-display\""
   (set-val cm.svgd:svg-file svg-file)
   (set-val cm.svgd:piano-roll piano-roll)

@@ -81,3 +81,9 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
   (unless incudine.util:*logger-stream*
     (reset-logger-stream))
   (dump (incudine:node node)))
+
+(defun clamps:set-tempo (bpm)
+  (setf cm:*tempo* bpm)
+  (setf (bpm *tempo*) bpm))
+
+(setf (fdefinition 'clamps::set-bpm) #'clamps:set-tempo)

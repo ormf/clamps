@@ -6,7 +6,7 @@
 #+OPTIONS: toc:3 h:3 html-multipage-join-empty-bodies:t
 #+OPTIONS: html-multipage-split:toc
 #+OPTIONS: html-multipage-toc-to-top:t
-#+OPTIONS: html-multipage-export-directory:html
+#+OPTIONS: html-multipage-export-directory:clamps
 #+OPTIONS: html-multipage-open:browser
 # #+OPTIONS: html-multipage-include-default-style:t
 #+HTML_DOCTYPE: xhtml5

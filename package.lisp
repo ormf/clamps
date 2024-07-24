@@ -19,18 +19,19 @@
 ;;; **********************************************************************
 
 (defpackage :clamps
-  (:export #:reset-logger-stream #:idump #:clamps #:clamps-restart-gui #:clamps-gui-root)
+  (:export #:reset-logger-stream #:idump #:clamps #:clamps-restart-gui #:clamps-gui-root
+           #:svg-gui-path #:set-tempo)
   (:shadowing-import-from #:incudine
                           #:rescale-envelope #:init #:stop
-                          #:group #:tempo #:control-value
+                          #:group #:*tempo* #:control-value
                           #:timestamp #:responder
 ;;; play-sample
-)
+                          )
 
   (:shadowing-import-from #:of-incudine-dsps #:clip)
 
   (:use #:cl #:cl-user #:cm)
-  (:shadow #:*tempo* #:buffer #:buffer-frames
+  (:shadow #:buffer #:buffer-frames
            #:buffer-sample-rate
            #:node #:bus
            #:lsample #:envelope
