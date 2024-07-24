@@ -1,0 +1,26 @@
+#+TITLE: Clamps Documentation
+#+AUTHOR: Orm Finnendahl
+#+LANGUAGE: en
+#+OPTIONS: html5-fancy:t
+#+OPTIONS: num:nil
+#+OPTIONS: toc:3 h:3 html-multipage-join-empty-bodies:t
+#+OPTIONS: html-multipage-split:toc
+#+OPTIONS: html-multipage-toc-to-top:t
+#+OPTIONS: html-multipage-export-directory:html
+#+OPTIONS: html-multipage-open:browser
+# #+OPTIONS: html-multipage-include-default-style:t
+#+HTML_DOCTYPE: xhtml5
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/of-doc.css" />
+#+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+#+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
+#+INFOJS_OPT: path:./js/of-doc.js
+# #+SETUPFILE: theme-readtheorg-local.setup
+
+* Clamps
+#+TOC: headlines 3
+
+* Introduction
+
+* Installation
+
+* First Steps
