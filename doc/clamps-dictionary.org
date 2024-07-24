@@ -18,20 +18,19 @@
 # \[\[\([^\[]+\)\]\] → [[\1][\1]]
 
 * A
-
 ** ats->browser
    #+BEGIN_SRC lisp
    (ats->browser ats)
    #+END_SRC
    Display the =ats= struct graphically in the interactive ATS Player
-   located at =/ats-display= in the Gui.
+   located at [[clamps-base-url][clamps-base-url]]/ats-display in the Gui.
 * B
 * C
 ** clamps
    #+BEGIN_SRC lisp
      (clamps &key (gui-base "/tmp/") (start-gui t))
    #+END_SRC
-   Start clamps including the gui.
+   Start Clamps including the gui.
 
    =gui-base= ist the path where to put the =www= subfolder for files
    accessible by the gui. In the given path the following directories
@@ -49,7 +48,9 @@
 *** See also
 
     [[clamps-restart-gui][clamps-restart-gui]], [[clamps-gui-root][clamps-gui-root]]
-
+** clamps-base-url
+   The url to access the Clamps Gui. Its default location is
+   http://localhost:8080.
 ** clamps-restart-gui
    #+BEGIN_SRC lisp
      (clamps-restart-gui gui-base &key  (start-gui t))
@@ -112,7 +113,11 @@
    #+BEGIN_SRC lisp
    (svg->browser svg-file)
    #+END_SRC
-   Display the svg file =svg-file= in the SVG Player Gui, located at =/svg-display=
+   Display =svg-file= in the SVG Player Gui, located at
+    [[clamps-base-url][clamps-base-url]]/svg-display
+
+   =svg-file= is a string naming the svg-file to display/play. The
+   filename is interpreted relative to the =gui-root/svg= directory.
 * T
 * U
 * V
