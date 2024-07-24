@@ -1,5 +1,2 @@
 *~
 *.fasl
-clamps
-init-clamps.lisp
-todo.org
