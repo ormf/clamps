@@ -20,7 +20,7 @@
 
 (in-package :cl-user)
 
-(defun clamps (&rest systems)
+(defun clamps (&rest args)
   (flet ((clampscall (fn &rest args)
            (apply (find-symbol (string fn) :clamps) args))
          (cmvar (var)
@@ -42,9 +42,7 @@
                   (cons (cons (symbol-name :cm)
                               (cmvar :*cm-readtable*))
                         (symbol-value sym)))))))
-    (let (#-sbcl (*trace-output* nil))
-      (dolist (s systems) (use-system s :verbose nil)))
-    (clampscall :start-clamps)))
+    (apply #'clampscall :clamps-start args)))
 
 (export '(clamps) 'cl-user)
 

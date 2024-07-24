@@ -39,10 +39,16 @@
 (defun ensure-directory (dir)
   (if (stringp dir) (format nil "~A/" dir) dir))
 
+(defvar *clamps-gui-root* nil)
+
+(defun clamps-gui-root ()
+  *clamps-gui-root*)
+
 (defun clamps-restart-gui (directory &key (start-gui t))
   (let* ((dir (pathname (ensure-directory directory)))
          (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
     (format t "(re)starting gui...~%")
+    (setf *clamps-gui-root* dir)
     (when (clog:is-running-p) (clog:shutdown))
     (uiop:run-program (format nil "mkdir -p ~a" svg-dir-path))
     (uiop:run-program (format nil "mkdir -p ~Asnd" (namestring dir)))
@@ -219,7 +225,7 @@ supplied and gets interned as a parameter."
   (setf *osc-inkscape-export-in* nil))
 
 
-(defun start-clamps (&key (qsynth nil) (gui-root "/tmp") (start-gui t))
+(defun clamps-start (&key (qsynth nil) (gui-root "/tmp") (start-gui t))
   (restart-inkscape-osc)
   (rts)
 ;;;  (unless (cm::rts?) (rts))
