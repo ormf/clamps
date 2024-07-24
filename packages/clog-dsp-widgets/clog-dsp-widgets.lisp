@@ -174,7 +174,7 @@ array of bindings, depending on the class."))
 
 ;;; o-knob is a custom html element defined in js:
 
-(defun create-o-knob (parent bindings min max step &key (unit "") (precision 2) css)
+(defun create-o-knob (parent bindings &key (unit "") (precision 2) min max width height step css)
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
@@ -200,7 +200,7 @@ array of bindings, depending on the class."))
                          ))))
     element))
 
-(defun create-o-numbox (parent bindings min max &key (precision 2) css)
+(defun create-o-numbox (parent bindings &key  min max width height (precision 2) css)
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
@@ -247,7 +247,7 @@ array of bindings, depending on the class."))
           (format str "]")))
     "[0]"))
 
-(defun create-o-scope (parent bindings &key css buffer)
+(defun create-o-scope (parent bindings &key width height css buffer)
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
@@ -292,7 +292,7 @@ array of bindings, depending on the class."))
 (defun opt-format-attr (attr val)
   (when val (format nil "~a='~(~a~)'" attr val)))
 
-(defun create-o-bang (parent bindings &key label (background '("transparent" "orange")) color flash-time css flash)
+(defun create-o-bang (parent bindings &key width height label (background '("transparent" "orange")) color flash-time css flash)
   (let* ((var (b-ref (first bindings)))
 ;;;         (attr (b-attr (first bindings)))
          (element (create-child
@@ -331,7 +331,7 @@ array of bindings, depending on the class."))
 (defun array->attr (arr)
   (format nil "[~{~a~^, ~}]" (coerce arr 'list)))
 
-(defun create-o-toggle (parent bindings &key label (background '("transparent" "orange")) color flash-time values css)
+(defun create-o-toggle (parent bindings &key width height label (background '("transparent" "orange")) color flash-time values css)
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
@@ -367,7 +367,7 @@ array of bindings, depending on the class."))
                            ))))
     element))
 
-(defun create-o-radio (parent bindings &key labels label (background '(("transparent") ("orange")))
+(defun create-o-radio (parent bindings &key labels label width height (background '(("transparent") ("orange")))
                                         color flash-time values (num 8) (direction :right) css)
   (declare (type (member :up :right :down :left) direction))
   (let* ((var (b-ref (first bindings)))
@@ -451,6 +451,7 @@ array of bindings, depending on the class."))
 
 (defun create-o-multislider (parent bindings
                              &key (direction :up) (value 0) (min 0) (max 1)
+                             width height
                                label background colors (thumb-color "transparent")
                                (mapping :lin) (clip-zero nil))
   (declare (type (member :lin :log) mapping)
