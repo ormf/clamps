@@ -86,4 +86,12 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
   (setf cm:*tempo* bpm)
   (setf (bpm *tempo*) bpm))
 
+(defvar *clamps-doc-acceptor* (make-instance 'hunchentoot:easy-acceptor
+        :port 8282
+        :document-root (asdf:system-relative-pathname :clamps "doc/")))
+
+(defun start-doc-acceptor ()
+  (unless (hunchentoot::acceptor-listen-socket *clamps-doc-acceptor*)
+    (hunchentoot:start *clamps-doc-acceptor*)))
+
 (setf (fdefinition 'clamps::set-bpm) #'clamps:set-tempo)

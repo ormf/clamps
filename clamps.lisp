@@ -239,6 +239,7 @@ supplied and gets interned as a parameter."
   ;; (install-sly-hooks)
   (incudine:setup-io)
   (ats-cuda-display:ats-display-init)
+  (start-doc-acceptor)
   (clamps-restart-gui gui-root :start-gui start-gui)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (clamps-logo))
