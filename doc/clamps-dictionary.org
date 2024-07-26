@@ -7,7 +7,11 @@
 #+OPTIONS: html-multipage-split:toc
 #+OPTIONS: html-multipage-toc-to-top:t
 #+OPTIONS: html-multipage-export-directory:dictionary
-#+OPTIONS: html-multipage-open:nil
+#+OPTIONS: html-multipage-open:browser
+#+OPTIONS: html-multipage-top-insert:"<div class=\"org-div-top-insert\">\n<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm/index.html\">CM Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Dictionary</a>\n</div>\n"
+
+
+
 # #+OPTIONS: html-multipage-include-default-style:t
 #+HTML_DOCTYPE: xhtml5
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/of-doc.css" />
@@ -19,6 +23,7 @@
 
 * A
 ** ats->browser
+   Function
    #+BEGIN_SRC lisp
    (ats->browser ats)
    #+END_SRC
@@ -27,6 +32,7 @@
 * B
 * C
 ** clamps
+   Function
    #+BEGIN_SRC lisp
      (clamps &key (gui-base "/tmp/") (start-gui t))
    #+END_SRC
@@ -45,15 +51,17 @@
      into the =gui-base/www= subdirectory with their filenames relative
      to this directory.
    
-*** See also
+*** See also:
 
-    [[clamps-restart-gui][clamps-restart-gui]], [[clamps-gui-root][clamps-gui-root]]
+    - [[clamps-restart-gui][clamps-restart-gui]]
+    - [[clamps-gui-root][clamps-gui-root]]
 ** clamps-base-url
    The url to access the Clamps Gui. Its default location is
    http://localhost:8080.
 ** clamps-restart-gui
+   Function
    #+BEGIN_SRC lisp
-     (clamps-restart-gui gui-base &key  (start-gui t))
+     (clamps-restart-gui gui-base &key (start-gui t))
    #+END_SRC
    Reset the gui-root to =gui-base/www/=, optionally starting the
    Gui.
@@ -72,17 +80,19 @@
    to this directory.
 
    
-*** See also
+*** See also:
 
-    [[clamps][clamps]], [[clamps-gui-root][clamps-gui-root]]
+    - [[clamps][clamps]]
+    - [[clamps-gui-root][clamps-gui-root]]
 
 ** clamps-gui-root
+   Function
    #+BEGIN_SRC lisp
      (clamps-gui-root)
    #+END_SRC
    Return the pathname of the gui root.
-*** See also
-    [[clamps-restart-gui][clamps-restart-gui]]
+*** See also:
+    - [[clamps-restart-gui][clamps-restart-gui]]
 * D
 * E
 * F
@@ -100,16 +110,19 @@
 * R
 * S
 ** set-bpm
+   Function
    #+BEGIN_SRC lisp
    (set-bpm bpm)
    #+END_SRC
    Synonym for [[set-tempo][set-tempo]]
 ** set-tempo
+   Function
    #+BEGIN_SRC lisp
    (set-tempo bpm)
    #+END_SRC
    Set the tempo in beats per minute for both, cm and incudine.
 ** svg->browser
+   Function
    #+BEGIN_SRC lisp
    (svg->browser svg-file)
    #+END_SRC
