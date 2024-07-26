@@ -63,7 +63,6 @@ to be supplied. The sym of the stream gets interned as a parameter."
      (initialize-io ,sym)
      (values ',sym)))
 
-
 (defun rts (&key (rt-wait 0))
   (declare (ignore rt-wait))
 ;;;  (cm)
@@ -71,7 +70,7 @@ to be supplied. The sym of the stream gets interned as a parameter."
     (setf *midi-in1* (first result))
     (make-mt-stream *midi-out1* (second result) '(1 0)))
   (loop repeat 20 until *midi-out1* do
-    (progn   (incudine.util:msg :warn "~a" *midi-out1*)
+    (progn (incudine.util:msg :warn "~a" *midi-out1*)
            (sleep 0.1)))
 ;;;  (incudine.util:msg :warn "~a" *midi-out1*)
   (if *midi-out1*
