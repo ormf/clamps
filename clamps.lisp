@@ -47,8 +47,10 @@
 (defun svg-gui-path (str)
   (namestring (merge-pathnames (format nil "www/svg/~a" str) (clamps-gui-root))))
 
-(defun clamps-restart-gui (directory &key (start-gui t))
-  (let* ((dir (pathname (ensure-directory directory)))
+(defun clamps-restart-gui (gui-root &key (open t))
+  "restart the gui using gui-root as the root directory, optionally
+opening it in a browser."
+  (let* ((dir (pathname (ensure-directory gui-root)))
          (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
     (format t "(re)starting gui...~%")
     (setf *clamps-gui-root* (merge-pathnames "www/" dir))
@@ -70,7 +72,7 @@
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
     (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
     (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")
-    (when start-gui (progn (sleep 0.5) (clog-dsp-widgets:start-gui :directory (namestring dir))))))
+    (progn (sleep 0.5) (clog-dsp-widgets:start-gui :directory (namestring dir) :open open))))
 
 ;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))
 
@@ -228,7 +230,9 @@ supplied and gets interned as a parameter."
   (setf *osc-inkscape-export-in* nil))
 
 
-(defun clamps-start (&key (qsynth nil) (gui-root "/tmp") (start-gui t))
+(defun clamps-start (&key (gui-root "/tmp") (qsynth nil) (open t))
+  "start clamps, setting the gui root directory and optinally starting
+qsynth and opening the gui in a browser window."
   (restart-inkscape-osc)
   (rts)
 ;;;  (unless (cm::rts?) (rts))
@@ -240,7 +244,7 @@ supplied and gets interned as a parameter."
   (incudine:setup-io)
   (ats-cuda-display:ats-display-init)
   (start-doc-acceptor)
-  (clamps-restart-gui gui-root :start-gui start-gui)
+  (clamps-restart-gui gui-root :open open)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (clamps-logo))
 

@@ -6,15 +6,12 @@
 #+OPTIONS: toc:2 h:3 html-multipage-join-empty-bodies:t
 #+OPTIONS: html-multipage-split:toc
 #+OPTIONS: html-multipage-toc-to-top:t
-#+OPTIONS: html-multipage-export-directory:dictionary
-#+OPTIONS: html-multipage-open:browser
-#+OPTIONS: html-multipage-top-insert:"<div class=\"org-div-top-insert\">\n<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm/index.html\">CM Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Dictionary</a>\n</div>\n"
-
-
-
+#+OPTIONS: html-multipage-export-directory:clamps-dictionary
+#+OPTIONS: html-multipage-open:nil
+#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm/index.html\">CM Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Dictionary</a>\n"
 # #+OPTIONS: html-multipage-include-default-style:t
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/of-doc.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps-dictionary.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 #+INFOJS_OPT: path:./js/of-doc.js
@@ -27,62 +24,81 @@
    #+BEGIN_SRC lisp
    (ats->browser ats)
    #+END_SRC
-   Display the =ats= struct graphically in the interactive ATS Player
-   located at [[clamps-base-url][clamps-base-url]]/ats-display in the Gui.
+   Display the ats struct =ats= graphically in the interactive ATS
+   Player located at [[http://localhost:8080/ats-display]] in the Gui.
+*** See also:
+    -  [[clamps-base-url][clamps-base-url]]
 * B
 * C
 ** clamps
    Function
    #+BEGIN_SRC lisp
-     (clamps &key (gui-base "/tmp/") (start-gui t))
+     (clamps &key (gui-root "/tmp/") (open t))
    #+END_SRC
    Start Clamps including the gui.
 
-   =gui-base= ist the path where to put the =www= subfolder for files
-   accessible by the gui. In the given path the following directories
-   will be created:
+   =gui-root= ist the path where to put the /www/ subfolder for files
+   accessible by the gui.
 
-   - =gui-base/www/svg=
-
-     file path for svg files used in the =svg-display= page of the
-     Gui.
-
-     Any files which need to be accessible by the Gui have to be put
-     into the =gui-base/www= subdirectory with their filenames relative
-     to this directory.
+   =open= is a flag indicating whether to open the [[clamps-base-url][clamps-base-url]] in
+   a browser window after starting the gui.
    
-*** See also:
-
-    - [[clamps-restart-gui][clamps-restart-gui]]
-    - [[clamps-gui-root][clamps-gui-root]]
-** clamps-base-url
-   The url to access the Clamps Gui. Its default location is
-   http://localhost:8080.
-** clamps-restart-gui
-   Function
-   #+BEGIN_SRC lisp
-     (clamps-restart-gui gui-base &key (start-gui t))
-   #+END_SRC
-   Reset the gui-root to =gui-base/www/=, optionally starting the
-   Gui.
-
-   =gui-base= ist the path where to put the =www= subfolder for files
-   accessible by the Gui. In the given path the following directories
+   In the given path the following directories
    will be created:
 
-   - =gui-base/www/svg=
-
-     file path for svg files used in the =svg-display= page of the
+   - /gui-root/www/
+   - /gui-root/www/svg/
+     
+     file path for svg files used in the /svg-display/ page of the
      Gui.
 
    Any files which need to be accessible by the Gui have to be put
-   into the =gui-base/www= subdirectory with their filenames relative
+   into the /gui-root/www/ subdirectory with their filenames relative
    to this directory.
-
    
+*** See also:
+    - [[clamps-base-url][clamps-base-url]]
+    - [[clamps-restart-gui][clamps-restart-gui]]
+    - [[clamps-gui-root][clamps-gui-root]]
+** clamps-base-url
+   The base url to access the Clamps Gui (nicknamed /gui-root/ in this
+   dictionary).
+
+   Its default location is http://localhost:8080.
+*** See also
+    - [[clamps][clamps]]
+    - [[clamps-restart-gui][clamps-restart-gui]]
+    - [[clamps-gui-root][clamps-gui-root]]
+** clamps-restart-gui
+   Function
+   #+BEGIN_SRC lisp
+     (clamps-restart-gui gui-root &key (open t))
+   #+END_SRC
+   Reset the root directory of the Gui to /gui-root/www/, optionally
+   opening the Gui in a browser window.
+
+   =gui-root= ist the path where to put the /www/ subfolder for files
+   accessible by the gui.
+
+   =open= is a flag indicating whether to open [[clamps-base-url][clamps-base-url]] in a
+   browser window after starting the gui.
+   
+   In the given path the following directories
+   will be created:
+
+   - /gui-root/www/
+   - /gui-root/www/svg/
+     
+     file path for svg files used in the /svg-display/ page of the
+     Gui.
+
+   Any files which need to be accessible by the Gui have to be put
+   into the /gui-root/www/ subdirectory with their filenames relative
+   to this directory.
 *** See also:
 
     - [[clamps][clamps]]
+    - [[clamps-base-url][clamps-base-url]]
     - [[clamps-gui-root][clamps-gui-root]]
 
 ** clamps-gui-root
@@ -90,8 +106,10 @@
    #+BEGIN_SRC lisp
      (clamps-gui-root)
    #+END_SRC
-   Return the pathname of the gui root.
+   Return the pathname of the gui root directory.
 *** See also:
+    - [[clamps][clamps]]
+    - [[clamps-base-url][clamps-base-url]]
     - [[clamps-restart-gui][clamps-restart-gui]]
 * D
 * E
