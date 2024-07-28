@@ -666,10 +666,10 @@ event."))
   (setf (title (html-document body)) "Clog Gui")
   (add-class body "w3-blue-grey"))
 
-(defun start-gui (&key (port 8080) (directory (asdf:system-source-directory :clog-dsp-widgets))
+(defun start-gui (&key (port 8080) (gui-root (asdf:system-source-directory :clog-dsp-widgets))
                     (open t))
   (clear-bindings) ;;; start from scratch
-  (format t "starting webserver at ~A" (merge-pathnames directory "/www"))
+  (format t "starting webserver at ~A" (merge-pathnames gui-root "/www"))
   (initialize #'on-new-window
               :port port
               :static-root (merge-pathnames directory "/www")
