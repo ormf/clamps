@@ -47,7 +47,7 @@
 (defun svg-gui-path (str)
   (namestring (merge-pathnames (format nil "www/svg/~a" str) (clamps-gui-root))))
 
-(defun clamps-restart-gui (gui-root &key (open t))
+(defun clamps-restart-gui (gui-root &key (open t) (port 56419))
   "restart the gui using gui-root as the root directory, optionally
 opening it in a browser."
   (let* ((dir (pathname (ensure-directory gui-root)))
@@ -72,7 +72,7 @@ opening it in a browser."
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
     (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
     (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")
-    (progn (sleep 0.5) (clog-dsp-widgets:start-gui :directory (namestring dir) :open open))))
+    (progn (sleep 0.5) (clog-dsp-widgets:start-gui :gui-root (namestring dir) :port port :open open))))
 
 ;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))
 
@@ -234,9 +234,9 @@ supplied and gets interned as a parameter."
   "start clamps, setting the gui root directory and optinally starting
 qsynth and opening the gui in a browser window."
   (restart-inkscape-osc)
+  ;;; rts also initializes midi
   (rts)
 ;;;  (unless (cm::rts?) (rts))
-  ;;(make-mt-stream *mt-out01* *midi-out1* '(4 0))
   (if qsynth (restart-qsynth))
   ;;(setf *rts-out* *mt-out01*)
   (format t "~&midi initialized!~%")

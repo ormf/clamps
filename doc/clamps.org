@@ -8,19 +8,51 @@
 #+OPTIONS: html-multipage-toc-to-top:t
 #+OPTIONS: html-multipage-export-directory:clamps
 #+OPTIONS: html-multipage-open:browser
+#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n"
 # #+OPTIONS: html-multipage-include-default-style:t
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/of-doc.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 #+INFOJS_OPT: path:./js/of-doc.js
 # #+SETUPFILE: theme-readtheorg-local.setup
 
 * Clamps
-#+TOC: headlines 3
-
-* Introduction
-
-* Installation
-
-* First Steps
+  #+TOC: headlines 3
+* Clamps Packages
+** Gui
+   The gui is realized in a browser using the [[https://github.com/rabbibotton/clog][Clog]] package available
+   through quicklisp. A collection of [[clog-dsp-widgets][dsp-widgets]] has been implemented
+   which realize the most common used gui elements for music, like
+   Sliders, Buttons, VU Meters, etc. The implementation relies on
+   [[cl-refs][cl-refs]] to establish and handle the connection between the gui
+   elements and the Common Lisp Code.
+*** clog-dsp-widgets
+*** ats-cuda-display
+** Midi
+*** cl-midictl
+*** clog-midi-controller
+** CM Extensions
+*** cm-svg
+*** cm-svg.rts
+*** cm-sfz
+*** cm-poolevt
+*** cm-poolplayer
+*** cm-fomus
+*** cm-incudine
+*** cm-all
+** Incudine Extensions
+*** of-incudine-dsps
+*** incudine-bufs
+** Networking
+*** cuda-usocket-osc
+*** fudi
+** Misc Packages
+*** cl-refs
+*** cl-sfz
+*** cl-poolplayer
+*** plot
+*** cm-utils
+*** orm-utils
+    orm-utils is a collection of utilities developed for general
+    purpose use. Ist is included here for completeness only.

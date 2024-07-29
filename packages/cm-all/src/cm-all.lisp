@@ -35,7 +35,7 @@
 (defun ensure-directory (dir)
   (if (stringp dir) (format nil "~A/" dir) dir))
 
-(defun cm-restart-gui (gui-root &key (start-gui t) (open t))
+(defun cm-restart-gui (gui-root &key (start-gui t) (port 56419) (open t))
   (let* ((dir (pathname (ensure-directory gui-root)))
          (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
     (when (clog:is-running-p) (clog:shutdown))
@@ -55,7 +55,7 @@
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
     (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
     (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")
-    (when start-gui (clog-dsp-widgets:start-gui :directory (namestring dir) :open open))))
+    (when start-gui (clog-dsp-widgets:start-gui :gui-root (namestring dir) :port port :open open))))
 
 ;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))
 

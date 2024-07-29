@@ -666,15 +666,16 @@ event."))
   (setf (title (html-document body)) "Clog Gui")
   (add-class body "w3-blue-grey"))
 
-(defun start-gui (&key (port 8080) (gui-root (asdf:system-source-directory :clog-dsp-widgets))
+(defun start-gui (&key (port 56419) (gui-root (asdf:system-source-directory :clog-dsp-widgets))
                     (open t))
   (clear-bindings) ;;; start from scratch
   (format t "starting webserver at ~A" (merge-pathnames gui-root "/www"))
   (initialize #'on-new-window
               :port port
-              :static-root (merge-pathnames directory "/www")
+              :static-root (merge-pathnames gui-root "/www")
               :boot-file "/start.html")
   ;; Open a browser to http://127.0.0.1:8080 - the default for CLOG apps
   (when open (open-browser)))
 
 ;;; (start-gui) should start a webserver
+

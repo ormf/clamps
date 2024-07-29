@@ -1,0 +1,17 @@
+(mapcar
+ (lambda (entry)
+   (let ((symbol (intern (car entry)
+			 *common-music-symbols*)))
+     (if (boundp symbol)
+	 (push (cadr entry) (symbol-value symbol))
+       (set symbol (cdr entry)))))
+ '(
+   ("ats->browser" "clamps-dictionary/01_00_00_a---b.html")
+   ("clamps" "clamps-dictionary/02_00_00_c---r.html")
+   ("clamps-base-url" "clamps-dictionary/02_02_00_clamps-base-url.html")
+   ("clamps-restart-gui" "clamps-dictionary/02_03_00_clamps-restart-gui.html")
+   ("clamps-gui-root" "clamps-dictionary/02_04_00_clamps-gui-root.html")
+   ("set-bpm" "clamps-dictionary/03_00_00_s---z.html")
+   ("set-tempo" "clamps-dictionary/03_02_00_set-tempo.html")
+   ("svg->browser" "clamps-dictionary/03_03_00_svg->browser.html")
+))
