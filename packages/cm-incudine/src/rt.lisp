@@ -97,7 +97,7 @@ to be supplied. The sym of the stream gets interned as a parameter."
 |#
 
 (defun rtserr (fn args)
-  (error "Attempt to call ~s without RTS loaded." (cons fn args)))
+  (error "Calling ~s doesn't work in the cm-incudine environment." (cons fn args)))
 
 (defun rts-stop (&rest args) (rtserr 'rts-stop args))
 

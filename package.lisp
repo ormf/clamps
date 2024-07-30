@@ -44,7 +44,7 @@
                           #:*midi-in1* #:*midi-out1*
                           #:chan #:id)
 
-  (:shadowing-import-from #:cm #:quantize #:at #:now #:tuning #:cycle)
+  (:shadowing-import-from #:cm #:quantize #:at #:now #:tuning #:cycle #:rts?)
   (:use #:incudine
         #:cl-midictl
         #:of-incudine-dsps

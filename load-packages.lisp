@@ -20,7 +20,7 @@
 
 (in-package :cl-user)
 
-(pushnew (asdf:system-relative-pathname :clamps "packages/")
+(pushnew (format nil "~a/" (namestring (asdf:system-relative-pathname :clamps "packages/")))
       asdf:*central-registry*)
 
 ;;; (push (asdf:system-relative-pathname :clamps "packages/fudi/") asdf:*central-registry*)
