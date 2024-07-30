@@ -41,7 +41,7 @@
                      (play-sfz curr ampdb (* 1.1 dtime) :preset preset)
                      (incf curr delta)
                      (cm:at next #'inner next)))))
-      (inner (cm:now))))) 
+      (inner (cm:now)))))
 
 (cm:now)
 (play-scale :bassoboe-pp 45 84 :ampdb -12 :dtime 1)
@@ -49,10 +49,10 @@
 
 (progn
   (load-sfz-preset "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv :force t)
-  (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-aeol/Fl-aeol.sfz" :flute-aeol :play-fn #'sample-play :force t)
-  (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-key-cl/Fl-key-cl.sfz" :flute-key-cl :play-fn #'sample-play :force t)
-  (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-tng-ram/Fl-tng-ram.sfz" :flute-tng-ram :play-fn #'sample-play :force t)
-  (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-pizz/Fl-pizz.sfz" :flute-pizz :play-fn #'sample-play :force t))
+  (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-aeol/Fl-aeol.sfz" :flute-aeol :play-fn #'oid:play-lsample :force t)
+  (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-key-cl/Fl-key-cl.sfz" :flute-key-cl :play-fn #'oid:play-lsample :force t)
+  (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-tng-ram/Fl-tng-ram.sfz" :flute-tng-ram :play-fn #'oid:play-lsample :force t)
+  (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-pizz/Fl-pizz.sfz" :flute-pizz :play-fn #'oid:play-lsample :force t))
 
 (untrace)
 (incudine::sfz->lsample)
@@ -64,7 +64,9 @@
 
 (untrace)
 
-(elt (gethash :flute-aeol *sf-tables*) 51)
+(setf (gethash sym *sfz-preset-lookup*) fname)
+
+(elt (gethash :flute-aeol cl-user::*sfz-preset-lookup*) 51)
 
 (incudine::sfz->lsample)
 
@@ -101,21 +103,7 @@
 
 
 (load-sfz-preset "/home/orm/work/snd/sfz/sol-flute/Fl-tng-ram/Fl-tng-ram.sfz" :flute-tng-ram :force t)
-(play-sample 48 18 0.2 :preset :flute-pizz)
 
-
-
-(ct->fv (- 48 (incudine::lsample-keynum (random-elem (aref (gethash :flute-pizz *sf-tables*) (round 48))))))
-
-(elt (gethash :flute-pizz *sf-tables*) 48)
-(->lsample)
-
-
-(sprout
- (process
-   for keynum from 36 to 72 do
-   
-   wait 0.2))
 
 (defun fv->ct (fv)
   (* 12 (log fv 2)))

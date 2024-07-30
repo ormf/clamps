@@ -272,7 +272,7 @@ nil just create the levelmeter."
                                           :class "levelmeter-panel"
                                           :css `(:display "flex" :border "none" :background "transparent"
                                                  :height "12em" :width "100%"))))
-        (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value") -40 12 :css '(:font-size "1em" :color "white" :background "transparent" :border none))
+        (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value") :min -40 :max 12 :css '(:font-size "1em" :color "white" :background "transparent" :border none))
         (dotimes (idx num-channels)
           (create-o-vumeter
            meter-container
@@ -313,7 +313,7 @@ nil just create the levelmeter."
                                           :class "levelmeter-panel"
                                           :css `(:display "flex" :border "none" :background "transparent"
                                                  :height "12em" :width "100%"))))
-        (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value") -40 12 :css '(:font-size "1em" :color "white" :background "transparent" :border none))
+        (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value") :min -40 :max 12 :css '(:font-size "1em" :color "white" :background "transparent" :border none))
         (dotimes (idx num-channels)
           (create-o-vumeter
            meter-container

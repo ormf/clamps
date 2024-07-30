@@ -276,6 +276,8 @@ filtering."
       (error "~a: Couldn't remove responder!" stream)
       (remhash stream *stream-recv-responders*)))
 
+(defgeneric incudine-ensure-microtuning (keyn chan stream time))
+
 (defun incudine-ensure-microtuning (keyn chan stream time)
   "return values keynum and chan according to tuning specs in stream."
   (declare (type (or fixnum single-float double-float symbol) keyn)
@@ -313,7 +315,7 @@ filtering."
                                   (rescale rem (- width) width 0 16383) t)))
                       (declare (type (signed-byte 16) width bend))
                       (at time
-                        (midi-out stream
+                          (midi-out (slot-value stream 'output)
                           (logior #.(ash +ml-pitch-bend-opcode+ 4) chan)
                           (ldb (byte 7 0) bend) (ldb (byte 7 7) bend) 3))))
                    (t (setf num (second dat))

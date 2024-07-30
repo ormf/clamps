@@ -30,7 +30,7 @@
 
   (:shadowing-import-from #:of-incudine-dsps #:clip)
 
-  (:use #:cl #:cl-user #:cm)
+  (:use #:cl #:cl-user #:cm #:of-incudine-dsps)
   (:shadow #:buffer #:buffer-frames
            #:buffer-sample-rate
            #:node #:bus
