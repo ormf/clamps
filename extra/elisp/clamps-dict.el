@@ -1,11 +1,11 @@
 (mapcar
- (lambda (entry)
-   (let ((symbol (intern (car entry)
-			 *common-music-symbols*)))
-     (if (boundp symbol)
-	 (push (cadr entry) (symbol-value symbol))
-       (set symbol (cdr entry)))))
- '(
+     (lambda (entry)
+       (let ((symbol (intern (car entry)
+                     *common-music-symbols*)))
+         (if (boundp symbol)
+    	 (push (cadr entry) (symbol-value symbol))
+           (set symbol (cdr entry)))))
+     '(
    ("ats->browser" "clamps-dict/01_00_00_a---b.html")
    ("clamps" "clamps-dict/02_00_00_c---h.html")
    ("clamps-base-url" "clamps-dict/02_02_00_clamps-base-url.html")

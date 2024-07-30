@@ -38,6 +38,16 @@ h2 {
     display: none;
 }
 
+#footnotes {
+    margin-top: 5em;
+    border-top: 1pt solid #8b8e93;
+}
+h2.footnotes {
+    font-size: 1.5em;
+    padding-top: 2em;
+    display: none;
+}
+
 
 header {
     /* grid-area: menul; */
@@ -181,7 +191,6 @@ a:hover, i.angle-left:hover, i.angle-right:hover {
     color: #5e8bde;
     text-decoration: none;
 }
-
 
 h1.title {
     line-height: 1.3em;
@@ -372,7 +381,9 @@ code {
     color: #ffa500;
 }
 
-
+.ul-toc-level-3 {
+    /* display: none; */
+}
 .toc-level-1 {
     margin-top: 0.5em;
     font-size: 1.6em;
@@ -385,6 +396,7 @@ code {
     font-weight: normal;
     line-height: 1.2em;
 }
+
 
 .toc-active {
     color: orange;
@@ -401,4 +413,8 @@ code {
     display:inline-block;
     white-space: nowrap;
     width: 22em;
+}
+
+.footpara {
+    display: inline;
 }

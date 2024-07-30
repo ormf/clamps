@@ -9,12 +9,11 @@
 #+OPTIONS: html-multipage-export-directory:clamps
 #+OPTIONS: html-multipage-open:browser
 #+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n"
-# #+OPTIONS: html-multipage-include-default-style:t
+#+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
-#+INFOJS_OPT: path:./js/of-doc.js
 # #+SETUPFILE: theme-readtheorg-local.setup
 
 * Clamps

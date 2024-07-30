@@ -1,6 +1,26 @@
-#+SETUPFILE: clamps-dict.setup
+#+TITLE: Clamps Dictionary
+#+AUTHOR: Orm Finnendahl
+#+LANGUAGE: en
+#+startup: entitiespretty
+#+OPTIONS: html5-fancy:t
+#+OPTIONS: num:nil
+#+OPTIONS: toc:2 h:3 html-multipage-join-empty-bodies:t
+#+OPTIONS: html-multipage-split:2
+#+OPTIONS: html-multipage-toc-to-top:t
+#+OPTIONS: html-multipage-export-directory:clamps-dict
+#+OPTIONS: html-multipage-open:nil
+#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Dictionary</a>\n"
+#+OPTIONS: html-toc-title:"Index"
+#+OPTIONS: html-multipage-include-default-style:nil
+#+HTML_DOCTYPE: xhtml5
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps-dictionary.css" />
+#+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+#+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
+# #+SETUPFILE: clamps-dict.setup
+#+BIND: org-export-multipage-split-functions (export-dict-to-clamps)
 # \[\[\([^\[]+\)\]\] → [[\1][\1]]
-# C-x 8 RET 200b RET
+# C-x 8 RET 200b RET C-x 8 0
+
 * A - B
 ** ats->browser
    Function
@@ -8,7 +28,7 @@
    (ats->browser ats)
    #+END_SRC
    Display the ats struct =ats= graphically in the interactive ATS
-   Player located at [[http://localhost:56419/ats-display]] in the Gui.
+   Player located at /<clamps-base-url>/ats-display/ in the Gui.
 *** See also:
     -  [[clamps-base-url][clamps-base-url]]
 * C - H
@@ -124,7 +144,7 @@
    #+BEGIN_SRC lisp
      (idump node)
    #+END_SRC
-   Dump all active dsps of /node/ to the /incudine:*​logger-stream​*/
+   Dump all active dsps of /node/ to the /incudine:\ast{}logger-stream\ast{}/
    output.
 
    - =node= The id of the node
@@ -145,7 +165,7 @@
    #+BEGIN_SRC lisp
      (reset-logger-stream)
    #+END_SRC
-   Resets /incudine:*logger-stream*/ to /*​error-output​*/. Call this
+   Resets /incudine:*logger-stream*/ to /\ast{}error-output\ast{}/. Call this
    function, if calls to /incudine.util:msg/ don't produce any output
    in the REPL.
 
@@ -157,6 +177,8 @@
      (rts?)
    #+END_SRC
    Checks if rts is started and running.
+*** See also:
+    - [[rts][rts]]
 ** rts
    Function
    #+BEGIN_SRC lisp
@@ -174,12 +196,14 @@
 
    It also starts the rt engine of incudine calling
    /incudine:rt-start/.
+*** See also:
+    - [[rts?][rts?]]
 ** rts-hush
    Function
    #+BEGIN_SRC lisp
      (rts-hush)
    #+END_SRC
-   Sends an all-note-off message to all channels of /*​midi-out1​*/ and
+   Sends an all-notes-off message[fn:: See /ChannelModeMessages/ on [[https://midi.org/summary-of-midi-1-0-messages][this page]].] to all channels of /\ast{}​midi-out1\ast{}/ and
    calls [[node-free-unprotected][node-free-unprotected]].
 *** Note:
     This command is bound to the Keyboard Sequence /<C-.>/ in emacs.
