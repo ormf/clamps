@@ -9,6 +9,7 @@
                           #:now #:stop #:*tempo*
                           #:next #:cycle #:interp
                           #:weighting
+                          #:clip
                           )
   (:shadowing-import-from #:orm-utils #:group)
   (:export
@@ -36,7 +37,7 @@
    #:GET-DTIME-FN-NO-X
    #:VALUE-FN
    #:X
-;;   #:ARGS
+   #:ARGS
    #:P1 #:P2 #:P3 #:P4
    #:G1 #:G2 #:G3 #:G4
    #:CM-COLLECT
@@ -56,4 +57,5 @@
    #:SERIALIZE-SCORE
    #:SET-BASEDIR
    #:*POOLPLAYER-EVENTS*
+   #:EXPAND-ARG-FORMS
    ))

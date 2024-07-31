@@ -29,6 +29,7 @@
                           )
 
   (:shadowing-import-from #:of-incudine-dsps #:clip)
+  (:shadowing-import-from #:cl-poolplayer #:args)
 
   (:use #:cl #:cl-user #:cm #:of-incudine-dsps)
   (:shadow #:buffer #:buffer-frames

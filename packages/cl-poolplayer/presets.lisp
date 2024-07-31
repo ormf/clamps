@@ -81,6 +81,16 @@
                      (declare (ignorable ,@(append (subseq '(&optional x dur p1 p2 p3 p4) 1 (min n 7)) '(args))))
                      ,val))))
 
+(defun expand-arg-forms (args)
+;;;  (format t "~&args: ~a" args)
+  (loop
+    for (key val) on (canonisize-arg-list args) by #'cddr
+    for idx = (get-fn-idx key)
+    for n from 3
+    collect `(list ,idx (lambda ,(append (subseq '(&optional x dur p1 p2 p3 p4) 0 (min n 7)) '(args))
+                          (declare (ignorable ,@(append (subseq '(&optional x dur p1 p2 p3 p4) 1 (min n 7)) '(args))))
+                          ,val))))
+
 (defun canonisize-arg-list (args)
   "make sure the args property list begins with the properties :p1 to
 :p4 in order."
