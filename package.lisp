@@ -31,7 +31,7 @@
   (:shadowing-import-from #:of-incudine-dsps #:clip)
   (:shadowing-import-from #:cl-poolplayer #:args)
 
-  (:use #:cl #:cl-user #:cm #:of-incudine-dsps)
+  (:use #:cl #:cl-user #:cm #:of-incudine-dsps #:ou)
   (:shadow #:buffer #:buffer-frames
            #:buffer-sample-rate
            #:node #:bus
@@ -45,7 +45,8 @@
                           #:*midi-in1* #:*midi-out1*
                           #:chan #:id)
 
-  (:shadowing-import-from #:cm #:quantize #:at #:now #:tuning #:cycle #:rts?)
+  (:shadowing-import-from #:cm #:pwd #:cd #:quantize #:at #:now #:tuning #:cycle #:rts?)
+  (:shadowing-import-from #:ou #:range)
   (:use #:incudine
         #:cl-midictl
         #:of-incudine-dsps

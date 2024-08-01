@@ -310,7 +310,7 @@ address."
 
 (if (member :cuda-usocket-osc *features*)
     (progn
-      (format t "~&shadowing incudine.osc functions with cuda-usocket-osc")
+      (format t "~&shadowing incudine.osc functions with cuda-usocket-osc~%")
       (setf (fdefinition 'incudine.osc::open) #'open-cu-osc)
       (setf (fdefinition 'incudine.osc::close) #'close-cu-osc)
       (unintern 'incudine.osc:message)
@@ -321,7 +321,7 @@ address."
                                    (encode-typetag ,types)
                                    (osc::encode-args (list ,@(loop for value in values
                                                                    collect value)))))))
-    (format t "~&not shadowing incudine.osc functions"))
+    (format t "~&not shadowing incudine.osc functions~%"))
 
 (define-compiler-macro message (stream address types &rest values)
   (with-gensyms (s)

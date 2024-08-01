@@ -170,7 +170,8 @@ to t."
 
 ;;; (load-sfz-preset "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv)
 
-(defun list-sfz-presets (&key (loaded t))
+(defun list-sfz-presets (&key (loaded nil))
+  "return a sorted list of all registered sfz-presets."
   (if loaded (sort (loop for k being each hash-key of *sfz-tables* collect k) #'string<)
       (sort (loop for k being each hash-key of cl-user:*sfz-preset-lookup* collect k) #'string<)))
 
@@ -237,10 +238,10 @@ to t."
 
 (setf (fdefinition 'ensure-sfz-preset) #'get-sfz-preset)
 
-(defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (sfz-tables *sfz-tables*) (startpos 0) (out1 0) out2)
+(defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
   "general function: Plays sample looping or one-shot depending on the
 'play-fn slot in the lsample definition."
-  (let ((map (get-sfz-preset preset sfz-tables)))
+  (let ((map (get-sfz-preset preset)))
     (if map 
         (let* ((out2 (or out2 (mod (1+ out1) 8)))
                (sample (random-elem (aref map (round pitch))))
@@ -272,31 +273,35 @@ to t."
 (incudine::play-buffer-stretch* (lsample-buffer (first (aref (gethash :flute-nv *sfz-tables*) 60))))
 |#
 
-(defun play-sfz-loop (pitch db dur &key (pan 0.5) (preset :flute-nv) (sfz-tables *sfz-tables*) (startpos 0) (out1 0) out2)
+(defun play-sfz-loop (pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
   "Plays sample looping independent of the 'play-fn slot in the lsample definition."
-  (let* ((map (gethash preset sfz-tables))
-         (sample (random-elem (aref map (round pitch))))
-         (out2 (or out2 (mod (1+ out1) 8)))
-         (buffer (of-incudine-dsps:lsample-buffer sample))
-         (rate (incudine::sample (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample)))))
-         (amp (of-incudine-dsps:lsample-amp sample))
-         (loopstart (of-incudine-dsps:lsample-loopstart sample))
-         (loopend (of-incudine-dsps:lsample-loopend sample)))
-    (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan loopstart loopend startpos out1 out2
-                                    :head 200)))
+  (let ((map (get-sfz-preset preset)))
+    (if map
+        (let* ((sample (random-elem (aref map (round pitch))))
+               (out2 (or out2 (mod (1+ out1) 8)))
+               (buffer (of-incudine-dsps:lsample-buffer sample))
+               (rate (incudine::sample (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample)))))
+               (amp (of-incudine-dsps:lsample-amp sample))
+               (loopstart (of-incudine-dsps:lsample-loopstart sample))
+               (loopend (of-incudine-dsps:lsample-loopend sample)))
+          (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan loopstart loopend startpos out1 out2
+                                          :head 200)
+          (error "preset ~S not found!" preset)))))
 
 ;;; (play-sfz-loop 60 0 10 :pan 0 :out1 1)
 
-(defun play-sfz-one-shot (pitch db dur &key (pan 0.5) (preset :flute-nv) (sfz-tables *sfz-tables*) (startpos 0) (out1 0) out2)
+(defun play-sfz-one-shot (pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
   "Plays sample once independent of the 'play-fn slot in the lsample definition."
-  (let* ((map (gethash preset sfz-tables))
-         (sample (random-elem (aref map (round pitch))))
-         (out2 (or out2 (mod (1+ out1) 8)))
-         (buffer (of-incudine-dsps:lsample-buffer sample))
-         (rate (incudine::sample (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample)))))
-         (amp (of-incudine-dsps:lsample-amp sample)))
+  (let ((map (get-sfz-preset preset)))
+    (if map
+        (let* ((sample (random-elem (aref map (round pitch))))
+               (out2 (or out2 (mod (1+ out1) 8)))
+               (buffer (of-incudine-dsps:lsample-buffer sample))
+               (rate (incudine::sample (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample)))))
+               (amp (of-incudine-dsps:lsample-amp sample)))
 ;;;    (break "rate: ~a" rate)
-    (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan startpos out1 out2
-                                    :head 200)))
+          (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan startpos out1 out2
+                                          :head 200))
+        (error "preset ~S not found!" preset))))
 
 ;;; (play-sfz-one-shot 60 0 0.5)
