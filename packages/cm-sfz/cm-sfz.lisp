@@ -107,9 +107,9 @@ svg-file."
 (defun rt-write-sfz-evt (obj scoretime)
   (with-slots (keynum amplitude duration preset play-fn pan startpos chan) obj
     (let ((time (+ (rts-now) (* *rt-scale* scoretime))))
-      (ensure-sfz-preset preset)
-      (at time (or play-fn #'cl-sfz:play-sfz) keynum amplitude duration :preset preset :pan pan :startpos startpos :out1 (mod (- chan 100) 8))))
-  )
+      (if (ensure-sfz-preset preset)
+          (at time (or play-fn #'cl-sfz:play-sfz) keynum amplitude duration :preset preset :pan pan :startpos startpos :out1 (mod (- chan 100) 8))
+          (warn "rt-write-sf-evt: preset ~S not present!")))))
 
 (defmethod write-event ((obj sfz) (to incudine-stream) scoretime)
   "output sfz object."

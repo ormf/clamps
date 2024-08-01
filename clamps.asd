@@ -1,5 +1,7 @@
 ;;; clamps.asd
 
+(in-package :cl-user)
+
 (asdf:defsystem #:clamps
   :description "Common Lisp Aided Music Production System"
   :author "Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>"
@@ -18,7 +20,10 @@
                (:file "clamps")
                ))
 
-(in-package :cl-user)
+
+(defparameter *sfz-preset-path* (list (pathname "~/work/snd/sfz/")))
+(defparameter *sfile-path* (list (pathname "~/work/snd/")))
+(defparameter *sfz-preset-lookup* (make-hash-table))
 
 (defun clamps (&rest args)
   (flet ((clampscall (fn &rest args)
@@ -44,5 +49,4 @@
                         (symbol-value sym)))))))
     (apply #'clampscall :clamps-start args)))
 
-(export '(clamps) 'cl-user)
-
+(export '(*sfz-preset-lookup* *sfz-preset-path* *sfile-path* clamps) 'cl-user)

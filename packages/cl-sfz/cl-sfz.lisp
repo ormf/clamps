@@ -163,9 +163,10 @@ all applicable sample-defs at the keynum's array-index."
   "load sfz file into a preset with the id name. In case this preset
 already exists, the old one will only be overwritten if :force is set
 to t."
-  (if (or force (not (gethash name *sfz-tables*)))
-      (setf (gethash name *sfz-tables*)
-            (get-keynum-array file :play-fn play-fn))))
+  (when (or force (not (gethash name *sfz-tables*)))
+    (format t "loading ~S from ~a~%" name file)
+    (setf (gethash name *sfz-tables*)
+          (get-keynum-array file :play-fn play-fn))))
 
 ;;; (load-sfz-preset "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv)
 
@@ -213,13 +214,15 @@ to t."
        (error "play-fn not found: ~a" play-fn)))))
 |#
 
-(defun ensure-sfz-preset (preset &key (sfz-tables *sfz-tables*))
-  (get-sfz-preset preset sfz-tables)
-  nil)
 
-(defun get-sfz-preset (preset &optional (sfz-tables *sfz-tables*))
+
+(defun add-sfz-preset (preset file)
+  "add preset to file association to 'cl-user:*sfz-preset-lookup*."
+  (setf (gethash preset cl-user:*sfz-preset-lookup*) file))
+
+(defun get-sfz-preset (preset)
   (or
-   (gethash preset sfz-tables)
+   (gethash preset *sfz-tables*)
    (and
     (boundp 'cl-user:*sfz-preset-lookup*)
     (boundp 'cl-user:*sfz-preset-path*)
@@ -228,10 +231,11 @@ to t."
                                  (incudine-bufs:get-sndfile-path
                                   name
                                   cl-user:*sfz-preset-path*))))
-      (format t "loaded ~S from ~a~%" preset sfz-preset-file)
       (and sfz-preset-file (load-sfz-preset sfz-preset-file preset)
-           (gethash preset sfz-tables))))
+           (gethash preset *sfz-tables*))))
    (warn "preset ~s not found!" preset)))
+
+(setf (fdefinition 'ensure-sfz-preset) #'get-sfz-preset)
 
 (defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (sfz-tables *sfz-tables*) (startpos 0) (out1 0) out2)
   "general function: Plays sample looping or one-shot depending on the

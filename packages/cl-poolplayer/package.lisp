@@ -9,9 +9,8 @@
                           #:now #:stop #:*tempo*
                           #:next #:cycle #:interp
                           #:weighting
-                          #:clip
                           )
-  (:shadowing-import-from #:orm-utils #:group)
+  (:shadowing-import-from #:orm-utils #:group #:clip)
   (:export
    #:*POOL-HASH*
    #:DTIME-DEV #:DTIME #:PRESET-PLAY #:EVENTPLAYER #:EVENTPLOTTER #:R-ELT

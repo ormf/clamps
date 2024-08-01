@@ -6,6 +6,7 @@
   (:use #:cl #:cl-ppcre #:incudine #:incudine-bufs)
 ;;;  (:shadowing-import-from #:incudine :sample-play :lsample-play)
   (:export
+   #:add-sfz-preset
    #:load-sfz-preset
    #:list-sfz-presets
    #:remove-sfz-preset

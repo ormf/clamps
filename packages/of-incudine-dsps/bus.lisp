@@ -56,9 +56,9 @@
 (export '(master-out bus-amp bus-amp-dsp master-out-dsp) 'incudine)
 
 ;;; audio buses start after the control buses. Reserve the maximum
-;;; number of them here. If the number needs to be changed, first free
-;;; all nodes using audio buses, then change the number and restart
-;;; the dsps using audio buses.
+;;; number of control buses here. If the number needs to be changed,
+;;; first free all nodes using audio buses, then change the number and
+;;; restart all dsps using audio buses.
 
 (defvar *number-of-ctl-bus-channels* 1024)
 
