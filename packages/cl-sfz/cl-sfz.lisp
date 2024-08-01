@@ -156,8 +156,6 @@ all applicable sample-defs at the keynum's array-index."
      (let ((keynums (mapcar #'oid:get-keynum (parse-sfz ref))))
        (list (round (apply #'min keynums)) (round (apply #'max keynums)))))))
 
-(get-sfz-preset)
-
 (defun sfz-table-get-range (preset)
   "get the min and max keynum of preset."
   (if (gethash preset *sfz-tables*)
@@ -192,6 +190,9 @@ to t."
   "return a sorted list of all registered sfz-presets."
   (if loaded (sort (loop for k being each hash-key of *sfz-tables* collect k) #'string<)
       (sort (loop for k being each hash-key of cl-user:*sfz-preset-lookup* collect k) #'string<)))
+
+(defun sfz-preset-loaded? (preset)
+  (if (gethash preset *sfz-tables*) t))
 
 (defun remove-sfz-preset (name)
   (remhash name *sfz-tables*))
