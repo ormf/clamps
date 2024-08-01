@@ -26,7 +26,7 @@
 (defmacro vector-extend (v1 v2)
   `(setf ,v1 (concatenate 'vector ,v1 ,v2)))
 
-(defmacro r-elt (place) `(elt ,place (random (length ,place))))
+;;; (defmacro r-elt (seq) `(elt ,seq (random (length ,seq))))
 
 (defmacro set-sv (p slot val)
   `(setf (sv (aref *players* ,p) ,slot) ,val))

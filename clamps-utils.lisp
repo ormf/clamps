@@ -95,3 +95,39 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
     (hunchentoot:start *clamps-doc-acceptor*)))
 
 (setf (fdefinition 'clamps::set-bpm) #'clamps:set-tempo)
+
+(defun n-lin-bp (x bp min max)
+  (n-lin (apply #'interp x (flatten bp)) min max))
+
+(defun n-exp-bp (x bp min max)
+  (n-exp (apply #'interp x (flatten bp)) min max))
+
+(defun plot-2d (seq)
+  "plot a linear sequence by grouping the elements in 2."
+  (plot (ou:group seq 2))
+  (values))
+
+(defun plot-3d (seq)
+  "plot a linear sequence by grouping the elements in 3."
+  (plot (ou:group seq 3))
+  (values))
+
+(defvar *standard-pitch* 440.0)
+
+(defun set-standard-pitch (freq)
+  (setf *standard-pitch* (float freq 1.0))
+  (setf oid::*standard-pitch* (float freq 1.0)))
+
+(defun ftom (f &key (tuning-base *standard-pitch*))
+  (+ 69 (* 12 (log (/ f tuning-base) 2))))
+
+(defun mtof (m &key (tuning-base *standard-pitch*))
+  (* tuning-base (expt 2 (/ (- m 69) 12))))
+
+(defun fr2ct (fr)
+  "Return interval in midcent of frequency ratio fr."
+  (* 12 (log fr 2)))
+
+(defun ct2fr (ct)
+  "Return frequency ratio of interval ct in midcent."
+  (expt 2 (/ ct 12)))

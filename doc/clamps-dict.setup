@@ -4,7 +4,7 @@
 #+startup: entitiespretty
 #+OPTIONS: html5-fancy:t
 #+OPTIONS: num:nil
-#+OPTIONS: toc:2 h:3 html-multipage-join-empty-bodies:t
+#+OPTIONS: toc:1 h:3 html-multipage-join-empty-bodies:t
 #+OPTIONS: html-multipage-split:toc
 #+OPTIONS: html-multipage-toc-to-top:t
 #+OPTIONS: html-multipage-export-directory:clamps-dict
@@ -12,31 +12,6 @@
 #+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Dictionary</a>\n"
 #+OPTIONS: html-toc-title:"Index"
 # #+OPTIONS: html-multipage-include-default-style:t
-#+BIND: org-export-filter-final-output-functions (export-dict-to-clamps)
-#+BEGIN_SRC emacs-lisp :exports results :results none
-  (defun export-dict-to-clamps (s backend info)
-    (with-temp-buffer 
-      (insert "(mapcar
-   (lambda (entry)
-     (let ((symbol (intern (car entry)
-  			 ,*common-music-symbols*)))
-       (if (boundp symbol)
-  	 (push (cadr entry) (symbol-value symbol))
-         (set symbol (cdr entry)))))
-   '(\n")
-      (mapcar
-       (lambda (entry)
-         (insert
-          (format "   (\"%s\" \"clamps-dict/%s\")\n"
-                  (org-html-element-title (car entry))
-                  (plist-get (cdr entry) :href))))
-       (cl-remove-if
-        (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
-        (plist-get global-info :multipage-toc-lookup)))
-      (insert "))\n")
-      (write-region (point-min) (point-max) "../extra/elisp/clamps-dict.el"))
-    s)
-#+END_SRC
 #+HTML_DOCTYPE: xhtml5
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps-dictionary.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">

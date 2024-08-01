@@ -140,14 +140,32 @@ all applicable sample-defs at the keynum's array-index."
       (push-keynums entry keynum-array))
     keynum-array))
 
-(defun sfz-get-range (file)
-  (let ((keynums (mapcar #'of-incudine-dsps:get-keynum (parse-sfz file))))
-    (list (round (apply #'min keynums)) (round (apply #'max keynums)))))
+(defun sfz-get-range (ref)
+  "get the range of a sfz preset or a sfz file."
+  (typecase ref
+    (symbol
+     (if (gethash ref *sfz-tables*)
+         (let ((keynums
+                 (loop for slist across (gethash ref *sfz-tables*)
+                       append (mapcar (lambda (x)
+                                        (round (oid:lsample-keynum x)))
+                                      slist))))
+           (list (apply #'min keynums) (apply #'max keynums)))
+         (error "can't find sfz preset: ~S" ref)))
+    (otherwise
+     (let ((keynums (mapcar #'oid:get-keynum (parse-sfz ref))))
+       (list (round (apply #'min keynums)) (round (apply #'max keynums)))))))
 
-(defun sf-table-get-range (preset)
+(get-sfz-preset)
+
+(defun sfz-table-get-range (preset)
+  "get the min and max keynum of preset."
   (if (gethash preset *sfz-tables*)
-      (let ((keynums (loop for slist across (gethash preset *sfz-tables*)
-                           append (mapcar (lambda (x) (round (of-incudine-dsps:lsample-keynum x))) slist))))
+      (let ((keynums
+              (loop for slist across (gethash preset *sfz-tables*)
+                    append (mapcar (lambda (x)
+                                     (round (oid:lsample-keynum x)))
+                                   slist))))
         (list (apply #'min keynums) (apply #'max keynums)))))
 
 ;;; (sf-table-get-range :altoflute-k)
@@ -220,21 +238,25 @@ to t."
 (defun add-sfz-preset (preset file)
   "add preset to file association to 'cl-user:*sfz-preset-lookup*."
   (setf (gethash preset cl-user:*sfz-preset-lookup*) file))
+(defun sfz-preset-file (preset)
+  "get the full path of the file of perset."
+  (and
+   (boundp 'cl-user:*sfz-preset-lookup*)
+   (boundp 'cl-user:*sfz-preset-path*)
+   (let ((name (gethash preset cl-user:*sfz-preset-lookup*)))
+     (and name
+          (incudine-bufs:get-sndfile-path
+           name
+           cl-user:*sfz-preset-path*)))))
 
 (defun get-sfz-preset (preset)
   (or
    (gethash preset *sfz-tables*)
-   (and
-    (boundp 'cl-user:*sfz-preset-lookup*)
-    (boundp 'cl-user:*sfz-preset-path*)
-    (let* ((name (gethash preset cl-user:*sfz-preset-lookup*))
-           (sfz-preset-file (and name
-                                 (incudine-bufs:get-sndfile-path
-                                  name
-                                  cl-user:*sfz-preset-path*))))
-      (and sfz-preset-file (load-sfz-preset sfz-preset-file preset)
-           (gethash preset *sfz-tables*))))
-   (warn "preset ~s not found!" preset)))
+   (let ((sfz-preset-file (sfz-preset-file preset)))
+     (if sfz-preset-file
+         (and (load-sfz-preset sfz-preset-file preset)
+              (gethash preset *sfz-tables*))
+         (warn "preset ~s not found!" preset)))))
 
 (setf (fdefinition 'ensure-sfz-preset) #'get-sfz-preset)
 

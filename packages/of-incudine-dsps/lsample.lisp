@@ -20,6 +20,7 @@
 
 (in-package :of-incudine-dsps)
 
+(defvar *standard-pitch* 440.0)
 ;;; (defparameter *hanning1024* (make-buffer 1024 :fill-function (gen:hanning)))
 
 (defstruct lsample
@@ -41,7 +42,7 @@ contains a slot for the sample buffer data."
 (declaim (inline keynum->hz))
 (defun keynum->hz (keynum)
   "Convert VALUE dB to linear value."
-  (* (sample 440.0d0) (expt 2 (/ (- keynum 69.0d0) 12.0d0))))
+  (* (sample *standard-pitch*) (expt 2 (/ (- keynum 69.0d0) 12.0d0))))
 
 (defun play-lsample (lsample pitch db dur &key (pan 0.5) (startpos 0))
   "play lsample with given pitch, amp and duration with loop."

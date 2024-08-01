@@ -32,7 +32,8 @@
   (:shadowing-import-from #:cl-poolplayer #:args)
 
   (:use #:cl #:cl-user #:cm #:of-incudine-dsps #:ou)
-  (:shadow #:buffer #:buffer-frames
+  (:shadow #:mtof #:ftom
+           #:buffer #:buffer-frames
            #:buffer-sample-rate
            #:node #:bus
            #:lsample #:envelope
@@ -47,6 +48,7 @@
 
   (:shadowing-import-from #:cm #:pwd #:cd #:quantize #:at #:now #:tuning #:cycle #:rts?)
   (:shadowing-import-from #:ou #:range)
+  (:shadowing-import-from #:cl-plot #:plot)
   (:use #:incudine
         #:cl-midictl
         #:of-incudine-dsps

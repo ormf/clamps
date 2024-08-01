@@ -1403,10 +1403,6 @@ values, the key and the value of each property in the proplist."
   "random value between [min..max] with linear distribution."
   (+ min (* (- max min) (random 1.0))))
 
-(defun randm (max)
-  "random value between [min..max] with linear distribution."
-  (r-lin 0 max))
-
 (defun rand (max)
   "random value between [0..max-1] with linear distribution."
   (r-lin 0 max))

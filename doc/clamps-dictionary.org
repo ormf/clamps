@@ -8,7 +8,7 @@
 #+OPTIONS: html-multipage-split:2
 #+OPTIONS: html-multipage-toc-to-top:t
 #+OPTIONS: html-multipage-export-directory:clamps-dict
-#+OPTIONS: html-multipage-open:nil
+#+OPTIONS: html-multipage-open:browser
 #+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Dictionary</a>\n"
 #+OPTIONS: html-toc-title:"Index"
 #+OPTIONS: html-multipage-include-default-style:nil
@@ -22,16 +22,61 @@
 # C-x 8 RET 200b RET C-x 8 0
 
 * A - B
+** add-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (add-sfz-preset preset file)
+   #+END_SRC
+   Add the association between a preset name and its corresponding sfz
+   file.
+
+   =preset= A keyword or symbol to name the preset
+
+   =file= A string or path to the associated sfz file. If the file
+   path is relative, it will be searched recursively in all paths of
+   /cl-user::*sfz-file-path*/.
+
+*** Note:
+    This function only stores the association between the preset name
+    and its sfz file. Loading of its samples into memory is done
+    implicitely when the preset is used by a playing function like
+    [[play-sfz][play-sfz]] or by using [[ensure-sfz-preset][ensure-sfz-preset]] or its synonym
+    [[get-sfz-preset][get-sfz-preset]].
+
+*** See also:
+
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+
+    - [[get-sfz-preset][get-sfz-preset]]
+
 ** ats->browser
    Function
    #+BEGIN_SRC lisp
-   (ats->browser ats)
+     (ats->browser ats)
    #+END_SRC
    Display the ats struct =ats= graphically in the interactive ATS
    Player located at /<clamps-base-url>/ats-display/ in the Gui.
 *** See also:
     -  [[clamps-base-url][clamps-base-url]]
-* C - H
+* C
+** ct2fr
+   #+BEGIN_SRC lisp
+     (ct2fr cent)
+   #+END_SRC
+Return the interval ratio of the interval given in /cent/ Midicent.
+
+=cent= The interval in Midicents.
+*** Example:
+    #+BEGIN_SRC lisp
+      (ct2fr 12) ;; => 2
+
+      (ct2fr 1) ;; => 1.0594631
+
+      (ct2fr 7) ;; => 1.4983071
+
+      (ct2fr -12) ;; => 1/2
+    #+END_SRC
+* D
 ** clamps
    Function
    #+BEGIN_SRC lisp
@@ -49,14 +94,14 @@
    In the given path the following directories
    will be created:
 
-   - /<clamps-gui-root>/www/
-   - /<clamps-gui-root>/www/svg/
+   - /<clamps-gui-root>/www//
+   - /<clamps-gui-root>/www/svg//
      
      file path for svg files used in the /<clamps-base-url>/svg-display/ page
      of the Gui.
 
    Any files which need to be accessible by the Gui have to be put
-   into the /<clamps-gui-root>/www/ subdirectory with their filenames
+   into the /<clamps-gui-root>/www// subdirectory with their filenames
    relative to this directory.
    
    Besides starting the Gui the function also:
@@ -73,10 +118,20 @@
     - [[clamps-restart-gui][clamps-restart-gui]]
     - [[clamps-gui-root][clamps-gui-root]]
 ** clamps-base-url
-   The base url to access the Clamps Gui (nicknamed /<clamps-base-url>/ in this
+   Function
+   #+BEGIN_SRC lisp
+     (clamps-base-url)
+   #+END_SRC
+   Return the base url to access the Clamps Gui (nicknamed /<clamps-base-url>/ in this
    dictionary).
 
    Its default location is http://localhost:56419.
+
+   /<clamps-base-url>/ in the browser side is corresponding to the
+   path /<clamps-gui-root>/, so an address named
+   /<clamps-base-url>/<file>/ will load the file located at
+   /<clamps-gui-root>/<file>/ as HTML into the browser window.
+
 *** Example:
 
     The location for the [[svg->browser][SVG Player Gui]] is at
@@ -107,14 +162,14 @@
    In the given path the following directories
    will be created:
 
-   - /<clamps-gui-root>/www/
-   - /<clamps-gui-root>/www/svg/
+   - /<clamps-gui-root>/www//
+   - /<clamps-gui-root>/www/svg//
      
      file path for svg files used in the /svg-display/ page of the
      Gui.
 
    Any files which need to be accessible by the Gui have to be put
-   into the /<clamps-gui-root>/www/ subdirectory with their filenames
+   into the /<clamps-gui-root>/www// subdirectory with their filenames
    relative to this directory.
 *** See also:
 
@@ -138,7 +193,75 @@
     - [[clamps][clamps]]
     - [[clamps-base-url][clamps-base-url]]
     - [[clamps-restart-gui][clamps-restart-gui]]
-* I - M
+* E
+** ensure-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (ensure-sfz-preset preset)
+   #+END_SRC
+
+   Synonym of [[get-sfz-preset][get-sfz-preset]].
+* F
+** ftom
+   Function
+   #+BEGIN_SRC lisp
+     (ftom freq &key (tuning-base *standard-pitch*))
+   #+END_SRC
+   Convert frequency in Hz to pitch in Midicents.
+
+   =freq= Frequency in Hz.
+
+   =tuning-base= Frequency of A4 in Hz.
+*** See also
+    - [[mtof][mtof]]
+
+** fr2ct
+#+BEGIN_SRC lisp
+(fr2ct ratio)
+#+END_SRC
+Return the Midicents interval of /ratio/.
+
+=ratio= The frequency ratio of the interval.
+
+*** Example:
+#+BEGIN_SRC lisp
+  (fr2ct 2) ;; => 12.0
+
+  (fr2ct 4/5) ;; => -3.863137
+
+  (fr2ct 3/2) ;; => 7.01955
+
+  (fr2ct 1/2) ;; => -12.0
+#+END_SRC
+
+* G - H
+** get-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (get-sfz-preset preset &key force)
+   #+END_SRC
+
+   Load the sfz definition of preset and all its samples into the
+   system if it hasn't been loaded previously. If force is t, force
+   reload.
+
+   The association between the preset name and its sfz file has to be
+   established before using [[add-sfz-preset][add-sfz-preset]], otherwise a warning is
+   issued and no file is loaded.
+
+   =preset= A keynum or symbol to serve as a name of the preset.
+
+   =force= A boolean indicating to force a reload even if the preset
+   has been loaded before.
+*** See also:
+
+    - [[add-sfz-preset][add-sfz-preset]]
+
+    - [[load-sfz-preset][load-sfz-preset]]
+
+    - [[remove-sfz-preset][remove-sfz-preset]]
+
+* I - K
 ** idump
    Function
    #+BEGIN_SRC lisp
@@ -151,7 +274,124 @@
 *** Note:
     If /(idump)/ doesn't create any output although dsps are running,
     reset the logger-stream using [[reset-logger-stream][reset-logger-stream]].
-* N - Q
+* L
+** list-sfz-presets
+   Function
+   #+BEGIN_SRC lisp
+     (list-sfz-presets &key (loaded nil))
+   #+END_SRC
+   Return a sorted list of all sfz preset names.
+
+   =loaded= Boolean to indicate whether only the preset names of
+   loaded presets should be returned. If /nil/ all registered preset
+   names are returned.
+** load-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (load-sfz-preset file name &key force (play-fn #'play-sfz-loop))
+   #+END_SRC
+
+   Load a sfz file into a preset with the id name. In case this preset
+   already exists, the old one will only be overwritten if force is
+   set to t. This function normally doesn't need to be called
+   explicitely. The preferred mechanism to deal with sfz presets is by
+   using a combination of [[add-sfz-preset][add-sfz-preset]] and [[ensure-sfz-preset][ensure-sfz-preset]].
+
+   =file= Path or filename of the sfz file to load
+
+   =id= Name to identify the preset (preferably a keyword, but any
+   symbol works)
+
+   =force= Force loading of the preset even if it already exists.
+
+   =play-fn= The play-fn to use when playing a sound. Possible choices
+   are
+
+     - /#'play-sfz-loop/
+
+       If loop points are set, play the loop in case the duration
+       exceeds (- loop-end start). If no loop points are set, loop the
+       whole sample.
+
+     - /#'play-sfz-one-shot/
+
+       Just play sample once even if duration exceeds sample length.
+*** Example:
+
+   #+BEGIN_SRC lisp
+     (load-sfz-preset "~/quicklisp/local-projects/clamps/packages/cl-sfz/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv)
+   #+END_SRC
+
+*** See also:
+
+    - [[add-sfz-preset][add-sfz-preset]]
+
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+
+    - [[remove-sfz-preset][remove-sfz-preset]]
+* M
+** mtof
+   Function
+   #+BEGIN_SRC lisp
+     (mtof midi-value &key (tuning-base *standard-pitch*))
+   #+END_SRC
+   Convert /midi-value/ in Midicts to frequency in Hz.
+
+   =midi-value= Pitch in Midicents.
+
+   =tuning-base= Frequency of A4 in Hz.
+*** See also
+    - [[ftom][ftom]]
+
+* N - O
+** n-lin
+   Function
+   #+BEGIN_SRC lisp
+     (n-lin x min max)
+   #+END_SRC
+   Return a value linearly interpolated between /min/ and /max/ for a given /x/ in the range /[0..1]/.
+
+   =x= Number in the range /[0..1]/.
+
+   =min= Minimum value.
+
+   =max= Maximum value.
+*** Examples:
+#+BEGIN_SRC lisp
+  (n-lin 0 10 20) ;; => 10.0
+
+  (n-lin 0.5 10 20) ;; => 15.0
+
+  (n-lin 1 10 20) ;; => 20.0
+#+END_SRC
+
+*** See also:
+    - [[n-exp][n-exp]]
+
+** n-exp
+   Function
+   #+BEGIN_SRC lisp
+     (n-lin x min max)
+   #+END_SRC
+   Return a value exponantially interpolated between /min/ and /max/
+   for a given /x/ in the range /[0..1]/.
+
+   =x= Number in the range /[0..1]/.
+
+   =min= Minimum value. A 0 will result in an error.
+
+   =max= Maximum value.
+*** Examples:
+#+BEGIN_SRC lisp
+  (n-exp 0 10 20) ;; => 10.0
+
+  (n-exp 0.5 10 20) ;; => 14.142136
+
+  (n-exp 1 10 20) ;; => 20.0
+#+END_SRC
+
+*** See also:
+    - [[n-lin][n-lin]]
 ** node-free-unprotected
    Function
    #+BEGIN_SRC lisp
@@ -160,8 +400,136 @@
    Free all Incudine nodes of /group 200/.
 *** See also:
     - [[rts-hush][rts-hush]]
+* P - Q
+** play-sfz
+   Function
+   #+BEGIN_SRC lisp
+     (play-sfz pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
+   #+END_SRC
+
+   Play a sfz preset with stereo panning to incudine's audio outputs
+   or a bus using the /play-fn/ of the sample to be played.
+
+   =pitch= Pitch in Midicent.
+
+   =db= Amplitude in dB. /0/ corresponds to a
+   scaling factor of /1/, /-100/ to a scaling factor of /0/.
+
+   =dur= Duration in seconds.
+
+   =pan= Number in the range /[0..1]/ defining equal power panning
+   between /out0/ and /out1/.
+
+   =preset= The name of a registered preset. If the preset hasn't been
+   loaded it will get loaded before playback starts.
+
+   =startpos= The startposition in the sample in seconds.
+
+   =out1= The first outlet.
+
+   =out2= the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
+
+*** See also:
+
+    - [[play-sfz-loop][play-sfz-loop]]
+
+    - [[play-sfz-one-shot][play-sfz-one-shot]]
+
+** play-sfz-loop
+   Function
+   #+BEGIN_SRC lisp
+     (play-sfz pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
+   #+END_SRC
+
+   Play a sfz preset with stereo panning to incudine's audio outputs
+   or a bus. Loop the sound according to the loop settings of the
+   sample in the sfz file or loop the whole sound if not present. This
+   function always uses loop playback regardless of the setting of
+   /play-fn/ in the sample to be played.
+   
+   =pitch= Pitch in Midicent.
+
+   =db= Amplitude in dB. /0/ corresponds to a scaling factor of /1/,
+   /-100/ to a scaling factor of /0/.
+
+   =dur= Duration in seconds.
+
+   =pan= Number in the range /[0..1]/ defining equal power panning
+   between /out0/ and /out1/.
+
+   =preset= The name of a registered preset. If the preset hasn't been
+   loaded it will get loaded before playback starts.
+
+   =startpos= The startposition in the sample in seconds.
+
+   =out1= The first outlet.
+
+   =out2= the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
+
+*** See also:
+
+    - [[play-sfz][play-sfz]]
+
+    - [[play-sfz-one-shot][play-sfz-one-shot]]
+
+** play-sfz-one-shot
+   Function
+   #+BEGIN_SRC lisp
+     (play-sfz-one-shot pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
+   #+END_SRC
+
+   Play a sfz preset with stereo panning to incudine's audio outputs
+   or a bus once (regardless of the setting of /play-fn/ in the sample
+   to be played).
+
+   =pitch= Pitch in Midicent.
+
+   =db= Amplitude in dB. /0/ corresponds to a
+   scaling factor of /1/, /-100/ to a scaling factor of /0/.
+
+   =dur= Duration in seconds.
+
+   =pan= Number in the range /[0..1]/ defining equal power panning
+   between /out0/ and /out1/.
+   
+   =preset= The name of a registered preset. If the preset hasn't been
+   loaded it will get loaded before playback starts.
+
+   =startpos= The startposition in the sample in seconds.
+
+   =out1= The first outlet.
+
+   =out2= the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
+
+*** See also:
+
+    - [[play-sfz][play-sfz]]
+
+    - [[play-sfz-loop][play-sfz-loop]]
+
 * R
+** remove-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (remove-sfz-preset name)
+   #+END_SRC
+
+   Remove the soundfile map associated with name. This is the opposite of [[load-sfz-preset][load-sfz-preset]].
+
+*** Note:
+    The soundfile buffers of the samples used in the sfz description
+    and the association between the preset name and the sfz file are
+    *not* removed! Only the association between the preset name, the
+    keynums and the buffers are removed.
+
+*** See also:
+
+    - [[load-sfz-preset][load-sfz-preset]]
+
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    
 ** reset-logger-stream
+   Function
    #+BEGIN_SRC lisp
      (reset-logger-stream)
    #+END_SRC
@@ -169,7 +537,7 @@
    function, if calls to /incudine.util:msg/ don't produce any output
    in the REPL.
 
-   This function needs to be called if /clamps/ is started from a Lisp
+   This function needs to be called if /Clamps/ is started from a Lisp
    Image.
 ** rts?
    Function
@@ -182,9 +550,9 @@
 ** rts
    Function
    #+BEGIN_SRC lisp
-     (rts (&key (rt-wait 0)))
+     (rts &key (rt-wait 0))
    #+END_SRC
-   Start the real time system of clamps. This functions sets the
+   Start the real-time system of Clamps. This functions sets the
    following special variables:
 
    =*midi-in1*= The default Midi Input
@@ -192,10 +560,16 @@
    =*midi-out1*= The default Midi Output
 
    =*rts-out*= The default output for realtime messages from
-   clamps/cm.
+   Clamps/CM.
 
    It also starts the rt engine of incudine calling
    /incudine:rt-start/.
+*** Note:
+    This command is an replacement of the /rts/ command of CM,
+    described [[../cm-dict/index.html#rts-fn.html][here]], so none of the options mentioned there or the
+    decription in [[../cm-dict/index.html#rts-topic.html][RTS]] apply to Clamps. Also other related CM
+    functions, like /rts-pause/, /rts-continue/ and /rts-stop/ don't
+    work in Clamps.
 *** See also:
     - [[rts?][rts?]]
 ** rts-hush
@@ -219,7 +593,221 @@
    #+BEGIN_SRC lisp
    (set-tempo bpm)
    #+END_SRC
-   Set the tempo in beats per minute for both, cm and incudine.
+   Set the tempo in beats per minute for both, CM and Incudine.
+** set-standard-pitch
+   Function
+
+   #+BEGIN_SRC lisp
+     (set-standard-pitch freq)
+   #+END_SRC
+   Set the /\ast{}standard-pitch\ast{}/ reference of /Clamps/ to /freq/ in Hz.
+
+   =freq= Frequency of A4 in Hz.
+*** See also:
+
+    - [[\ast{}standard-pitch\ast{}][\ast{}standard-pitch\ast{}]]
+
+** sfz
+   Class   
+   #+BEGIN_SRC lisp
+   (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
+   #+END_SRC
+   Generates sfz Events.
+
+   sfz accepts the following keywords:
+
+   =:object-time= The output time in seconds, initially unbound.
+
+   =:sfz-keynum= Keynum in Midicents
+
+   =:sfz-amplitude= Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
+
+   =:sfz-duration=
+
+   =:sfz-preset=
+
+   =:sfz-play-fn=
+
+   =:sfz-pan= Number in the range /[0..1]/ defining equal power
+   panning between the two outputs of the dsp on playback.
+
+   =:sfz-startpos= The startposition in the sample in seconds.
+
+   =:sfz-chan= The channel (layer) used in svg output.
+   
+   THe sfz class defines or uses the following accessor functions:
+
+   - [[../cm-dict/index.html#object-time-fn.html][object-time]]
+   - [[sfz-keynum][sfz-keynum]]
+   - [[sfz-amplitude][sfz-amplitude]]
+   - [[sfz-duration][sfz-duration]]
+   - [[sfz-preset][sfz-preset]]
+   - [[sfz-play-fn][sfz-play-fn]]
+   - [[sfz-pan][sfz-pan]]
+   - [[sfz-startpos][sfz-startpos]]
+   - [[sfz-chan][sfz-chan]]
+*** Examples:
+#+BEGIN_SRC lisp
+  (new sfz)
+  ;; => #i(sfz keynum 60 amplitude 1 duration 1 preset :flute-nv
+  ;;           play-fn nil pan 0.5 startpos 0 chan 100)
+
+  ;; the following code should send 1 second of a flute middle C sound
+  ;; to the first two oulets of incudine:
+
+  (output (new sfz)) ; => ; No value
+
+  ;; => loading :flute-nv from ~/quicklisp/local-projects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz
+  ;; ; No values
+
+  (loop
+    for idx below 200
+    for x = (/ idx 199)
+    for time = 0 then (+ time (n-exp (interp x 0 0   0.3 1   1 0) 0.01 0.1))
+    do (sprout
+        (new sfz
+          :time time
+          :keynum (+ 65.5 (random (n-lin (interp x 0 0 1 1) 1 5)))
+          :duration (+ 0.5 (random 2.0))
+          :amplitude (n-lin (interp x 0 0 0.8 0 1 1) -12 -24))))
+
+  ;; => nil
+#+END_SRC
+** sfz-amplitude
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-amplitude sfz)
+   #+END_SRC
+   Amplitude of sfz instance in dB, setfable.
+
+   =sfz= Instance of class sfz.
+*** See also:
+    - [[sfz][sfz]]
+** sfz-chan
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-channel sfz)
+   #+END_SRC
+   Channel of sfz instance, setfable.
+
+   =sfz= Instance of class sfz.
+*** See also:
+    - [[sfz][sfz]]
+
+** sfz-duration
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-duration sfz)
+   #+END_SRC
+   Duration of sfz instance in seconds, setfable.
+
+   =sfz= Instance of class sfz.
+*** See also:
+    - [[sfz][sfz]]
+
+** sfz-get-range
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-get-range ref)
+   #+END_SRC
+   Return the keynum range of sfz denoted by /ref/.
+
+   =ref= Reference to the sfz. Can be the /keyword/ or /symbol/ of a
+   registered sfz preset or a filename (pathname or string) of a sfz
+   file. Relative filenames will be searched recursively in
+   /\ast{}sfz-file-path\ast{}/.
+*** See also:
+
+    - [[add-sfz-preset][add-sfz-preset]]
+
+** sfz-keynum
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-keynum sfz)
+   #+END_SRC
+   Keynum of sfz instance in Midicents, setfable.
+
+   =sfz= Instance of class sfz.
+*** See also:
+    - [[sfz][sfz]]
+
+** sfz-pan
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-pan sfz)
+   #+END_SRC
+   Equal power panning of sfz instance in the range /[0..1]/,
+   setfable.
+
+   =sfz= Instance of class sfz.
+*** See also:
+    - [[sfz][sfz]]
+
+** sfz-preset-file
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-preset-file preset)
+   #+END_SRC
+   Return the full path of /preset/.
+
+   =preset= Keyword or symbol of a registered sfz preset.
+*** See also<:
+    - [[add-sfz-preset][add-sfz-preset]]
+
+** sfz-play-fn
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-play-fn sfz)
+   #+END_SRC
+   Play function of sfz instance, setfable.
+
+   =sfz= Instance of class sfz.
+*** See also:
+    - [[sfz][sfz]]
+
+** sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-preset sfz)
+   #+END_SRC
+   Preset of sfz instance, setfable.
+
+   =sfz= Instance of class sfz.
+*** See also:
+    - [[sfz][sfz]]
+
+** sfz-startpos
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-startpos sfz)
+   #+END_SRC
+   Start position of sfz instance in seconds, setfable.
+
+   =sfz= Instance of class sfz.
+*** See also:
+    - [[sfz][sfz]]
+
+** \ast{}standard-pitch\ast{}
+   Variable
+
+   The tuning reference for /ftom/ and /mtof/ in Hz. Defaults to /440/.
+   
+*** Important Note:
+
+Don't set this value directly! Rather use the [[set-standard-pitch][set-standard-pitch]]
+function which changes the standard pitch reference for the entire
+/Clamps/ system.
+
+
+*** See also:
+    - [[ftom][ftom]]
+
+    - [[mtof][mtof]]
+
+    - [[set-standard-pitch][set-standard-pitch]]
+
+
+
 ** svg->browser
    Function
    #+BEGIN_SRC lisp
@@ -231,3 +819,13 @@
    =svg-file= is a string naming the svg-file to display/play. The
    filename is interpreted relative to the /<clamps-gui-root>/svg/
    directory.
+* TODO
+
+** m-lin
+
+** m-exp
+** lin-n
+** exp-n
+** r-elt
+** n-exp-dev
+** n-lin-dev
