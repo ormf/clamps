@@ -197,7 +197,7 @@ supplied and gets interned as a parameter."
   (dolist (fn *sly-connected-hooks*) (funcall fn)))
 
 (defun start-cm-all (&key (qsynth nil) (start-gui t))
-  (start-inkscape-osc)
+  (restart-inkscape-osc)
   (rts)
 ;;;  (unless (cm::rts?) (rts))
   ;;(make-mt-stream *mt-out01* *midi-out1* '(4 0))

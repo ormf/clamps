@@ -230,9 +230,10 @@ supplied and gets interned as a parameter."
   (setf *osc-inkscape-export-in* nil))
 
 
-(defun clamps-start (&key (gui-root "/tmp") (qsynth nil) (open t))
+(defun clamps-start (&key (gui-root "/tmp") (qsynth nil) (open-gui t))
   "start clamps, setting the gui root directory and optinally starting
 qsynth and opening the gui in a browser window."
+  (setf *package* (find-package :clamps))
   (restart-inkscape-osc)
   ;;; rts also initializes midi
   (rts)
@@ -244,7 +245,7 @@ qsynth and opening the gui in a browser window."
   (incudine:setup-io)
   (ats-cuda-display:ats-display-init)
   (start-doc-acceptor)
-  (clamps-restart-gui gui-root :open open)
+  (clamps-restart-gui gui-root :open open-gui)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (clamps-logo))
 

@@ -36,5 +36,6 @@
 ;;;          bus-amp
           channel-offs
           amp->db-slider db-slider->amp db-slider->db db->db-slider
-          find-bus add-bus remove-bus list-buses bus-channel)
+          find-bus add-bus remove-bus list-buses bus-channel
+          add-dsp remove-dsp remove-all-dsps find-dsp list-dsps)
         'clog-dsp-widgets)

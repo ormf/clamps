@@ -26,8 +26,6 @@
 
 (defparameter *dsps* (make-hash-table :test #'equal))
 
-(export '(add-dsp remove-dsp find-dsp list-dsps) 'clog-dsp-widgets)
-
 (defun add-dsp (dsp &rest args &key id &allow-other-keys)
   (setf (gethash id *dsps*)
         (apply #'make-instance dsp args)))
@@ -38,9 +36,13 @@
       (cuda-dsp-cleanup dsp)
       (remhash id *dsps*))))
 
+(defun remove-all-dsps ()
+  (map nil #'remove-dsp (list-dsps)))
+
 (defun find-dsp (id)
   (gethash id *dsps*))
 
 (defun list-dsps ()
-  (format t "current active-dsps:~%")
-  (maphash (lambda (id dsp) dsp (format t "~S~%" id)) *dsps*))
+  (loop
+    for key being the hash-keys of *dsps*
+    collect key))
