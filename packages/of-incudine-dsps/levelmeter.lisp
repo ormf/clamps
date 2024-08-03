@@ -374,6 +374,7 @@
                          (cl-refs:set-val ref value))))
                     (setf (aref last-value ch) (aref value ch)))
                   (setf (smp-ref sums (+ (* ch periods) i)) +sample-zero+))))
+            ;; clearing the audio-bus for the next dsp graph cycle:
             (setf (audio-bus (+ in ch) current-frame) +sample-zero+)))))))
 
 (dsp! master-amp-meter-bus ((bus-num channel-number)

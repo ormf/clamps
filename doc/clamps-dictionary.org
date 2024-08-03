@@ -27,9 +27,9 @@
    #+BEGIN_SRC lisp
      (add-sfz-preset preset file)
    #+END_SRC
-   Add the association between a preset name and its corresponding sfz
+   Register the association between a preset name and its corresponding sfz
    file.
-
+*** Arguments:
    =preset= A keyword or symbol to name the preset
 
    =file= A string or path to the associated sfz file. If the file
@@ -49,6 +49,10 @@
 
     - [[get-sfz-preset][get-sfz-preset]]
 
+    - [[sfz][sfz]]
+    
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+
 ** ats->browser
    Function
    #+BEGIN_SRC lisp
@@ -56,16 +60,19 @@
    #+END_SRC
    Display the ats struct =ats= graphically in the interactive ATS
    Player located at /<clamps-base-url>/ats-display/ in the Gui.
+*** Arguments:
+    =ats= The ats struct to display.
 *** See also:
     -  [[clamps-base-url][clamps-base-url]]
 * C
 ** ct2fr
+   Function
    #+BEGIN_SRC lisp
      (ct2fr cent)
    #+END_SRC
-Return the interval ratio of the interval given in /cent/ Midicent.
-
-=cent= The interval in Midicents.
+   Return the interval ratio of the interval /cent/ in Midicent.
+*** Arguments:
+   =cent= The interval in Midicents.
 *** Example:
     #+BEGIN_SRC lisp
       (ct2fr 12) ;; => 2
@@ -84,6 +91,7 @@ Return the interval ratio of the interval given in /cent/ Midicent.
    #+END_SRC
    Start Clamps including the gui.
 
+*** Arguments:
    =gui-root= ist the path where to put the /www/ subfolder for files
    accessible by the gui (nicknamed /<clamps-gui-root>/ throughout
    this dictionary).
@@ -152,25 +160,26 @@ Return the interval ratio of the interval given in /cent/ Midicent.
    Reset the root directory of the Gui to /gui-root/www/, optionally
    opening the Gui in a browser window.
 
-   =gui-root= ist the path where to put the /www/ subfolder for files
-   accessible by the gui (nicknamed /<clamps-gui-root>/ throughout
-   this dictionary).
+*** Arguments:
+    =gui-root= ist the path where to put the /www/ subfolder for files
+    accessible by the gui (nicknamed /<clamps-gui-root>/ throughout
+    this dictionary).
 
-   =open= is a flag indicating whether to open [[clamps-base-url][clamps-base-url]] in a
-   browser window after starting the gui.
+    =open= is a flag indicating whether to open [[clamps-base-url][clamps-base-url]] in a
+    browser window after starting the gui.
    
-   In the given path the following directories
-   will be created:
+    In the given path the following directories
+    will be created:
 
-   - /<clamps-gui-root>/www//
-   - /<clamps-gui-root>/www/svg//
+    - /<clamps-gui-root>/www//
+    - /<clamps-gui-root>/www/svg//
      
-     file path for svg files used in the /svg-display/ page of the
-     Gui.
+      file path for svg files used in the /svg-display/ page of the
+      Gui.
 
-   Any files which need to be accessible by the Gui have to be put
-   into the /<clamps-gui-root>/www// subdirectory with their filenames
-   relative to this directory.
+    Any files which need to be accessible by the Gui have to be put
+    into the /<clamps-gui-root>/www// subdirectory with their filenames
+    relative to this directory.
 *** See also:
 
     - [[clamps][clamps]]
@@ -209,6 +218,7 @@ Return the interval ratio of the interval given in /cent/ Midicent.
    #+END_SRC
    Convert frequency in Hz to pitch in Midicents.
 
+*** Arguments:
    =freq= Frequency in Hz.
 
    =tuning-base= Frequency of A4 in Hz.
@@ -216,12 +226,14 @@ Return the interval ratio of the interval given in /cent/ Midicent.
     - [[mtof][mtof]]
 
 ** fr2ct
-#+BEGIN_SRC lisp
-(fr2ct ratio)
-#+END_SRC
-Return the Midicents interval of /ratio/.
+   Function
+   #+BEGIN_SRC lisp
+     (fr2ct ratio)
+   #+END_SRC
+   Return the Midicents interval of /ratio/.
 
-=ratio= The frequency ratio of the interval.
+*** Arguments:
+    =ratio= The frequency ratio of the interval.
 
 *** Example:
 #+BEGIN_SRC lisp
@@ -249,10 +261,11 @@ Return the Midicents interval of /ratio/.
    established before using [[add-sfz-preset][add-sfz-preset]], otherwise a warning is
    issued and no file is loaded.
 
-   =preset= A keynum or symbol to serve as a name of the preset.
+*** Arguments:
+    =preset= A keynum or symbol to serve as a name of the preset.
 
-   =force= A boolean indicating to force a reload even if the preset
-   has been loaded before.
+    =force= A boolean indicating to force a reload even if the preset
+    has been loaded before.
 *** See also:
 
     - [[add-sfz-preset][add-sfz-preset]]
@@ -260,6 +273,8 @@ Return the Midicents interval of /ratio/.
     - [[load-sfz-preset][load-sfz-preset]]
 
     - [[remove-sfz-preset][remove-sfz-preset]]
+
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 
 * I - K
 ** idump
@@ -270,7 +285,8 @@ Return the Midicents interval of /ratio/.
    Dump all active dsps of /node/ to the /incudine:\ast{}logger-stream\ast{}/
    output.
 
-   - =node= The id of the node
+*** Arguments:
+    - =node= The id of the node
 *** Note:
     If /(idump)/ doesn't create any output although dsps are running,
     reset the logger-stream using [[reset-logger-stream][reset-logger-stream]].
@@ -282,9 +298,10 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Return a sorted list of all sfz preset names.
 
-   =loaded= Boolean to indicate whether only the preset names of
-   loaded presets should be returned. If /nil/ all registered preset
-   names are returned.
+*** Arguments:
+    =loaded= Boolean to indicate whether only the preset names of
+    loaded presets should be returned. If /nil/ all registered preset
+    names are returned.
 ** load-sfz-preset
    Function
    #+BEGIN_SRC lisp
@@ -297,25 +314,26 @@ Return the Midicents interval of /ratio/.
    explicitely. The preferred mechanism to deal with sfz presets is by
    using a combination of [[add-sfz-preset][add-sfz-preset]] and [[ensure-sfz-preset][ensure-sfz-preset]].
 
-   =file= Path or filename of the sfz file to load
+*** Arguments:
+    =file= Path or filename of the sfz file to load
 
-   =id= Name to identify the preset (preferably a keyword, but any
-   symbol works)
+    =id= Name to identify the preset (preferably a keyword, but any
+    symbol works)
 
-   =force= Force loading of the preset even if it already exists.
+    =force= Force loading of the preset even if it already exists.
 
-   =play-fn= The play-fn to use when playing a sound. Possible choices
-   are
+    =play-fn= The play-fn to use when playing a sound. Possible choices
+    are
 
-     - /#'play-sfz-loop/
+      - /#'play-sfz-loop/
 
-       If loop points are set, play the loop in case the duration
-       exceeds (- loop-end start). If no loop points are set, loop the
-       whole sample.
+        If loop points are set, play the loop in case the duration
+        exceeds (- loop-end start). If no loop points are set, loop
+        the whole sample.
 
-     - /#'play-sfz-one-shot/
+      - /#'play-sfz-one-shot/
 
-       Just play sample once even if duration exceeds sample length.
+        Just play sample once even if duration exceeds sample length.
 *** Example:
 
    #+BEGIN_SRC lisp
@@ -329,6 +347,10 @@ Return the Midicents interval of /ratio/.
     - [[ensure-sfz-preset][ensure-sfz-preset]]
 
     - [[remove-sfz-preset][remove-sfz-preset]]
+** lsample
+   Struct
+*** See also:
+    - [[sfz][sfz]]
 * M
 ** mtof
    Function
@@ -337,9 +359,10 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Convert /midi-value/ in Midicts to frequency in Hz.
 
-   =midi-value= Pitch in Midicents.
+*** Arguments:
+    =midi-value= Pitch in Midicents.
 
-   =tuning-base= Frequency of A4 in Hz.
+    =tuning-base= Frequency of A4 in Hz.
 *** See also
     - [[ftom][ftom]]
 
@@ -351,11 +374,12 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Return a value linearly interpolated between /min/ and /max/ for a given /x/ in the range /[0..1]/.
 
-   =x= Number in the range /[0..1]/.
+*** Arguments:
+    =x= Number in the range /[0..1]/.
 
-   =min= Minimum value.
+    =min= Minimum value.
 
-   =max= Maximum value.
+    =max= Maximum value.
 *** Examples:
 #+BEGIN_SRC lisp
   (n-lin 0 10 20) ;; => 10.0
@@ -376,11 +400,12 @@ Return the Midicents interval of /ratio/.
    Return a value exponantially interpolated between /min/ and /max/
    for a given /x/ in the range /[0..1]/.
 
-   =x= Number in the range /[0..1]/.
+*** Arguments:
+    =x= Number in the range /[0..1]/.
 
-   =min= Minimum value. A 0 will result in an error.
+    =min= Minimum value. A 0 will result in an error.
 
-   =max= Maximum value.
+    =max= Maximum value.
 *** Examples:
 #+BEGIN_SRC lisp
   (n-exp 0 10 20) ;; => 10.0
@@ -410,25 +435,26 @@ Return the Midicents interval of /ratio/.
    Play a sfz preset with stereo panning to incudine's audio outputs
    or a bus using the /play-fn/ of the sample to be played.
 
-   =pitch= Pitch in Midicent.
-
-   =db= Amplitude in dB. /0/ corresponds to a
-   scaling factor of /1/, /-100/ to a scaling factor of /0/.
-
-   =dur= Duration in seconds.
-
-   =pan= Number in the range /[0..1]/ defining equal power panning
-   between /out0/ and /out1/.
-
-   =preset= The name of a registered preset. If the preset hasn't been
-   loaded it will get loaded before playback starts.
-
-   =startpos= The startposition in the sample in seconds.
-
-   =out1= The first outlet.
-
-   =out2= the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
-
+*** Arguments:
+    =pitch= Pitch in Midicent.
+ 
+    =db= Amplitude in dB. /0/ corresponds to a
+    scaling factor of /1/, /-100/ to a scaling factor of /0/.
+ 
+    =dur= Duration in seconds.
+ 
+    =pan= Number in the range /[0..1]/ defining equal power panning
+    between /out0/ and /out1/.
+ 
+    =preset= The name of a registered preset. If the preset hasn't been
+    loaded it will get loaded before playback starts.
+ 
+    =startpos= The startposition in the sample in seconds.
+ 
+    =out1= The first outlet.
+ 
+    =out2= the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
+ 
 *** See also:
 
     - [[play-sfz-loop][play-sfz-loop]]
@@ -447,25 +473,26 @@ Return the Midicents interval of /ratio/.
    function always uses loop playback regardless of the setting of
    /play-fn/ in the sample to be played.
    
-   =pitch= Pitch in Midicent.
-
-   =db= Amplitude in dB. /0/ corresponds to a scaling factor of /1/,
-   /-100/ to a scaling factor of /0/.
-
-   =dur= Duration in seconds.
-
-   =pan= Number in the range /[0..1]/ defining equal power panning
-   between /out0/ and /out1/.
-
-   =preset= The name of a registered preset. If the preset hasn't been
-   loaded it will get loaded before playback starts.
-
-   =startpos= The startposition in the sample in seconds.
-
-   =out1= The first outlet.
-
-   =out2= the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
-
+*** Arguments:
+    =pitch= Pitch in Midicent.
+ 
+    =db= Amplitude in dB. /0/ corresponds to a scaling factor of /1/,
+    /-100/ to a scaling factor of /0/.
+ 
+    =dur= Duration in seconds.
+ 
+    =pan= Number in the range /[0..1]/ defining equal power panning
+    between /out0/ and /out1/.
+ 
+    =preset= The name of a registered preset. If the preset hasn't been
+    loaded it will get loaded before playback starts.
+ 
+    =startpos= The startposition in the sample in seconds.
+ 
+    =out1= The first outlet.
+ 
+    =out2= the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
+ 
 *** See also:
 
     - [[play-sfz][play-sfz]]
@@ -482,32 +509,66 @@ Return the Midicents interval of /ratio/.
    or a bus once (regardless of the setting of /play-fn/ in the sample
    to be played).
 
-   =pitch= Pitch in Midicent.
-
-   =db= Amplitude in dB. /0/ corresponds to a
-   scaling factor of /1/, /-100/ to a scaling factor of /0/.
-
-   =dur= Duration in seconds.
-
-   =pan= Number in the range /[0..1]/ defining equal power panning
-   between /out0/ and /out1/.
-   
-   =preset= The name of a registered preset. If the preset hasn't been
-   loaded it will get loaded before playback starts.
-
-   =startpos= The startposition in the sample in seconds.
-
-   =out1= The first outlet.
-
-   =out2= the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
-
+*** Arguments:
+    =pitch= Pitch in Midicent.
+ 
+    =db= Amplitude in dB. /0/ corresponds to a
+    scaling factor of /1/, /-100/ to a scaling factor of /0/.
+ 
+    =dur= Duration in seconds.
+ 
+    =pan= Number in the range /[0..1]/ defining equal power panning
+    between /out0/ and /out1/.
+    
+    =preset= The name of a registered preset. If the preset hasn't been
+    loaded it will get loaded before playback starts.
+ 
+    =startpos= The startposition in the sample in seconds.
+ 
+    =out1= The first outlet.
+ 
+    =out2= the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
+ 
 *** See also:
 
     - [[play-sfz][play-sfz]]
 
     - [[play-sfz-loop][play-sfz-loop]]
+** plot
+   Method
+   #+BEGIN_SRC lisp
+     (plot obj)
+   #+END_SRC
+   Plot /obj/ using [[http://www.gnuplot.info/][GnuPlot]].
+
+   Currently the following object types as arguments to plot are
+   implemented:
+
+   - =seq= A sequence of numbers, interpreted as y-values of
+     successive x-values starting at 0.
+
+     Pairs or triplets as elements of /seq/ are interpreted as 2d or
+     3d coordinates of data points. Vectors, arrays or lists are valid
+     objects.
+
+   - =incudine:buffer= Display the contents of an incudine
+     buffer. For a sample buffer this acts like a waveform display,
+     but any buffer data can be displayed.
+
+
+   - =Function= A function of one argument. Displays the values of
+     applying function to x-values in a given range.
+
+*** Examples:
+
+*** See also:
+
+    - [[svg][svg]]
+
 
 * R
+
+
 ** remove-sfz-preset
    Function
    #+BEGIN_SRC lisp
@@ -516,6 +577,8 @@ Return the Midicents interval of /ratio/.
 
    Remove the soundfile map associated with name. This is the opposite of [[load-sfz-preset][load-sfz-preset]].
 
+*** Arguments:
+    =name= Keyword or symbol of the registered preset.
 *** Note:
     The soundfile buffers of the samples used in the sfz description
     and the association between the preset name and the sfz file are
@@ -526,7 +589,7 @@ Return the Midicents interval of /ratio/.
 
     - [[load-sfz-preset][load-sfz-preset]]
 
-    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
     
 ** reset-logger-stream
    Function
@@ -559,11 +622,13 @@ Return the Midicents interval of /ratio/.
 
    =*midi-out1*= The default Midi Output
 
-   =*rts-out*= The default output for realtime messages from
+   =\ast{}rts-out\ast{}= The default output for realtime messages from
    Clamps/CM.
 
    It also starts the rt engine of incudine calling
    /incudine:rt-start/.
+*** Arguments:
+    =rt-wait= Time to wait before starting in seconds.
 *** Note:
     This command is an replacement of the /rts/ command of CM,
     described [[../cm-dict/index.html#rts-fn.html][here]], so none of the options mentioned there or the
@@ -594,15 +659,17 @@ Return the Midicents interval of /ratio/.
    (set-tempo bpm)
    #+END_SRC
    Set the tempo in beats per minute for both, CM and Incudine.
+*** Arguments:
+    =bpm= Number of beats per minute.
 ** set-standard-pitch
    Function
-
    #+BEGIN_SRC lisp
      (set-standard-pitch freq)
    #+END_SRC
    Set the /\ast{}standard-pitch\ast{}/ reference of /Clamps/ to /freq/ in Hz.
 
-   =freq= Frequency of A4 in Hz.
+*** Arguments:
+    =freq= Frequency of A4 in Hz.
 *** See also:
 
     - [[\ast{}standard-pitch\ast{}][\ast{}standard-pitch\ast{}]]
@@ -610,32 +677,32 @@ Return the Midicents interval of /ratio/.
 ** sfz
    Class   
    #+BEGIN_SRC lisp
-   (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
+     (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
    #+END_SRC
    Generates sfz Events.
 
    sfz accepts the following keywords:
 
-   =:object-time= The output time in seconds, initially unbound.
+   =:time= The output time in seconds, initially unbound.
 
-   =:sfz-keynum= Keynum in Midicents
+   =:keynum= Keynum in Midicents
 
-   =:sfz-amplitude= Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
+   =:amplitude= Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
 
-   =:sfz-duration=
+   =:duration= Duration in seconds.
 
-   =:sfz-preset=
+   =:preset= Keyword or symbol of a registered preset name.
 
-   =:sfz-play-fn=
+   =:play-fn= The play function to be used for sample playback.
 
-   =:sfz-pan= Number in the range /[0..1]/ defining equal power
+   =:pan= Number in the range /[0..1]/ defining equal power
    panning between the two outputs of the dsp on playback.
 
-   =:sfz-startpos= The startposition in the sample in seconds.
+   =:startpos= The startposition in the sample in seconds.
 
-   =:sfz-chan= The channel (layer) used in svg output.
+   =:chan= The channel (layer) used in svg output.
    
-   THe sfz class defines or uses the following accessor functions:
+   The sfz class defines or uses the following accessor functions:
 
    - [[../cm-dict/index.html#object-time-fn.html][object-time]]
    - [[sfz-keynum][sfz-keynum]]
@@ -663,7 +730,7 @@ Return the Midicents interval of /ratio/.
   (loop
     for idx below 200
     for x = (/ idx 199)
-    for time = 0 then (+ time (n-exp (interp x 0 0   0.3 1   1 0) 0.01 0.1))
+    for time = 0 then (+ time (n-exp (interp x 0 0  0.3 1  1 0) 0.01 0.1))
     do (sprout
         (new sfz
           :time time
@@ -673,6 +740,15 @@ Return the Midicents interval of /ratio/.
 
   ;; => nil
 #+END_SRC
+*** See also:
+    - [[add-sfz-preset][add-sfz-preset]]
+      
+    - [[lsample][lsample]]
+
+    - [[play-sfz-loop][play-sfz-loop]]
+
+    - [[play-sfz-one-shot][play-sfz-one-shot]]
+
 ** sfz-amplitude
    Function
    #+BEGIN_SRC lisp
@@ -680,7 +756,8 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Amplitude of sfz instance in dB, setfable.
 
-   =sfz= Instance of class sfz.
+*** Arguments:
+    =sfz= Instance of class sfz.
 *** See also:
     - [[sfz][sfz]]
 ** sfz-chan
@@ -690,7 +767,8 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Channel of sfz instance, setfable.
 
-   =sfz= Instance of class sfz.
+*** Arguments:
+    =sfz= Instance of class sfz.
 *** See also:
     - [[sfz][sfz]]
 
@@ -701,7 +779,8 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Duration of sfz instance in seconds, setfable.
 
-   =sfz= Instance of class sfz.
+*** Arguments:
+    =sfz= Instance of class sfz.
 *** See also:
     - [[sfz][sfz]]
 
@@ -712,10 +791,11 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Return the keynum range of sfz denoted by /ref/.
 
-   =ref= Reference to the sfz. Can be the /keyword/ or /symbol/ of a
-   registered sfz preset or a filename (pathname or string) of a sfz
-   file. Relative filenames will be searched recursively in
-   /\ast{}sfz-file-path\ast{}/.
+*** Arguments:
+    =ref= Reference to the sfz. Can be the /keyword/ or /symbol/ of a
+    registered sfz preset or a filename (pathname or string) of a sfz
+    file. Relative filenames will be searched recursively in
+    /\ast{}sfz-file-path\ast{}/.
 *** See also:
 
     - [[add-sfz-preset][add-sfz-preset]]
@@ -727,7 +807,8 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Keynum of sfz instance in Midicents, setfable.
 
-   =sfz= Instance of class sfz.
+*** Arguments:
+    =sfz= Instance of class sfz.
 *** See also:
     - [[sfz][sfz]]
 
@@ -739,7 +820,8 @@ Return the Midicents interval of /ratio/.
    Equal power panning of sfz instance in the range /[0..1]/,
    setfable.
 
-   =sfz= Instance of class sfz.
+*** Arguments:
+    =sfz= Instance of class sfz.
 *** See also:
     - [[sfz][sfz]]
 
@@ -750,9 +832,38 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Return the full path of /preset/.
 
-   =preset= Keyword or symbol of a registered sfz preset.
+*** Arguments:
+    =preset= Keyword or symbol of a registered sfz preset.
 *** See also<:
     - [[add-sfz-preset][add-sfz-preset]]
+
+** sfz-preset-loaded?
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-preset-loaded? preset)
+   #+END_SRC
+
+   Predicate to test if sfz preset is loaded.
+
+*** Arguments:
+    =preset= Keyword or symbol of registered preset.
+
+*** Examples:
+    #+BEGIN_SRC lisp
+      ;;; Directly after Clamps startup:
+
+      (sfz-preset-loaded? :flute-nv) ;; => nil
+
+      (output (new sfz))
+      ;; => loading :flute-nv from ~/quicklisp/local-procects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz
+      ;; No values
+
+      (sfz-preset-loaded? :flute-nv) ;; => t
+    #+END_SRC
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+
+    - [[get-sfz-preset][get-sfz-preset]]
 
 ** sfz-play-fn
    Function
@@ -761,7 +872,8 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Play function of sfz instance, setfable.
 
-   =sfz= Instance of class sfz.
+*** Arguments:
+    =sfz= Instance of class sfz.
 *** See also:
     - [[sfz][sfz]]
 
@@ -772,7 +884,8 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Preset of sfz instance, setfable.
 
-   =sfz= Instance of class sfz.
+*** Arguments:
+    =sfz= Instance of class sfz.
 *** See also:
     - [[sfz][sfz]]
 
@@ -783,7 +896,8 @@ Return the Midicents interval of /ratio/.
    #+END_SRC
    Start position of sfz instance in seconds, setfable.
 
-   =sfz= Instance of class sfz.
+*** Arguments:
+    =sfz= Instance of class sfz.
 *** See also:
     - [[sfz][sfz]]
 
@@ -807,7 +921,8 @@ function which changes the standard pitch reference for the entire
     - [[set-standard-pitch][set-standard-pitch]]
 
 
-
+** svg
+   Class
 ** svg->browser
    Function
    #+BEGIN_SRC lisp
@@ -816,11 +931,13 @@ function which changes the standard pitch reference for the entire
    Display =svg-file= in the SVG Player Gui, located at
     /<clamps-base-url>/svg-display/.
 
-   =svg-file= is a string naming the svg-file to display/play. The
-   filename is interpreted relative to the /<clamps-gui-root>/svg/
-   directory.
-* TODO
+*** Arguments:
+    =svg-file= String naming the svg-file to display/play. The
+    filename is interpreted relative to the /<clamps-gui-root>/svg/
+    directory.
 
+
+* TODO
 ** m-lin
 
 ** m-exp
@@ -829,3 +946,6 @@ function which changes the standard pitch reference for the entire
 ** r-elt
 ** n-exp-dev
 ** n-lin-dev
+
+** plot-2d
+** plot-3d
