@@ -1590,10 +1590,10 @@ modified in the body to enable returning a value."
              (symbol-value ',symbol))
         ,value)))
 
-(defun r-elt (seq &rest idxs)
+(defun r-elt (seq)
   "retrieve element from seq applying the #'elt function recursively
 with idxs taken from the rest arg."
-  (reduce #'elt idxs :initial-value seq))
+  (elt seq (random (length seq))))
 
 (defun getf-or-elt (seq id)
   "depending on the type of id retrieve the element with the #'elt

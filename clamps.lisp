@@ -247,6 +247,7 @@ qsynth and opening the gui in a browser window."
   (start-doc-acceptor)
   (clamps-restart-gui gui-root :open open-gui)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
+  (reset-logger-stream)
   (clamps-logo))
 
 #|

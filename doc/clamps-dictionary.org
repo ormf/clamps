@@ -9,6 +9,7 @@
 #+OPTIONS: html-multipage-toc-to-top:t
 #+OPTIONS: html-multipage-export-directory:clamps-dict
 #+OPTIONS: html-multipage-open:browser
+#+OPTIONS: html-multipage-numbered-filenames:nil
 #+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Dictionary</a>\n"
 #+OPTIONS: html-toc-title:"Index"
 #+OPTIONS: html-multipage-include-default-style:nil
@@ -17,6 +18,31 @@
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: clamps-dict.setup
+#+BEGIN_SRC emacs-lisp :exports results :results: none
+  (defun export-dict-to-clamps (s backend info)
+    (with-temp-buffer 
+      (insert "(mapcar
+   (lambda (entry)
+     (let ((symbol (intern (car entry)
+  			 ,*common-music-symbols*)))
+       (if (boundp symbol)
+  	 (push (cadr entry) (symbol-value symbol))
+         (set symbol (cdr entry)))))
+   '(\n")
+      (mapcar
+       (lambda (entry)
+         (insert
+          (format "   (\"%s\" \"clamps-dict/%s\")\n"
+                  (org-html-element-title (car entry))
+                  (plist-get (cdr entry) :href))))
+       (cl-remove-if
+        (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
+        (plist-get info :multipage-toc-lookup)))
+      (insert "))\n")
+      (write-region (point-min) (point-max) "../extra/elisp/clamps-dict.el"))
+      (message "done!\n")
+    s)
+#+END_SRC
 #+BIND: org-export-multipage-split-functions (export-dict-to-clamps)
 # \[\[\([^\[]+\)\]\] → [[\1][\1]]
 # C-x 8 RET 200b RET C-x 8 0
@@ -64,7 +90,7 @@
     =ats= The ats struct to display.
 *** See also:
     -  [[clamps-base-url][clamps-base-url]]
-* C
+* C - D
 ** ct2fr
    Function
    #+BEGIN_SRC lisp
@@ -83,7 +109,6 @@
 
       (ct2fr -12) ;; => 1/2
     #+END_SRC
-* D
 ** clamps
    Function
    #+BEGIN_SRC lisp
@@ -565,7 +590,6 @@
 
     - [[svg][svg]]
 
-
 * R
 
 
@@ -661,6 +685,8 @@
    Set the tempo in beats per minute for both, CM and Incudine.
 *** Arguments:
     =bpm= Number of beats per minute.
+*** See also:
+    - [[set-bpm][set-bpm]]
 ** set-standard-pitch
    Function
    #+BEGIN_SRC lisp
@@ -920,7 +946,6 @@ function which changes the standard pitch reference for the entire
 
     - [[set-standard-pitch][set-standard-pitch]]
 
-
 ** svg
    Class
 ** svg->browser
@@ -935,7 +960,6 @@ function which changes the standard pitch reference for the entire
     =svg-file= String naming the svg-file to display/play. The
     filename is interpreted relative to the /<clamps-gui-root>/svg/
     directory.
-
 
 * TODO
 ** m-lin

@@ -319,13 +319,13 @@
           (create-o-slider controls (bind-refs-to-attrs ats-res-balance "value")
                            :width "4em" :css '(:margin-left "0.5em") :height "88%" :direction :right :min 0 :max 1))
     (setf ats-timebox
-          (create-o-numbox controls (bind-refs-to-attrs ats-time "value") 0 10
+          (create-o-numbox controls (bind-refs-to-attrs ats-time "value") :min 0 :max 10
                            :css '(:margin-left "0.5em")))
     (setf ats-pitchbox
-          (create-o-numbox controls (bind-refs-to-attrs ats-pitch "value") 0 127
+          (create-o-numbox controls (bind-refs-to-attrs ats-pitch "value") :min 0 :max 127
                            :css '(:margin-left "0.5em")))
     (setf ats-freqbox
-          (create-o-numbox controls (bind-refs-to-attrs ats-freq "value") 0 10000
+          (create-o-numbox controls (bind-refs-to-attrs ats-freq "value") :min 0 :max 10000
                            :css '(:margin-left "0.5em")))
     (setf ats-osc-play-toggle
           (create-o-toggle controls (bind-refs-to-attrs ats-osc-play "value")
