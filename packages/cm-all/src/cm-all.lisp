@@ -35,7 +35,7 @@
 (defun ensure-directory (dir)
   (if (stringp dir) (format nil "~A/" dir) dir))
 
-(defun cm-restart-gui (gui-root &key (start-gui t) (port 56419) (open t))
+(defun cm-restart-gui (gui-root &key (start-gui t) (port 54619) (open t))
   (let* ((dir (pathname (ensure-directory gui-root)))
          (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
     (when (clog:is-running-p) (clog:shutdown))

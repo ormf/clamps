@@ -47,7 +47,7 @@
 (defun svg-gui-path (str)
   (namestring (merge-pathnames (format nil "www/svg/~a" str) (clamps-gui-root))))
 
-(defun clamps-restart-gui (gui-root &key (open t) (port 56419))
+(defun clamps-restart-gui (gui-root &key (open t) (port 54619))
   "restart the gui using gui-root as the root directory, optionally
 opening it in a browser."
   (let* ((dir (pathname (ensure-directory gui-root)))

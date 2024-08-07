@@ -158,7 +158,7 @@
    Return the base url to access the Clamps Gui (nicknamed /<clamps-base-url>/ in this
    dictionary).
 
-   Its default location is http://localhost:56419.
+   Its default location is http://localhost:54619.
 
    /<clamps-base-url>/ in the browser side is corresponding to the
    path /<clamps-gui-root>/, so an address named
@@ -170,7 +170,7 @@
     The location for the [[svg->browser][SVG Player Gui]] is at
     /<clamps-base-url>/svg-display/ which translates to the URL
 
-    [[http://localhost:56419/svg-display]]
+    [[http://localhost:54619/svg-display]]
 
 
 *** See also
