@@ -230,7 +230,7 @@ supplied and gets interned as a parameter."
   (setf *osc-inkscape-export-in* nil))
 
 
-(defun clamps-start (&key (gui-root "/tmp") (qsynth nil) (open-gui t))
+(defun clamps-start (&key (gui-root "/tmp") (qsynth nil) (open-gui nil))
   "start clamps, setting the gui root directory and optinally starting
 qsynth and opening the gui in a browser window."
   (setf *package* (find-package :clamps))
