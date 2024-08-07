@@ -49,4 +49,7 @@
                         (symbol-value sym)))))))
     (apply #'clampscall :clamps-start args)))
 
+(defun clamps-nogui ()
+  (clamps :open-gui nil))
+
 (export '(*sfz-preset-lookup* *sfz-preset-path* *sfile-path* clamps) 'cl-user)
