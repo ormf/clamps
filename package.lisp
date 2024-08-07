@@ -50,6 +50,7 @@
   (:shadowing-import-from #:ou #:range)
   (:shadowing-import-from #:cl-plot #:plot)
   (:use #:incudine
+        #:incudine.util
         #:cl-midictl
         #:of-incudine-dsps
         #:incudine-bufs
