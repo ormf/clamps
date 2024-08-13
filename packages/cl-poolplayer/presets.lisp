@@ -148,10 +148,6 @@
   (namestring (merge-pathnames "presets/cl-poolplayer-01.lisp"
                                (asdf:system-source-directory :cl-poolplayer)))) 
 
-;;; (defparameter *audio-presets-file* "presets/schwarm01-audio-presets.lisp")
-
-;;; (setf *poolplayer-presets-file* "presets/schwarm-18-11-18.lisp")
-
 (defparameter *poolplayer-presets*
   (make-array
    100
@@ -200,13 +196,13 @@
 
 
 (defun next-poolplayer-preset ()
-  (let ((slynk::*emacs-connection* *emcs-conn*))
+  (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
     (when (< *curr-poolplayer-preset-nr* *max-poolplayer-preset-nr*)
       (incudine.util:msg :info "next")
       (edit-preset-in-emacs (incf *curr-poolplayer-preset-nr*)))))
 
 (defun previous-poolplayer-preset ()
-  (let ((slynk::*emacs-connection* *emcs-conn*))
+  (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
     (when (> *curr-poolplayer-preset-nr* 0)
       (incudine.util:msg :info "previous")
       (edit-preset-in-emacs (decf *curr-poolplayer-preset-nr*)))))

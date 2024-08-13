@@ -86,8 +86,6 @@
            (js-execute obj (format nil "~A.bang()" (script-id obj)))
            )))))))
 
-
-
 (defgeneric bind-ref-to-attr (refvar attr &optional map)
   (:method ((refvar ref-object-super) attr &optional (map (lambda (val) val)))
     (let ((name (binding-name refvar attr)))
@@ -200,7 +198,7 @@ array of bindings, depending on the class."))
                          ))))
     element))
 
-(defun create-o-numbox (parent bindings &key  min max width height (precision 2) css)
+(defun create-o-numbox (parent bindings &key min max width height (precision 2) css)
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
@@ -557,14 +555,10 @@ array of bindings, depending on the class."))
                      )))
     element))
 
-
-
-
 (defmacro expand-bindings (bindings)
   `(loop for binding in ,bindings
          collect `((gethash ,(b-attr binding))
                    (%set-val ,(b-ref binding) (gethash ,(b-attr binding) data)))))
-
 
 (defun create-hide-button (parent element-to-hide
                            &key label (background '("transparent" "orange"))
@@ -602,11 +596,6 @@ array of bindings, depending on the class."))
                                             (gethash "value" data)))))))))
     button))
 
-
-
-
-
-
 ;; array as attribute: <div id="demo" data-stuff='["some", "string", "here"]'></div>
 ;;
 ;; <div id="storageElement" data-storeIt="stuff,more stuff"></div> and use string.split.
@@ -625,7 +614,6 @@ array of bindings, depending on the class."))
 ;;; utils from clog-dsp-widgets (will be replaced soon)
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 (defgeneric flash (clog-obj)
   (:method ((obj clog-obj))
@@ -649,7 +637,6 @@ event."))
 (defmethod highlight ((obj clog-element) value)
   (execute obj (format nil "highlight(~A)" value))  
   value)
-
 
 ;;; We don't want to restart the server everytime when the new-window
 ;;; fun is canged thats why this proxy gets defined

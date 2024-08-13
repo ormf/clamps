@@ -206,54 +206,19 @@ nil just create the levelmeter."
            :mapping :pd
            :css '(:height "97%" :width "0.25em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.1em solid black" :background "#222")))))))
 
-
-
-(defun master-amp-bus-levelmeter-gui (id gui-parent &key (group 300)
-                                                      (amp (make-ref (amp->db-slider 1)))
-                                                      refs (num 1) (audio-bus 0) (channel-offset 0)
-                                                      (bus-name "") nb-ampdb)
-  (declare (ignorable nb-ampdb))
-  (let* ((dsp
-              (or (find-dsp id)
-                  (let* ((new (add-dsp 'master-amp-meter-bus
-                                       :id id :node-group group
-                                       :audio-bus audio-bus :refs refs :num num
-                                       :channel-offset channel-offset
-                                       :bus-name bus-name)))
-                    (loop until (and (amp-node new) (refs new)))
-                    (push (watch (lambda () (set-control (amp-node new) :amp (db-slider->amp (get-val amp))))) (unwatch new))
-                    new))))
-    (with-slots (refs bus-node) dsp
-      (let* ((gui-container (create-div gui-parent
-                                        :content bus-name
-                                        :css `(:display "flex" :color "white" :width "8em"
-                                               :flex-direction :column :border "none" :background "transparent")))
-             (meter-container (create-div gui-container
-                                          :class "levelmeter-panel"
-                                          :css `(:display "flex" :border "none" :background "transparent"
-                                                 :height "12em" :width "100%"))))
-        (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value") -40 12 :css '(:font-size "1em" :color "white" :background "transparent" :border none))
-        (dotimes (idx num)
-          (create-o-vumeter
-           meter-container
-           (bind-refs-to-attrs (aref refs idx) "db-value")
-           :mapping :pd
-           :css '(:height "97%" :width "0.25em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#222")))
-        (create-o-slider
-         meter-container
-         (bind-refs-to-attrs amp "value")
-         :css '(:height "97%" :width "0.5em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#999"))))))
-
 (defun master-amp-bus-levelmeter-gui
     (id gui-parent &key (group 300)
                      (audio-bus 0)
                      (out-chan 0)
                      (num-channels 1)
                      ;;                                                      (freq 10)
-                     (amp (make-ref (amp->db-slider 1)))
+                     (amp (make-ref 1))
+                     (amp-slider (make-ref (amp->db-slider 1)))
                      meter-refs
                      (meter-display (make-ref :post))
                      (bus-name "")
+                     (min -40)
+                     (max 12)
                      nb-ampdb)
   (declare (ignorable nb-ampdb))
   (let* ((dsp (or (find-dsp id)
@@ -276,7 +241,7 @@ nil just create the levelmeter."
                                           :css `(:display "flex" :border "none" :background "transparent"
                                                  :height "12em" :width "100%"))))
         (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value")
-                         :min -40 :max 12 :css '(:font-size "1em" :color "white"
+                         :min min :max max :css '(:font-size "1em" :color "white"
                                                  :background "transparent" :border none))
         (dotimes (idx num-channels)
           (create-o-vumeter
@@ -287,7 +252,8 @@ nil just create the levelmeter."
                   :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#222")))
         (create-o-slider
          meter-container
-         (bind-refs-to-attrs amp "value")
+         (bind-refs-to-attrs amp-slider "value")
+;;         :min min :max max
          :css '(:height "97%" :width "0.5em" :min-width "0.1em"
                 :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#999"))))))
 
@@ -296,10 +262,13 @@ nil just create the levelmeter."
                      (out-chan 0)
                      (num-channels 1)
                      ;; (freq 10)
-                     (amp (make-ref (amp->db-slider 1)))
+                     (amp (make-ref 1))
+                     (amp-slider (make-ref (amp->db-slider 1)))
                      meter-refs
                      (meter-display (make-ref :post))
                      (bus-name "")
+                     (min -40)
+                     (max 12)
                      nb-ampdb)
   (declare (ignorable nb-ampdb))
   (let* ((dsp
@@ -321,7 +290,7 @@ nil just create the levelmeter."
                                           :class "levelmeter-panel"
                                           :css `(:display "flex" :border "none" :background "transparent"
                                                  :height "12em" :width "100%"))))
-        (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value") :min -40 :max 12 :css '(:font-size "1em" :color "white" :background "transparent" :border none))
+        (create-o-numbox gui-container (bind-refs-to-attrs nb-ampdb "value") :min min :max max :css '(:font-size "1em" :color "white" :background "transparent" :border none))
         (dotimes (idx num-channels)
           (create-o-vumeter
            meter-container
@@ -331,7 +300,8 @@ nil just create the levelmeter."
                   :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#222")))
         (create-o-slider
          meter-container
-         (bind-refs-to-attrs amp "value")
+         (bind-refs-to-attrs amp-slider "value")
+;;         :min min :max max
          :css '(:height "97%" :width "0.5em" :min-width "0.1em"
                 :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#999"))))))
 
