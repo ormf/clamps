@@ -1336,7 +1336,7 @@ values, the key and the value of each property in the proplist."
 (lin-n min min max) -> 0
 (lin-n max min max) -> 1
 "
-  (/ (- val min) (- max min)))
+  (float (/ (- val min) (- max min)) 1.0))
 
 (defun n-exp (x min max)
   "linear interpolation for normalized x."
@@ -1375,7 +1375,7 @@ values, the key and the value of each property in the proplist."
 
 (defun m-lin (x min max)
   "linear interpolation for midivalues (x = [0..127])"
-  (+ min (* (- max min) (/ x 127))))
+  (float (+ min (* (- max min) (/ x 127))) 1.0))
 
 (defun ntom (n)
   (round (* n 127)))
@@ -1411,8 +1411,8 @@ values, the key and the value of each property in the proplist."
   "return a random deviation factor, the deviation being exponentially
 interpolated between 1 for x=0 and [1/max..max] for x=1."
   (r-exp
-   (n-lin x 1 (/ max))
-   (n-lin x 1 max)))
+   (n-exp x 1 (/ max))
+   (n-exp x 1 max)))
 
 (defun r-exp-dev (max)
   "return a random deviation factor, the deviation being exponentially
@@ -1424,7 +1424,7 @@ interpolated between 1 for x=0 and [1/max..max] for x=1."
 interpolated between 0 for x=0 and [-max..max] for x=1."
   (if (zerop x)
       0
-      (* max (- x (random (* 2.0 x))))))
+      (float (* max (- x (random (* 2.0 x)))) 1.0)))
 
 (defun n-lin-fn (min max)
   "linear interpolation for normalized x."

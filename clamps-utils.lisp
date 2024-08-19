@@ -125,9 +125,9 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
   (* tuning-base (expt 2 (/ (- m 69) 12))))
 
 (defun fr2ct (fr)
-  "Return interval in midcent of frequency ratio fr."
+  "Return interval in midicent of frequency ratio fr."
   (* 12 (log fr 2)))
 
 (defun ct2fr (ct)
-  "Return frequency ratio of interval ct in midcent."
+  "Return frequency ratio of interval ct in midicent."
   (expt 2 (/ ct 12)))

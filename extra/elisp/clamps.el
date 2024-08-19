@@ -3,6 +3,9 @@
 ;;; when clamps is *not* running make sure, this file is loaded before
 ;;; starting multipage export of clamps-dictionary.org
 
+(defvar *clamps-doc-symbols* (make-vector 63 0))
+(defvar *clamps-overview-symbols* (make-vector 63 0))
+
 (defun export-dict-to-clamps (data _backend info)
   (with-temp-buffer 
     (insert "(mapcar

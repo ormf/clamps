@@ -45,7 +45,7 @@
   *clamps-gui-root*)
 
 (defun svg-gui-path (str)
-  (namestring (merge-pathnames (format nil "www/svg/~a" str) (clamps-gui-root))))
+  (namestring (merge-pathnames (format nil "svg/~a" str) (clamps-gui-root))))
 
 (defun clamps-restart-gui (gui-root &key (open t) (port 54619))
   "restart the gui using gui-root as the root directory, optionally
@@ -229,6 +229,11 @@ supplied and gets interned as a parameter."
   (if *osc-inkscape-export-in* (incudine.osc:close *osc-inkscape-export-in*))
   (setf *osc-inkscape-export-in* nil))
 
+(defun gui ()
+  (clog:open-browser))
+
+(defun meters ()
+  (clog:open-browser :url (format nil "http://127.0.0.1:~A/meters" clog::*clog-port*)))
 
 (defun clamps-start (&key (gui-root "/tmp") (qsynth nil) (open-gui nil))
   "start clamps, setting the gui root directory and optinally starting

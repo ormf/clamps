@@ -48,7 +48,8 @@
                   :clog-cuda
                   :cl-midictl
                   :clog-midi-controller
-                  :cm-all))
+                  :cm-all
+                  ))
   (asdf:operate 'asdf:load-op system))
 
 (setf asdf:*central-registry*

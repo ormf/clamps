@@ -87,8 +87,6 @@ supplied and gets interned as a parameter."
          collect (new midi :time (* idx 0.05) :keynum (float (+ 60 (* idx 1/4)))))
    *mt-out01*))
 
-
-
 #|
 (defun get-qsynth-midi-port-name (&optional (direction :input))
   (let ((result (with-output-to-string (str)

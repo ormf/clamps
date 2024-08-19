@@ -191,6 +191,12 @@ to t."
   (if loaded (sort (loop for k being each hash-key of *sfz-tables* collect k) #'string<)
       (sort (loop for k being each hash-key of cl-user:*sfz-preset-lookup* collect k) #'string<)))
 
+(defun sfz-preset-buffer (preset pitch)
+  "return the buffer(s) of preset for pitch in a list."
+  (mapcar
+   #'of-incudine-dsps:lsample-buffer
+   (aref (get-sfz-preset preset) (round pitch))))
+
 (defun sfz-preset-loaded? (preset)
   (if (gethash preset *sfz-tables*) t))
 
@@ -250,12 +256,13 @@ to t."
            name
            cl-user:*sfz-preset-path*)))))
 
-(defun get-sfz-preset (preset)
+(defun get-sfz-preset (preset &key force (play-fn  #'play-sfz-loop))
   (or
-   (gethash preset *sfz-tables*)
+   (and (not force) (gethash preset *sfz-tables*))
    (let ((sfz-preset-file (sfz-preset-file preset)))
      (if sfz-preset-file
-         (and (load-sfz-preset sfz-preset-file preset)
+         (and (load-sfz-preset sfz-preset-file preset
+                               :force force :play-fn play-fn)
               (gethash preset *sfz-tables*))
          (warn "preset ~s not found!" preset)))))
 

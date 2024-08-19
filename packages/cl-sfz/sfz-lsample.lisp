@@ -41,3 +41,4 @@
 (declaim (inline get-lsample))
 (defun get-lsample (keynum map)
   (aref map (min (round keynum) 127)))
+

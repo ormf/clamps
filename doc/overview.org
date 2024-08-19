@@ -3,24 +3,425 @@
 #+LANGUAGE: en
 #+OPTIONS: html5-fancy:t
 #+OPTIONS: num:nil
-#+OPTIONS: toc:3 h:3 html-multipage-join-empty-bodies:t
+#+OPTIONS: toc:2 h:3 html-multipage-join-empty-bodies:t
 #+OPTIONS: html-multipage-split:toc
 #+OPTIONS: html-multipage-toc-to-top:t
 #+OPTIONS: html-multipage-export-directory:overview
-#+OPTIONS: html-multipage-open:browser
-#+OPTIONS: html-preamble:"<a class=\"top-menu top-menu-active\" href=\"./index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n"
+#+OPTIONS: html-multipage-open:nil
+#+OPTIONS: html-multipage-postamble-position:bottom
+#+OPTIONS: html-postamble:nil
+#+OPTIONS: html-preamble:"<a class=\"top-menu top-menu-active\" href=\"./index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n"
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/overview.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
-
-* Clamps
-#+TOC: headlines 3
+#+BEGIN_SRC emacs-lisp :exports results :results: none
+  (defun export-overview-syms (s backend info)
+    (message "exporting clamps syms")
+    (with-temp-buffer 
+      (insert "(mapcar
+   (lambda (entry)
+     (let ((symbol (intern (car entry)
+  			 ,*clamps-overview-symbols*)))
+       (if (boundp symbol)
+  	 (push (cadr entry) (symbol-value symbol))
+         (set symbol (cdr entry)))))
+   '(\n")
+      (mapcar
+       (lambda (entry)
+         (insert
+          (format "   (\"%s\" \"clamps/%s\")\n"
+                  (org-html-element-title (car entry))
+                  (plist-get (cdr entry) :href))))
+       (cl-remove-if
+        (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
+        (plist-get info :multipage-toc-lookup)))
+      (insert "))\n")
+      (write-region (point-min) (point-max) "../extra/elisp/clamps-overview-lookup.el"))
+    (load (format "%s%s" (file-name-directory (buffer-file-name))
+               "../extra/elisp/clamps-overview-lookup.el"))
+    s)
+#+END_SRC
+#+BIND: org-export-filter-multipage-functions (export-overview-syms)
 
 * Introduction
+** What is Clamps?
+  # #+TOC: headlines 3
+  Clamps, the /*C*​ommon *L*​isp *A*​ided *M*​usic *P*​roduction *S*​ystem/
+  is an integrated environment for the production of music in the
+  areas of algorithmic composition, electronic music and its
+  performance. It can be used for non-realtime production of
+  instrumental scores or fixed media, as a toolbox for music
+  simulation or as a development environment in a broad field of
+  applications like advanced DSP, realtime instruments, performances
+  and installative work.
 
+  In this regard it is comparable to other realtime and non-realtime
+  music programming environments like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]], [[https://en.wikipedia.org/wiki/Max_(software)][Max/MSP]], [[https://en.wikipedia.org/wiki/Csound][Csound]],
+  [[https://en.wikipedia.org/wiki/SuperCollider][SuperCollider]], [[https://ccrma.stanford.edu/software/clm/][CLM]], [[https://commonmusic.sourceforge.net/][Common Music]], [[https://chuck.stanford.edu/][Chuck]], [[https://faust.grame.fr/][Faust]], [[https://forum.ircam.fr/projects/detail/openmusic/][Open Music]],
+  [[https://opusmodus.com/][OpusModus]], [[https://michael-edwards.org/sc/][Slippery Chicken]] and [[https://www.music21.org/music21docs/][Music21]].
+
+  Clamps is a collection of tools, developed over the course of some
+  decades primarily for the artistic work of its author, biased by his
+  conceptual and aesthetic ideas. It is put together and made public
+  in the hope it might be useful for others, but -like the beauty of
+  Art in its own right- without any explict or implicit warranty that
+  it fits any purpose whatsoever.
+  
+  The Documentation of Clamps is split into four parts, accessible
+  using the Top Menu:
+
+  - The [[Introduction][Overview]] explains the raison d'etre of Clamps and gives a
+    short overview of its components, followed by installation
+    instructions, a short primer and an introduction into tools
+    available when working with Common Lisp in Emacs.
+
+    
+  - The [[../clamps/index.html][Clamps Packages]] section gives a more detailed introduction
+    with examples into the [[Internal components of Clamps][internal components]] specifically written
+    for Clamps. The [[External Components of Clamps][external components]] which make up a large part of
+    the functionality of Clamps, are not documented here as they are
+    well documented in their own respective documention available
+    online.
+
+    
+  - The [[../cm-dict/index.html][CM Dictionary]] is part of the Common Lisp version of Common
+    Music and is integrated into the Emacs/Lisp interface with online
+    symbol lookup using the /<C-c C-d c>/ keyboard shortcut on any of
+    its entries. It is included here because Clamps extends the symbol
+    lookup with the symbols added by Clamps in the [[../clamps-dict/index.html][Clamps Dictionary]],
+    providing a seemless integration.
+
+    
+  - The [[../clamps-dict/index.html][Clamps Dictionary]] is inspired by and extends the [[../cm-dict/index.html][CM Dictionary]]
+    with the added symbols of Clamps. The entries of this dictionary
+    are linked in the Emacs Lisp Interface with the same /<C-c C-d c>/
+    keyboard shortcut as the CM Dictionary.
+
+#+HTML: <h4>Note</h4>
+#+LATEX: NOTE
+
+  This documentation serves as a reference manual for the regular user
+  and not as a step by step introduction or tutorial into the
+  system. These topics are or will be covered in seperate
+  publications. Knowledge of Common Lisp, the Emacs Editor and the
+  basics of Common Music, Incudine or GUI programming are required to
+  take full advantage of this documentation.
+
+#+HTML: <h4>Acknowledgements</h4>
+#+LATEX: Acknowledgements
+
+  Clamps would not have been possible without the tremendous work put
+  into Incudine by Tito Latini, Common Music by Rick Taube, FOMUS by
+  David Psenicka, CLOG by Rabbibotton, ATS by Juan Pampin and of
+  course Common Lisp by innumerable people, who helped building this
+  amazing programming language with all its extensions over the last
+  65+ years. Making all their work available to the public using an
+  open source license provides the basis for being able to extend
+  it. It can't be expressed enough how grateful and privileged I feel
+  using the results of their work and benefit from them throughout my
+  artistic career. In that sense making Clamps available to the public
+  is my contribution intended to pay back to the community.
+
+  Orm Finnendahl, August 2025
+** Why Clamps?
+  
+   Clamps is written in [[https://en.wikipedia.org/wiki/Common_Lisp][Common Lisp]]. A main advantage of using Common
+   Lisp is the integrated immediate accessibility of the source code
+   of Clamps, its [[External Components of Clamps][External Components]] and the Common Lisp language
+   itself down to the lowest implementation level while working with
+   it. Changes to every detail can easily be done on-the-fly, even
+   while realtime DSP routines are running, resulting in an immediate
+   acoustical feedback of the changes.
+
+   This is in contrast to most systems used for realtime processing
+   mentioned in the [[Introduction][Introduction]]. Many of them use precompiled objects
+   for low level processing tasks written in a language different from
+   the language/paradigm of the system itself[fn:1]. These systems
+   suppose that changes in those modules are generally not done by the
+   user and rare. They require a seperate development process using
+   editors/compilers different from the used system and require a
+   restart of the system on every change.
+
+   In addition, some systems use a distinction between control-rate
+   and audio-rate processing or between a language and a synth server
+   like SuperCollider. All these design decisions are there for a
+   reason and have their advantages, but they put obstacles and
+   barriers in the way which can create manyfold problems when working
+   with them. In Clamps, all DSP routines, the scheduler and the
+   control engine run as functions or macros within the same Lisp
+   image. Therefore the aforementioned barriers are not present when
+   using the system, resulting in a seemless experience of
+   transparency on every level of the working process. Although it
+   might rarely be necessary to tinker with the lowest level of the
+   system, it is nevertheless possible at any moment of working with
+   it. Any change is at the fingertips of the user, just a few
+   keystrokes away, providing the unique experience typical for most
+   Lisp based systems.
+
+   In recent decades the Common Lisp ecosystem has evolved
+   significantly providing fast compilers and outstanding [[https://en.wikipedia.org/wiki/Integrated_development_environment][IDEs]] for
+   code inspection, editing and debugging. In combiniation with the
+   language's unique and characteristic features like the ease of
+   combining different idioms from low level to high level using any
+   programming paradigm and its flexibility to adapt its syntax to any
+   problem domain make it an excellent choice for people aiming for an
+   explorative and dynamic workflow in their artistic work.
+** External components of Clamps
+
+   As the acronym as a word implies, /Clamps/ combines and extends
+   different Common Lisp Packages. Apart from using many general
+   purpose Lisp packages, crucial components of Clamps are realized on
+   top of the following packages which do the heavy lifting of Clamps'
+   functionality:
+
+   - [[Incudine][Incudine]]
+     
+   - [[Common Music][Common Music]]
+
+   - [[FOMUS][FOMUS]]
+
+   - [[ATS][ATS]]
+     
+   - [[CLOG][CLOG]]
+
+   These systems and their contribution to Clamps are described in the
+   following subsections.
+*** Incudine
+
+    [[https://incudine.sourceforge.net/][Incudine]] is the backbone of the system for everything related to
+    [[https://en.wikipedia.org/wiki/Real-time_computing][Real-time computing]] or [[https://en.wikipedia.org/wiki/Digital_signal_processing][DSP]]. It is actively developed and
+    maintained at the time of writing this manual by Tito Latini and
+    released under an open source license. Incudine is a very
+    efficient DSP engine with a builtin sample accurate scheduler,
+    combining many ideas from other well established systems like
+    [[https://en.wikipedia.org/wiki/Csound][Csound]], [[https://en.wikipedia.org/wiki/SuperCollider][SuperCollider]] or [[https://ccrma.stanford.edu/software/clm/][CLM]]. Incudine has no preconceptions
+    concerning audio- or control-rate. It can be used with any
+    blocksize starting from 1 sample.
+*** Common Music
+    [[https://commonmusic.sourceforge.net/][Common Music]] (also called /CM/) is another crucial component of
+    Clamps. It has been developed since the early 1990s by Rick Taube
+    and is released with an open source license. Common Music was
+    primarily conceived to facilitate algorithmic composition on the
+    Metalevel[fn:2]. Initially written in Common Lisp, it has since
+    been transformed into version 3 using the Scheme programming
+    language, adding sophisticated realtime capabilities likening it
+    to the purpose of Clamps. The system used in Clamps is based on
+    the last Common Lisp version 2.12, released around 2007. Although
+    this version already contained realtime capablilities, this
+    functionality has been adapted in Clamps using [[Incudine][Incudine]]. Clamps
+    extends the functionality of CM by adding classes for [[https://en.wikipedia.org/wiki/SVG][SVG]]
+    import/export as well as [[https://en.wikipedia.org/wiki/SFZ_(file_format)][SFZ]] and sample based in-/output realized
+    using [[Incudine][Incudine]].
+*** FOMUS
+    [[https://fomus.sourceforge.net/][FOMUS]] is a system for score output originally developed in Common
+    Lisp around 2010/2011 by David Psenicka. It integrates well with
+    Common Music, facilitating output in a wide range of backend
+    formats like [[https://en.wikipedia.org/wiki/Common_Music_Notation][CMN]], [[https://en.wikipedia.org/wiki/LilyPond][LilyPond]] or [[https://en.wikipedia.org/wiki/MusicXML][MusicXML]]. In Clamps, mainly the
+    LilyPond backend is supported.
+*** ATS
+    [[https://github.com/ormf/cl-ats][ATS]] was originally developed by Juan Pampin in the early 2000s
+    using Common Lisp for the analysis, transformation and
+    (re)synthesis of audio files using FFT based algorithms similar to
+    [[https://www.klingbeil.com/spear/][SPEAR]]. It predates SPEAR by nearly a decade and has been published
+    with an open source license making it eligible for integration
+    into Clamps. In addition to the analysis of sinusoidal components
+    performed by SPEAR it also captures and synthesizes the residual
+    noise component of the analyzed audio files. For Clamps the
+    synthesis engine has been completely rewritten in [[Incudine][Incudine]].
+
+*** CLOG
+    [[https://github.com/rabbibotton/clog][CLOG]] is a web based system written in Common Lisp using Javascript
+    in a Webbrowser for rendering Graphical User Interfaces using
+    [[https://en.wikipedia.org/wiki/WebSocket][Websockets]] for the communication between Common Lisp and the
+    Browser. CLOG closes the gap of missing GUIs in Common Lisp based
+    systems due to the time of the definition of the Common Lisp
+    Standard in 1990 predating the predominant use of GUIS in current
+    computer applications. The most common GUI widgets like sliders,
+    number boxes, buttons, interactive graphic displays and VU meters
+    have been added to the Clamps system to facilitate the creation of
+    sophisticated GUIs nowadays taken for granted in computer music
+    environments.
+** Internal Components of Clamps
+   Based on the [[External Components of Clamps][External Components of Clamps]] many additional packages
+   were developed. They extend the functionality of the external
+   components, aiming at integration in some unified way without
+   compromising any of their original functionality and usability.
+
+   - [[Incudine extensions][Incudine extensions]]
+
+   - [[Common Music extensions][Common Music extensions]]
+
+   - [[CLOG extensions][CLOG extensions]]
+
+   - [[ATS extensions][ATS extensions]]
+*** Incudine extensions
+    - /of-incudine-dsps/
+
+      This package contains DSPs for /buffer/ playback/recording
+      and /sample/ playback with granular stretching/transposing, an
+      infrastructure for /audio buses/ capable to deal with any
+      blocksize, /bus DSPs/ for any number of channels, various
+      /levelmeter DSPs/, some basic /Unit Generators/ (VUGs) adapted
+      to work with a blocksize > 1 and miscellaneous basic /envelopes/
+      and /function tables/.
+
+    - /incudine-bufs/
+
+      This package implements an infrastructure dealing with loading,
+      registering and finding buffers. It ensures that buffers are
+      unique and not inadvertedly loaded repeatedly to keep the memory
+      footprint low. In addition a search mechanism is implemented to
+      look for files in user definable paths.
+*** Common Music extensions
+    - /cm-incudine/
+
+      Compatibility layer to bind the original MIDI, OSC and real-time
+      scheduling related functions of CM 2 to their equivalent in
+      Incudine.
+      
+    - /cm-fomus/
+
+      This is not a package in its own right but rather a thin wrapper
+      to integrate [[https://fomus.sourceforge.net/][FOMUS]] into cm. Most parts were written by Rick
+      Taube for CM 2 and got adapted to Clamps.
+    
+    - /cm-poolevt/
+
+      Eventclass and infrastructure for sample-based granular
+      playback.
+    
+    - /cm-poolplayer/
+
+      Infrastructure for Live-Coding based players of sample events.
+    
+    - /cm-sfz/
+
+      Eventclass and infrastructure for SFZ based realtime playback
+      using incudine. Also implements a path based search
+      infrastructure for SFZ definitions.
+
+    - /cm-svg/
+
+      Infrastructure to import and export CM events to and from SVG
+      files.
+
+    - /cm-utils/
+
+      Package defining a generalized process mechanism called
+      /rt-proc/, based on coroutines, allowing arbitrary lisp
+      iteration contructs and multiple waits in its body and
+      miscellaneous utility functions.
+*** CLOG extensions
+    - /clog-dsp-widgets/
+
+      Implementation of various GUI elements for realtime interactive
+      work or display, like Sliders, Number Boxes, Buttons, Toggles,
+      Radiobuttons, VU-Meters, Scopes, etc. in a browser including an
+      infrastructure for connecting Common Lisp with the GUI parts
+      written in JavaScript for client side rendering.
+
+    - /ats-cuda-display/
+
+      A Gui to interactively explore and play Sounds analyzed with
+      ATS.
+
+    - /cm-svg.rts/
+
+      GUI for the interactive display and playback of SVG files
+      exported from CM.    
+*** ATS extensions
+    - /ats-cuda/
+
+      This package implements the DSPs for resynthesizing ATS analysis
+      data in realtime.
+*** Miscellaneous
+    - /cuda-usocket-osc/
+      
+      A small compatibility layer to make OSC work on OSX.
+
+    - /cl-plot/
+
+      Plotting extension using [[http://www.gnuplot.info/][gnuplot]].
+    
+    - /cl-sfz/
+
+      Base package to parse and load sfz files into incudine.
+    
+    - /orm-utils/
+
+      A collection of Common Lisp utility functions.
 * Installation
-
+** Linux
+   Noicht leer
+*** Preparation
+** OSX
 * First Steps
+* Tools
+** Context Help
+    For every compiled expression[fn:3], the /sly-mode/ in Emacs takes
+    care of automatically storing all information of the expression
+    internally. In case of functions this means that the signature of
+    any compiled function is known and will be displayed in the
+    Minibuffer of Emacs when typing the name of a function in an
+    inferior lisp buffer[fn:4]:
+
+    #+attr_html: :width 80%
+    #+CAPTION: Context help of function arguments in the Minibuffer
+    [[file:../img/function-help.png]]
+** Finding Source Definitions
+    To jump to the source definition of any compiled expression, use
+    the <C-.> key. This will jump to definitions in other files,
+    opening them if necessary. To get back to the place before the
+    jump, press the /<C-,>/ key. This is recursive: Repeated jumps to
+    source locations with /<C-.>/ can be reversed one by one with the
+    same number of /<C-,>/.
+** Code Inspection
+   Sly comes with a powerful and versatile code inspector. It can be
+   invoked by pressing the /<C-c I>/ key sequence after an expression
+   to be inspected. The expression will be prompted in the Emacs
+   Minibuffer and needs to be confirmed with the /<Enter>/ key. A new
+   buffer will open with information about the inspected
+   expression.
+   
+    #+attr_html: :width 80%
+    #+CAPTION: The Sly Inspector invoked on (make-instance 'sfz)
+    [[file:../img/sly-inspector.png]]
+   
+   Depending on the type of expression it is possible to navigate to
+   subsequences of inspected sequences, see and inspect the slots of
+   structures or classes and their value, modify/unbind them, unbind
+   symbols and much more[fn:5]. It is very important to get acquainted
+   and comfortable using the inspector right from the start of working
+   with Clamps as it provides invaluable information about the current
+   state of a Lisp session.
+   
+   The buffer of the inspector can be closed with the /<q>/ key.
+** Debugging Tools
+*** The Sly Debugger
+*** Sly Stickers
+** Online Help System
+*** Common Lisp Hyperspec
+*** Clamps/Common Music
+*** Incudine
+    Incudine has different formats to get
+
+* 
+
+[fn:1] In most systems those objects are written in C/C++.
+
+[fn:2] See [[https://www.abebooks.de/9789026519574/Notes-Metalevel-Introduction-Algorithmic-Music-9026519575/plp][Notes from the Metalevel: An Introduction to Computer
+Composition]].
+
+[fn:3] Compiling an expression in Sly means to move the cursor
+somewhere into or just behind an expression or form to be compiled and
+then press /<C-c C-c>/. This will compile the toplevel form of the
+expression.
+
+[fn:4] For this to work, the /company/ minor-mode has to be active in
+the lisp buffer. The standard [[Installation][installation]] should take care of that.
+
+[fn:5] For more information check the /SLY-Inspector/ menu in Emacs or
+consult [[https://joaotavora.github.io/sly/#Inspector][this]] page.

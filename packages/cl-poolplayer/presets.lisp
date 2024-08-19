@@ -194,7 +194,6 @@
 #+slynk
 (defparameter *emcs-conn* slynk::*emacs-connection*)
 
-
 (defun next-poolplayer-preset ()
   (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
     (when (< *curr-poolplayer-preset-nr* *max-poolplayer-preset-nr*)
@@ -211,7 +210,7 @@
   (let ((new (max (min (round num) *max-poolplayer-preset-nr*) 0)))
     (when (/= new *curr-poolplayer-preset-nr*)
       (setf *curr-poolplayer-preset-nr* new)
-      (let ((slynk::*emacs-connection* *emcs-conn*))
+      (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
         (edit-preset-in-emacs *curr-poolplayer-preset-nr*)))))
 
 #-slynk

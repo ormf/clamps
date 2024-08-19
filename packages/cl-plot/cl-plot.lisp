@@ -68,6 +68,10 @@ Common Lisp's #'map."
 ;;;  default function for the :data-fn arg of plot. The Return value
 ;;;  should be of the format (values x y &rest z ...)
 
+(defun plot-2d (data &rest args &key region header options grid &allow-other-keys)
+  (declare (ignorable region header options grid))
+  (apply #'plot (ou:group data 2) args))
+
 (defun gnuplot-data-fn (idx obj)
   (if (numberp obj)
       (values idx obj)

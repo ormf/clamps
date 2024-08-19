@@ -1,57 +1,551 @@
-#+TITLE: Clamps Documentation
+#+TITLE: Clamps Packages
 #+AUTHOR: Orm Finnendahl
 #+LANGUAGE: en
 #+OPTIONS: html5-fancy:t
 #+OPTIONS: num:nil
-#+OPTIONS: toc:3 h:3 html-multipage-join-empty-bodies:t
-#+OPTIONS: html-multipage-split:toc
+#+OPTIONS: toc:3 h:4 html-multipage-join-empty-bodies:t
+#+OPTIONS: html-multipage-split-level:toc
 #+OPTIONS: html-multipage-toc-to-top:t
 #+OPTIONS: html-multipage-export-directory:clamps
-#+OPTIONS: html-multipage-open:browser
-#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n"
+#+OPTIONS: html-multipage-open:nil
+#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n"
+#+OPTIONS: html-multipage-postamble-position:bottom
+#+OPTIONS: html-postamble:nil
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
+#+BEGIN_SRC emacs-lisp :exports results :results: none
+  (defun export-clamps-syms (s backend info)
+    (message "exporting clamps syms")
+    (with-temp-buffer 
+      (insert "(mapcar
+   (lambda (entry)
+     (let ((symbol (intern (car entry)
+  			 ,*clamps-doc-symbols*)))
+       (if (boundp symbol)
+  	 (push (cadr entry) (symbol-value symbol))
+         (set symbol (cdr entry)))))
+   '(\n")
+      (mapcar
+       (lambda (entry)
+         (insert
+          (format "   (\"%s\" \"clamps/%s\")\n"
+                  (org-html-element-title (car entry))
+                  (plist-get (cdr entry) :href))))
+       (cl-remove-if
+        (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
+        (plist-get info :multipage-toc-lookup)))
+      (insert "))\n")
+      (write-region (point-min) (point-max) "../extra/elisp/clamps-lookup.el"))
+    (load (format "%s%s" (file-name-directory (buffer-file-name))
+               "../extra/elisp/clamps-lookup.el"))
+    s)
+#+END_SRC
+#+BIND: org-export-filter-multipage-functions (export-clamps-syms)
+#  #:\([^ ]+\) →    - [[dict:\1][\1]]
 
-* Clamps
-  #+TOC: headlines 3
-* Clamps Packages
-** Gui
-   The gui is realized in a browser using the [[https://github.com/rabbibotton/clog][Clog]] package available
+
+* General
+# #+TOC: headlines 3
+** clamps
+*** Startup
+   The clamps package is loaded from the REPL using quicklisp:
+   #+BEGIN_SRC lisp
+     CL-USER> (ql:quickload :clamps)
+   #+END_SRC
+   To startup MIDI, Networking, DSP and the GUI, use the [[dict:clamps][clamps]]
+   function:
+   #+BEGIN_SRC lisp
+     CL-USER> (clamps)
+     warn: closing midi streams
+
+     warn: #<JACKMIDI:input-STREAM "midi_in_1">
+     warn: #<JACKMIDI:output-STREAM "midi_out_1">
+     midi initialized!
+     mag: 123.0d0 sr: 44100 fs: 441 ws: 1765 partials: 42 frames: 253 MaxAmp: 0.19512822211922679d0 MaxFrq: 19762.520188644547d0 Dur: 2.5113378684807257d0 Type: 4
+     Loading sound...
+     Optimizing load sound...
+     Getting amplitude and frequency averages...
+     Transferring noise energy to partials...
+     Done!(re)starting gui...
+     starting webserver at /tmp/www
+     Hunchentoot server is started.
+     Listening on 0.0.0.0:54619.
+     HTTP listening on    : 0.0.0.0:54619
+     HTML root            : /tmp/www/
+     SSL                  : no
+     SSL Key File         : nil
+     SSL Cert File        : nil
+     Long poll first      : no
+     Boot function added  : no
+     Boot html source use : compiled version, when no file
+     Boot js source use   : compiled version
+     Boot file for path / : /start.html
+
+      /\\\          
+     ---\\\---------
+     ----\\\-------- CLAMPS
+     ----/\\\------- Common Lisp Aided Music Production System
+     ---/--\\\------ Version 0.0.1
+     --/----\\\-----
+      /      \\\/   
+
+     ; No values
+     clamps> 
+   #+END_SRC
+*** Emacs Shortcuts
+    The following emacs shorctus are defined when working with Clamps:
+
+    - /<C-c M-.>/ Start DSP processing (equivalent to /(rt-start)/)
+
+    - /<C-c C-.>/ Stop DSP processing (equivalent to /(rt-stop)/)
+
+    - /C-./ Stop all currently running dsps in /group 200/ and clear
+      the Incudine scheduler.
+*** GUI
+    The GUI can be opened using the [[dict:gui][gui]] function. Calling this
+    function will open the [[dict:clamps-base-url][clamps-base-url]] in a browser. It will
+    initially display an empty page with a blue-grey background. To
+    add elements to this page see [[clog-dsp-widgets]].
+
+   #+attr_html: :width 80%
+   #+CAPTION: Clamps GUI after startup
+   [[./img/clamps-gui.png]]   
+*** Meter Display
+   To display VU Meters of the first 8 inputs and outputs of Incudine,
+   call the [[dict:meters][meters]] function. It will open the page
+   /<clamps-base-url>/meters/ in a Browser and display the following
+   image:
+
+   #+attr_html: :width 80%
+   #+CAPTION: Clamps Meters display
+   [[./img/meters.png]]
+*** Symbols
+   The clamps package imports most common music and incudine symbols.
+   They can be used without prepending the package name as if being in
+   the /:cm/ or /:incudine.scratch/ package. Not imported are the
+   symbols of /:clog/ (with some exceptions). In addition clamps
+   imports all symbols from clamps packages which extend the
+   functionality of Common Music, Incudine or CLOG, documented in the
+   [[./index.html][Clamps Packages]] section.
+   
+   Notable exceptions of symbols not imported from /:cm/ are the
+   symbols in the body of the [[dict:process][process]] macro, as they collide with
+   common lisp's /loop/ symbols. To get around this restriction,
+   evaluate a call to the process macro within the /:cm/ package like
+   this:
+   #+BEGIN_SRC lisp
+     (in-package :cm)
+
+     (process
+       repeat 5
+       output (new sfz)
+       wait 1)
+   #+END_SRC
+   The clamps package exports the following symbols:
+
+   - [[dict:clamps][clamps]]
+   - [[dict:clamps-restart-gui][clamps-restart-gui]]
+   - [[dict:clamps-start][clamps-start]]
+   - [[dict:clamps-gui-root][clamps-gui-root]]
+   - [[dict:gui][gui]]
+   - [[dict:idump][idump]]
+   - [[dict:meters][meters]]
+   - [[dict:reset-logger-stream][reset-logger-stream]]
+   - [[dict:set-tempo][set-tempo]]
+   - [[dict:start-doc-acceptor][start-doc-acceptor]]
+   - [[dict:svg-gui-path][svg-gui-path]] 
+
+* Midi
+** cl-midictl
+** clog-midi-controller
+* CM Extensions
+** cm-svg
+** cm-svg.rts
+** cm-sfz
+** cm-poolevt
+** cm-poolplayer
+** cm-fomus
+** cm-incudine
+** cm-all
+* Incudine Extensions
+** General Incudine Setup
+   :PROPERTIES:
+   :DIR:      ~/work/programmieren/lisp/clamps/doc/img/./
+   :END:
+   When Clamps gets started, four groups, 100, 200, 300 and 400 are
+   created in Incudine. They are placed in the dsp chain in
+   chronological order:
+
+   #+attr_html: :width 80%
+   #+CAPTION: dsp chain after Clamps startup
+   [[./img/clamps-dsp-chain.png]]
+
+   Groups 100, 300 and 400 are intended for persistent dsps like
+   levelmeters or buses.
+
+   Pressing /<C-.>/ in emacs calls the function [[dict:node-free-unprotected][node-free-unprotected]]
+   which frees all dsps in group 200, but /not/ any dsp in groups 100,
+   300 or 400.
+
+   As a consequence, dsps which should be stoppable with that keyboard
+   shortcut have to be put into group 200 using the /:before/ or
+   /:after/ keywords when starting the dsp.
+** of-incudine-dsps
+** incudine-bufs
+* Gui
+** General GUI Setup
+   The gui is realized in a browser using the [[https://github.com/rabbibotton/clog][CLOG]] package available
    through quicklisp. A collection of [[clog-dsp-widgets][dsp-widgets]] has been implemented
    which realize the most common used gui elements for music, like
    Sliders, Buttons, VU Meters, etc. The implementation relies on
-   [[cl-refs][cl-refs]] to establish and handle the connection between the gui
+  [[cl-refs][ cl-refs]] to establish and handle the connection between the gui
    elements and the Common Lisp Code.
-*** clog-dsp-widgets
-*** ats-cuda-display
-** Midi
-*** cl-midictl
-*** clog-midi-controller
-** CM Extensions
-*** cm-svg
-*** cm-svg.rts
-*** cm-sfz
-*** cm-poolevt
-*** cm-poolplayer
-*** cm-fomus
-*** cm-incudine
-*** cm-all
-** Incudine Extensions
-*** of-incudine-dsps
-*** incudine-bufs
-** Networking
-*** cuda-usocket-osc
-*** fudi
-** Misc Packages
-*** cl-refs
-*** cl-sfz
-*** cl-poolplayer
-*** plot
-*** cm-utils
-*** orm-utils
-    orm-utils is a collection of utilities developed for general
-    purpose use. Ist is included here for completeness only.
+** clog-dsp-widgets
+** ats-cuda-display
+* Networking
+** cuda-usocket-osc
+** fudi
+* Misc Packages
+** cl-refs
+   /cl-refs/ is a package dealing with the state (= value) of
+   variables of an application and their synchronization.
+
+   In Common Lisp, assigning a value to a symbol is called
+   /binding/. The most common ways to bind a value to a symbol are
+   using the special forms /let/, /setq/, /setf/, /defvar/,
+   /defparameter/ or /defconstant/. During the course of running an
+   application, the value bound to a symbol may change frequently as
+   a consequence of user interaction or programmatic behaviour in
+   certain situations, like reacting to external events, etc.[fn:1]
+    
+   Tracking those changes can be a challenging task, especially if
+   the complexity of a program increases and values of different
+   symbols need to be related to each other in a way that any change
+   in one of these value should be reflected by the change of all
+   other related values.
+
+   /cl-refs/ addresses this task using a special class called
+   /ref-object/ with customized access functions and additional
+   functions defining relations and actions to be executed on value
+   change. See the next sections for examples and implementation
+   details.
+*** A short example
+   Let's consider a short example: A program defines two variables,
+   /v1/ and /v2/. When changing one of these variables, the other
+   variable doesn't change:
+   #+BEGIN_SRC lisp
+     (defvar v1 1) ; => v1
+
+     (defvar v2 2) ; => v2
+
+     v1 ; => 1
+     v2 ; => 2
+
+     (setf v1 3) ; => 3
+
+     v1 ; => 3
+     v2 ; => 2
+   #+END_SRC
+   The program wants to ensure, that /v2/ is always the double value
+   of /v1/. This requires that we write some mechanism that changing
+   one of the values also changes the other value. In a very naïve
+   way we could do it like this:
+   #+BEGIN_SRC lisp
+     (defun set-v1 (value)
+       (setf v1 value)
+       (setf v2 (* 2 value))
+       value)
+
+     (defun set-v2 (value)
+       (setf v2 value)
+       (setf v1 (/ value 2))
+       value)
+
+     (set-v1 10) ; => 10
+
+     v1 ; => 10
+     v2 ; => 20
+
+     (set-v2 30) ; => 30
+
+     v1 ; => 15
+     v2 ; => 30
+   #+END_SRC
+   Although this works, there are some problems with this approach:
+
+   - For every relation two functions need to be defined, each of
+     them needs to get a unique name and that can become cumbersome
+     with an increasing number of variables in the program.
+
+   - Changing a relation requires redefining all functions which use
+     any of the related variables.
+
+   - Linking more than two variables makes the definitions
+     increasingly more complex and hard to maintain.
+
+   Here is an example of an extension with a third variable /v3/
+   defining the factor of the relation of /v1/ and /v2/
+   #+BEGIN_SRC lisp
+     (defparameter v3 2) ; => v3
+
+     (defun set-v1 (value)
+       (setf v1 value)
+       (setf v2 (* v3 value))
+       value)
+
+     (defun set-v2 (value)
+       (setf v2 value)
+       (setf v1 (/ value v3))
+       value)
+
+     (defun set-v3 (value)
+       (setf v3 value)
+       (setf v2 (* v1 value))
+       v3)
+
+     (set-v3 4) ; => 4
+
+     v1 ; => 15
+     v2 ; => 60
+
+     (set-v2 28) ; => 28
+
+     v1 ; => 7
+     v2 ; => 28
+   #+END_SRC
+
+   Now imagine /v3/ is dependant on another variable /v4/, or there
+   is a chain of dependencies, in the worst case even resulting in a
+   circular dependency, when /v4/ is dependent on the value of /v1/.
+    
+   Especially in a dynamic programming environment where relations
+   between variables might frequently change during a session, the
+   necessity of keeping track of all functions which need to be
+   redefined and reevaluated to keep the variable state consistent
+   becomes a major issue, making programs increasingly hard to
+   maintain and debug.
+*** The ref-object class
+    To make this task less challenging, /cl-refs/ separates the
+    definition of the variables and the application logic into
+    distinct parts, automating the updating of variables behind the
+    scenes. This makes the maintenance of the program much
+    easier[fn:2].
+
+    For a variable with possible relations to other variables,
+    /cl-ref/ uses a special class called /ref-object/. Three main
+    functions are defined to create and access a ref-object: A
+    [[creation
+     function][creation function]], a [[reader function][reader function]] and a [[setter function][setter function]]. These
+    functions are always the same, regardless of the variable they
+    apply to, so there is no need to define a new function for
+    setting any of the variables as in the example above.
+**** creation function
+     A ref-object gets created with the function
+     /make-ref/:
+     #+BEGIN_SRC lisp
+      (defparameter v1 (make-ref 1.0)) ; => v1
+
+      v1 ; => #<ref 1.0>
+     #+END_SRC
+**** reader function
+     To read the value of a ref-object, use the function /get-val/:
+     #+BEGIN_SRC lisp
+       (get-val v1)  ; => 1.0
+     #+END_SRC
+**** setter function
+     To set the value of a ref-object, use the function /set-val/:
+     #+BEGIN_SRC lisp
+      (set-val v1 2.3)  ; => 2.3
+
+      (get-val v1) ; => 2.3
+     #+END_SRC
+*** Defining relations
+    /cl-refs/ provides two ways to define a relation between
+    ref-objects, or between a ref-object and some program logic,
+    [[make-computed][make-computed]] and [[watch][watch]].
+**** make-computed
+     This function combines creating a new ref-object with
+     establishing a relation between the created object and one or
+     more other ref-objects. It takes a function as argument. All
+     ref-objects referenced in the body of that function using
+     /get-val/ will cause the newly created ref-object to update its
+     value by calling the function whenever the value of any of these
+     ref-objects is changed. /make-computed/ returns the newly
+     created ref-object.
+     #+BEGIN_SRC lisp
+       (defvar c1 (make-ref 1.0)) ; => c1
+
+       c1 ; => #<ref 1.0>
+
+       (defvar c2 (make-computed (lambda () (* 2 (get-val c1)))))
+
+       c2 ; => #<ref 2.0>
+
+       (get-val c2) ; => 2.0
+
+       (set-val c1 12) ; => 12
+
+       (get-val c2) ; => 24
+
+       ;;; NOTE: The other direction is undefined:
+
+       (set-val c2 30) ; => 30
+
+       (get-val c1) ; => 12 !!!
+     #+END_SRC
+     Here is an example using two related ref-objects:
+     #+BEGIN_SRC lisp
+       (defvar d1 (make-ref 1)) ; => d1
+       (defvar d2 (make-ref -4)) ; => d2
+
+       (defvar d3 (make-computed (lambda () (+ (get-val d1) (get-val d2))))) ; => d3
+
+       (get-val d3) ; => -3
+
+       (set-val d1 10) ; => 10
+
+       (get-val d3) ; => 6
+
+       (set-val d2 5) ; => 5
+
+       (get-val d3) ; => 15
+     #+END_SRC
+     In case a two-way relation between ref-objects is needed,
+     another function defining the reverse computation can be
+     supplied as optional second argument to /make-computed/:
+     #+BEGIN_SRC lisp
+             (setf c2 (make-computed
+                       ;; function called to set c2
+                       ;; whenever any of the
+                       ;; contained ref-objects are
+                       ;; changed:
+                       (lambda () (* 2 (get-val c1)))
+                        ;; function called whenever c2 gets changed using
+                        ;; (set-val c2 val):
+                       (lambda (val) (set-val c1 (/ val 2)))))
+       ; => #<ref 24>
+
+             c2 ; => #<ref 24>
+
+             (get-val c2) ; => 24
+
+             (set-val c1 7) ; => 7
+
+             (get-val c2) ; => 14
+
+             ;;; Now the other direction works as well:
+
+             (set-val c2 30) ; => 30
+
+             (get-val c1) ; => 15
+     #+END_SRC      
+**** watch
+     Like /make-computed/ also /watch/ takes a function as
+     argument. This function is called, whenever one or more
+     ref-objects referenced in its body using /get-val/ are
+     changed. In that way actions can be triggered and associated
+     with the change of ref-objects[fn:3]. Since actions can also
+     involve changing other ref-objects, /watch/ can be used in a
+     similar fashion as /make-computed/.
+
+     Note that the call to /watch/ will trigger the execution of the
+     supplied function once. This is necessary to register the
+     function in the referenced ref-objects and to ensure the correct
+     state of the application in case relations between ref-objects
+     are defined within the function.
+
+     /watch/ returns a function to remove the action defined by the
+     supplied function. It is crucial to capture this result in order
+     to be able to later remove the established connections between
+     variables and associated actions[fn:4].
+
+     IMPORTANT NOTE: Calling the same watch expression twice will
+     establish two independent functions which will always be called
+     on change of any contained ref-object. If the result of /watch/
+     wasn't captured, removing the defined function(s) is only
+     possible by redefining all referenced objects with the result
+     that any other relation previously established using
+     /make-computed/ or /watch/ is referencing outdated ref-objects
+     and will have to get redefined. Therefore it is not only
+     advisable to capture the return value of all calls to watch, but
+     also to put all definitions of ref-objects and their relations
+     into a function or a piece of code reloadable at runtime to be
+     able to reset all relations, preferably with additional code
+     reestablishing a defined application state of all used
+     ref-objects.
+     #+BEGIN_SRC lisp
+       (defvar e1 (make-ref 1)) ; => e1
+
+       ;; Variable to capture watch definitions:
+       (defvar unwatch nil) ; => unwatch
+
+       (push (watch (lambda () (format t "e1 has changed to ~a~%" (get-val e1)))) unwatch)
+
+       (set-val e1 40) ;; => 40
+
+       ;; output in the REPL:
+       ;; e1 has changed to 40
+
+       unwatch ; => (#<function (lambda () :in watch) {1009EAD9DB}>)
+
+       ;; define another action to be taken:
+
+       (push
+        (watch
+         (lambda ()
+           (format t "another relation: e1 has changed to ~a~%" (get-val e1))))
+        unwatch)
+       ;;  => (#<function (lambda () :in watch) {100D3F59DB}>
+       ;;      #<function (lambda () :in watch) {1009EAD9DB}>)
+
+       ;; output in the REPL:
+       ;; another relation: e1 has changed to 40
+
+       (set-val e1 10) ;; => 10
+
+       ;; output in the REPL:
+       ;; another relation: e1 has changed to 10
+       ;; e1 has changed to 10
+
+       ;; clear all connections by calling the functions returned by the call
+       ;; to #'watch:
+
+       (mapc #'funcall unwatch)
+
+       (setf unwatch nil)
+
+       ;; => (#<function (lambda () :in watch) {100F60096B}>
+       ;;     #<function (lambda () :in watch) {100F60098B}>)
+
+
+     #+END_SRC
+** cl-sfz
+** cl-poolplayer
+** plot
+** cm-utils
+** orm-utils
+   orm-utils is a collection of utilities developed for general
+   purpose use. Ist is included here for completeness only.
+
+[fn:1] With the notable exception of a value bound by /defconstant/,
+as a constant is an /immutable/ value, which never changes.
+
+[fn:2] The implementation ideas are similar to javascript frameworks
+which became increasingly popular in the 2010s like [[https://en.wikipedia.org/wiki/React_(JavaScript_library)][React]] or [[https://en.wikipedia.org/wiki/Vue.js][Vue.js]],
+although they are rooted in much older concepts from the 1970s and
+80s.
+
+[fn:3] In Lisp parlance this is the classic example of a
+/side-effect/.
+
+[fn:4] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
+[[https://en.wikipedia.org/wiki/Max_(software)][Max/MSP]], /watch/ serves a similar purpose as patch cords in these
+systems. Calling the function returned by /watch/ in that context is
+similar to removing a patch cord, although the analogy shouldn't be
+overstressed considering the significant differences between a
+graph-based message-passing paradigm in these systems and the
+structural layout of cl-ref/clamps.

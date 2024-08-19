@@ -21,6 +21,7 @@
   (:use #:cl)
   (:export
    #:PLOT
+o   #:PLOT-2D
    #:CONSTRUCT-PLOT-COMMAND
    #:WITH-GNUPLOT-INSTANCE
    #:*GNUPLOT-HEADER*

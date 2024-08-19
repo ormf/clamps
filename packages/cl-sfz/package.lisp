@@ -12,6 +12,7 @@
    #:remove-sfz-preset
    #:ensure-sfz-preset
    #:get-sfz-preset
+   #:sfz-preset-buffer
    #:sfz-get-range
    #:sfz-preset-loaded?
    #:sf-table-get-range
