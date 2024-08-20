@@ -8,7 +8,8 @@
   :license  "Gnu Public license, version 2.0 or later."
   :version "0.0.1"
   :serial t
-  :depends-on (#:cl-ppcre
+  :depends-on (#:cffi
+	       #:cl-ppcre
                #:cl-refs
                #:incudine
                #:cm
