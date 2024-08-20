@@ -66,9 +66,10 @@
   Clamps is a collection of tools, developed over the course of some
   decades primarily for the artistic work of its author, biased by his
   conceptual and aesthetic ideas. It is put together and made public
-  in the hope it might be useful for others, but -like the beauty of
-  Art in its own right- without any explict or implicit warranty that
-  it fits any purpose whatsoever.
+  in the hope it might be useful for others, but -like one of the
+  integral characteristics of the beauty of Art in general- without
+  any explict or implicit warranty that it fits any purpose
+  whatsoever.
   
   The Documentation of Clamps is split into four parts, accessible
   using the Top Menu:
@@ -115,7 +116,7 @@
 
   Clamps would not have been possible without the tremendous work put
   into Incudine by Tito Latini, Common Music by Rick Taube, FOMUS by
-  David Psenicka, CLOG by Rabbibotton, ATS by Juan Pampin and of
+  David Psenicka, CLOG by David Botton, ATS by Juan Pampin and of
   course Common Lisp by innumerable people, who helped building this
   amazing programming language with all its extensions over the last
   65+ years. Making all their work available to the public using an
@@ -209,12 +210,12 @@
     been transformed into version 3 using the Scheme programming
     language, adding sophisticated realtime capabilities likening it
     to the purpose of Clamps. The system used in Clamps is based on
-    the last Common Lisp version 2.12, released around 2007. Although
-    this version already contained realtime capablilities, this
-    functionality has been adapted in Clamps using [[Incudine][Incudine]]. Clamps
-    extends the functionality of CM by adding classes for [[https://en.wikipedia.org/wiki/SVG][SVG]]
-    import/export as well as [[https://en.wikipedia.org/wiki/SFZ_(file_format)][SFZ]] and sample based in-/output realized
-    using [[Incudine][Incudine]].
+    the last Common Lisp version 2.12, released around
+    2008/2009. Although this version already contained realtime
+    capablilities, this functionality has been adapted in Clamps using
+    [[Incudine][Incudine]]. Clamps extends the functionality of CM by adding classes
+    for [[https://en.wikipedia.org/wiki/SVG][SVG]] import/export as well as [[https://en.wikipedia.org/wiki/SFZ_(file_format)][SFZ]] and sample based in-/output
+    realized using [[Incudine][Incudine]].
 *** FOMUS
     [[https://fomus.sourceforge.net/][FOMUS]] is a system for score output originally developed in Common
     Lisp around 2010/2011 by David Psenicka. It integrates well with
@@ -233,17 +234,13 @@
     synthesis engine has been completely rewritten in [[Incudine][Incudine]].
 
 *** CLOG
-    [[https://github.com/rabbibotton/clog][CLOG]] is a web based system written in Common Lisp using Javascript
-    in a Webbrowser for rendering Graphical User Interfaces using
-    [[https://en.wikipedia.org/wiki/WebSocket][Websockets]] for the communication between Common Lisp and the
-    Browser. CLOG closes the gap of missing GUIs in Common Lisp based
-    systems due to the time of the definition of the Common Lisp
-    Standard in 1990 predating the predominant use of GUIS in current
-    computer applications. The most common GUI widgets like sliders,
-    number boxes, buttons, interactive graphic displays and VU meters
-    have been added to the Clamps system to facilitate the creation of
-    sophisticated GUIs nowadays taken for granted in computer music
-    environments.
+    [[https://github.com/rabbibotton/clog][CLOG]] is a web based system written by David Botton in Common Lisp
+    and Javascript to enable the rendering of Graphical User
+    Interfaces in a Webbrowser using [[https://en.wikipedia.org/wiki/WebSocket][Websockets]] for the communication
+    between Common Lisp and the Browser. CLOG closes the gap of
+    missing GUIs in Common Lisp based systems due to the time of the
+    definition of the Common Lisp Standard in 1990 predating the
+    predominant use of GUIS in current computer applications.
 ** Internal Components of Clamps
    Based on the [[External Components of Clamps][External Components of Clamps]] many additional packages
    were developed. They extend the functionality of the external
@@ -319,9 +316,15 @@
 
       Implementation of various GUI elements for realtime interactive
       work or display, like Sliders, Number Boxes, Buttons, Toggles,
-      Radiobuttons, VU-Meters, Scopes, etc. in a browser including an
-      infrastructure for connecting Common Lisp with the GUI parts
-      written in JavaScript for client side rendering.
+      Radiobuttons, VU-Meters, Scopes, etc. in a browser including a
+      sophisticated infrastructure for connecting the state of Common
+      Lisp objects with the GUI parts that were written in JavaScript
+      to do client side rendering. The package not only facilitates
+      the creation of sophisticated GUIs nowadays taken for granted in
+      computer music environments, but allows for collaborative
+      performances with multiple synced GUIs using standard hardware
+      like Mobile phones or Tablets without the need to install
+      specialized programs.
 
     - /ats-cuda-display/
 
@@ -355,8 +358,22 @@
       A collection of Common Lisp utility functions.
 * Installation
 ** Linux
-   Noicht leer
+*** Dependencies
+    Please download the following programs using the package manager
+    of your Linux Distribution.
+    - Gnu Emacs
+    - LilyPond (optional)
+    - sbcl
 *** Preparation
+    - Download the file [[https://github.com/ormf/clamps/blob/main/extra/quicklisp-install.sh][quicklisp-install.sh]] from the clamps
+      repository and put it into the /tmp/ folder.
+
+    - Open a terminal and issue
+      #+BEGIN_SRC sh
+        sh < quicklisp-install.sh
+      #+END_SRC
+
+      =sh < quicklisp-install=
 ** OSX
 * First Steps
 * Tools
