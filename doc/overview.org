@@ -364,10 +364,9 @@
     - Gnu Emacs
     - LilyPond (optional)
     - sbcl
+    - git
+      
 *** Preparation
-    - Download the file [[https://github.com/ormf/clamps/blob/main/extra/quicklisp-install.sh][quicklisp-install.sh]] from the clamps
-      repository and put it into the /tmp/ folder.
-
     - Open a terminal and issue
       #+BEGIN_SRC sh
         sh < quicklisp-install.sh

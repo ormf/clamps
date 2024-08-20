@@ -15,6 +15,17 @@
    The components rely on and extend software not written by the
    author. The most important are listed under Dependencies.
 
+   There is extensive documentation contained in the repository. To
+   browse the documentation online use this link:
+
+   [[Online doc not yet available]]
+
+** Installation
+
+   To simplify the installation process, a separat repository
+   [[https://github.com/ormf/clamps-install][clamps-install]] has been created. Please consult the installation
+   instructions there.
+
 ** Prerequisites
 
    - Jack
@@ -23,8 +34,9 @@
 
    - Quicklisp
 
-   - preferably Emacs & Sly
-     
+   - Gnu Emacs
+
+   - git
 ** Dependencies
 
    - Incudine
@@ -41,5 +53,4 @@
    - CLOG
 
      Used for browser based interactive GUI definitions.
-
-** Installation
+     
