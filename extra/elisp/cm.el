@@ -162,7 +162,7 @@
         ;; lookup cm function at point
         (define-key slime-mode-map (kbd "\C-c\C-dc") 'cm-lookup)
         (define-key slime-repl-mode-map (kbd "\C-c\C-dc") 'cm-lookup)))
-  (if (boundp 'sly-mode-map)
+  (if (boundp 'sly-mrepl-mode-map)
       (progn
         ;; (define-key lisp-mode-map (kbd "\C-x\C-e") 'sly-eval-last-expression)
         ;; ;; indent line or region
@@ -364,6 +364,10 @@ selected; indent whole defun if prefixed."
             lisp-font-lock-keywords)
       lisp-font-lock-keywords cm-font-lock-keywords)
 
-;; eof
-(enable-cm-commands)
+(add-hook
+ 'sly-mrepl-mode-hook
+ (lambda ()
+   (enable-cm-commands)))
+
 (provide 'cm)
+;; eof

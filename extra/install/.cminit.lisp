@@ -10,7 +10,7 @@
 
 (export '(*sfz-preset-lookup* *sfz-preset-path* *sfile-path*) 'cl-user)
 
-;;; The following paths are the defaults, where the sfz files are
+;;; The following paths are the defaults, where sfz and soundfiles are
 ;;; located in the clamps repository. In order to be able to pull
 ;;; updates of clamps later on it is advisable to add your own sfz
 ;;; files and soundfiles into a folder of your choice and push this
