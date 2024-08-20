@@ -3,5 +3,4 @@
 clamps
 init-clamps.lisp
 todo.org
-/doc/clamps-dictionary/
-/doc/overview/
+html/

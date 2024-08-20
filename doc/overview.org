@@ -122,9 +122,10 @@
   65+ years. Making all their work available to the public using an
   open source license provides the basis for being able to extend
   it. It can't be expressed enough how grateful and privileged I feel
-  using the results of their work and benefit from them throughout my
-  artistic career. In that sense making Clamps available to the public
-  is my contribution intended to pay back to the community.
+  having been able to use the results of their work and benefit from
+  them throughout my artistic career. In that sense making Clamps
+  available to the public is my contribution intended to pay back to
+  the community.
 
   Orm Finnendahl, August 2025
 ** Why Clamps?
@@ -239,7 +240,7 @@
     Interfaces in a Webbrowser using [[https://en.wikipedia.org/wiki/WebSocket][Websockets]] for the communication
     between Common Lisp and the Browser. CLOG closes the gap of
     missing GUIs in Common Lisp based systems due to the time of the
-    definition of the Common Lisp Standard in 1990 predating the
+    definition of the Common Lisp Standard in the 1980s, predating the
     predominant use of GUIS in current computer applications.
 ** Internal Components of Clamps
    Based on the [[External Components of Clamps][External Components of Clamps]] many additional packages
