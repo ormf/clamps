@@ -33,7 +33,7 @@
     --anchor-toc: #518be2;
     --anchor-active: orange;
     --i-color: #1fa03c;
-    --arg-color: #001185;
+    --arg-color: #d06060;
     --b-color: #00000e;
     --title-color: #7a7d87;
     --h1-color: #7a7d87;
@@ -44,7 +44,7 @@
     --code-background: #1f1a1a;
     --code-border-before: #black;
     --code-border: #333;
-    --code-text: #1463318;
+    --code-text: #b5b9bf
     --nav-color: #284671;
     --nav-hover: #518be2;
     --footnote-separator: #b5b9bf;
@@ -400,6 +400,9 @@ code {
 
 }
 
+code {
+    var(--i-color);    
+}
 
 #org-div-nav-menu {
     display: none;
@@ -427,27 +430,27 @@ code {
 }
 
 .toc-level-1 a {
-    color: #5e6068;
+    color: var(--h2-color);
     pointer-events: none;
 }
 
 .toc-level-2 .toc-entry {
-    color: #3e6bae;
+    color: var(--anchor-toc);
     pointer-events: auto;
 }
 
 .toc-level-2 .toc-entry:hover {
-    color: #5e8bde;
+    color: var(--anchor-hover);
     pointer-events: auto;
 }
 
 .toc-level-2 .toc-active {
-    color: #ffa500;
+    color: var(--anchor-active);
     pointer-events: auto;
 }
 
 .toc-level-2 .toc-active:hover {
-    color: #ffa500;
+    color: var(--anchor-active);
 }
 
 .ul-toc-level-3 {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-19 Mo 11:20 -->
+<!-- 2024-08-23 Fr 16:21 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Dictionary</title>
@@ -17,12 +17,18 @@
 <a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
 <a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
 <a class="top-menu top-menu-active" href="./index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
 </div>
-<div id="org-div-nav-menu">Next: <a accesskey="n" href="lsample.html"> lsample </a>,&nbsp;Previous: <a accesskey="p" href="list-sfz-presets.html"> list-sfz-presets </a>,&nbsp;Up: <a accesskey="u" href="l.html"> L </a>,&nbsp;Home: <a accesskey="h" href="a-b.html"> A - B </a></div><div id="content" class="content">
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="logger-level.html"> logger-level </a>,&nbsp;Previous: <a accesskey="p" href="list-sfz-presets.html"> list-sfz-presets </a>,&nbsp;Up: <a accesskey="u" href="l.html"> L </a>,&nbsp;Home: <a accesskey="h" href="overview.html"> Overview </a></div><div id="content" class="content">
 <nav id="table-of-contents" role="doc-toc">
 <h2>Index</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="overview.html"class="toc-entry">Overview</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="overview.html"class="toc-entry">Notation and Usage</a></li>
+</ul>
+</li>
 <li class="toc-level-1"><a href="a-b.html"class="toc-entry">A - B</a>
 <ul class="ul-toc-level-2">
 <li class="toc-hidden toc-level-2"><a href="a-b.html"class="toc-entry">ats-&gt;browser</a></li>
@@ -49,6 +55,7 @@
 <ul class="ul-toc-level-2">
 <li class="toc-hidden toc-level-2"><a href="f.html"class="toc-entry">ftom</a></li>
 <li class="toc-hidden toc-level-2"><a href="fr2ct.html"class="toc-entry">fr2ct</a></li>
+<li class="toc-hidden toc-level-2"><a href="fredrik.html"class="toc-entry">fredrik</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="g-h.html"class="toc-entry">G - H</a>
@@ -68,6 +75,7 @@
 <li class="toc-level-2"><a href="l.html"class="toc-entry">lin-n</a></li>
 <li class="toc-level-2"><a href="list-sfz-presets.html"class="toc-entry">list-sfz-presets</a></li>
 <li class="toc-level-2"><a href="load-sfz-preset.html"class="toc-entry toc-active">load-sfz-preset</a></li>
+<li class="toc-level-2"><a href="logger-level.html"class="toc-entry">logger-level</a></li>
 <li class="toc-level-2"><a href="lsample.html"class="toc-entry">lsample</a></li>
 </ul>
 </li>
@@ -79,6 +87,7 @@
 <li class="toc-hidden toc-level-2"><a href="make-ref.html"class="toc-entry">make-ref</a></li>
 <li class="toc-hidden toc-level-2"><a href="meters.html"class="toc-entry">meters</a></li>
 <li class="toc-hidden toc-level-2"><a href="mtof.html"class="toc-entry">mtof</a></li>
+<li class="toc-hidden toc-level-2"><a href="msg.html"class="toc-entry">msg</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="n-o.html"class="toc-entry">N - O</a>
@@ -147,9 +156,9 @@
 <header>
 <h1 class="title">Clamps Dictionary</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="list-sfz-presets.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-org9ee9ed5" class="outline-3">
-<h3 id="org9ee9ed5">load-sfz-preset</h3>
-<div class="outline-text-3" id="text-org9ee9ed5">
+<div id="page-text-body"><div id="outline-container-org1db407c" class="outline-3">
+<h3 id="org1db407c">load-sfz-preset</h3>
+<div class="outline-text-3" id="text-org1db407c">
 <p>
 Function
 </p>
@@ -163,12 +172,12 @@ Load a sfz file into a preset with the id name. In case this preset
 already exists, the old one will only be overwritten if force is
 set to t. This function normally doesn't need to be called
 explicitely. The preferred mechanism to deal with sfz presets is by
-using a combination of <a href="add-sfz-preset.html#org7fc21d3">add-sfz-preset</a> and <a href="e.html#orgb13407a">ensure-sfz-preset</a>.
+using a combination of <a href="add-sfz-preset.html#orgf849b35">add-sfz-preset</a> and <a href="e.html#org1cf6aef">ensure-sfz-preset</a>.
 </p>
 </div>
-<div id="outline-container-org751cd6e" class="outline-4">
-<h4 id="org751cd6e">Arguments</h4>
-<div class="outline-text-4" id="text-org751cd6e">
+<div id="outline-container-org9d9acce" class="outline-4">
+<h4 id="org9d9acce">Arguments</h4>
+<div class="outline-text-4" id="text-org9d9acce">
 <p>
 <code>file</code> Path or filename of the sfz file to load
 </p>
@@ -189,7 +198,7 @@ are
 
 <ul class="org-ul">
 <li><p>
-<a href="play-sfz-loop.html#orgfb15228">#'play-sfz-loop</a>
+<a href="play-sfz-loop.html#org0820766">#'play-sfz-loop</a>
 </p>
 
 <p>
@@ -199,7 +208,7 @@ the whole sample.
 </p></li>
 
 <li><p>
-<a href="play-sfz-one-shot.html#org6878b1c">#'play-sfz-one-shot</a>
+<a href="play-sfz-one-shot.html#org889aa99">#'play-sfz-one-shot</a>
 </p>
 
 <p>
@@ -208,33 +217,33 @@ Just play sample once even if duration exceeds sample length.
 </ul>
 </div>
 </div>
-<div id="outline-container-orgc65cb4b" class="outline-4">
-<h4 id="orgc65cb4b">Example</h4>
-<div class="outline-text-4" id="text-orgc65cb4b">
+<div id="outline-container-org6181a57" class="outline-4">
+<h4 id="org6181a57">Example</h4>
+<div class="outline-text-4" id="text-org6181a57">
 <div class="org-src-container">
 <pre class="src src-lisp"><span style="color: #ffff00;">(</span>load-sfz-preset <span style="color: #87cefa;">"~/quicklisp/local-projects/clamps/packages/cl-sfz/snd/sfz/Flute-nv/000_Flute-nv.sfz"</span> <span style="color: #7fffd4;">:flute-nv</span><span style="color: #ffff00;">)</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-orgde06474" class="outline-4">
-<h4 id="orgde06474">See also</h4>
-<div class="outline-text-4" id="text-orgde06474">
+<div id="outline-container-org3259ca6" class="outline-4">
+<h4 id="org3259ca6">See also</h4>
+<div class="outline-text-4" id="text-org3259ca6">
 <ul class="org-ul">
-<li><a href="add-sfz-preset.html#org7fc21d3">add-sfz-preset</a></li>
+<li><a href="add-sfz-preset.html#orgf849b35">add-sfz-preset</a></li>
 
-<li><a href="e.html#orgb13407a">ensure-sfz-preset</a></li>
+<li><a href="e.html#org1cf6aef">ensure-sfz-preset</a></li>
 
-<li><a href="remove-sfz-preset.html#org69489b1">remove-sfz-preset</a></li>
+<li><a href="remove-sfz-preset.html#org8ae2f68">remove-sfz-preset</a></li>
 </ul>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Orm Finnendahl</p>
-<p class="date">Created: 2024-08-19 Mo 11:20</p>
+<p class="date">Created: 2024-08-23 Fr 16:21</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
-</div><nav id="nav-right"><a href="lsample.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</div><nav id="nav-right"><a href="logger-level.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
 </body>
 </html>

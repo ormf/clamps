@@ -28,12 +28,12 @@
     --toc-background: #1a1c23;
     --menu-background: #060712;
     --search-background: #00032c;
-    --img-background: #1131312;
+    --img-background: #ffeeee
     --anchor-hover: #7ab6ff;
     --anchor-toc: #518be2;
     --anchor-active: orange;
     --i-color: #1fa03c;
-    --arg-color: #001185;
+    --arg-color: #d06060;
     --b-color: #00000e;
     --title-color: #7a7d87;
     --h1-color: #7a7d87;
@@ -44,7 +44,7 @@
     --code-background: #1f1a1a;
     --code-border-before: #black;
     --code-border: #333;
-    --code-text: #1463318;
+    --code-text: antiquewhite
     --nav-color: #284671;
     --nav-hover: #518be2;
     --footnote-separator: #b5b9bf;
@@ -319,7 +319,7 @@ pre {
   box-shadow: none;
   padding: 8pt;
   background-color: var(--code-background);
-    padding-top: 8pt;
+  padding-top: 8pt;
   font-family: monospace;
   overflow: auto;
   margin: 1.2em;
@@ -431,12 +431,7 @@ code {
     pointer-events: none;
 }
 
-.toc-level-2 a {
-    color: #5e6068;
-    pointer-events: none;
-}
-
-.toc-level-3 .toc-entry {
+.toc-level-2 .toc-entry {
     color: #3e6bae;
     pointer-events: auto;
 }
@@ -446,12 +441,12 @@ code {
     pointer-events: auto;
 }
 
-.toc-level-3 .toc-active {
+.toc-level-2 .toc-active {
     color: #ffa500;
     pointer-events: auto;
 }
 
-.toc-level-3 .toc-active:hover {
+.toc-level-2 .toc-active:hover {
     color: #ffa500;
 }
 
@@ -466,14 +461,7 @@ code {
 }
 
 .toc-level-2 {
-    margin-top: 0.5em;
-    font-size: 0.7em;
-    font-weight: bold;
-    line-height: 1.2em;
-}
-
-.toc-level-3 {
-    font-size: 1em;
+    font-size: 0.625em;
     font-weight: normal;
     line-height: 1.2em;
 }

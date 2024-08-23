@@ -8,7 +8,7 @@
 #+OPTIONS: html-multipage-toc-to-top:t
 #+OPTIONS: html-multipage-export-directory:clamps
 #+OPTIONS: html-multipage-open:nil
-#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n"
+#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n<a class=\"top-menu\" href=\"../fomus/index.html\">Fomus</a>\n"
 #+OPTIONS: html-multipage-postamble-position:bottom
 #+OPTIONS: html-postamble:nil
 #+OPTIONS: html-multipage-include-default-style:nil

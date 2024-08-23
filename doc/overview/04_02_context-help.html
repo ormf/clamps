@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-08-23 Fr 08:57 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Overview</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/overview.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu top-menu-active" href="./index.html">Overview</a>
+<a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="04_03_finding-source-definitions.html"> Finding Source Definitions </a>,&nbsp;Previous: <a accesskey="p" href="04_00_tools.html"> Tools </a>,&nbsp;Up: <a accesskey="u" href="04_00_tools.html"> Tools </a>,&nbsp;Home: <a accesskey="h" href="01_00_introduction.html"> Introduction </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_introduction.html"class="toc-entry">Introduction</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="01_00_introduction.html"class="toc-entry">What is Clamps?</a></li>
+<li class="toc-hidden toc-level-2"><a href="01_02_why-clamps.html"class="toc-entry">Why Clamps?</a></li>
+<li class="toc-hidden toc-level-2"><a href="01_03_external-components-of-clamps.html"class="toc-entry">External components of Clamps</a></li>
+<li class="toc-hidden toc-level-2"><a href="01_04_internal-components-of-clamps.html"class="toc-entry">Internal Components of Clamps</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_installation.html"class="toc-entry">Installation</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="02_00_installation.html"class="toc-entry">clamps-install</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_first-steps.html"class="toc-entry">First Steps</a></li>
+<li class="toc-level-1"><a href="04_00_tools.html"class="toc-entry">Tools</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="04_00_tools.html"class="toc-entry">Online Help System</a></li>
+<li class="toc-level-2"><a href="04_02_context-help.html"class="toc-entry toc-active">Context Help</a></li>
+<li class="toc-level-2"><a href="04_03_finding-source-definitions.html"class="toc-entry">Finding Source Definitions</a></li>
+<li class="toc-level-2"><a href="04_04_code-inspection.html"class="toc-entry">Code Inspection</a></li>
+<li class="toc-level-2"><a href="04_05_debugging-tools.html"class="toc-entry">Debugging Tools</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_.html"class="toc-entry"></a></li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Overview</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="04_00_tools.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-orgaf3713c" class="outline-3">
+<h3 id="orgaf3713c">Context Help</h3>
+<div class="outline-text-3" id="text-orgaf3713c">
+<p>
+For every compiled expression<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>, the <i>sly-mode</i> in Emacs takes
+care of automatically storing all information of the expression
+internally. In case of functions this means that the signature of
+any compiled function is known and will be displayed in the
+Minibuffer of Emacs when typing the name of a function in an
+inferior lisp buffer<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>:
+</p>
+
+
+<figure id="org215c621">
+<img src="./img/function-help.png" alt="function-help.png" width="80%" />
+
+<figcaption><span class="figure-number">Figure 1: </span>Context help of function arguments in the Minibuffer</figcaption>
+</figure>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+Compiling an expression in Sly means to move the cursor
+somewhere into or just behind an expression or form to be compiled and
+then press <i>&lt;C-c C-c&gt;</i>. This will compile the toplevel form of the
+expression.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+For this to work, the <i>company</i> minor-mode has to be active in
+the lisp buffer. The standard <a href="02_00_installation.html#org3f21532">installation</a> should take care of that.
+</p></div></div>
+
+
+</div>
+</div></div><nav id="nav-right"><a href="04_03_finding-source-definitions.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

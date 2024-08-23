@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-20 Di 14:22 -->
+<!-- 2024-08-23 Fr 08:57 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Overview</title>
@@ -17,6 +17,7 @@
 <a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
 <a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
 <a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
 </div>
 <div id="org-div-nav-menu">Next: <a accesskey="n" href="01_02_why-clamps.html"> Why Clamps? </a>,&nbsp;Home: <a accesskey="h" href="01_00_introduction.html"> Introduction </a></div><div id="content" class="content">
 <nav id="table-of-contents" role="doc-toc">
@@ -33,18 +34,17 @@
 </li>
 <li class="toc-level-1"><a href="02_00_installation.html"class="toc-entry">Installation</a>
 <ul class="ul-toc-level-2">
-<li class="toc-hidden toc-level-2"><a href="02_00_installation.html"class="toc-entry">Linux</a></li>
-<li class="toc-hidden toc-level-2"><a href="02_02_osx.html"class="toc-entry">OSX</a></li>
+<li class="toc-hidden toc-level-2"><a href="02_00_installation.html"class="toc-entry">clamps-install</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="03_00_first-steps.html"class="toc-entry">First Steps</a></li>
 <li class="toc-level-1"><a href="04_00_tools.html"class="toc-entry">Tools</a>
 <ul class="ul-toc-level-2">
-<li class="toc-hidden toc-level-2"><a href="04_00_tools.html"class="toc-entry">Context Help</a></li>
-<li class="toc-hidden toc-level-2"><a href="04_02_finding-source-definitions.html"class="toc-entry">Finding Source Definitions</a></li>
-<li class="toc-hidden toc-level-2"><a href="04_03_code-inspection.html"class="toc-entry">Code Inspection</a></li>
-<li class="toc-hidden toc-level-2"><a href="04_04_debugging-tools.html"class="toc-entry">Debugging Tools</a></li>
-<li class="toc-hidden toc-level-2"><a href="04_05_online-help-system.html"class="toc-entry">Online Help System</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_00_tools.html"class="toc-entry">Online Help System</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_02_context-help.html"class="toc-entry">Context Help</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_03_finding-source-definitions.html"class="toc-entry">Finding Source Definitions</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_04_code-inspection.html"class="toc-entry">Code Inspection</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_05_debugging-tools.html"class="toc-entry">Debugging Tools</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="05_00_.html"class="toc-entry"></a></li>
@@ -54,13 +54,13 @@
 <header>
 <h1 class="title">Clamps Overview</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="" class="nav-left"><i class="angle-left-inactive"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-org42296f4" class="outline-2">
-<h2 id="org42296f4">Introduction</h2>
-<div class="outline-text-2" id="text-org42296f4">
+<div id="page-text-body"><div id="outline-container-org27f65c7" class="outline-2">
+<h2 id="org27f65c7">Introduction</h2>
+<div class="outline-text-2" id="text-org27f65c7">
 </div>
-<div id="outline-container-orgcf9a47c" class="outline-3">
-<h3 id="orgcf9a47c">What is Clamps?</h3>
-<div class="outline-text-3" id="text-orgcf9a47c">
+<div id="outline-container-org961edda" class="outline-3">
+<h3 id="org961edda">What is Clamps?</h3>
+<div class="outline-text-3" id="text-org961edda">
 <p>
 Clamps, the <i><b>C</b>​ommon <b>L</b>​isp <b>A</b>​ided <b>M</b>​usic <b>P</b>​roduction <b>S</b>​ystem</i>
 is an integrated environment for the production of music in the
@@ -95,7 +95,7 @@ using the Top Menu:
 </p>
 
 <ul class="org-ul">
-<li>The <a href="01_00_introduction.html#org42296f4">Overview</a> explains the raison d'etre of Clamps and gives a
+<li>The <a href="01_00_introduction.html#org27f65c7">Overview</a> explains the raison d'etre of Clamps and gives a
 short overview of its components, followed by installation
 instructions, a short primer and an introduction into tools
 available when working with Common Lisp in Emacs.</li>
@@ -104,8 +104,8 @@ available when working with Common Lisp in Emacs.</li>
 
 <ul class="org-ul">
 <li>The <a href="../clamps/index.html">Clamps Packages</a> section gives a more detailed introduction
-with examples into the <a href="01_04_internal-components-of-clamps.html#org29ba9b7">internal components</a> specifically written
-for Clamps. The <a href="01_03_external-components-of-clamps.html#org0f52813">external components</a> which make up a large part of
+with examples into the <a href="01_04_internal-components-of-clamps.html#org9e927ca">internal components</a> specifically written
+for Clamps. The <a href="01_03_external-components-of-clamps.html#org9cc59cb">external components</a> which make up a large part of
 the functionality of Clamps, are not documented here as they are
 well documented in their own respective documention available
 online.</li>

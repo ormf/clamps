@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-08-23 Fr 08:57 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Overview</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/overview.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu top-menu-active" href="./index.html">Overview</a>
+<a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="05_00_.html">  </a>,&nbsp;Previous: <a accesskey="p" href="04_04_code-inspection.html"> Code Inspection </a>,&nbsp;Up: <a accesskey="u" href="04_00_tools.html"> Tools </a>,&nbsp;Home: <a accesskey="h" href="01_00_introduction.html"> Introduction </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_introduction.html"class="toc-entry">Introduction</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="01_00_introduction.html"class="toc-entry">What is Clamps?</a></li>
+<li class="toc-hidden toc-level-2"><a href="01_02_why-clamps.html"class="toc-entry">Why Clamps?</a></li>
+<li class="toc-hidden toc-level-2"><a href="01_03_external-components-of-clamps.html"class="toc-entry">External components of Clamps</a></li>
+<li class="toc-hidden toc-level-2"><a href="01_04_internal-components-of-clamps.html"class="toc-entry">Internal Components of Clamps</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_installation.html"class="toc-entry">Installation</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="02_00_installation.html"class="toc-entry">clamps-install</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_first-steps.html"class="toc-entry">First Steps</a></li>
+<li class="toc-level-1"><a href="04_00_tools.html"class="toc-entry">Tools</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="04_00_tools.html"class="toc-entry">Online Help System</a></li>
+<li class="toc-level-2"><a href="04_02_context-help.html"class="toc-entry">Context Help</a></li>
+<li class="toc-level-2"><a href="04_03_finding-source-definitions.html"class="toc-entry">Finding Source Definitions</a></li>
+<li class="toc-level-2"><a href="04_04_code-inspection.html"class="toc-entry">Code Inspection</a></li>
+<li class="toc-level-2"><a href="04_05_debugging-tools.html"class="toc-entry toc-active">Debugging Tools</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_.html"class="toc-entry"></a></li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Overview</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="04_04_code-inspection.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-org79bf19c" class="outline-3">
+<h3 id="org79bf19c">Debugging Tools</h3>
+<div class="outline-text-3" id="text-org79bf19c">
+</div>
+<div id="outline-container-orgc8a954f" class="outline-4">
+<h4 id="orgc8a954f">Logging</h4>
+<div class="outline-text-4" id="text-orgc8a954f">
+<p>
+To obtain information about the state of the program while it is
+running, Incudine implements a logging mechanism which is imported
+into clamps. Messages can be formatted to the REPL using the <a href="../clamps-dict/msg.html">msg</a>
+function. The first argument to that function is the logger level.
+</p>
+
+<p>
+There are 4 available logger levels, <code>:error</code>, <code>:warn</code>, <code>:info</code>
+and <code>:debug</code> in ascending order. The currently active logger level
+can be returned or set using the <a href="../clamps-dict/logger-level.html">logger-level</a> function.
+</p>
+
+<p>
+If a msg command uses a logger level &lt;= the current logger level,
+it will be printed in the REPL, otherwise the msg command doesn't
+produce any output:
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>logger-level<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; :warn</span>
+
+<span style="color: #ffff00;">(</span>msg <span style="color: #7fffd4;">:warn</span> <span style="color: #87cefa;">"Warning"</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; nil</span>
+
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">Output in the REPL:</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">warn: Warning</span>
+
+<span style="color: #ffff00;">(</span>msg <span style="color: #7fffd4;">:error</span> <span style="color: #87cefa;">"Error"</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; nil</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">Output in the REPL:</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">error: Error</span>
+
+<span style="color: #ffff00;">(</span>msg <span style="color: #7fffd4;">:info</span> <span style="color: #87cefa;">"Info"</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; nil</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">No Output in the REPL!</span>
+
+<span style="color: #ffff00;">(</span>setf <span style="color: #a9a9a9;">(</span>logger-level<span style="color: #a9a9a9;">)</span> <span style="color: #7fffd4;">:info</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; :info</span>
+<span style="color: #ffff00;">(</span>msg <span style="color: #7fffd4;">:info</span> <span style="color: #87cefa;">"Info"</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; nil</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">Output in the REPL:</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">Info</span>
+
+<span style="color: #ffff00;">(</span>msg <span style="color: #7fffd4;">:error</span> <span style="color: #87cefa;">"Error"</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; nil</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">Output in the REPL:</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">error: Error</span>
+</pre>
+</div>
+<p>
+This mechanism can be used to put messaging into the code which is
+only activated for certain logger levels to be able to trace and
+inspect what is going on in the application by setting the
+appropriate logger level. In addition output can be directed by
+setting the <i>*​logger-stream​*</i> special variable.
+</p>
+</div>
+</div>
+<div id="outline-container-org66d887e" class="outline-4">
+<h4 id="org66d887e">The Sly Debugger</h4>
+<div class="outline-text-4" id="text-org66d887e">
+<p>
+Common Lisp has a unique mechanism for error recovery called
+<i>Condition System</i><sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>. Whenever an error is encountered, emacs
+opens a new Buffer similar to the one shown below.
+</p>
+
+
+<figure id="orgf9836fa">
+<img src="./img/sly-debug.png" alt="sly-debug.png" width="80%" />
+
+<figcaption><span class="figure-number">Figure 3: </span>The Sly Debugger</figcaption>
+</figure>
+
+<p>
+It is very important to note that even though an error just
+occurred, the Lisp REPL is still responsive and a user can
+continue to work with the system. Nevertheless, the error
+condition should always be handled by invoking one of the
+restarts, listed under <i>Restarts:</i> to avoid multiple threads open
+in the background not doing anything useful.
+</p>
+
+<p>
+In the above example, restart "1" or "2" are probably the most
+sensitive choices as retrying to divide by zero, as restart "0"
+suggests, would result in the same error condition as before. The
+restart is selected by pressing the corresponding number key on
+the keyboard. Aborting the debugger thread can also get
+accomplished using the <i>q</i> key.
+</p>
+
+<p>
+Studying the Backtrace can convey important information about the
+context and sequence of function calls causing the error
+condition. The Sly Debugger includes a comfortable inspector to
+see and inspect the arguments of all functions leading to the
+error.
+</p>
+</div>
+</div>
+<div id="outline-container-orgb70a5d5" class="outline-4">
+<h4 id="orgb70a5d5">Internet Resources</h4>
+<div class="outline-text-4" id="text-orgb70a5d5">
+<p>
+It is beyound the scope of this reference to give a detailed
+introduction into all debugging and inspection options in a mature
+Common Lisp environment like Emacs/Sly/sbcl. An excellent online
+collection of tools and information can be found in the <a href="https://lispcookbook.github.io/cl-cookbook/debugging.html">Debugging</a>
+chapter of the Common Lisp Cookbook. Studying it is strongly
+recommended.
+</p>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+For a detailed description see the excellent Book by Michal
+"phoe" Herda: The Common Lisp Condition System, Beyond Exception
+Handling with Control Flow Mechanisms, APress 2020
+</p></div></div>
+
+
+</div>
+</div></div><nav id="nav-right"><a href="05_00_.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

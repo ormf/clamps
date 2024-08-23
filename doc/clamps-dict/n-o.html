@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-19 Mo 11:20 -->
+<!-- 2024-08-23 Fr 16:21 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Dictionary</title>
@@ -17,12 +17,18 @@
 <a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
 <a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
 <a class="top-menu top-menu-active" href="./index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
 </div>
-<div id="org-div-nav-menu">Next: <a accesskey="n" href="n-exp-dev.html"> n-exp-dev </a>,&nbsp;Previous: <a accesskey="p" href="mtof.html"> mtof </a>,&nbsp;Home: <a accesskey="h" href="a-b.html"> A - B </a></div><div id="content" class="content">
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="n-exp-dev.html"> n-exp-dev </a>,&nbsp;Previous: <a accesskey="p" href="msg.html"> msg </a>,&nbsp;Home: <a accesskey="h" href="overview.html"> Overview </a></div><div id="content" class="content">
 <nav id="table-of-contents" role="doc-toc">
 <h2>Index</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="overview.html"class="toc-entry">Overview</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="overview.html"class="toc-entry">Notation and Usage</a></li>
+</ul>
+</li>
 <li class="toc-level-1"><a href="a-b.html"class="toc-entry">A - B</a>
 <ul class="ul-toc-level-2">
 <li class="toc-hidden toc-level-2"><a href="a-b.html"class="toc-entry">ats-&gt;browser</a></li>
@@ -49,6 +55,7 @@
 <ul class="ul-toc-level-2">
 <li class="toc-hidden toc-level-2"><a href="f.html"class="toc-entry">ftom</a></li>
 <li class="toc-hidden toc-level-2"><a href="fr2ct.html"class="toc-entry">fr2ct</a></li>
+<li class="toc-hidden toc-level-2"><a href="fredrik.html"class="toc-entry">fredrik</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="g-h.html"class="toc-entry">G - H</a>
@@ -68,6 +75,7 @@
 <li class="toc-hidden toc-level-2"><a href="l.html"class="toc-entry">lin-n</a></li>
 <li class="toc-hidden toc-level-2"><a href="list-sfz-presets.html"class="toc-entry">list-sfz-presets</a></li>
 <li class="toc-hidden toc-level-2"><a href="load-sfz-preset.html"class="toc-entry">load-sfz-preset</a></li>
+<li class="toc-hidden toc-level-2"><a href="logger-level.html"class="toc-entry">logger-level</a></li>
 <li class="toc-hidden toc-level-2"><a href="lsample.html"class="toc-entry">lsample</a></li>
 </ul>
 </li>
@@ -79,6 +87,7 @@
 <li class="toc-hidden toc-level-2"><a href="make-ref.html"class="toc-entry">make-ref</a></li>
 <li class="toc-hidden toc-level-2"><a href="meters.html"class="toc-entry">meters</a></li>
 <li class="toc-hidden toc-level-2"><a href="mtof.html"class="toc-entry">mtof</a></li>
+<li class="toc-hidden toc-level-2"><a href="msg.html"class="toc-entry">msg</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="n-o.html"class="toc-entry toc-active">N - O</a>
@@ -146,14 +155,14 @@
 </nav>
 <header>
 <h1 class="title">Clamps Dictionary</h1>
-</header><div id="page-main-body"><nav id="nav-left"><a href="mtof.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-orga784492" class="outline-2">
-<h2 id="orga784492">N - O</h2>
-<div class="outline-text-2" id="text-orga784492">
+</header><div id="page-main-body"><nav id="nav-left"><a href="msg.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-org371a42b" class="outline-2">
+<h2 id="org371a42b">N - O</h2>
+<div class="outline-text-2" id="text-org371a42b">
 </div>
-<div id="outline-container-org06d4f25" class="outline-3">
-<h3 id="org06d4f25">n-exp</h3>
-<div class="outline-text-3" id="text-org06d4f25">
+<div id="outline-container-org94b22d8" class="outline-3">
+<h3 id="org94b22d8">n-exp</h3>
+<div class="outline-text-3" id="text-org94b22d8">
 <p>
 Function
 </p>
@@ -166,9 +175,9 @@ Return the exponential interpolation for a normalized value in the
 range <i>[min..max]</i> as a float value.
 </p>
 </div>
-<div id="outline-container-orga769c32" class="outline-4">
-<h4 id="orga769c32">Arguments</h4>
-<div class="outline-text-4" id="text-orga769c32">
+<div id="outline-container-org4c4282e" class="outline-4">
+<h4 id="org4c4282e">Arguments</h4>
+<div class="outline-text-4" id="text-org4c4282e">
 <p>
 <code>x</code> An input value in the range <i>[0..1]</i> to be interpolated.
 </p>
@@ -182,9 +191,9 @@ range <i>[min..max]</i> as a float value.
 </p>
 </div>
 </div>
-<div id="outline-container-orgcec5767" class="outline-4">
-<h4 id="orgcec5767">Examples</h4>
-<div class="outline-text-4" id="text-orgcec5767">
+<div id="outline-container-orgc5607d7" class="outline-4">
+<h4 id="orgc5607d7">Examples</h4>
+<div class="outline-text-4" id="text-orgc5607d7">
 <div class="org-src-container">
 <pre class="src src-lisp"><span style="color: #ffff00;">(</span>n-exp 0 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 1.0</span>
 
@@ -195,23 +204,23 @@ range <i>[min..max]</i> as a float value.
 </div>
 </div>
 </div>
-<div id="outline-container-orgc4cf679" class="outline-4">
-<h4 id="orgc4cf679">See also</h4>
-<div class="outline-text-4" id="text-orgc4cf679">
+<div id="outline-container-org2da9be7" class="outline-4">
+<h4 id="org2da9be7">See also</h4>
+<div class="outline-text-4" id="text-org2da9be7">
 <ul class="org-ul">
-<li><a href="exp-n.html#org7b1b432">exp-n</a></li>
+<li><a href="exp-n.html#org57c6f8c">exp-n</a></li>
 
-<li><a href="l.html#org1e61619">lin-n</a></li>
+<li><a href="l.html#org096e00e">lin-n</a></li>
 
-<li><a href="m.html#orge49ffa5">m-exp</a></li>
+<li><a href="m.html#org6bb202e">m-exp</a></li>
 
-<li><a href="m-lin.html#orgee70ced">m-lin</a></li>
+<li><a href="m-lin.html#org5707abc">m-lin</a></li>
 
-<li><a href="n-exp-dev.html#org6c2e5c5">n-exp-dev</a></li>
+<li><a href="n-exp-dev.html#org39fbb43">n-exp-dev</a></li>
 
-<li><a href="n-lin.html#org8fd2f01">n-lin</a></li>
+<li><a href="n-lin.html#org187cddd">n-lin</a></li>
 
-<li><a href="n-lin-dev.html#org5f83c55">n-lin-dev</a></li>
+<li><a href="n-lin-dev.html#orgf8061e8">n-lin-dev</a></li>
 </ul>
 </div>
 </div>
@@ -219,7 +228,7 @@ range <i>[min..max]</i> as a float value.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Orm Finnendahl</p>
-<p class="date">Created: 2024-08-19 Mo 11:20</p>
+<p class="date">Created: 2024-08-23 Fr 16:21</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </div><nav id="nav-right"><a href="n-exp-dev.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>

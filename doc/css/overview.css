@@ -31,9 +31,10 @@
     --img-background: #1131312;
     --anchor-hover: #7ab6ff;
     --anchor-toc: #518be2;
+    --angle-color: #284671;
     --anchor-active: orange;
     --i-color: #1fa03c;
-    --arg-color: #001185;
+    --arg-color: #d06060;
     --b-color: #00000e;
     --title-color: #7a7d87;
     --h1-color: #7a7d87;
@@ -44,7 +45,7 @@
     --code-background: #1f1a1a;
     --code-border-before: #black;
     --code-border: #333;
-    --code-text: #1463318;
+    --code-text: #b5b9bf
     --nav-color: #284671;
     --nav-hover: #518be2;
     --footnote-separator: #b5b9bf;
@@ -343,7 +344,7 @@ a.nav-left {
     flex-direction: column;
     accesskey: 'p';
     /* color: #32568b; */
-    color: var(--nav-color);
+    color: var(--anchor-toc);
 }
 
 a.nav-left:hover, a.nav-right:hover, a.nav-up:hover {
@@ -360,7 +361,7 @@ a.nav-right {
     justify-content: center;
     align-content: center;
     flex-direction: column;
-    color: var(--nav-color);
+    color: var(--angle-color);
 }
 
 i.angle-left::before {
@@ -374,7 +375,7 @@ i.angle-right::before {
 }
 
 i.angle-left, i.angle-right {
-    color: var(--nav-color);
+    color: var(--angle-color);
 }
 
 
@@ -384,7 +385,7 @@ i {
 }
 
 code {
-    color: var(--arg-color);
+    color: var(--angle-color);
 }
 
 #postamble {
@@ -400,6 +401,9 @@ code {
 
 }
 
+code {
+    var(--i-color);    
+}
 
 #org-div-nav-menu {
     display: none;
@@ -427,7 +431,7 @@ code {
 }
 
 .toc-level-1 a {
-    color: #5e6068;
+    color: var(--h2-color);
     pointer-events: none;
 }
 

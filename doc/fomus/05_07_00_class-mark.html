@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-08-23 Fr 08:51 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fomus</title>
+<meta name="author" content="David Psenicka" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/fomus.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu" href="../overview/index.html">Overview</a>
+<a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu top-menu-active" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="05_08_00_structure-instr.html"> Structure INSTR </a>,&nbsp;Previous: <a accesskey="p" href="05_06_00_class-rest.html"> Class REST </a>,&nbsp;Up: <a accesskey="u" href="05_00_00_objects.html"> Objects </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_disclaimer.html"> Disclaimer </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_00_disclaimer.html"class="toc-entry">Disclaimer</a></li>
+<li class="toc-level-1"><a href="02_00_00_introduction.html"class="toc-entry">Introduction</a></li>
+<li class="toc-level-1"><a href="03_00_00_installation.html"class="toc-entry">Installation</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="03_00_00_installation.html"class="toc-entry">Downloading</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_02_00_compiling-loading.html"class="toc-entry">Compiling/Loading</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_03_00_installing-as-an-executable.html"class="toc-entry">Installing as an Executable</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_04_00_customizing-the-installation.html"class="toc-entry">Customizing the Installation</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_05_00_simple-emacs-interface.html"class="toc-entry">Simple Emacs Interface</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="04_00_00_usage.html"class="toc-entry">Usage</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="04_01_00_interface-1.html"class="toc-entry">Interface 1</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_02_00_interface-2.html"class="toc-entry">Interface 2</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_03_00_text-file-interface.html"class="toc-entry">Text File Interface</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_04_00_common-music-interface.html"class="toc-entry">Common Music Interface</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_05_00_command-line-interface.html"class="toc-entry">Command Line Interface</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_06_00_chunks.html"class="toc-entry">Chunks</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_07_00_other-interface-functions.html"class="toc-entry">Other Interface Functions</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="04_07_00_other-interface-functions.html"class="toc-entry">list-fomus-settings</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_02_list-fomus-modules.html"class="toc-entry">list-fomus-modules</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_03_list-fomus-instruments.html"class="toc-entry">list-fomus-instruments</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_04_get-instr-syms.html"class="toc-entry">get-instr-syms</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_05_list-fomus-percussion.html"class="toc-entry">list-fomus-percussion</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_06_get-perc-syms.html"class="toc-entry">get-perc-syms</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_07_list-fomus-instrgroups.html"class="toc-entry">list-fomus-instrgroups</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_08_list-fomus-clefs.html"class="toc-entry">list-fomus-clefs</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_09_list-fomus-meas-divs.html"class="toc-entry">list-fomus-meas-divs</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_10_list-fomus-tuplet-divs.html"class="toc-entry">list-fomus-tuplet-divs</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_11_load-init-file.html"class="toc-entry">load-init-file</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_12_get-midi-instr.html"class="toc-entry">get-midi-instr</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_13_marks.html"class="toc-entry">marks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_00_objects.html"class="toc-entry">Objects</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="05_01_00_class-part.html"class="toc-entry">Class PART</a></li>
+<li class="toc-level-2"><a href="05_02_00_class-timesig.html"class="toc-entry">Class TIMESIG</a></li>
+<li class="toc-level-2"><a href="05_03_00_class-timesig-repl.html"class="toc-entry">Class TIMESIG-REPL</a></li>
+<li class="toc-level-2"><a href="05_04_00_class-keysig.html"class="toc-entry">Class KEYSIG</a></li>
+<li class="toc-level-2"><a href="05_05_00_class-note.html"class="toc-entry">Class NOTE</a></li>
+<li class="toc-level-2"><a href="05_06_00_class-rest.html"class="toc-entry">Class REST</a></li>
+<li class="toc-level-2"><a href="05_07_00_class-mark.html"class="toc-entry toc-active">Class MARK</a></li>
+<li class="toc-level-2"><a href="05_08_00_structure-instr.html"class="toc-entry">Structure INSTR</a></li>
+<li class="toc-level-2"><a href="05_09_00_structure-perc.html"class="toc-entry">Structure PERC</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="06_00_00_settings.html"class="toc-entry">Settings</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="06_01_00_most-useful-fomus-settings.html"class="toc-entry">Most Useful FOMUS Settings</a></li>
+<li class="toc-hidden toc-level-2"><a href="06_02_00_complete-fomus-settings.html"class="toc-entry">Complete FOMUS Settings</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="06_02_00_complete-fomus-settings.html"class="toc-entry">Program Settings</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_02_backend-options.html"class="toc-entry">Backend Options</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_03_global.html"class="toc-entry">Global</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_04_objects.html"class="toc-entry">Objects</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_05_parts.html"class="toc-entry">Parts</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_06_time-signatures.html"class="toc-entry">Time Signatures</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_07_plugins.html"class="toc-entry">Plugins</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_08_plugins-on-off.html"class="toc-entry">Plugins On/Off</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_09_quantizing.html"class="toc-entry">Quantizing</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_10_staves.html"class="toc-entry">Staves</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_11_ottavas.html"class="toc-entry">Ottavas</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_12_accidentals.html"class="toc-entry">Accidentals</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_13_cautionary-accidentals.html"class="toc-entry">Cautionary Accidentals</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_14_grace-notes.html"class="toc-entry">Grace Notes</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_15_measure-tuplet-divisions.html"class="toc-entry">Measure/Tuplet Divisions</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_16_note-splitting-tying.html"class="toc-entry">Note Splitting/Tying</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_17_beams.html"class="toc-entry">Beams</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="06_03_00_alphabetical-listing-of-settings.html"class="toc-entry">Alphabetical Listing of Settings</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="07_00_00_marks.html"class="toc-entry">Marks</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="07_01_00_fomus-marks.html"class="toc-entry">FOMUS Marks</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_01_01_articulations.html"class="toc-entry">Articulations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_02_dynamics.html"class="toc-entry">Dynamics</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_03_tempo-duration.html"class="toc-entry">Tempo/Duration</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_04_ornamentations.html"class="toc-entry">Ornamentations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_05_effects.html"class="toc-entry">Effects</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_06_text.html"class="toc-entry">Text</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_07_notation.html"class="toc-entry">Notation</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_08_other.html"class="toc-entry">Other</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_02_00_timesig-properties.html"class="toc-entry">TIMESIG Properties</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_03_00_part-properties.html"class="toc-entry">PART Properties</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="08_00_00_outputs.html"class="toc-entry">Outputs</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="08_01_00_data.html"class="toc-entry">Data</a></li>
+<li class="toc-hidden toc-level-2"><a href="08_02_00_lilypond.html"class="toc-entry">LilyPond</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="08_02_01_lilypond-options.html"class="toc-entry">LilyPond Options</a></li>
+<li class="toc-hidden toc-level-3"><a href="08_02_02_alphabetical-listing-of-options.html"class="toc-entry">Alphabetical Listing of Options</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="08_03_00_musicxml.html"class="toc-entry">MusicXML</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="08_03_01_musicxml-options.html"class="toc-entry">MusicXML Options</a></li>
+<li class="toc-hidden toc-level-3"><a href="08_03_02_alphabetical-listing-of-options.html"class="toc-entry">Alphabetical Listing of Options</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="08_04_00_musicxml-for-sibelius.html"class="toc-entry">MusicXML for Sibelius</a></li>
+<li class="toc-hidden toc-level-2"><a href="08_05_00_musicxml-for-finale.html"class="toc-entry">MusicXML for Finale</a></li>
+<li class="toc-hidden toc-level-2"><a href="08_06_00_common-music-notation.html"class="toc-entry">Common Music Notation</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="08_06_01_cmn-options.html"class="toc-entry">CMN Options</a></li>
+<li class="toc-hidden toc-level-3"><a href="08_06_02_alphabetical-listing-of-options.html"class="toc-entry">Alphabetical Listing of Options</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="08_07_00_midi.html"class="toc-entry">MIDI</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="08_07_01_midi-options.html"class="toc-entry">MIDI Options</a></li>
+<li class="toc-hidden toc-level-3"><a href="08_07_02_alphabetical-listing-of-options.html"class="toc-entry">Alphabetical Listing of Options</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="08_08_00_chunk.html"class="toc-entry">CHUNK</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="09_00_00_initialization-file.html"class="toc-entry">Initialization File</a></li>
+<li class="toc-level-1"><a href="10_00_00_examples.html"class="toc-entry">Examples</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="10_01_00_lisp-examples.html"class="toc-entry">Lisp Examples</a></li>
+<li class="toc-hidden toc-level-2"><a href="10_02_00_common-music-examples.html"class="toc-entry">Common Music Examples</a></li>
+<li class="toc-hidden toc-level-2"><a href="10_03_00_text-input-file-examples.html"class="toc-entry">Text Input File Examples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Fomus</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="05_06_00_class-rest.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-section.objects8" class="outline-3">
+<h3 id="section.objects8">Class MARK</h3>
+<div class="outline-text-3" id="text-section.objects8">
+<p>
+The <code>MARK</code> objects allow the user to specify marks outside of a <code>NOTE</code>
+or <code>REST</code> class. Marks designate extra information that to be applied to
+a <code>NOTE</code> or <code>REST</code> object such as articulations, modifications like
+tremolos or harmonics, printed text, etc.. After voices and staff
+assignments have been established, information in the <code>MARK</code> objects is
+dumped into the slots of <code>NOTE</code> and <code>REST</code>
+objects according to the values in the and
+slots.
+</p>
+
+<p>
+There are several advantages to using <code>MARK</code> objects as opposed to
+specifying marks in <code>NOTE</code> or <code>REST</code> objects. One is that many markings
+(dynamics, for example) might only need to be attached to notes that are
+in one voice, such as the bottom voice of a particular staff. Since
+voice assignments for notes might not be known until FOMUS decides them,
+<code>MARK</code> objects are the only way of insuring that the marks occur in the
+right place. <code>MARK</code> objects are also a convenient way of specifying
+marks for a range of parts, and make it easier to apply spanners such as
+slurs without having to juggle <code>NOTE</code> objects around.
+</p>
+
+<p>
+<code>MARK</code> objects are passed to FOMUS by including them either in the
+slot list of a <code>PART</code> object or in the global
+<code>EVENTS</code> list. The behavior in either case is exactly the same as with
+<code>NOTE</code> or <code>REST</code> objects.
+</p>
+
+<p>
+Constructor:
+<code>(MAKE-MARK &amp;key :ID id :PARTID partid :VOICE voice :OFF off :MARKS marks)</code>
+</p>
+
+<p>
+Copy Function:
+<code>(COPY-MARK mark &amp;key :ID id :PARTID partid :VOICE voice :OFF off :MARKS marks)</code>
+</p>
+
+<p>
+Predicate Function: <code>(MARKP obj)</code>
+</p>
+
+<p>
+Accessors:
+</p>
+
+<dl class="org-dl">
+<dt><code>OBJ-ID</code></dt><dd>This slot isn't used by FOMUS.</dd>
+
+<dt><code>EVENT-PARTID</code></dt><dd>This slot is equivalent to the
+slot in the <code>NOTE</code> or <code>REST</code> class.</dd>
+
+<dt><code>EVENT-VOICE</code></dt><dd><p>
+This slot is equivalent to the 
+slot in the <code>REST</code> class, with the exception that a staff or list of
+staves can be specified instead of voices. Staves are indicated with a
+list beginning with the symbol <code>:STAFF</code> followed by one or more
+integer values. The integers represent staff choices and can either be
+negative or positive, negative indicating that the mark be placed in
+the uppermost voice of the staff (the staff number is the absolute
+value of the number given in this case) and positive indicating that
+the mark be placed in the lowermost voice of the staff. FOMUS chooses
+the option from the list that places the mark the closest to the
+specified offset. Following is an example of how to specify staves:
+</p>
+
+<pre class="example" id="org900ee4e">
+'(:staff 1 -2)
+                
+</pre>
+
+<p>
+Specifying a choice of staves like this allows the user to place marks
+like dynamics that apply to all voices but only need to appear in one
+place. In the case of the example above, a mark with this value in its
+slot that is applied to a grand staff is
+attached to a note in a voice on the inside of the staff.
+</p>
+
+<p>
+As in the case of the <code>REST</code> class, when set to a list of voices, the
+<code>MARK</code> object is distributed to all of them.
+</p></dd>
+
+<dt><code>EVENT-OFF</code></dt><dd>This slot is equivalent to the slot
+in the <code>NOTE</code> or <code>REST</code> class, with the exception that offsets may
+also be wrapped inside a list and given a positive or negative value
+(for example, <code>'(3)</code>, <code>'(11.5)</code> or <code>'(-11.5)</code>). When this list is
+used, it indicates that the marks in the slot
+are applied to events just before or after the given offset depending
+on its sign. Positive offset values indicate the mark is to applied to
+the event just following the offset and negative values indicate the
+mark is to be applied just before it (the absolute value of it). This
+makes it easier in some cases to place marks that indicate ends of
+spanners such as slurs, since marks that indicate the end of the
+spanner can actually be given the offset where the next spanner
+begins. FOMUS will place the end mark in the proper place (the event
+that immediately precedes the one at the indicated offset).</dd>
+
+<dt><code>EVENT-MARKS</code></dt><dd><p>
+slots contain lists of marks.
+(In a <code>NOTE</code> or <code>REST</code> object, these marks are "attached" to that
+event.) Marks are specified as either symbols or lists of symbols and
+numbers. If it is a list, then the first element is the mark symbol
+followed by one or more arguments. Following is an example of what may
+appear in the slot:
+</p>
+
+<pre class="example" id="orgc48b5c6">
+'(:accent :startslur- (:startslur- 2 :dotted) (:texttempo "accelerando"))
+                
+</pre>
+
+<p>
+The <code>MARK</code> class can contain one extra mark that <code>NOTE</code> or <code>REST</code>
+objects can't contain. The symbol itself is <code>:MARK</code> and actually
+specifies another mark that is to be placed in the same voice at a
+different offset. It has the following format:
+<code>'(:MARK off mark ...)</code>, specifying that another mark is to be placed
+in the same voice at the offset given. This special mark is necessary
+if the user specifies a staff instead of a voice and the mark is a
+symbol indicating the start of a spanner. It can also be used as a
+convenience, since only one <code>MARK</code> object needs to be instantiated to
+specify several marks that belong together. By specifying the end
+symbol here as part of a <code>MARK</code> mark, FOMUS recognizes the start and
+end marks as belonging to each other and will place them in the same
+voice. (Starting and ending marks that aren't paired in the same voice
+cause errors.) The offset argument that is the second element in this
+list uses the same extended syntax as the slot in
+this class. The rest of the list after the second element is the mark
+symbol and the arguments that apply to that symbol. Following is an
+example:
+</p>
+
+<pre class="example" id="org4d2dfc4">
+'(:accent (:startslur- 2) (:mark (-101) :endslur- 2))
+                
+</pre>
+
+<p>
+The contents of the slots of <code>MARK</code> objects are
+dumped into the slots of <code>NOTE</code> and <code>REST</code>
+objects once voices and staves have been decided. See <a href="#org6d5c19f">Marks</a> for a
+more detailed explanation of marks and their usage.
+</p></dd>
+</dl>
+</div>
+</div>
+</div><nav id="nav-right"><a href="05_08_00_structure-instr.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

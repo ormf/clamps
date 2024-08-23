@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-19 Mo 11:20 -->
+<!-- 2024-08-23 Fr 16:21 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Dictionary</title>
@@ -17,12 +17,18 @@
 <a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
 <a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
 <a class="top-menu top-menu-active" href="./index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
 </div>
-<div id="org-div-nav-menu">Next: <a accesskey="n" href="plot-2d.html"> plot-2d </a>,&nbsp;Previous: <a accesskey="p" href="play-sfz-one-shot.html"> play-sfz-one-shot </a>,&nbsp;Up: <a accesskey="u" href="p-q.html"> P - Q </a>,&nbsp;Home: <a accesskey="h" href="a-b.html"> A - B </a></div><div id="content" class="content">
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="plot-2d.html"> plot-2d </a>,&nbsp;Previous: <a accesskey="p" href="play-sfz-one-shot.html"> play-sfz-one-shot </a>,&nbsp;Up: <a accesskey="u" href="p-q.html"> P - Q </a>,&nbsp;Home: <a accesskey="h" href="overview.html"> Overview </a></div><div id="content" class="content">
 <nav id="table-of-contents" role="doc-toc">
 <h2>Index</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="overview.html"class="toc-entry">Overview</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="overview.html"class="toc-entry">Notation and Usage</a></li>
+</ul>
+</li>
 <li class="toc-level-1"><a href="a-b.html"class="toc-entry">A - B</a>
 <ul class="ul-toc-level-2">
 <li class="toc-hidden toc-level-2"><a href="a-b.html"class="toc-entry">ats-&gt;browser</a></li>
@@ -49,6 +55,7 @@
 <ul class="ul-toc-level-2">
 <li class="toc-hidden toc-level-2"><a href="f.html"class="toc-entry">ftom</a></li>
 <li class="toc-hidden toc-level-2"><a href="fr2ct.html"class="toc-entry">fr2ct</a></li>
+<li class="toc-hidden toc-level-2"><a href="fredrik.html"class="toc-entry">fredrik</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="g-h.html"class="toc-entry">G - H</a>
@@ -68,6 +75,7 @@
 <li class="toc-hidden toc-level-2"><a href="l.html"class="toc-entry">lin-n</a></li>
 <li class="toc-hidden toc-level-2"><a href="list-sfz-presets.html"class="toc-entry">list-sfz-presets</a></li>
 <li class="toc-hidden toc-level-2"><a href="load-sfz-preset.html"class="toc-entry">load-sfz-preset</a></li>
+<li class="toc-hidden toc-level-2"><a href="logger-level.html"class="toc-entry">logger-level</a></li>
 <li class="toc-hidden toc-level-2"><a href="lsample.html"class="toc-entry">lsample</a></li>
 </ul>
 </li>
@@ -79,6 +87,7 @@
 <li class="toc-hidden toc-level-2"><a href="make-ref.html"class="toc-entry">make-ref</a></li>
 <li class="toc-hidden toc-level-2"><a href="meters.html"class="toc-entry">meters</a></li>
 <li class="toc-hidden toc-level-2"><a href="mtof.html"class="toc-entry">mtof</a></li>
+<li class="toc-hidden toc-level-2"><a href="msg.html"class="toc-entry">msg</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="n-o.html"class="toc-entry">N - O</a>
@@ -147,9 +156,9 @@
 <header>
 <h1 class="title">Clamps Dictionary</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="play-sfz-one-shot.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-orgc8d8ac9" class="outline-3">
-<h3 id="orgc8d8ac9">plot</h3>
-<div class="outline-text-3" id="text-orgc8d8ac9">
+<div id="page-text-body"><div id="outline-container-org26d6c78" class="outline-3">
+<h3 id="org26d6c78">plot</h3>
+<div class="outline-text-3" id="text-org26d6c78">
 <p>
 Method
 </p>
@@ -161,9 +170,9 @@ Method
 Plot <i>obj</i> using <a href="http://www.gnuplot.info/">GnuPlot</a>.
 </p>
 </div>
-<div id="outline-container-org11ea5bf" class="outline-4">
-<h4 id="org11ea5bf">Arguments</h4>
-<div class="outline-text-4" id="text-org11ea5bf">
+<div id="outline-container-org2bc4532" class="outline-4">
+<h4 id="org2bc4532">Arguments</h4>
+<div class="outline-text-4" id="text-org2bc4532">
 <p>
  <code>obj</code> The object to be plotted. Currently the following object
 types are implemented:
@@ -211,15 +220,15 @@ the plot command.
 </p>
 </div>
 </div>
-<div id="outline-container-org40e806b" class="outline-4">
-<h4 id="org40e806b">Examples:</h4>
-<div class="outline-text-4" id="text-org40e806b">
+<div id="outline-container-org26c37ba" class="outline-4">
+<h4 id="org26c37ba">Examples:</h4>
+<div class="outline-text-4" id="text-org26c37ba">
 <div class="org-src-container">
 <pre class="src src-lisp"><span style="color: #ffff00;">(</span>plot '<span style="color: #a9a9a9;">(</span>5 4 6 1 9<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; (5 4 6 1 9)</span>
 </pre>
 </div>
 
-<figure id="orgac1d8b4">
+<figure id="org69ae26e">
 <img src="./img/plot-01.svg" alt="plot-01.svg" class="org-svg" width="50%" />
 
 <figcaption><span class="figure-number">Figure 1: </span>output of (plot '(5 4 6 1 9))</figcaption>
@@ -229,7 +238,7 @@ the plot command.
 </pre>
 </div>
 
-<figure id="org90076d6">
+<figure id="org6585af9">
 <img src="./img/plot-02.svg" alt="plot-02.svg" class="org-svg" width="50%" />
 
 <figcaption><span class="figure-number">Figure 2: </span>output of (plot '((-2 5) (0 8) (4 -2) (6 10)))</figcaption>
@@ -241,7 +250,7 @@ the plot command.
 </pre>
 </div>
 
-<figure id="org5a44644">
+<figure id="org0049f1d">
 <img src="./img/plot-03.svg" alt="plot-03.svg" class="org-svg" width="50%" />
 
 <figcaption><span class="figure-number">Figure 3: </span>output of (plot #'my-fn)</figcaption>
@@ -251,7 +260,7 @@ the plot command.
 </pre>
 </div>
 
-<figure id="orgc3b5e2f">
+<figure id="orgfb96cf8">
 <img src="./img/plot-04.svg" alt="plot-04.svg" class="org-svg" width="50%" />
 
 <figcaption><span class="figure-number">Figure 4: </span>output of (plot #'my-fn :region '(-10 10))</figcaption>
@@ -263,27 +272,27 @@ the plot command.
 </pre>
 </div>
 
-<figure id="org3151f88">
+<figure id="org5650fda">
 <img src="./img/plot-05.svg" alt="plot-05.svg" class="org-svg" width="50%" />
 
 <figcaption><span class="figure-number">Figure 5: </span>output of (plot (first (sfz-preset-buffer :flute-nv 60)))</figcaption>
 </figure>
 </div>
 </div>
-<div id="outline-container-org66a6767" class="outline-4">
-<h4 id="org66a6767">See also</h4>
-<div class="outline-text-4" id="text-org66a6767">
+<div id="outline-container-org1a595ea" class="outline-4">
+<h4 id="org1a595ea">See also</h4>
+<div class="outline-text-4" id="text-org1a595ea">
 <ul class="org-ul">
-<li><a href="plot-2d.html#orgb75a0dd">plot-2d</a></li>
+<li><a href="plot-2d.html#org4ebd6a5">plot-2d</a></li>
 
-<li><a href="svg.html#org9c404d1">svg</a></li>
+<li><a href="svg.html#org50eb1d7">svg</a></li>
 </ul>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Orm Finnendahl</p>
-<p class="date">Created: 2024-08-19 Mo 11:20</p>
+<p class="date">Created: 2024-08-23 Fr 16:21</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </div><nav id="nav-right"><a href="plot-2d.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>

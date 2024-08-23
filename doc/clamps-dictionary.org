@@ -10,7 +10,7 @@
 #+OPTIONS: html-multipage-export-directory:clamps-dict
 #+OPTIONS: html-multipage-open:nil
 #+OPTIONS: html-multipage-numbered-filenames:nil
-#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Dictionary</a>\n"
+#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Dictionary</a>\n<a class=\"top-menu\" href=\"../fomus/index.html\">Fomus</a>\n"
 #+OPTIONS: html-toc-title:"Index"
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
@@ -20,7 +20,6 @@
 # #+SETUPFILE: clamps-dict.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
     (defun export-dict-to-clamps (s backend info)
-      (message "export-dict-to-clamps!")
       (with-temp-buffer 
         (insert "(mapcar
      (lambda (entry)
@@ -41,9 +40,6 @@
           (plist-get info :multipage-toc-lookup)))
         (insert "))\n")
         (write-region (point-min) (point-max) "../extra/elisp/clamps-dict.el"))
-      (message "done!\n")
-      (message "%s%s" (file-name-directory (buffer-file-name))
-               "../extra/elisp/clamps-dict.el")
       (load (format "%s%s" (file-name-directory (buffer-file-name))
                "../extra/elisp/clamps-dict.el"))
       s)
@@ -52,6 +48,22 @@
 # \[\[\([^\[]+\)\]\] → [[\1][\1]]
 # C-x 8 RET 200b RET C-x 8 0
 
+* Overview
+** Notation and Usage
+   The Clamps Dictionary has been inspired by the [[../cm-dict/index.html][CM Dictionary]], which
+   was an original part of Common Music 2. Rather than interfering
+   with the original, the additions of the Clamps package have been
+   separated into this [[./index.html][Clamps Dictionary]]. Both dictionaries are
+   accessed by the same keyboard shortcut /<C-c C-d c>/, automatically
+   integrated into the Clamps system using the standard [[overview:Installation][Installation]].
+
+   The Notation of the Clamps Dictionary is simpler than the Notation
+   used in the CM Dictionary. Function and Macro definitions use the
+   definition syntax of the function or macro with the initial /defun/
+   or /defmacro/ removed.
+
+   Names of argumens in the /Arguments/ section of entries are printed
+   in =red= and emphasized words appear in /green/.
 * A - B
 ** ats->browser
    Function
@@ -331,7 +343,6 @@ Function
 #+END_SRC
 *** See also
     - [[ct2fr][ct2fr]]
-
 * G - H
 ** get-sfz-preset
    Function
@@ -495,6 +506,25 @@ Function
     - [[ensure-sfz-preset][ensure-sfz-preset]]
 
     - [[remove-sfz-preset][remove-sfz-preset]]
+** logger-level
+   Function
+   #+BEGIN_SRC lisp
+     (logger-level)
+   #+END_SRC
+   Return or set the current logger level.  The logger level
+   can be one of:
+
+   =:error=
+
+   =:warn=
+
+   =:info=
+
+   =:debug=
+
+   For a description and examples, see [[overview:Debugging Tools][Debugging Tools]].
+*** See also
+    - [[msg][msg]]
 ** lsample
    Struct
 *** Slots:
@@ -648,6 +678,25 @@ Function
     #+END_SRC
 *** See also
     - [[ftom][ftom]]
+** msg
+   Macro
+   #+BEGIN_SRC lisp
+     (msg type format-control &rest format-arguments)
+   #+END_SRC
+   Print a message to /*logger-stream*/ when the current logger-level
+   is >= /type/.
+
+   For a description and examples, see [[overview:Debugging Tools][Debugging Tools]].
+*** Arguments
+    =type= The logger level, one of /:error/, /:warn/, /:info/ or /:debug/.
+
+    =format-control= A control string with the same syntax as Common
+    Lisps /format/ macro.
+
+    =format-arguments= Arguments to the control string with the same
+    behaviour as in Common Lisps /format/ macro.
+*** See also
+    - [[logger-level][logger-level]]
 * N - O
 ** n-exp
    Function

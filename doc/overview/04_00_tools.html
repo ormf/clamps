@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-20 Di 14:22 -->
+<!-- 2024-08-23 Fr 08:57 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Overview</title>
@@ -17,8 +17,9 @@
 <a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
 <a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
 <a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
 </div>
-<div id="org-div-nav-menu">Next: <a accesskey="n" href="04_02_finding-source-definitions.html"> Finding Source Definitions </a>,&nbsp;Previous: <a accesskey="p" href="03_00_first-steps.html"> First Steps </a>,&nbsp;Home: <a accesskey="h" href="01_00_introduction.html"> Introduction </a></div><div id="content" class="content">
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="04_02_context-help.html"> Context Help </a>,&nbsp;Previous: <a accesskey="p" href="03_00_first-steps.html"> First Steps </a>,&nbsp;Home: <a accesskey="h" href="01_00_introduction.html"> Introduction </a></div><div id="content" class="content">
 <nav id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
@@ -33,18 +34,17 @@
 </li>
 <li class="toc-level-1"><a href="02_00_installation.html"class="toc-entry">Installation</a>
 <ul class="ul-toc-level-2">
-<li class="toc-hidden toc-level-2"><a href="02_00_installation.html"class="toc-entry">Linux</a></li>
-<li class="toc-hidden toc-level-2"><a href="02_02_osx.html"class="toc-entry">OSX</a></li>
+<li class="toc-hidden toc-level-2"><a href="02_00_installation.html"class="toc-entry">clamps-install</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="03_00_first-steps.html"class="toc-entry">First Steps</a></li>
 <li class="toc-level-1"><a href="04_00_tools.html"class="toc-entry toc-active">Tools</a>
 <ul class="ul-toc-level-2">
-<li class="toc-level-2"><a href="04_00_tools.html"class="toc-entry toc-active">Context Help</a></li>
-<li class="toc-level-2"><a href="04_02_finding-source-definitions.html"class="toc-entry">Finding Source Definitions</a></li>
-<li class="toc-level-2"><a href="04_03_code-inspection.html"class="toc-entry">Code Inspection</a></li>
-<li class="toc-level-2"><a href="04_04_debugging-tools.html"class="toc-entry">Debugging Tools</a></li>
-<li class="toc-level-2"><a href="04_05_online-help-system.html"class="toc-entry">Online Help System</a></li>
+<li class="toc-level-2"><a href="04_00_tools.html"class="toc-entry toc-active">Online Help System</a></li>
+<li class="toc-level-2"><a href="04_02_context-help.html"class="toc-entry">Context Help</a></li>
+<li class="toc-level-2"><a href="04_03_finding-source-definitions.html"class="toc-entry">Finding Source Definitions</a></li>
+<li class="toc-level-2"><a href="04_04_code-inspection.html"class="toc-entry">Code Inspection</a></li>
+<li class="toc-level-2"><a href="04_05_debugging-tools.html"class="toc-entry">Debugging Tools</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="05_00_.html"class="toc-entry"></a></li>
@@ -54,49 +54,90 @@
 <header>
 <h1 class="title">Clamps Overview</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="03_00_first-steps.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-org31a66a3" class="outline-2">
-<h2 id="org31a66a3">Tools</h2>
-<div class="outline-text-2" id="text-org31a66a3">
+<div id="page-text-body"><div id="outline-container-orgd085e2d" class="outline-2">
+<h2 id="orgd085e2d">Tools</h2>
+<div class="outline-text-2" id="text-orgd085e2d">
 </div>
-<div id="outline-container-org4792610" class="outline-3">
-<h3 id="org4792610">Context Help</h3>
-<div class="outline-text-3" id="text-org4792610">
+<div id="outline-container-org209ef27" class="outline-3">
+<h3 id="org209ef27">Online Help System</h3>
+<div class="outline-text-3" id="text-org209ef27">
 <p>
-For every compiled expression<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>, the <i>sly-mode</i> in Emacs takes
-care of automatically storing all information of the expression
-internally. In case of functions this means that the signature of
-any compiled function is known and will be displayed in the
-Minibuffer of Emacs when typing the name of a function in an
-inferior lisp buffer<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>:
+Clamps comes with a couple of online help systems explained below.
+</p>
+</div>
+<div id="outline-container-org9b12cf3" class="outline-4">
+<h4 id="org9b12cf3">Emacs</h4>
+<div class="outline-text-4" id="text-org9b12cf3">
+<p>
+The Emacs editor can appear quite strange and intimidating,
+especially for novice users. For anyone not comfortable with
+Emacs, studying the <i>Emacs Tutorial</i>, available under the Emacs
+<i>Help</i> Menu is strongly recommended and well worth the time spent.
+</p>
+</div>
+</div>
+<div id="outline-container-org8e89423" class="outline-4">
+<h4 id="org8e89423">Common Lisp Hyperspec</h4>
+<div class="outline-text-4" id="text-org8e89423">
+<p>
+Being in a Lisp Mode buffer or the REPL, the documentation of all
+symbols and special forms of the Common Lisp Language Standard can
+be accessed using the key combination <i>&lt;C-c C-d h&gt;</i>. Pressing
+these keys with the cursor positioned directly after the
+expression will open a browser window with a page of the <a href="https://www.lispworks.com/documentation/HyperSpec/Front/index.htm">Common
+Lisp HyperSpec</a> showing the documentation of the symbol. A local
+copy of the HyperSpec gets automatically installed with the
+installation of Clamps using the <a href="https://github.com/ormf/clamps-install">clamps-install</a> repository.
+</p>
+</div>
+</div>
+<div id="outline-container-orge032177" class="outline-4">
+<h4 id="orge032177">Cltl2</h4>
+<div class="outline-text-4" id="text-orge032177">
+<p>
+Cltl2 is the language standard of Common Lisp, finalized
+in 1990. The Common Lisp HyperSpec has been derived from the
+online documentation of Cltl2. Although many users prefer the
+HyperSpec, sometimes it might be desirable to study the original,
+commented standard.
 </p>
 
-
-<figure id="org5408688">
-<img src="../img/function-help.png" alt="function-help.png" width="80%" />
-
-<figcaption><span class="figure-number">Figure 1: </span>Context help of function arguments in the Minibuffer</figcaption>
-</figure>
+<p>
+To that end the key combination <i>&lt;C-c C-d l&gt;</i> will lookup a symbol
+in a local copy of Cltl2, like the HyperSpec downloaded by the
+clamps installation and stored in
+<i>$HOME​/​<i>.config/common-lisp/cltl2</i></i>.
+</p>
+</div>
+</div>
+<div id="outline-container-org43476b2" class="outline-4">
+<h4 id="org43476b2">Common Music/Clamps</h4>
+<div class="outline-text-4" id="text-org43476b2">
+<p>
+Online documentation of symbols of Common Music or Clamps can be
+accessed by pressing the key combination <i>&lt;C-c C-d c&gt;</i>. Depending
+on the symbol this will open a local page of the <a href="../cm-dict/index.html">Common Music
+Dictionary</a> or <a href="../clamps-dict/index.html">Clamps Dictionary</a>, which is integrated in the
+browser-based clamps documentatiion.
+</p>
+</div>
+</div>
+<div id="outline-container-org3e4abb4" class="outline-4">
+<h4 id="org3e4abb4">Incudine</h4>
+<div class="outline-text-4" id="text-org3e4abb4">
+<p>
+Incudine has different formats to get help. It is available in the
+Internet at the <a href="https://incudine.sourceforge.net/">Incudine Home Page</a>. Local documentation can be
+generated in different formats, like <i><a href="https://en.wikipedia.org/wiki/Texinfo">texinfo</a></i>, <i>html</i> or any
+output format supported by Texinfo depending on the user's
+preferences. As Emacs has a builtin <i>info-mode</i> for dealing with
+Texinfo files this can be a viable online help option for adept
+Emacs users.
+</p>
 </div>
 </div>
 </div>
-<div id="footnotes">
-<h2 class="footnotes">Footnotes: </h2>
-<div id="text-footnotes">
-
-<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-Compiling an expression in Sly means to move the cursor
-somewhere into or just behind an expression or form to be compiled and
-then press <i>&lt;C-c C-c&gt;</i>. This will compile the toplevel form of the
-expression.
-</p></div></div>
-
-<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-For this to work, the <i>company</i> minor-mode has to be active in
-the lisp buffer. The standard <a href="02_00_installation.html#org07091c9">installation</a> should take care of that.
-</p></div></div>
-
-
 </div>
-</div></div><nav id="nav-right"><a href="04_02_finding-source-definitions.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</div><nav id="nav-right"><a href="04_02_context-help.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
 </body>
 </html>
