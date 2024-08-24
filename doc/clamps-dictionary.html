@@ -1,0 +1,3376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-08-21 Mi 11:17 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Dictionary</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #000000; }
+  .timestamp-kwd { color: #000000; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../css/clamps-dictionary.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu" href="../overview/index.html">Overview</a>
+<a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu top-menu-active" href="./index.html">Clamps Dictionary</a>
+</div>
+<div id="content" class="content">
+<header>
+<h1 class="title">Clamps Dictionary</h1>
+</header><nav id="table-of-contents" role="doc-toc">
+<h2>Index</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="#org3005a8c">A - B</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#orgfa00642">ats-&gt;browser</a></li>
+<li class="toc-level-2"><a href="#org1ea3aae">add-sfz-preset</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#org8067787">C - D</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org68ea7df">ct2fr</a></li>
+<li class="toc-level-2"><a href="#orgd419b34">clamps</a></li>
+<li class="toc-level-2"><a href="#orgacaa029">clamps-base-url</a></li>
+<li class="toc-level-2"><a href="#org81f5d67">clamps-restart-gui</a></li>
+<li class="toc-level-2"><a href="#org3c1d1a7">clamps-gui-root</a></li>
+<li class="toc-level-2"><a href="#org1abfba1">clamps-start</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#orgfcfb421">E</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org24d51ec">ensure-sfz-preset</a></li>
+<li class="toc-level-2"><a href="#org3d573ca">exp-n</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#org512bfaa">F</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org3ecc4e8">ftom</a></li>
+<li class="toc-level-2"><a href="#org644b9cb">fr2ct</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#org1620219">G - H</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org86aa2cb">get-sfz-preset</a></li>
+<li class="toc-level-2"><a href="#org30f229f">get-val</a></li>
+<li class="toc-level-2"><a href="#org08c56ec">gui</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#orgfed5abc">I - K</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org78543ac">idump</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#org5f00253">L</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org5869d83">lin-n</a></li>
+<li class="toc-level-2"><a href="#org4a3a1aa">list-sfz-presets</a></li>
+<li class="toc-level-2"><a href="#org9315be4">load-sfz-preset</a></li>
+<li class="toc-level-2"><a href="#org789f687">logger-level</a></li>
+<li class="toc-level-2"><a href="#orgc3ef1fd">lsample</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#orge3b7866">M</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org37fe3ef">m-exp</a></li>
+<li class="toc-level-2"><a href="#org15d887c">m-lin</a></li>
+<li class="toc-level-2"><a href="#orgd23f998">make-computed</a></li>
+<li class="toc-level-2"><a href="#orgf28e231">make-ref</a></li>
+<li class="toc-level-2"><a href="#orgf2bdcc6">meters</a></li>
+<li class="toc-level-2"><a href="#org41aca11">mtof</a></li>
+<li class="toc-level-2"><a href="#orgc14b873">msg</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#orgfed93f9">N - O</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org2bffe24">n-exp</a></li>
+<li class="toc-level-2"><a href="#orgb710de9">n-exp-dev</a></li>
+<li class="toc-level-2"><a href="#org892548b">n-lin</a></li>
+<li class="toc-level-2"><a href="#orgee8763b">n-lin-dev</a></li>
+<li class="toc-level-2"><a href="#orgc29b2b8">node-free-unprotected</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#orgb04cc01">P - Q</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org62d2892">play-sfz</a></li>
+<li class="toc-level-2"><a href="#orgd08b988">play-sfz-loop</a></li>
+<li class="toc-level-2"><a href="#org868f855">play-sfz-one-shot</a></li>
+<li class="toc-level-2"><a href="#org419f89e">plot</a></li>
+<li class="toc-level-2"><a href="#org1a5ba90">plot-2d</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#org2e3fd90">R</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org9656c03">r-elt</a></li>
+<li class="toc-level-2"><a href="#orgd22c573">ref-object</a></li>
+<li class="toc-level-2"><a href="#org951c3ba">remove-sfz-preset</a></li>
+<li class="toc-level-2"><a href="#orgd8780c4">reset-logger-stream</a></li>
+<li class="toc-level-2"><a href="#org36e3b02">rts?</a></li>
+<li class="toc-level-2"><a href="#org90dfe6a">rts</a></li>
+<li class="toc-level-2"><a href="#org6dbd3c6">rts-hush</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#org55f4e87">S - V</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org1ac1072">set-bpm</a></li>
+<li class="toc-level-2"><a href="#org2286128">set-tempo</a></li>
+<li class="toc-level-2"><a href="#orgbf5bd77">set-standard-pitch</a></li>
+<li class="toc-level-2"><a href="#org4b2eaca">set-val</a></li>
+<li class="toc-level-2"><a href="#orgf99d308">sfz</a></li>
+<li class="toc-level-2"><a href="#orgbb9b648">sfz-amplitude</a></li>
+<li class="toc-level-2"><a href="#org5accb28">sfz-chan</a></li>
+<li class="toc-level-2"><a href="#org0133edc">sfz-duration</a></li>
+<li class="toc-level-2"><a href="#org7191415">sfz-get-range</a></li>
+<li class="toc-level-2"><a href="#org6f2e6c0">sfz-keynum</a></li>
+<li class="toc-level-2"><a href="#orgc0e83d7">sfz-pan</a></li>
+<li class="toc-level-2"><a href="#org3f64d52">sfz-preset-file</a></li>
+<li class="toc-level-2"><a href="#org01b0ffb">sfz-preset-loaded?</a></li>
+<li class="toc-level-2"><a href="#org20ee4a6">sfz-play-fn</a></li>
+<li class="toc-level-2"><a href="#org4973f5f">sfz-preset</a></li>
+<li class="toc-level-2"><a href="#orgc115799">sfz-startpos</a></li>
+<li class="toc-level-2"><a href="#org4ee3faa">&lowast;standard-pitch&lowast;</a></li>
+<li class="toc-level-2"><a href="#org669127c">start-doc-acceptor</a></li>
+<li class="toc-level-2"><a href="#org6599126">svg</a></li>
+<li class="toc-level-2"><a href="#orge98d1d5">svg-&gt;browser</a></li>
+<li class="toc-level-2"><a href="#orgf2ea187">svg-gui-path</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#orgf1e5cfb">W - Z</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="#org1d9cbb3">watch</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="#org8dde590"><span class="todo TODO">TODO</span> </a></li>
+</ul>
+</div>
+</nav>
+<pre class="example">
+export-dict-to-clamps
+</pre>
+<div id="outline-container-org3005a8c" class="outline-2">
+<h2 id="org3005a8c">A - B</h2>
+<div class="outline-text-2" id="text-org3005a8c">
+</div>
+<div id="outline-container-orgfa00642" class="outline-3">
+<h3 id="orgfa00642">ats-&gt;browser</h3>
+<div class="outline-text-3" id="text-orgfa00642">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>ats-&gt;browser ats<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Display the ats struct <code>ats</code> graphically in the interactive ATS
+Player located at <i>&lt;clamps-base-url&gt;/ats-display</i> in the Gui.
+</p>
+</div>
+<div id="outline-container-orgd6142ee" class="outline-4">
+<h4 id="orgd6142ee">Arguments</h4>
+<div class="outline-text-4" id="text-orgd6142ee">
+<p>
+<code>ats</code> The ats struct to display.
+</p>
+</div>
+</div>
+<div id="outline-container-org12c816c" class="outline-4">
+<h4 id="org12c816c">See also</h4>
+<div class="outline-text-4" id="text-org12c816c">
+<ul class="org-ul">
+<li><a href="#orgacaa029">clamps-base-url</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org1ea3aae" class="outline-3">
+<h3 id="org1ea3aae">add-sfz-preset</h3>
+<div class="outline-text-3" id="text-org1ea3aae">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>add-sfz-preset preset file<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Register the association between a preset name and its corresponding sfz
+file.
+</p>
+</div>
+<div id="outline-container-org29f3b71" class="outline-4">
+<h4 id="org29f3b71">Arguments</h4>
+<div class="outline-text-4" id="text-org29f3b71">
+<p>
+<code>preset</code> A keyword or symbol to name the preset
+</p>
+
+<p>
+<code>file</code> A string or path to the associated sfz file. If the file
+path is relative, it will be searched recursively in all paths of
+<i>cl-user::*sfz-file-path*</i>.
+</p>
+</div>
+</div>
+<div id="outline-container-orga3af71f" class="outline-4">
+<h4 id="orga3af71f">Note:</h4>
+<div class="outline-text-4" id="text-orga3af71f">
+<p>
+This function only stores the association between the preset name
+and its sfz file. Loading of its samples into memory is done
+implicitely when the preset is used by a playing function like
+<a href="#org62d2892">play-sfz</a> or by using <a href="#org24d51ec">ensure-sfz-preset</a> or its synonym
+<a href="#org86aa2cb">get-sfz-preset</a>.
+</p>
+</div>
+</div>
+<div id="outline-container-org424e4e6" class="outline-4">
+<h4 id="org424e4e6">See also</h4>
+<div class="outline-text-4" id="text-org424e4e6">
+<ul class="org-ul">
+<li><a href="#org24d51ec">ensure-sfz-preset</a></li>
+
+<li><a href="#org86aa2cb">get-sfz-preset</a></li>
+
+<li><a href="#orgf99d308">sfz</a></li>
+
+<li><a href="#org01b0ffb">sfz-preset-loaded?</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org8067787" class="outline-2">
+<h2 id="org8067787">C - D</h2>
+<div class="outline-text-2" id="text-org8067787">
+</div>
+<div id="outline-container-org68ea7df" class="outline-3">
+<h3 id="org68ea7df">ct2fr</h3>
+<div class="outline-text-3" id="text-org68ea7df">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>ct2fr cent<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the frequency ratio of the Midicents interval <i>cent</i>.
+</p>
+</div>
+<div id="outline-container-orgcb3c76b" class="outline-4">
+<h4 id="orgcb3c76b">Arguments</h4>
+<div class="outline-text-4" id="text-orgcb3c76b">
+<p>
+<code>cent</code> The interval in Midicents.
+</p>
+</div>
+</div>
+<div id="outline-container-org2b8e56d" class="outline-4">
+<h4 id="org2b8e56d">Example</h4>
+<div class="outline-text-4" id="text-org2b8e56d">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>ct2fr 12<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; 2</span>
+
+<span style="color: #ffff00;">(</span>ct2fr 1<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; 1.0594631</span>
+
+<span style="color: #ffff00;">(</span>ct2fr 7<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; 1.4983071</span>
+
+<span style="color: #ffff00;">(</span>ct2fr -12<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; 1/2</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgec58ea6" class="outline-4">
+<h4 id="orgec58ea6">See also</h4>
+<div class="outline-text-4" id="text-orgec58ea6">
+<ul class="org-ul">
+<li><a href="#org644b9cb">fr2ct</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd419b34" class="outline-3">
+<h3 id="orgd419b34">clamps</h3>
+<div class="outline-text-3" id="text-orgd419b34">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>clamps <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>gui-root <span style="color: #87cefa;">"/tmp/"</span><span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>open t<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Start Clamps including the gui.
+</p>
+
+<p>
+Besides starting the Gui the function also:
+</p>
+
+<ul class="org-ul">
+<li>Starts the osc responder for Inkscape.</li>
+<li>Starts the realtime engine calling <a href="#org90dfe6a">rts</a>.</li>
+<li>Creates groups and buses for incudine dsps (see the
+Chapter <a href="../nil">General Incudine Setup</a> in <a href="../clamps/index.html">Clamps Packages</a>).</li>
+<li>Starts the documentation acceptor for the searchable online doc
+at <i><a href="http://localhost:8282/overview/index.html">http://localhost:8282/overview/index.html</a></i>.</li>
+</ul>
+</div>
+<div id="outline-container-org303c491" class="outline-4">
+<h4 id="org303c491">Arguments</h4>
+<div class="outline-text-4" id="text-org303c491">
+<p>
+<code>gui-root</code> ist the path where to put the <i>www</i> subfolder for files
+accessible by the gui (nicknamed <i>&lt;clamps-gui-root&gt;</i> throughout
+this dictionary).
+</p>
+
+<p>
+<code>open</code> is a flag indicating whether to open the <a href="#orgacaa029">clamps-base-url</a> in
+a browser window after starting the gui.
+</p>
+
+<p>
+In the given path the following directories
+will be created:
+</p>
+
+<ul class="org-ul">
+<li><i>&lt;clamps-gui-root&gt;/www/</i></li>
+<li><p>
+<i>&lt;clamps-gui-root&gt;/www/svg/</i>
+</p>
+
+<p>
+file path for svg files used in the <i>&lt;clamps-base-url&gt;/svg-display</i> page
+of the Gui.
+</p></li>
+</ul>
+
+<p>
+Any files which need to be accessible by the Gui have to be put
+into the <i>&lt;clamps-gui-root&gt;/www/</i> subdirectory with their filenames
+relative to this directory.
+</p>
+</div>
+</div>
+<div id="outline-container-org4b36a81" class="outline-4">
+<h4 id="org4b36a81">See also</h4>
+<div class="outline-text-4" id="text-org4b36a81">
+<ul class="org-ul">
+<li><a href="#orgacaa029">clamps-base-url</a></li>
+<li><a href="#org81f5d67">clamps-restart-gui</a></li>
+<li><a href="#org3c1d1a7">clamps-gui-root</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgacaa029" class="outline-3">
+<h3 id="orgacaa029">clamps-base-url</h3>
+<div class="outline-text-3" id="text-orgacaa029">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>clamps-base-url<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the base url to access the Clamps Gui (nicknamed <i>&lt;clamps-base-url&gt;</i> in this
+dictionary).
+</p>
+
+<p>
+Its default location is <a href="http://localhost:54619">http://localhost:54619</a>.
+</p>
+
+<p>
+<i>&lt;clamps-base-url&gt;</i> in the browser side is corresponding to the
+path <i>&lt;clamps-gui-root&gt;</i>, so an address named
+<i>&lt;clamps-base-url&gt;/&lt;file&gt;</i> will load the file located at
+<i>&lt;clamps-gui-root&gt;/&lt;file&gt;</i> as HTML into the browser window.
+</p>
+</div>
+<div id="outline-container-org170c7db" class="outline-4">
+<h4 id="org170c7db">Example</h4>
+<div class="outline-text-4" id="text-org170c7db">
+<p>
+The location for the <a href="#orge98d1d5">SVG Player Gui</a> is at
+<i>&lt;clamps-base-url&gt;/svg-display</i> which translates to the URL
+</p>
+
+<p>
+<a href="http://localhost:54619/svg-display">http://localhost:54619/svg-display</a>
+</p>
+</div>
+</div>
+<div id="outline-container-org917784d" class="outline-4">
+<h4 id="org917784d">See also</h4>
+<div class="outline-text-4" id="text-org917784d">
+<ul class="org-ul">
+<li><a href="#orgd419b34">clamps</a></li>
+<li><a href="#org81f5d67">clamps-restart-gui</a></li>
+<li><a href="#org3c1d1a7">clamps-gui-root</a></li>
+<li><a href="#org08c56ec">gui</a></li>
+<li><a href="#orgf2bdcc6">meters</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org81f5d67" class="outline-3">
+<h3 id="org81f5d67">clamps-restart-gui</h3>
+<div class="outline-text-3" id="text-org81f5d67">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>clamps-restart-gui gui-root <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>open t<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Reset the root directory of the Gui to <i>gui-root/www</i>, optionally
+opening the Gui in a browser window.
+</p>
+</div>
+<div id="outline-container-org55cf14c" class="outline-4">
+<h4 id="org55cf14c">Arguments</h4>
+<div class="outline-text-4" id="text-org55cf14c">
+<p>
+<code>gui-root</code> ist the path where to put the <i>www</i> subfolder for files
+accessible by the gui (nicknamed <i>&lt;clamps-gui-root&gt;</i> throughout
+this dictionary).
+</p>
+
+<p>
+<code>:open</code> is a flag indicating whether to open <a href="#orgacaa029">clamps-base-url</a> in a
+browser window after starting the gui.
+</p>
+
+<p>
+In the given path the following directories
+will be created:
+</p>
+
+<ul class="org-ul">
+<li><i>&lt;clamps-gui-root&gt;/www/</i></li>
+<li><p>
+<i>&lt;clamps-gui-root&gt;/www/svg/</i>
+</p>
+
+<p>
+file path for svg files used in the <i>svg-display</i> page of the
+Gui.
+</p></li>
+</ul>
+
+<p>
+Any files which need to be accessible by the Gui have to be put
+into the <i>&lt;clamps-gui-root&gt;/www/</i> subdirectory with their filenames
+relative to this directory.
+</p>
+</div>
+</div>
+<div id="outline-container-org2150c81" class="outline-4">
+<h4 id="org2150c81">See also</h4>
+<div class="outline-text-4" id="text-org2150c81">
+<ul class="org-ul">
+<li><a href="#orgd419b34">clamps</a></li>
+<li><a href="#orgacaa029">clamps-base-url</a></li>
+<li><a href="#org3c1d1a7">clamps-gui-root</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org3c1d1a7" class="outline-3">
+<h3 id="org3c1d1a7">clamps-gui-root</h3>
+<div class="outline-text-3" id="text-org3c1d1a7">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>clamps-gui-root<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the pathname of the Gui root directory. It is nicknamed
+<i>&lt;clamps-gui-root&gt;</i> throughout this dictionary.
+</p>
+
+<p>
+<i>&lt;clamps-gui-root&gt;</i> is the path corresponding to
+<i>&lt;clamps-base-url&gt;</i> on the browser side, so any file named <i>&lt;file&gt;</i>
+put into the <i>&lt;clamps-gui-root&gt;</i> directory can be accessed in the
+browser at the address <i>&lt;clamps-base-url&gt;/&lt;file&gt;</i>.
+</p>
+</div>
+<div id="outline-container-org4d5fd6f" class="outline-4">
+<h4 id="org4d5fd6f">See also</h4>
+<div class="outline-text-4" id="text-org4d5fd6f">
+<ul class="org-ul">
+<li><a href="#orgd419b34">clamps</a></li>
+<li><a href="#orgacaa029">clamps-base-url</a></li>
+<li><a href="#org81f5d67">clamps-restart-gui</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org1abfba1" class="outline-3">
+<h3 id="org1abfba1">clamps-start</h3>
+<div class="outline-text-3" id="text-org1abfba1">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>clamps-start <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>gui-root <span style="color: #87cefa;">"/tmp"</span><span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>qsynth nil<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>open-gui nil<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Start clamps, optionally starting qsynth (Linux only) and opening
+the gui in a browser. This function gets called by <a href="#orgd419b34">clamps</a> and
+should normally not be called by the user.
+</p>
+</div>
+<div id="outline-container-orgbd71b9c" class="outline-4">
+<h4 id="orgbd71b9c">Arguments</h4>
+<div class="outline-text-4" id="text-orgbd71b9c">
+<p>
+<code>gui-root</code> The root path of the gui
+</p>
+
+<p>
+<code>qsynth</code> Boolean indicating whether to start the qsynth softsynth (Linux only).
+</p>
+
+<p>
+<code>open-gui</code> Boolean indicating whether to open the gui in a Browser window.
+</p>
+</div>
+</div>
+<div id="outline-container-org852bf34" class="outline-4">
+<h4 id="org852bf34">See also</h4>
+<div class="outline-text-4" id="text-org852bf34">
+<ul class="org-ul">
+<li><a href="#org3c1d1a7">clamps-gui-root</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfcfb421" class="outline-2">
+<h2 id="orgfcfb421">E</h2>
+<div class="outline-text-2" id="text-orgfcfb421">
+</div>
+<div id="outline-container-org24d51ec" class="outline-3">
+<h3 id="org24d51ec">ensure-sfz-preset</h3>
+<div class="outline-text-3" id="text-org24d51ec">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>ensure-sfz-preset preset <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> force <span style="color: #a9a9a9;">(</span>play-fn #'play-sfz-loop<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+
+<p>
+Synonym of <a href="#org86aa2cb">get-sfz-preset</a>.
+</p>
+</div>
+</div>
+<div id="outline-container-org3d573ca" class="outline-3">
+<h3 id="org3d573ca">exp-n</h3>
+<div class="outline-text-3" id="text-org3d573ca">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>exp-n x min max<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the reverse linear interpolation for a value in the range
+<i>[min..max]</i> as a normalized float value. <i>Min</i> and <i>max</i> have to be
+positive numbers.
+</p>
+</div>
+<div id="outline-container-orgbef6c73" class="outline-4">
+<h4 id="orgbef6c73">Arguments</h4>
+<div class="outline-text-4" id="text-orgbef6c73">
+<p>
+<code>x</code> An input value in the range <i>[min..max]</i> to be interpolated.
+</p>
+
+<p>
+<code>min</code> The minimum value.
+</p>
+
+<p>
+<code>max</code> The maximum value.
+</p>
+</div>
+</div>
+<div id="outline-container-org53a9ca8" class="outline-4">
+<h4 id="org53a9ca8">Examples</h4>
+<div class="outline-text-4" id="text-org53a9ca8">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>exp-n 1 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 0.0</span>
+
+<span style="color: #ffff00;">(</span>exp-n 10 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 0.5</span>
+
+<span style="color: #ffff00;">(</span>exp-n 100 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 1.0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgaa0d295" class="outline-4">
+<h4 id="orgaa0d295">See also</h4>
+<div class="outline-text-4" id="text-orgaa0d295">
+<ul class="org-ul">
+<li><a href="#org5869d83">lin-n</a></li>
+
+<li><a href="#org37fe3ef">m-exp</a></li>
+
+<li><a href="#org15d887c">m-lin</a></li>
+
+<li><a href="#org2bffe24">n-exp</a></li>
+
+<li><a href="#orgb710de9">n-exp-dev</a></li>
+
+<li><a href="#org892548b">n-lin</a></li>
+
+<li><a href="#orgee8763b">n-lin-dev</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org512bfaa" class="outline-2">
+<h2 id="org512bfaa">F</h2>
+<div class="outline-text-2" id="text-org512bfaa">
+</div>
+<div id="outline-container-org3ecc4e8" class="outline-3">
+<h3 id="org3ecc4e8">ftom</h3>
+<div class="outline-text-3" id="text-org3ecc4e8">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>ftom freq <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>tuning-base *standard-pitch*<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Convert frequency in Hz to pitch in Midicents.
+</p>
+</div>
+<div id="outline-container-org298abfa" class="outline-4">
+<h4 id="org298abfa">Arguments</h4>
+<div class="outline-text-4" id="text-org298abfa">
+<p>
+<code>freq</code> Frequency in Hz.
+</p>
+
+<p>
+<code>:tuning-base</code> Frequency of A4 in Hz.
+</p>
+</div>
+</div>
+<div id="outline-container-orgb8991e3" class="outline-4">
+<h4 id="orgb8991e3">Examples</h4>
+<div class="outline-text-4" id="text-orgb8991e3">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>ftom 440<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 69.0</span>
+
+<span style="color: #ffff00;">(</span>ftom 269.3<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 60.500526</span>
+
+<span style="color: #ffff00;">(</span>ftom 415 <span style="color: #7fffd4;">:tuning-base</span> 415<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 69.0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org97efa86" class="outline-4">
+<h4 id="org97efa86">See also</h4>
+<div class="outline-text-4" id="text-org97efa86">
+<ul class="org-ul">
+<li><a href="#org41aca11">mtof</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org644b9cb" class="outline-3">
+<h3 id="org644b9cb">fr2ct</h3>
+<div class="outline-text-3" id="text-org644b9cb">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>fr2ct ratio<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the Midicents interval of <i>ratio</i>.
+</p>
+</div>
+<div id="outline-container-org567ffb7" class="outline-4">
+<h4 id="org567ffb7">Arguments</h4>
+<div class="outline-text-4" id="text-org567ffb7">
+<p>
+<code>ratio</code> The frequency ratio of the interval.
+</p>
+</div>
+</div>
+<div id="outline-container-org1ae4350" class="outline-4">
+<h4 id="org1ae4350">Example</h4>
+<div class="outline-text-4" id="text-org1ae4350">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>fr2ct 2<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; 12.0</span>
+
+<span style="color: #ffff00;">(</span>fr2ct 4/5<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; -3.863137</span>
+
+<span style="color: #ffff00;">(</span>fr2ct 3/2<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; 7.01955</span>
+
+<span style="color: #ffff00;">(</span>fr2ct 1/2<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; -12.0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org18f0978" class="outline-4">
+<h4 id="org18f0978">See also</h4>
+<div class="outline-text-4" id="text-org18f0978">
+<ul class="org-ul">
+<li><a href="#org68ea7df">ct2fr</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org1620219" class="outline-2">
+<h2 id="org1620219">G - H</h2>
+<div class="outline-text-2" id="text-org1620219">
+</div>
+<div id="outline-container-org86aa2cb" class="outline-3">
+<h3 id="org86aa2cb">get-sfz-preset</h3>
+<div class="outline-text-3" id="text-org86aa2cb">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>get-sfz-preset preset <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> force <span style="color: #a9a9a9;">(</span>play-fn #'play-sfz-loop<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+
+<p>
+Load the sfz definition of <i>preset</i> and all its samples into the
+system if it hasn't been loaded previously. If force is <i>t</i>, force
+reload. Optionally set a play function.
+</p>
+
+<p>
+The association between the preset name and its sfz file has to be
+established before using <a href="#org1ea3aae">add-sfz-preset</a>, otherwise a warning is
+issued and no file is loaded.
+</p>
+</div>
+<div id="outline-container-orgcd26a17" class="outline-4">
+<h4 id="orgcd26a17">Arguments</h4>
+<div class="outline-text-4" id="text-orgcd26a17">
+<p>
+<code>preset</code> A keynum or symbol to serve as a name of the preset.
+</p>
+
+<p>
+<code>:force</code> A boolean indicating to force a reload even if the preset
+has been loaded before.
+</p>
+
+<p>
+<code>:play-fn</code> The play function to be used. Possible options are:
+</p>
+
+<ul class="org-ul">
+<li><a href="#orgd08b988">#'play-sfz-loop</a></li>
+
+<li><a href="#org868f855">#'play-sfz-one-shot</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org08c5e8c" class="outline-4">
+<h4 id="org08c5e8c">See also</h4>
+<div class="outline-text-4" id="text-org08c5e8c">
+<ul class="org-ul">
+<li><a href="#org1ea3aae">add-sfz-preset</a></li>
+
+<li><a href="#org24d51ec">ensure-sfz-preset</a></li>
+
+<li><a href="#org9315be4">load-sfz-preset</a></li>
+
+<li><a href="#org951c3ba">remove-sfz-preset</a></li>
+
+<li><a href="#org01b0ffb">sfz-preset-loaded?</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org30f229f" class="outline-3">
+<h3 id="org30f229f">get-val</h3>
+<div class="outline-text-3" id="text-org30f229f">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>get-val ref-object<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the value of <i>ref-object</i>.
+</p>
+</div>
+<div id="outline-container-org5101673" class="outline-4">
+<h4 id="org5101673">Arguments</h4>
+<div class="outline-text-4" id="text-org5101673">
+<p>
+<code>ref-object</code> An instance of <a href="#orgd22c573">ref-object</a>.
+</p>
+</div>
+</div>
+<div id="outline-container-orgc260b6e" class="outline-4">
+<h4 id="orgc260b6e">See also</h4>
+<div class="outline-text-4" id="text-orgc260b6e">
+<ul class="org-ul">
+<li><a href="#orgd23f998">make-computed</a></li>
+
+<li><a href="#orgf28e231">make-ref</a></li>
+
+<li><a href="#org4b2eaca">set-val</a></li>
+
+<li><a href="#org1d9cbb3">watch</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org08c56ec" class="outline-3">
+<h3 id="org08c56ec">gui</h3>
+<div class="outline-text-3" id="text-org08c56ec">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>gui<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Open the page at <i>&lt;clamps-base-url&gt;</i> in a Browser.
+</p>
+</div>
+<div id="outline-container-orgf771320" class="outline-4">
+<h4 id="orgf771320">See also</h4>
+<div class="outline-text-4" id="text-orgf771320">
+<ul class="org-ul">
+<li><a href="#orgacaa029">clamps-base-url</a></li>
+<li><a href="#orgf2bdcc6">meters</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfed5abc" class="outline-2">
+<h2 id="orgfed5abc">I - K</h2>
+<div class="outline-text-2" id="text-orgfed5abc">
+</div>
+<div id="outline-container-org78543ac" class="outline-3">
+<h3 id="org78543ac">idump</h3>
+<div class="outline-text-3" id="text-org78543ac">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>idump node<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Dump all active dsps of <i>node</i> to the <i>incudine:&lowast;logger-stream&lowast;</i>
+output.
+</p>
+</div>
+<div id="outline-container-org6b9bf3d" class="outline-4">
+<h4 id="org6b9bf3d">Arguments</h4>
+<div class="outline-text-4" id="text-org6b9bf3d">
+<ul class="org-ul">
+<li><code>node</code> The id of the node</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org28675e5" class="outline-4">
+<h4 id="org28675e5">Note:</h4>
+<div class="outline-text-4" id="text-org28675e5">
+<p>
+If <i>(idump)</i> doesn't create any output although dsps are running,
+reset the logger-stream using <a href="#orgd8780c4">reset-logger-stream</a>.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org5f00253" class="outline-2">
+<h2 id="org5f00253">L</h2>
+<div class="outline-text-2" id="text-org5f00253">
+</div>
+<div id="outline-container-org5869d83" class="outline-3">
+<h3 id="org5869d83">lin-n</h3>
+<div class="outline-text-3" id="text-org5869d83">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>lin-n x min max<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the reverse linear interpolation for a value in the range
+<i>[min..max]</i> as a normalized float value.
+</p>
+</div>
+<div id="outline-container-org4e53f29" class="outline-4">
+<h4 id="org4e53f29">Arguments</h4>
+<div class="outline-text-4" id="text-org4e53f29">
+<p>
+<code>x</code> An input value in the range <i>[min..max]</i> to be interpolated.
+</p>
+
+<p>
+<code>min</code> The minimum value.
+</p>
+
+<p>
+<code>max</code> The maximum value.
+</p>
+</div>
+</div>
+<div id="outline-container-orgc0b3c0e" class="outline-4">
+<h4 id="orgc0b3c0e">Examples</h4>
+<div class="outline-text-4" id="text-orgc0b3c0e">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>lin-n 10 10 20<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 0.0</span>
+
+<span style="color: #ffff00;">(</span>lin-n 15 10 20<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 0.5</span>
+
+<span style="color: #ffff00;">(</span>lin-n 20 10 20<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 1.0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4fbe632" class="outline-4">
+<h4 id="org4fbe632">See also</h4>
+<div class="outline-text-4" id="text-org4fbe632">
+<ul class="org-ul">
+<li><a href="#org3d573ca">exp-n</a></li>
+
+<li><a href="#org37fe3ef">m-exp</a></li>
+
+<li><a href="#org15d887c">m-lin</a></li>
+
+<li><a href="#org2bffe24">n-exp</a></li>
+
+<li><a href="#orgb710de9">n-exp-dev</a></li>
+
+<li><a href="#org892548b">n-lin</a></li>
+
+<li><a href="#orgee8763b">n-lin-dev</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org4a3a1aa" class="outline-3">
+<h3 id="org4a3a1aa">list-sfz-presets</h3>
+<div class="outline-text-3" id="text-org4a3a1aa">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>list-sfz-presets <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>loaded nil<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return a sorted list of all sfz preset names.
+</p>
+</div>
+<div id="outline-container-org881b01b" class="outline-4">
+<h4 id="org881b01b">Arguments</h4>
+<div class="outline-text-4" id="text-org881b01b">
+<p>
+<code>:loaded</code> Boolean to indicate whether only the preset names of
+loaded presets should be returned. If <i>nil</i> all registered preset
+names are returned.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org9315be4" class="outline-3">
+<h3 id="org9315be4">load-sfz-preset</h3>
+<div class="outline-text-3" id="text-org9315be4">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>load-sfz-preset file name <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> force <span style="color: #a9a9a9;">(</span>play-fn #'play-sfz-loop<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+
+<p>
+Load a sfz file into a preset with the id name. In case this preset
+already exists, the old one will only be overwritten if force is
+set to t. This function normally doesn't need to be called
+explicitely. The preferred mechanism to deal with sfz presets is by
+using a combination of <a href="#org1ea3aae">add-sfz-preset</a> and <a href="#org24d51ec">ensure-sfz-preset</a>.
+</p>
+</div>
+<div id="outline-container-org2b73b4e" class="outline-4">
+<h4 id="org2b73b4e">Arguments</h4>
+<div class="outline-text-4" id="text-org2b73b4e">
+<p>
+<code>file</code> Path or filename of the sfz file to load
+</p>
+
+<p>
+<code>name</code> symbol to identify the preset (preferably a keyword, but any
+symbol works)
+</p>
+
+<p>
+<code>:force</code> Force loading of the preset even if it already exists.
+</p>
+
+<p>
+<code>:play-fn</code> The play-fn to use when playing a sound. Possible choices
+are
+</p>
+
+<ul class="org-ul">
+<li><p>
+<a href="#orgd08b988">#'play-sfz-loop</a>
+</p>
+
+<p>
+If loop points are set, play the loop in case the duration
+exceeds (- loop-end start). If no loop points are set, loop
+the whole sample.
+</p></li>
+
+<li><p>
+<a href="#org868f855">#'play-sfz-one-shot</a>
+</p>
+
+<p>
+Just play sample once even if duration exceeds sample length.
+</p></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org08cd582" class="outline-4">
+<h4 id="org08cd582">Example</h4>
+<div class="outline-text-4" id="text-org08cd582">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>load-sfz-preset <span style="color: #87cefa;">"~/quicklisp/local-projects/clamps/packages/cl-sfz/snd/sfz/Flute-nv/000_Flute-nv.sfz"</span> <span style="color: #7fffd4;">:flute-nv</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org21a941d" class="outline-4">
+<h4 id="org21a941d">See also</h4>
+<div class="outline-text-4" id="text-org21a941d">
+<ul class="org-ul">
+<li><a href="#org1ea3aae">add-sfz-preset</a></li>
+
+<li><a href="#org24d51ec">ensure-sfz-preset</a></li>
+
+<li><a href="#org951c3ba">remove-sfz-preset</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org789f687" class="outline-3">
+<h3 id="org789f687">logger-level</h3>
+<div class="outline-text-3" id="text-org789f687">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>logger-level<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return or set the current logger level.  The logger level
+can be one of:
+</p>
+
+<p>
+<code>:error</code>
+</p>
+
+<p>
+<code>:warn</code>
+</p>
+
+<p>
+<code>:info</code>
+</p>
+
+<p>
+<code>:debug</code>
+</p>
+
+<p>
+For a description and examples, see <a href="../clamps/04_04_debugging-tools.html">Debugging Tools</a>.
+</p>
+</div>
+<div id="outline-container-org594822e" class="outline-4">
+<h4 id="org594822e">See also</h4>
+<div class="outline-text-4" id="text-org594822e">
+<ul class="org-ul">
+<li><a href="#orgc14b873">msg</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc3ef1fd" class="outline-3">
+<h3 id="orgc3ef1fd">lsample</h3>
+<div class="outline-text-3" id="text-orgc3ef1fd">
+<p>
+Struct
+</p>
+</div>
+<div id="outline-container-orgbb35850" class="outline-4">
+<h4 id="orgbb35850">Slots:</h4>
+</div>
+<div id="outline-container-org1c10967" class="outline-4">
+<h4 id="org1c10967">See also</h4>
+<div class="outline-text-4" id="text-org1c10967">
+<ul class="org-ul">
+<li><a href="#orgf99d308">sfz</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orge3b7866" class="outline-2">
+<h2 id="orge3b7866">M</h2>
+<div class="outline-text-2" id="text-orge3b7866">
+</div>
+<div id="outline-container-org37fe3ef" class="outline-3">
+<h3 id="org37fe3ef">m-exp</h3>
+<div class="outline-text-3" id="text-org37fe3ef">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>m-exp x min max<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the exponential interpolation for a MIDI value in the range
+<i>[min..max]</i> as a float value. The min and max values have to be
+positive.
+</p>
+</div>
+<div id="outline-container-org80c5af8" class="outline-4">
+<h4 id="org80c5af8">Arguments</h4>
+<div class="outline-text-4" id="text-org80c5af8">
+<p>
+<code>x</code> An input value in the range <i>[0..127]</i> to be interpolated.
+</p>
+
+<p>
+<code>min</code> The output value for <i>x = 0</i>.
+</p>
+
+<p>
+<code>max</code> The output value for <i>x = 127</i>.
+</p>
+</div>
+</div>
+<div id="outline-container-org5617894" class="outline-4">
+<h4 id="org5617894">Examples</h4>
+<div class="outline-text-4" id="text-org5617894">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>m-exp 0 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 1.0 (100.0%)</span>
+
+<span style="color: #ffff00;">(</span>m-exp 64 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 10.18296</span>
+
+<span style="color: #ffff00;">(</span>m-exp 127 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 100.0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org4c4de77" class="outline-4">
+<h4 id="org4c4de77">See also</h4>
+<div class="outline-text-4" id="text-org4c4de77">
+<ul class="org-ul">
+<li><a href="#org3d573ca">exp-n</a></li>
+
+<li><a href="#org5869d83">lin-n</a></li>
+
+<li><a href="#org15d887c">m-lin</a></li>
+
+<li><a href="#org2bffe24">n-exp</a></li>
+
+<li><a href="#orgb710de9">n-exp-dev</a></li>
+
+<li><a href="#org892548b">n-lin</a></li>
+
+<li><a href="#orgee8763b">n-lin-dev</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org15d887c" class="outline-3">
+<h3 id="org15d887c">m-lin</h3>
+<div class="outline-text-3" id="text-org15d887c">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>m-lin x min max<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the linear interpolation for a MIDI value in the range
+<i>[min..max]</i> as a float value.
+</p>
+</div>
+<div id="outline-container-orge77b91f" class="outline-4">
+<h4 id="orge77b91f">Arguments</h4>
+<div class="outline-text-4" id="text-orge77b91f">
+<p>
+<code>x</code> An input value in the range <i>[0..127]</i> to be interpolated.
+</p>
+
+<p>
+<code>min</code> The output value for <i>x = 0</i>.
+</p>
+
+<p>
+<code>max</code> The output value for <i>x = 127</i>.
+</p>
+</div>
+</div>
+<div id="outline-container-org3662e6c" class="outline-4">
+<h4 id="org3662e6c">Examples</h4>
+<div class="outline-text-4" id="text-org3662e6c">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>m-lin 0 10 20<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 10.0</span>
+
+<span style="color: #ffff00;">(</span>m-lin 64 10 20<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 15.039371</span>
+
+<span style="color: #ffff00;">(</span>m-lin 127 10 20<span style="color: #ffff00;">)</span>  <span style="color: #add8e6;">; =&gt; 20.0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge4b3595" class="outline-4">
+<h4 id="orge4b3595">See also</h4>
+<div class="outline-text-4" id="text-orge4b3595">
+<ul class="org-ul">
+<li><a href="#org3d573ca">exp-n</a></li>
+
+<li><a href="#org5869d83">lin-n</a></li>
+
+<li><a href="#org37fe3ef">m-exp</a></li>
+
+<li><a href="#org2bffe24">n-exp</a></li>
+
+<li><a href="#orgb710de9">n-exp-dev</a></li>
+
+<li><a href="#org892548b">n-lin</a></li>
+
+<li><a href="#orgee8763b">n-lin-dev</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd23f998" class="outline-3">
+<h3 id="orgd23f998">make-computed</h3>
+<div class="outline-text-3" id="text-orgd23f998">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>make-computed fn <span style="color: #87ceeb; font-weight: bold;">&amp;optional</span> <span style="color: #a9a9a9;">(</span>setter nil<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return a <a href="#orgd22c573">ref-object</a> which recalculates and sets its value using
+<i>fn</i> whenever a ref-object accessed with <a href="#org30f229f">get-val</a> in the body of
+<i>fn</i> is changed.
+</p>
+
+<p>
+Refer to <a href="../nil">Defining relations</a> in the Clamps documentation for
+examples.
+</p>
+</div>
+<div id="outline-container-org77249a2" class="outline-4">
+<h4 id="org77249a2">Arguments</h4>
+<div class="outline-text-4" id="text-org77249a2">
+<p>
+<code>fn</code> Function of no arguments to call whenever a value accessed
+using <a href="#org30f229f">get-val</a> in the body of the function is changed.
+</p>
+
+<p>
+<code>setter</code> Function of one argument called with the value of the
+ref-object returned by <i>make-computed</i> whenever it changes.
+</p>
+</div>
+</div>
+<div id="outline-container-org1e0c180" class="outline-4">
+<h4 id="org1e0c180">See also</h4>
+<div class="outline-text-4" id="text-org1e0c180">
+<ul class="org-ul">
+<li><a href="#org30f229f">get-val</a></li>
+
+<li><a href="#orgf28e231">make-ref</a></li>
+
+<li><a href="#org4b2eaca">set-val</a></li>
+
+<li><a href="#org1d9cbb3">watch</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf28e231" class="outline-3">
+<h3 id="orgf28e231">make-ref</h3>
+<div class="outline-text-3" id="text-orgf28e231">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>make-ref val <span style="color: #87ceeb; font-weight: bold;">&amp;rest</span> args<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return an instance of <a href="#orgd22c573">ref-object</a> with initial value <i>val</i>.
+</p>
+</div>
+<div id="outline-container-org9e2b730" class="outline-4">
+<h4 id="org9e2b730">Arguments</h4>
+<div class="outline-text-4" id="text-org9e2b730">
+<p>
+<code>val</code> Initial value of the created instance. It can be of any
+type.
+</p>
+
+<p>
+<code>args</code> Optional args supplied to make-instance. They are used
+internally and are not intended to be used directly when working
+with <i>cl-refs</i>.
+</p>
+</div>
+</div>
+<div id="outline-container-org75c2b4a" class="outline-4">
+<h4 id="org75c2b4a">See also</h4>
+<div class="outline-text-4" id="text-org75c2b4a">
+<ul class="org-ul">
+<li><a href="#org30f229f">get-val</a></li>
+
+<li><a href="#orgd23f998">make-computed</a></li>
+
+<li><a href="#org4b2eaca">set-val</a></li>
+
+<li><a href="#org1d9cbb3">watch</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf2bdcc6" class="outline-3">
+<h3 id="orgf2bdcc6">meters</h3>
+<div class="outline-text-3" id="text-orgf2bdcc6">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>meters<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Open the levelmeter page at <i>&lt;clamps-base-url&gt;/meters</i> in a
+Browser.
+</p>
+</div>
+<div id="outline-container-org937983b" class="outline-4">
+<h4 id="org937983b">See also</h4>
+<div class="outline-text-4" id="text-org937983b">
+<ul class="org-ul">
+<li><a href="#orgacaa029">clamps-base-url</a></li>
+<li><a href="#org08c56ec">gui</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org41aca11" class="outline-3">
+<h3 id="org41aca11">mtof</h3>
+<div class="outline-text-3" id="text-org41aca11">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>mtof midi-value <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>tuning-base *standard-pitch*<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Convert pitch in Midicts to frequency in Hz.
+</p>
+</div>
+<div id="outline-container-org06f1ae4" class="outline-4">
+<h4 id="org06f1ae4">Arguments</h4>
+<div class="outline-text-4" id="text-org06f1ae4">
+<p>
+<code>midi-value</code> Pitch in Midicents.
+</p>
+
+<p>
+<code>:tuning-base</code> Frequency of A4 in Hz.
+</p>
+</div>
+</div>
+<div id="outline-container-orgf5f25f4" class="outline-4">
+<h4 id="orgf5f25f4">Examples</h4>
+<div class="outline-text-4" id="text-orgf5f25f4">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>mtof 69<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 440</span>
+
+<span style="color: #ffff00;">(</span>mtof 60.5<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 269.29178</span>
+
+<span style="color: #ffff00;">(</span>mtof 69 <span style="color: #7fffd4;">:tuning-base</span> 415<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 415</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org87b6853" class="outline-4">
+<h4 id="org87b6853">See also</h4>
+<div class="outline-text-4" id="text-org87b6853">
+<ul class="org-ul">
+<li><a href="#org3ecc4e8">ftom</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc14b873" class="outline-3">
+<h3 id="orgc14b873">msg</h3>
+<div class="outline-text-3" id="text-orgc14b873">
+<p>
+Macro
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>msg type format-control <span style="color: #87ceeb; font-weight: bold;">&amp;rest</span> format-arguments<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Print a message to <i><b>logger-stream</b></i> when the current logger-level
+is &gt;= <i>type</i>.
+</p>
+
+<p>
+For a description and examples, see <a href="../clamps/04_04_debugging-tools.html">Debugging Tools</a>.
+</p>
+</div>
+<div id="outline-container-orgb541db9" class="outline-4">
+<h4 id="orgb541db9">Arguments</h4>
+<div class="outline-text-4" id="text-orgb541db9">
+<p>
+<code>type</code> The logger level, one of <i>:error</i>, <i>:warn</i>, <i>:info</i> or <i>:debug</i>.
+</p>
+
+<p>
+<code>format-control</code> A control string with the same syntax as Common
+Lisps <i>format</i> macro.
+</p>
+
+<p>
+<code>format-arguments</code> Arguments to the control string with the same
+behaviour as in Common Lisps <i>format</i> macro.
+</p>
+</div>
+</div>
+<div id="outline-container-org90d8c93" class="outline-4">
+<h4 id="org90d8c93">See also</h4>
+<div class="outline-text-4" id="text-org90d8c93">
+<ul class="org-ul">
+<li><a href="#org789f687">logger-level</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgfed93f9" class="outline-2">
+<h2 id="orgfed93f9">N - O</h2>
+<div class="outline-text-2" id="text-orgfed93f9">
+</div>
+<div id="outline-container-org2bffe24" class="outline-3">
+<h3 id="org2bffe24">n-exp</h3>
+<div class="outline-text-3" id="text-org2bffe24">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>n-exp x min max<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the exponential interpolation for a normalized value in the
+range <i>[min..max]</i> as a float value.
+</p>
+</div>
+<div id="outline-container-org3ddd3e1" class="outline-4">
+<h4 id="org3ddd3e1">Arguments</h4>
+<div class="outline-text-4" id="text-org3ddd3e1">
+<p>
+<code>x</code> An input value in the range <i>[0..1]</i> to be interpolated.
+</p>
+
+<p>
+<code>min</code> The output value for <i>x = 0</i>.
+</p>
+
+<p>
+<code>max</code> The output value for <i>x = 1</i>.
+</p>
+</div>
+</div>
+<div id="outline-container-orga0d2561" class="outline-4">
+<h4 id="orga0d2561">Examples</h4>
+<div class="outline-text-4" id="text-orga0d2561">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>n-exp 0 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 1.0</span>
+
+<span style="color: #ffff00;">(</span>n-exp 0.5 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 10.0</span>
+
+<span style="color: #ffff00;">(</span>n-exp 1 1 100<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 100.0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdd78c39" class="outline-4">
+<h4 id="orgdd78c39">See also</h4>
+<div class="outline-text-4" id="text-orgdd78c39">
+<ul class="org-ul">
+<li><a href="#org3d573ca">exp-n</a></li>
+
+<li><a href="#org5869d83">lin-n</a></li>
+
+<li><a href="#org37fe3ef">m-exp</a></li>
+
+<li><a href="#org15d887c">m-lin</a></li>
+
+<li><a href="#orgb710de9">n-exp-dev</a></li>
+
+<li><a href="#org892548b">n-lin</a></li>
+
+<li><a href="#orgee8763b">n-lin-dev</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb710de9" class="outline-3">
+<h3 id="orgb710de9">n-exp-dev</h3>
+<div class="outline-text-3" id="text-orgb710de9">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>n-exp-dev x max<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return a random deviation factor, the deviation being exponentially
+interpolated between <i>1</i> for <i>x = 0</i> and <i>[1/max..max]</i> for <i>x = 1</i>.
+</p>
+</div>
+<div id="outline-container-org472816e" class="outline-4">
+<h4 id="org472816e">Arguments</h4>
+<div class="outline-text-4" id="text-org472816e">
+<p>
+<code>x</code> An input value in the range <i>[0..1]</i> to be interpolated.
+</p>
+
+<p>
+<code>max</code> The maximum deviation factor for <i>x = 1</i>;
+</p>
+</div>
+</div>
+<div id="outline-container-orgcc6ad24" class="outline-4">
+<h4 id="orgcc6ad24">Examples</h4>
+<div class="outline-text-4" id="text-orgcc6ad24">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>n-exp-dev 0 4<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 1.0</span>
+
+<span style="color: #ffff00;">(</span>n-exp-dev 0.5 4<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; a random value exponentially distributed in the range [0.5..2.0]</span>
+
+<span style="color: #ffff00;">(</span>n-exp-dev 1 4<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; a random value exponentially distributed in the range [0.25..4.0]</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org0a7ac0b" class="outline-4">
+<h4 id="org0a7ac0b">See also</h4>
+<div class="outline-text-4" id="text-org0a7ac0b">
+<ul class="org-ul">
+<li><a href="#org3d573ca">exp-n</a></li>
+
+<li><a href="#org5869d83">lin-n</a></li>
+
+<li><a href="#org37fe3ef">m-exp</a></li>
+
+<li><a href="#org15d887c">m-lin</a></li>
+
+<li><a href="#org2bffe24">n-exp</a></li>
+
+<li><a href="#org892548b">n-lin</a></li>
+
+<li><a href="#orgee8763b">n-lin-dev</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org892548b" class="outline-3">
+<h3 id="org892548b">n-lin</h3>
+<div class="outline-text-3" id="text-org892548b">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>n-lin x min max<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the linear interpolation for a normalized value in the range
+<i>[min..max]</i> as a float value.
+</p>
+</div>
+<div id="outline-container-orga978617" class="outline-4">
+<h4 id="orga978617">Arguments</h4>
+<div class="outline-text-4" id="text-orga978617">
+<p>
+<code>x</code> An input value in the range <i>[0..1]</i> to be interpolated.
+</p>
+
+<p>
+<code>min</code> The output value for <i>x = 0</i>.
+</p>
+
+<p>
+<code>max</code> The output value for <i>x = 1</i>.
+</p>
+</div>
+</div>
+<div id="outline-container-orgb2adcee" class="outline-4">
+<h4 id="orgb2adcee">Examples</h4>
+<div class="outline-text-4" id="text-orgb2adcee">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>n-lin 0 10 20<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 10.0</span>
+
+<span style="color: #ffff00;">(</span>n-lin 0.5 10 20<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 15.0</span>
+
+<span style="color: #ffff00;">(</span>n-lin 1 10 20<span style="color: #ffff00;">)</span>  <span style="color: #add8e6;">; =&gt; 20.0</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org9efbe83" class="outline-4">
+<h4 id="org9efbe83">See also</h4>
+<div class="outline-text-4" id="text-org9efbe83">
+<ul class="org-ul">
+<li><a href="#org3d573ca">exp-n</a></li>
+
+<li><a href="#org5869d83">lin-n</a></li>
+
+<li><a href="#org37fe3ef">m-exp</a></li>
+
+<li><a href="#org15d887c">m-lin</a></li>
+
+<li><a href="#org2bffe24">n-exp</a></li>
+
+<li><a href="#orgb710de9">n-exp-dev</a></li>
+
+<li><a href="#orgee8763b">n-lin-dev</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgee8763b" class="outline-3">
+<h3 id="orgee8763b">n-lin-dev</h3>
+<div class="outline-text-3" id="text-orgee8763b">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>n-lin-dev x max<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return a random deviation value, the deviation being linearly
+interpolated between <i>0</i> for <i>x = 0</i> and <i>[-max..max]</i> for <i>x = 1</i>.
+</p>
+</div>
+<div id="outline-container-orgd94da79" class="outline-4">
+<h4 id="orgd94da79">Arguments</h4>
+<div class="outline-text-4" id="text-orgd94da79">
+<p>
+<code>x</code> An input value in the range <i>[0..1]</i> to be interpolated.
+</p>
+
+<p>
+<code>max</code> The maximum deviation value for <i>x = 1</i>;
+</p>
+</div>
+</div>
+<div id="outline-container-org88d32fe" class="outline-4">
+<h4 id="org88d32fe">Examples</h4>
+<div class="outline-text-4" id="text-org88d32fe">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>n-lin-dev 0 4<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 0</span>
+
+<span style="color: #ffff00;">(</span>n-lin-dev 0.5 4<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; a random value linearly distributed in the range [-2.0..2.0]</span>
+
+<span style="color: #ffff00;">(</span>n-lin-dev 1 4<span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; a random value linearly distributed in the range [-4.0..4.0]</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org83c63d1" class="outline-4">
+<h4 id="org83c63d1">See also</h4>
+<div class="outline-text-4" id="text-org83c63d1">
+<ul class="org-ul">
+<li><a href="#org3d573ca">exp-n</a></li>
+
+<li><a href="#org5869d83">lin-n</a></li>
+
+<li><a href="#org37fe3ef">m-exp</a></li>
+
+<li><a href="#org15d887c">m-lin</a></li>
+
+<li><a href="#org2bffe24">n-exp</a></li>
+
+<li><a href="#orgb710de9">n-exp-dev</a></li>
+
+<li><a href="#org892548b">n-lin</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc29b2b8" class="outline-3">
+<h3 id="orgc29b2b8">node-free-unprotected</h3>
+<div class="outline-text-3" id="text-orgc29b2b8">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>node-free-unprotected<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Free all Incudine nodes of <i>group 200</i>.
+</p>
+</div>
+<div id="outline-container-org0e28885" class="outline-4">
+<h4 id="org0e28885">See also</h4>
+<div class="outline-text-4" id="text-org0e28885">
+<ul class="org-ul">
+<li><a href="#org6dbd3c6">rts-hush</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb04cc01" class="outline-2">
+<h2 id="orgb04cc01">P - Q</h2>
+<div class="outline-text-2" id="text-orgb04cc01">
+</div>
+<div id="outline-container-org62d2892" class="outline-3">
+<h3 id="org62d2892">play-sfz</h3>
+<div class="outline-text-3" id="text-org62d2892">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>play-sfz pitch db dur <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>pan 0.5<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>preset <span style="color: #7fffd4;">:flute-nv</span><span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>startpos 0<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>out1 0<span style="color: #a9a9a9;">)</span> out2<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+
+<p>
+Play a sfz preset with stereo panning to incudine's audio outputs
+or a bus using the <i>play-fn</i> of the sample to be played.
+</p>
+</div>
+<div id="outline-container-org8f408e5" class="outline-4">
+<h4 id="org8f408e5">Arguments</h4>
+<div class="outline-text-4" id="text-org8f408e5">
+<p>
+<code>pitch</code> Pitch in Midicent.
+</p>
+
+<p>
+<code>db</code> Amplitude in dB. <i>0</i> corresponds to a
+scaling factor of <i>1</i>, <i>-100</i> to a scaling factor of <i>0</i>.
+</p>
+
+<p>
+<code>dur</code> Duration in seconds.
+</p>
+
+<p>
+<code>:pan</code> Number in the range <i>[0..1]</i> defining equal power panning
+between <i>out0</i> and <i>out1</i>.
+</p>
+
+<p>
+<code>:preset</code> The name of a registered preset. If the preset hasn't been
+loaded it will get loaded before playback starts.
+</p>
+
+<p>
+<code>:startpos</code> The startposition in the sample in seconds.
+</p>
+
+<p>
+<code>:out1</code> Zero based index of the first outlet.
+</p>
+
+<p>
+<code>:out2</code> Zero based index of the second outlet. If not specified, <i>(mod (1+ out1) 8)</i> will be used.
+</p>
+</div>
+</div>
+<div id="outline-container-orge7c9ebd" class="outline-4">
+<h4 id="orge7c9ebd">See also</h4>
+<div class="outline-text-4" id="text-orge7c9ebd">
+<ul class="org-ul">
+<li><a href="#orgd08b988">play-sfz-loop</a></li>
+
+<li><a href="#org868f855">play-sfz-one-shot</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd08b988" class="outline-3">
+<h3 id="orgd08b988">play-sfz-loop</h3>
+<div class="outline-text-3" id="text-orgd08b988">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>play-sfz pitch db dur <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>pan 0.5<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>preset <span style="color: #7fffd4;">:flute-nv</span><span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>startpos 0<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>out1 0<span style="color: #a9a9a9;">)</span> out2<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+
+<p>
+Play a sfz preset with stereo panning to incudine's audio outputs
+or a bus. Loop the sound according to the loop settings of the
+sample in the sfz file or loop the whole sound if not present. This
+function always uses loop playback regardless of the setting of
+<i>play-fn</i> in the sample to be played.
+</p>
+</div>
+<div id="outline-container-orgaa85873" class="outline-4">
+<h4 id="orgaa85873">Arguments</h4>
+<div class="outline-text-4" id="text-orgaa85873">
+<p>
+<code>pitch</code> Pitch in Midicent.
+</p>
+
+<p>
+<code>db</code> Amplitude in dB. <i>0</i> corresponds to a scaling factor of <i>1</i>,
+<i>-100</i> to a scaling factor of <i>0</i>.
+</p>
+
+<p>
+<code>dur</code> Duration in seconds.
+</p>
+
+<p>
+<code>:pan</code> Number in the range <i>[0..1]</i> defining equal power panning
+between <i>out0</i> and <i>out1</i>.
+</p>
+
+<p>
+<code>:preset</code> The name of a registered preset. If the preset hasn't been
+loaded it will get loaded before playback starts.
+</p>
+
+<p>
+<code>:startpos</code> The startposition in the sample in seconds.
+</p>
+
+<p>
+<code>:out1</code> Zero based index of the first outlet.
+</p>
+
+<p>
+<code>:out2</code> Zero based index of the second outlet. If not specified, <i>(mod (1+ out1) 8)</i> will be used.
+</p>
+</div>
+</div>
+<div id="outline-container-org2d904a5" class="outline-4">
+<h4 id="org2d904a5">See also</h4>
+<div class="outline-text-4" id="text-org2d904a5">
+<ul class="org-ul">
+<li><a href="#org62d2892">play-sfz</a></li>
+
+<li><a href="#org868f855">play-sfz-one-shot</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org868f855" class="outline-3">
+<h3 id="org868f855">play-sfz-one-shot</h3>
+<div class="outline-text-3" id="text-org868f855">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>play-sfz-one-shot pitch db dur <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>pan 0.5<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>preset <span style="color: #7fffd4;">:flute-nv</span><span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>startpos 0<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>out1 0<span style="color: #a9a9a9;">)</span> out2<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+
+<p>
+Play a sfz preset with stereo panning to incudine's audio outputs
+or a bus once (regardless of the setting of <i>play-fn</i> in the sample
+to be played).
+</p>
+</div>
+<div id="outline-container-orga5d081d" class="outline-4">
+<h4 id="orga5d081d">Arguments</h4>
+<div class="outline-text-4" id="text-orga5d081d">
+<p>
+<code>pitch</code> Pitch in Midicent.
+</p>
+
+<p>
+<code>db</code> Amplitude in dB. <i>0</i> corresponds to a
+scaling factor of <i>1</i>, <i>-100</i> to a scaling factor of <i>0</i>.
+</p>
+
+<p>
+<code>dur</code> Duration in seconds.
+</p>
+
+<p>
+<code>:pan</code> Number in the range <i>[0..1]</i> defining equal power panning
+between <i>out0</i> and <i>out1</i>.
+</p>
+
+<p>
+<code>:preset</code> The name of a registered preset. If the preset hasn't been
+loaded it will get loaded before playback starts.
+</p>
+
+<p>
+<code>:startpos</code> The startposition in the sample in seconds.
+</p>
+
+<p>
+<code>:out1</code> Zero based index of the first outlet.
+</p>
+
+<p>
+<code>:out2</code> Zero based index of the second outlet. If not specified, <i>(mod (1+ out1) 8)</i> will be used.
+</p>
+</div>
+</div>
+<div id="outline-container-org874e19e" class="outline-4">
+<h4 id="org874e19e">See also</h4>
+<div class="outline-text-4" id="text-org874e19e">
+<ul class="org-ul">
+<li><a href="#org62d2892">play-sfz</a></li>
+
+<li><a href="#orgd08b988">play-sfz-loop</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org419f89e" class="outline-3">
+<h3 id="org419f89e">plot</h3>
+<div class="outline-text-3" id="text-org419f89e">
+<p>
+Method
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>plot obj <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> region header <span style="color: #a9a9a9;">(</span>options <span style="color: #87cefa;">"notitle with lines;"</span><span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>grid t<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Plot <i>obj</i> using <a href="http://www.gnuplot.info/">GnuPlot</a>.
+</p>
+</div>
+<div id="outline-container-org7ba8b9b" class="outline-4">
+<h4 id="org7ba8b9b">Arguments</h4>
+<div class="outline-text-4" id="text-org7ba8b9b">
+<p>
+ <code>obj</code> The object to be plotted. Currently the following object
+types are implemented:
+</p>
+
+<ul class="org-ul">
+<li><p>
+<code>seq</code> A sequence of numbers, interpreted as y-values of
+successive x-values starting at 0.
+</p>
+
+<p>
+Pairs as elements of <i>seq</i> are interpreted as 2d coordinates of
+data points. Vectors, arrays or lists are valid sequences.
+</p></li>
+
+<li><code>Function</code> A function of one argument. Displays the values of
+applying function to x-values in the range <i>[0..1]</i>.</li>
+</ul>
+
+
+<ul class="org-ul">
+<li><code>incudine:buffer</code> Display the contents of an incudine
+buffer. For a sample buffer this acts like a waveform display,
+but any buffer data can be displayed.</li>
+</ul>
+
+
+<p>
+<code>:region</code> A list of two values defining the left and right margin of
+x-values of the plot.
+</p>
+
+<p>
+<code>:header</code> A string supplied as a header to GnuPlot before initiating
+the plot command.
+</p>
+
+<p>
+<code>:options</code> A string with options for GnuPlot.
+</p>
+
+<p>
+<code>:grid</code> Boolean indicating whether to use a grid.
+</p>
+</div>
+</div>
+<div id="outline-container-org768c70e" class="outline-4">
+<h4 id="org768c70e">Examples:</h4>
+<div class="outline-text-4" id="text-org768c70e">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>plot '<span style="color: #a9a9a9;">(</span>5 4 6 1 9<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; (5 4 6 1 9)</span>
+</pre>
+</div>
+
+<figure id="org2f82398">
+<img src="./img/plot-01.svg" alt="plot-01.svg" class="org-svg" width="50%" />
+
+<figcaption><span class="figure-number">Figure 1: </span>output of (plot '(5 4 6 1 9))</figcaption>
+</figure>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>plot '<span style="color: #a9a9a9;">(</span><span style="color: #ff1493;">(</span>-2 5<span style="color: #ff1493;">)</span> <span style="color: #ff1493;">(</span>0 8<span style="color: #ff1493;">)</span> <span style="color: #ff1493;">(</span>4 -2<span style="color: #ff1493;">)</span> <span style="color: #ff1493;">(</span>6 10<span style="color: #ff1493;">)</span><span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>  <span style="color: #add8e6;">; =&gt; ((-2 5) (0 8) (4 -2) (6 10))</span>
+</pre>
+</div>
+
+<figure id="orga8a6013">
+<img src="./img/plot-02.svg" alt="plot-02.svg" class="org-svg" width="50%" />
+
+<figcaption><span class="figure-number">Figure 2: </span>output of (plot '((-2 5) (0 8) (4 -2) (6 10)))</figcaption>
+</figure>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span><span style="color: #afeeee; font-weight: bold;">defun</span> <span style="color: #7fffd4; font-weight: bold;">my-fn</span> <span style="color: #a9a9a9;">(</span>x<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>* x x<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; my-fn</span>
+
+<span style="color: #ffff00;">(</span>plot #'my-fn<span style="color: #ffff00;">)</span>  <span style="color: #add8e6;">; =&gt; #&lt;function my-fn&gt;</span>
+</pre>
+</div>
+
+<figure id="org3883442">
+<img src="./img/plot-03.svg" alt="plot-03.svg" class="org-svg" width="50%" />
+
+<figcaption><span class="figure-number">Figure 3: </span>output of (plot #'my-fn)</figcaption>
+</figure>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>plot #'my-fn <span style="color: #7fffd4;">:region</span> '<span style="color: #a9a9a9;">(</span>-10 10<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; #&lt;function my-fn&gt;</span>
+</pre>
+</div>
+
+<figure id="orgf5b6419">
+<img src="./img/plot-04.svg" alt="plot-04.svg" class="org-svg" width="50%" />
+
+<figcaption><span class="figure-number">Figure 4: </span>output of (plot #'my-fn :region '(-10 10))</figcaption>
+</figure>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>ensure-sfz-preset <span style="color: #7fffd4;">:flute-nv</span><span style="color: #ffff00;">)</span>
+
+<span style="color: #ffff00;">(</span>plot <span style="color: #a9a9a9;">(</span>first <span style="color: #ff1493;">(</span>sfz-preset-buffer <span style="color: #7fffd4;">:flute-nv</span> 60<span style="color: #ff1493;">)</span><span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+
+<figure id="orga34df15">
+<img src="./img/plot-05.svg" alt="plot-05.svg" class="org-svg" width="50%" />
+
+<figcaption><span class="figure-number">Figure 5: </span>output of (plot (first (sfz-preset-buffer :flute-nv 60)))</figcaption>
+</figure>
+</div>
+</div>
+<div id="outline-container-orgfbd6799" class="outline-4">
+<h4 id="orgfbd6799">See also</h4>
+<div class="outline-text-4" id="text-orgfbd6799">
+<ul class="org-ul">
+<li><a href="#org1a5ba90">plot-2d</a></li>
+
+<li><a href="#org6599126">svg</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org1a5ba90" class="outline-3">
+<h3 id="org1a5ba90">plot-2d</h3>
+<div class="outline-text-3" id="text-org1a5ba90">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>plot-2d obj <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> region header <span style="color: #a9a9a9;">(</span>options <span style="color: #87cefa;">"notitle with lines;"</span><span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>grid t<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Convenience wrapper around <a href="#org419f89e">plot</a>: A flat sequence of numbers is
+interpreted as 2-d coordinate pairs.
+</p>
+</div>
+<div id="outline-container-org9142a80" class="outline-4">
+<h4 id="org9142a80">Example</h4>
+<div class="outline-text-4" id="text-org9142a80">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>plot-2d '<span style="color: #a9a9a9;">(</span>2 1 4 3 6 10<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span> &lt;=&gt; <span style="color: #ffff00;">(</span>plot '<span style="color: #a9a9a9;">(</span><span style="color: #ff1493;">(</span>2 1<span style="color: #ff1493;">)</span> <span style="color: #ff1493;">(</span>4 3<span style="color: #ff1493;">)</span> <span style="color: #ff1493;">(</span>6 10<span style="color: #ff1493;">)</span><span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org2e3fd90" class="outline-2">
+<h2 id="org2e3fd90">R</h2>
+<div class="outline-text-2" id="text-org2e3fd90">
+</div>
+<div id="outline-container-org9656c03" class="outline-3">
+<h3 id="org9656c03">r-elt</h3>
+<div class="outline-text-3" id="text-org9656c03">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>r-elt seq<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return a random element of seq.
+</p>
+</div>
+<div id="outline-container-org58d07db" class="outline-4">
+<h4 id="org58d07db">Arguments</h4>
+<div class="outline-text-4" id="text-org58d07db">
+<p>
+<code>seq</code> a sequence fulfilling the predicate <i>(typep seq 'sequence)</i>
+like a list or a vector.
+</p>
+</div>
+</div>
+<div id="outline-container-org014b3f9" class="outline-4">
+<h4 id="org014b3f9">Examples</h4>
+<div class="outline-text-4" id="text-org014b3f9">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>r-elt #<span style="color: #a9a9a9;">(</span>1 2 3 4<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; 1, 2, 3 or 4</span>
+
+<span style="color: #ffff00;">(</span>r-elt '<span style="color: #a9a9a9;">(</span>dog cat bird cow<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; dog, cat, bird or cow</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd22c573" class="outline-3">
+<h3 id="orgd22c573">ref-object</h3>
+<div class="outline-text-3" id="text-orgd22c573">
+<p>
+Class
+</p>
+
+<p>
+A <i>ref-object</i> is a special class used in the <i>cl-refs</i>
+package. Its slots shouldn't be accessed or manipulated directly,
+but rather using the public functions of the cl-refs package listed
+below. For information how to use ref-objects refer to <a href="../nil">cl-refs</a> in
+the Clamps documentation.
+</p>
+</div>
+<div id="outline-container-org910f564" class="outline-4">
+<h4 id="org910f564">See also</h4>
+<div class="outline-text-4" id="text-org910f564">
+<ul class="org-ul">
+<li><a href="#org30f229f">get-val</a></li>
+
+<li><a href="#orgd23f998">make-computed</a></li>
+
+<li><a href="#orgf28e231">make-ref</a></li>
+
+<li><a href="#org4b2eaca">set-val</a></li>
+
+<li><a href="#org1d9cbb3">watch</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org951c3ba" class="outline-3">
+<h3 id="org951c3ba">remove-sfz-preset</h3>
+<div class="outline-text-3" id="text-org951c3ba">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>remove-sfz-preset name<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+
+<p>
+Remove the soundfile map associated with name. This is the opposite of <a href="#org9315be4">load-sfz-preset</a>.
+</p>
+</div>
+<div id="outline-container-org81c976a" class="outline-4">
+<h4 id="org81c976a">Arguments</h4>
+<div class="outline-text-4" id="text-org81c976a">
+<p>
+<code>name</code> Keyword or symbol of the registered preset.
+</p>
+</div>
+</div>
+<div id="outline-container-org7745744" class="outline-4">
+<h4 id="org7745744">Note:</h4>
+<div class="outline-text-4" id="text-org7745744">
+<p>
+The soundfile buffers of the samples used in the sfz description
+and the association between the preset name and the sfz file are
+<b>not</b> removed! Only the association between the preset name, the
+keynums and the buffers are removed.
+</p>
+</div>
+</div>
+<div id="outline-container-orgb867742" class="outline-4">
+<h4 id="orgb867742">See also</h4>
+<div class="outline-text-4" id="text-orgb867742">
+<ul class="org-ul">
+<li><a href="#org9315be4">load-sfz-preset</a></li>
+
+<li><a href="#org86aa2cb">get-sfz-preset</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd8780c4" class="outline-3">
+<h3 id="orgd8780c4">reset-logger-stream</h3>
+<div class="outline-text-3" id="text-orgd8780c4">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>reset-logger-stream<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Resets <i>incudine:*logger-stream*</i> to <i>&lowast;error-output&lowast;</i>. Call this
+function, if calls to <i>incudine.util:msg</i> don't produce any output
+in the REPL.
+</p>
+
+<p>
+This function needs to be called if <i>Clamps</i> is started from a Lisp
+Image.
+</p>
+</div>
+</div>
+<div id="outline-container-org36e3b02" class="outline-3">
+<h3 id="org36e3b02">rts?</h3>
+<div class="outline-text-3" id="text-org36e3b02">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>rts?<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Checks if rts is started and running.
+</p>
+</div>
+<div id="outline-container-org28e88dd" class="outline-4">
+<h4 id="org28e88dd">See also</h4>
+<div class="outline-text-4" id="text-org28e88dd">
+<ul class="org-ul">
+<li><a href="#org90dfe6a">rts</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org90dfe6a" class="outline-3">
+<h3 id="org90dfe6a">rts</h3>
+<div class="outline-text-3" id="text-org90dfe6a">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>rts <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>rt-wait 0<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Start the real-time system of Clamps. This functions sets the
+following special variables:
+</p>
+
+<p>
+<code>*midi-in1*</code> The default Midi Input
+</p>
+
+<p>
+<code>*midi-out1*</code> The default Midi Output
+</p>
+
+<p>
+<code>*rts-out*</code> The default output for realtime messages from
+Clamps/CM.
+</p>
+
+<p>
+It also starts the rt engine of incudine calling
+<i>incudine:rt-start</i>.
+</p>
+</div>
+<div id="outline-container-org0056f10" class="outline-4">
+<h4 id="org0056f10">Arguments</h4>
+<div class="outline-text-4" id="text-org0056f10">
+<p>
+<code>rt-wait</code> Time in seconds to wait before starting.
+</p>
+</div>
+</div>
+<div id="outline-container-org3171179" class="outline-4">
+<h4 id="org3171179">Note:</h4>
+<div class="outline-text-4" id="text-org3171179">
+<p>
+This command is an replacement of the <i>rts</i> command of CM,
+described <a href="../cm-dict/index.html#rts-fn.html">here</a>, so none of the options mentioned there or the
+decription in <a href="../cm-dict/index.html#rts-topic.html">RTS</a> apply to Clamps. Other related CM functions,
+like <i>rts-pause</i>, <i>rts-continue</i> and <i>rts-stop</i> also don't work in
+Clamps.
+</p>
+</div>
+</div>
+<div id="outline-container-org381a73e" class="outline-4">
+<h4 id="org381a73e">See also</h4>
+<div class="outline-text-4" id="text-org381a73e">
+<ul class="org-ul">
+<li><a href="#org36e3b02">rts?</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org6dbd3c6" class="outline-3">
+<h3 id="org6dbd3c6">rts-hush</h3>
+<div class="outline-text-3" id="text-org6dbd3c6">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>rts-hush<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Sends an all-notes-off message<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup> to all channels of <i>&lowast;​midi-out1&lowast;</i> and
+calls <a href="#orgc29b2b8">node-free-unprotected</a>.
+</p>
+</div>
+<div id="outline-container-orga3cbd9e" class="outline-4">
+<h4 id="orga3cbd9e">Note:</h4>
+<div class="outline-text-4" id="text-orga3cbd9e">
+<p>
+This command is bound to the Keyboard Sequence <i>&lt;C-.&gt;</i> in emacs.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org55f4e87" class="outline-2">
+<h2 id="org55f4e87">S - V</h2>
+<div class="outline-text-2" id="text-org55f4e87">
+</div>
+<div id="outline-container-org1ac1072" class="outline-3">
+<h3 id="org1ac1072">set-bpm</h3>
+<div class="outline-text-3" id="text-org1ac1072">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>set-bpm bpm<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Synonym for <a href="#org2286128">set-tempo</a>
+</p>
+</div>
+</div>
+<div id="outline-container-org2286128" class="outline-3">
+<h3 id="org2286128">set-tempo</h3>
+<div class="outline-text-3" id="text-org2286128">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>set-tempo bpm<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Set the tempo in beats per minute for both, CM and Incudine.
+</p>
+</div>
+<div id="outline-container-org61915b7" class="outline-4">
+<h4 id="org61915b7">Arguments</h4>
+<div class="outline-text-4" id="text-org61915b7">
+<p>
+<code>bpm</code> Number of beats per minute.
+</p>
+</div>
+</div>
+<div id="outline-container-orge24c16b" class="outline-4">
+<h4 id="orge24c16b">See also</h4>
+<div class="outline-text-4" id="text-orge24c16b">
+<ul class="org-ul">
+<li><a href="#org1ac1072">set-bpm</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbf5bd77" class="outline-3">
+<h3 id="orgbf5bd77">set-standard-pitch</h3>
+<div class="outline-text-3" id="text-orgbf5bd77">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>set-standard-pitch freq<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Set the <i>&lowast;standard-pitch&lowast;</i> reference of <i>Clamps</i> to <i>freq</i> in Hz.
+</p>
+</div>
+<div id="outline-container-orgeeddcba" class="outline-4">
+<h4 id="orgeeddcba">Arguments</h4>
+<div class="outline-text-4" id="text-orgeeddcba">
+<p>
+<code>freq</code> Frequency of A4 in Hz.
+</p>
+</div>
+</div>
+<div id="outline-container-orgd79890d" class="outline-4">
+<h4 id="orgd79890d">See also</h4>
+<div class="outline-text-4" id="text-orgd79890d">
+<ul class="org-ul">
+<li><a href="#org4ee3faa">&lowast;standard-pitch&lowast;</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org4b2eaca" class="outline-3">
+<h3 id="org4b2eaca">set-val</h3>
+<div class="outline-text-3" id="text-org4b2eaca">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>set-val ref value  <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>force nil<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Set the value of ref-object <i>ref</i> to <i>value</i> if different than
+previous value. If <i>force</i> is non-nil, set in any case. Return
+value.
+</p>
+</div>
+<div id="outline-container-org10f408e" class="outline-4">
+<h4 id="org10f408e">Arguments</h4>
+<div class="outline-text-4" id="text-org10f408e">
+<p>
+<code>ref</code> An instance of <a href="#orgd22c573">ref-object</a>
+</p>
+
+<p>
+<code>value</code> Any value of any type to be set.
+</p>
+
+<p>
+<code>force</code> A boolean indicating to set the value even if it is eql to
+the previous value of the ref-object.
+</p>
+</div>
+</div>
+<div id="outline-container-orgddcab65" class="outline-4">
+<h4 id="orgddcab65">See also</h4>
+<div class="outline-text-4" id="text-orgddcab65">
+<ul class="org-ul">
+<li><a href="#org30f229f">get-val</a></li>
+
+<li><a href="#orgd23f998">make-computed</a></li>
+
+<li><a href="#orgf28e231">make-ref</a></li>
+
+<li><a href="#org1d9cbb3">watch</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf99d308" class="outline-3">
+<h3 id="orgf99d308">sfz</h3>
+<div class="outline-text-3" id="text-orgf99d308">
+<p>
+Class   
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>new sfz <span style="color: #87ceeb; font-weight: bold;">&amp;key</span> <span style="color: #a9a9a9;">(</span>keynum 60<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>amplitude 0<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>duration 1<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>preset <span style="color: #7fffd4;">:flute-nv</span><span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>play-fn nil<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>pan 0.5<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>startpos 0<span style="color: #a9a9a9;">)</span> <span style="color: #a9a9a9;">(</span>chan 100<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Generates sfz Events.
+</p>
+
+<p>
+sfz accepts the following keywords:
+</p>
+
+<p>
+<code>:time</code> The output time in seconds, initially unbound.
+</p>
+
+<p>
+<code>:keynum</code> Keynum in Midicents
+</p>
+
+<p>
+<code>:amplitude</code> Amplitude in dB. <i>0</i> corresponds to a scaling factor of <i>1</i>, <i>-100</i> to a scaling factor of <i>0</i>.
+</p>
+
+<p>
+<code>:duration</code> Duration in seconds.
+</p>
+
+<p>
+<code>:preset</code> Keyword or symbol of a registered preset name.
+</p>
+
+<p>
+<code>:play-fn</code> The play function to be used for sample playback.
+</p>
+
+<p>
+<code>:pan</code> Number in the range <i>[0..1]</i> defining equal power
+panning between the two outputs of the dsp on playback.
+</p>
+
+<p>
+<code>:startpos</code> The startposition in the sample in seconds.
+</p>
+
+<p>
+<code>:chan</code> The channel (layer) used in svg output.
+</p>
+
+<p>
+The sfz class defines or uses the following accessor functions:
+</p>
+
+<ul class="org-ul">
+<li><a href="../cm-dict/index.html#object-time-fn.html">object-time</a></li>
+
+<li><a href="#org6f2e6c0">sfz-keynum</a></li>
+
+<li><a href="#orgbb9b648">sfz-amplitude</a></li>
+
+<li><a href="#org0133edc">sfz-duration</a></li>
+
+<li><a href="#org4973f5f">sfz-preset</a></li>
+
+<li><a href="#org20ee4a6">sfz-play-fn</a></li>
+
+<li><a href="#orgc0e83d7">sfz-pan</a></li>
+
+<li><a href="#orgc115799">sfz-startpos</a></li>
+
+<li><a href="#org5accb28">sfz-chan</a></li>
+</ul>
+</div>
+<div id="outline-container-org0f0ee37" class="outline-4">
+<h4 id="org0f0ee37">Examples:</h4>
+<div class="outline-text-4" id="text-org0f0ee37">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>new sfz<span style="color: #ffff00;">)</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; #i(sfz keynum 60 amplitude 1 duration 1 preset :flute-nv</span>
+<span style="color: #add8e6;">;;           </span><span style="color: #add8e6;">play-fn nil pan 0.5 startpos 0 chan 100)</span>
+
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">the following code should send 1 second of a flute middle C sound</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">to the first two oulets of incudine:</span>
+
+<span style="color: #ffff00;">(</span>output <span style="color: #a9a9a9;">(</span>new sfz<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">; =&gt; ; No value</span>
+
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; loading :flute-nv from ~/quicklisp/local-projects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">; No values</span>
+
+<span style="color: #ffff00;">(</span><span style="color: #afeeee; font-weight: bold;">loop</span>
+  for idx below 200
+  for x = <span style="color: #a9a9a9;">(</span>/ idx 199<span style="color: #a9a9a9;">)</span>
+  for time = 0 then <span style="color: #a9a9a9;">(</span>+ time <span style="color: #ff1493;">(</span>n-exp <span style="color: #adff2f;">(</span>interp x 0 0  0.3 1  1 0<span style="color: #adff2f;">)</span> 0.01 0.1<span style="color: #ff1493;">)</span><span style="color: #a9a9a9;">)</span>
+  do <span style="color: #a9a9a9;">(</span>sprout
+      <span style="color: #ff1493;">(</span>new sfz
+        <span style="color: #7fffd4;">:time</span> time
+        <span style="color: #7fffd4;">:keynum</span> <span style="color: #adff2f;">(</span>+ 65.5 <span style="color: #00bfff;">(</span>random <span style="color: #ffff00;">(</span>n-lin <span style="color: #cdad00;">(</span>interp x 0 0 1 1<span style="color: #cdad00;">)</span> 1 5<span style="color: #ffff00;">)</span><span style="color: #00bfff;">)</span><span style="color: #adff2f;">)</span>
+        <span style="color: #7fffd4;">:duration</span> <span style="color: #adff2f;">(</span>+ 0.5 <span style="color: #00bfff;">(</span>random 2.0<span style="color: #00bfff;">)</span><span style="color: #adff2f;">)</span>
+        <span style="color: #7fffd4;">:amplitude</span> <span style="color: #adff2f;">(</span>n-lin <span style="color: #00bfff;">(</span>interp x 0 0 0.8 0 1 1<span style="color: #00bfff;">)</span> -12 -24<span style="color: #adff2f;">)</span><span style="color: #ff1493;">)</span><span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; nil</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org2238535" class="outline-4">
+<h4 id="org2238535">See also</h4>
+<div class="outline-text-4" id="text-org2238535">
+<ul class="org-ul">
+<li><a href="#org1ea3aae">add-sfz-preset</a></li>
+
+<li><a href="#orgc3ef1fd">lsample</a></li>
+
+<li><a href="#orgd08b988">play-sfz-loop</a></li>
+
+<li><a href="#org868f855">play-sfz-one-shot</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgbb9b648" class="outline-3">
+<h3 id="orgbb9b648">sfz-amplitude</h3>
+<div class="outline-text-3" id="text-orgbb9b648">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-amplitude sfz<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Amplitude of sfz instance in dB, setfable.
+</p>
+</div>
+<div id="outline-container-orgfef1755" class="outline-4">
+<h4 id="orgfef1755">Arguments</h4>
+<div class="outline-text-4" id="text-orgfef1755">
+<p>
+<code>sfz</code> Instance of class sfz.
+</p>
+</div>
+</div>
+<div id="outline-container-orgc54fb8a" class="outline-4">
+<h4 id="orgc54fb8a">See also</h4>
+<div class="outline-text-4" id="text-orgc54fb8a">
+<ul class="org-ul">
+<li><a href="#orgf99d308">sfz</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org5accb28" class="outline-3">
+<h3 id="org5accb28">sfz-chan</h3>
+<div class="outline-text-3" id="text-org5accb28">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-channel sfz<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Channel of sfz instance, setfable.
+</p>
+</div>
+<div id="outline-container-orgcbae37b" class="outline-4">
+<h4 id="orgcbae37b">Arguments</h4>
+<div class="outline-text-4" id="text-orgcbae37b">
+<p>
+<code>sfz</code> Instance of class sfz.
+</p>
+</div>
+</div>
+<div id="outline-container-orgd5f0c2a" class="outline-4">
+<h4 id="orgd5f0c2a">See also</h4>
+<div class="outline-text-4" id="text-orgd5f0c2a">
+<ul class="org-ul">
+<li><a href="#orgf99d308">sfz</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org0133edc" class="outline-3">
+<h3 id="org0133edc">sfz-duration</h3>
+<div class="outline-text-3" id="text-org0133edc">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-duration sfz<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Duration of sfz instance in seconds, setfable.
+</p>
+</div>
+<div id="outline-container-orgf719eab" class="outline-4">
+<h4 id="orgf719eab">Arguments</h4>
+<div class="outline-text-4" id="text-orgf719eab">
+<p>
+<code>sfz</code> Instance of class sfz.
+</p>
+</div>
+</div>
+<div id="outline-container-org41a16dc" class="outline-4">
+<h4 id="org41a16dc">See also</h4>
+<div class="outline-text-4" id="text-org41a16dc">
+<ul class="org-ul">
+<li><a href="#orgf99d308">sfz</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org7191415" class="outline-3">
+<h3 id="org7191415">sfz-get-range</h3>
+<div class="outline-text-3" id="text-org7191415">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-get-range ref<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the keynum range of sfz denoted by <i>ref</i>.
+</p>
+</div>
+<div id="outline-container-orgcfc951d" class="outline-4">
+<h4 id="orgcfc951d">Arguments</h4>
+<div class="outline-text-4" id="text-orgcfc951d">
+<p>
+<code>ref</code> Reference to the sfz. Can be the <i>keyword</i> or <i>symbol</i> of a
+registered sfz preset or a filename (pathname or string) of a sfz
+file. Relative filenames will be searched recursively in
+<i>&lowast;sfz-file-path&lowast;</i>.
+</p>
+</div>
+</div>
+<div id="outline-container-org48169c4" class="outline-4">
+<h4 id="org48169c4">See also</h4>
+<div class="outline-text-4" id="text-org48169c4">
+<ul class="org-ul">
+<li><a href="#org1ea3aae">add-sfz-preset</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org6f2e6c0" class="outline-3">
+<h3 id="org6f2e6c0">sfz-keynum</h3>
+<div class="outline-text-3" id="text-org6f2e6c0">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-keynum sfz<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Keynum of sfz instance in Midicents, setfable.
+</p>
+</div>
+<div id="outline-container-org96f4a80" class="outline-4">
+<h4 id="org96f4a80">Arguments</h4>
+<div class="outline-text-4" id="text-org96f4a80">
+<p>
+<code>sfz</code> Instance of class sfz.
+</p>
+</div>
+</div>
+<div id="outline-container-org0761f25" class="outline-4">
+<h4 id="org0761f25">See also</h4>
+<div class="outline-text-4" id="text-org0761f25">
+<ul class="org-ul">
+<li><a href="#orgf99d308">sfz</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc0e83d7" class="outline-3">
+<h3 id="orgc0e83d7">sfz-pan</h3>
+<div class="outline-text-3" id="text-orgc0e83d7">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-pan sfz<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Equal power panning of sfz instance in the range <i>[0..1]</i>,
+setfable.
+</p>
+</div>
+<div id="outline-container-org8113345" class="outline-4">
+<h4 id="org8113345">Arguments</h4>
+<div class="outline-text-4" id="text-org8113345">
+<p>
+<code>sfz</code> Instance of class sfz.
+</p>
+</div>
+</div>
+<div id="outline-container-org885f86d" class="outline-4">
+<h4 id="org885f86d">See also</h4>
+<div class="outline-text-4" id="text-org885f86d">
+<ul class="org-ul">
+<li><a href="#orgf99d308">sfz</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org3f64d52" class="outline-3">
+<h3 id="org3f64d52">sfz-preset-file</h3>
+<div class="outline-text-3" id="text-org3f64d52">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-preset-file preset<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the full path of <i>preset</i>.
+</p>
+</div>
+<div id="outline-container-orga3128c7" class="outline-4">
+<h4 id="orga3128c7">Arguments</h4>
+<div class="outline-text-4" id="text-orga3128c7">
+<p>
+<code>preset</code> Keyword or symbol of a registered sfz preset.
+</p>
+</div>
+</div>
+<div id="outline-container-org2abb93a" class="outline-4">
+<h4 id="org2abb93a">See also&lt;:</h4>
+<div class="outline-text-4" id="text-org2abb93a">
+<ul class="org-ul">
+<li><a href="#org1ea3aae">add-sfz-preset</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org01b0ffb" class="outline-3">
+<h3 id="org01b0ffb">sfz-preset-loaded?</h3>
+<div class="outline-text-3" id="text-org01b0ffb">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-preset-loaded? preset<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+
+<p>
+Predicate to test if sfz preset is loaded.
+</p>
+</div>
+<div id="outline-container-org6176917" class="outline-4">
+<h4 id="org6176917">Arguments</h4>
+<div class="outline-text-4" id="text-org6176917">
+<p>
+<code>preset</code> Keyword or symbol of registered preset.
+</p>
+</div>
+</div>
+<div id="outline-container-org2d70dd9" class="outline-4">
+<h4 id="org2d70dd9">Examples:</h4>
+<div class="outline-text-4" id="text-org2d70dd9">
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #add8e6;">;;; </span><span style="color: #add8e6;">Directly after Clamps startup:</span>
+
+<span style="color: #ffff00;">(</span>sfz-preset-loaded? <span style="color: #7fffd4;">:flute-nv</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; nil</span>
+
+<span style="color: #ffff00;">(</span>output <span style="color: #a9a9a9;">(</span>new sfz<span style="color: #a9a9a9;">)</span><span style="color: #ffff00;">)</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; loading :flute-nv from ~/quicklisp/local-procects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz</span>
+<span style="color: #add8e6;">;; </span><span style="color: #add8e6;">No values</span>
+
+<span style="color: #ffff00;">(</span>sfz-preset-loaded? <span style="color: #7fffd4;">:flute-nv</span><span style="color: #ffff00;">)</span> <span style="color: #add8e6;">;; </span><span style="color: #add8e6;">=&gt; t</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org1d8086e" class="outline-4">
+<h4 id="org1d8086e">See also</h4>
+<div class="outline-text-4" id="text-org1d8086e">
+<ul class="org-ul">
+<li><a href="#org1ea3aae">add-sfz-preset</a></li>
+
+<li><a href="#org86aa2cb">get-sfz-preset</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org20ee4a6" class="outline-3">
+<h3 id="org20ee4a6">sfz-play-fn</h3>
+<div class="outline-text-3" id="text-org20ee4a6">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-play-fn sfz<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Play function of sfz instance, setfable.
+</p>
+</div>
+<div id="outline-container-org9dc7ed4" class="outline-4">
+<h4 id="org9dc7ed4">Arguments</h4>
+<div class="outline-text-4" id="text-org9dc7ed4">
+<p>
+<code>sfz</code> Instance of class sfz.
+</p>
+</div>
+</div>
+<div id="outline-container-org8be3626" class="outline-4">
+<h4 id="org8be3626">See also</h4>
+<div class="outline-text-4" id="text-org8be3626">
+<ul class="org-ul">
+<li><a href="#orgf99d308">sfz</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org4973f5f" class="outline-3">
+<h3 id="org4973f5f">sfz-preset</h3>
+<div class="outline-text-3" id="text-org4973f5f">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-preset sfz<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Preset of sfz instance, setfable.
+</p>
+</div>
+<div id="outline-container-orgec798c8" class="outline-4">
+<h4 id="orgec798c8">Arguments</h4>
+<div class="outline-text-4" id="text-orgec798c8">
+<p>
+<code>sfz</code> Instance of class sfz.
+</p>
+</div>
+</div>
+<div id="outline-container-org5e8920b" class="outline-4">
+<h4 id="org5e8920b">See also</h4>
+<div class="outline-text-4" id="text-org5e8920b">
+<ul class="org-ul">
+<li><a href="#orgf99d308">sfz</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgc115799" class="outline-3">
+<h3 id="orgc115799">sfz-startpos</h3>
+<div class="outline-text-3" id="text-orgc115799">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>sfz-startpos sfz<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Start position of sfz instance in seconds, setfable.
+</p>
+</div>
+<div id="outline-container-org6f4381a" class="outline-4">
+<h4 id="org6f4381a">Arguments</h4>
+<div class="outline-text-4" id="text-org6f4381a">
+<p>
+<code>sfz</code> Instance of class sfz.
+</p>
+</div>
+</div>
+<div id="outline-container-org8aa43fa" class="outline-4">
+<h4 id="org8aa43fa">See also</h4>
+<div class="outline-text-4" id="text-org8aa43fa">
+<ul class="org-ul">
+<li><a href="#orgf99d308">sfz</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org4ee3faa" class="outline-3">
+<h3 id="org4ee3faa">&lowast;standard-pitch&lowast;</h3>
+<div class="outline-text-3" id="text-org4ee3faa">
+<p>
+Variable
+</p>
+
+<p>
+The tuning reference for <i>ftom</i> and <i>mtof</i> in Hz. Defaults to <i>440</i>.
+</p>
+</div>
+<div id="outline-container-org892d516" class="outline-4">
+<h4 id="org892d516">Important Note:</h4>
+<div class="outline-text-4" id="text-org892d516">
+<p>
+Don't set this value directly! Rather use the <a href="#orgbf5bd77">set-standard-pitch</a>
+function which changes the standard pitch reference for the entire
+<i>Clamps</i> system.
+</p>
+</div>
+</div>
+<div id="outline-container-orgcc8be55" class="outline-4">
+<h4 id="orgcc8be55">See also</h4>
+<div class="outline-text-4" id="text-orgcc8be55">
+<ul class="org-ul">
+<li><a href="#org3ecc4e8">ftom</a></li>
+
+<li><a href="#org41aca11">mtof</a></li>
+
+<li><a href="#orgbf5bd77">set-standard-pitch</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org669127c" class="outline-3">
+<h3 id="org669127c">start-doc-acceptor</h3>
+<div class="outline-text-3" id="text-org669127c">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>start-doc-acceptor<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Start the doc acceptor for online documentation. This is done
+automatically on startup to make the clamps documentation
+accessible at the URL <i><a href="https://localhost:8282">https://localhost:8282</a></i>.
+</p>
+</div>
+<div id="outline-container-orge75784c" class="outline-4">
+<h4 id="orge75784c">See also</h4>
+</div>
+</div>
+<div id="outline-container-org6599126" class="outline-3">
+<h3 id="org6599126">svg</h3>
+<div class="outline-text-3" id="text-org6599126">
+<p>
+Class
+</p>
+</div>
+</div>
+<div id="outline-container-orge98d1d5" class="outline-3">
+<h3 id="orge98d1d5">svg-&gt;browser</h3>
+<div class="outline-text-3" id="text-orge98d1d5">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>svg-&gt;browser svg-file<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Display <code>svg-file</code> in the SVG Player Gui, located at
+ <i>&lt;clamps-base-url&gt;/svg-display</i>.
+</p>
+</div>
+<div id="outline-container-org5b6ceeb" class="outline-4">
+<h4 id="org5b6ceeb">Arguments</h4>
+<div class="outline-text-4" id="text-org5b6ceeb">
+<p>
+<code>svg-file</code> String naming the svg-file to display/play. The
+filename is interpreted relative to the <i>&lt;clamps-gui-root&gt;/svg</i>
+directory.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf2ea187" class="outline-3">
+<h3 id="orgf2ea187">svg-gui-path</h3>
+<div class="outline-text-3" id="text-orgf2ea187">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>svg-gui-path file<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Return the full path of SVG file <i>file</i> in the current GUI.
+</p>
+</div>
+<div id="outline-container-org1072d11" class="outline-4">
+<h4 id="org1072d11">Arguments</h4>
+<div class="outline-text-4" id="text-org1072d11">
+<p>
+<code>file</code> A String designating the filename of the SVG file.
+</p>
+</div>
+</div>
+<div id="outline-container-org90b03bd" class="outline-4">
+<h4 id="org90b03bd">See also</h4>
+<div class="outline-text-4" id="text-org90b03bd">
+<ul class="org-ul">
+<li><a href="#org3c1d1a7">clamps-gui-root</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf1e5cfb" class="outline-2">
+<h2 id="orgf1e5cfb">W - Z</h2>
+<div class="outline-text-2" id="text-orgf1e5cfb">
+</div>
+<div id="outline-container-org1d9cbb3" class="outline-3">
+<h3 id="org1d9cbb3">watch</h3>
+<div class="outline-text-3" id="text-org1d9cbb3">
+<p>
+Function
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span style="color: #ffff00;">(</span>watch fn<span style="color: #ffff00;">)</span>
+</pre>
+</div>
+<p>
+Call <i>fn</i> whenever a value accessed using <a href="#org30f229f">get-val</a> in the body of
+the function is changed.
+</p>
+
+<p>
+<i>watch</i> returns a function to remove the relation, <i>watch</i> has
+established. Refer to the chapter <i>Clamps Packages/Misc
+Packages/cl-refs</i> in the <a href="../clamps/index.html">Clamps</a> documentation for examples.
+</p>
+</div>
+<div id="outline-container-orgfc6b09c" class="outline-4">
+<h4 id="orgfc6b09c">Arguments</h4>
+<div class="outline-text-4" id="text-orgfc6b09c">
+<p>
+<code>fn</code> Function of no arguments to call
+</p>
+</div>
+</div>
+<div id="outline-container-org06ad5a0" class="outline-4">
+<h4 id="org06ad5a0">See also</h4>
+<div class="outline-text-4" id="text-org06ad5a0">
+<ul class="org-ul">
+<li><a href="#org30f229f">get-val</a></li>
+
+<li><a href="#orgd23f998">make-computed</a></li>
+
+<li><a href="#orgf28e231">make-ref</a></li>
+
+<li><a href="#org4b2eaca">set-val</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org8dde590" class="outline-2">
+<h2 id="org8dde590"><span class="todo TODO">TODO</span> </h2>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">See <i>ChannelModeMessages</i> on <a href="https://midi.org/summary-of-midi-1-0-messages">this page</a>.</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Orm Finnendahl</p>
+<p class="date">Created: 2024-08-21 Mi 11:17</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

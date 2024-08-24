@@ -1,0 +1,121 @@
+#+TITLE: svg-import-export
+
+A library for exporting to and importing from svg file format.
+
+This library contains lisp classes for an incomplete set of svg
+elements and defines a function svg-export to export them into a svg
+file. The used header writes the file in inkscape file format to
+enable the use of layers.
+
+The code is primarily aimed at using inkscape as some sort of
+piano-roll editor for music related data, especially in conjunction
+with common music (version 2) using the cm-svg package as glue code to
+integrate it with cm. It only imports line or circle objects in
+specified layers. The export code is more general and implements the
+major svg elements.
+
+Both, import and export code should be easily extensible to be adapted
+to other purposes.
+
+* Intro
+
+Code example taken from the file [[file:svg-export-examples.lisp][svg-export-examples.lisp]]:
+
+Make sure you have [[https://www.quicklisp.org/beta/][Quicklisp]] installed and working with your Lisp implementation, then load svg-import-export:
+
+#+BEGIN_SRC lisp
+  (ql:quickload :svg-import-export)
+  (in-package :svg-import-export)
+#+END_SRC
+
+** Example
+
+In the example we first create an svg-file instance and then fill the
+'elements slot with objects. SVG group elements like layers and groups
+are represented as (possibly nested) lists with a group or layer
+object as first element and the contents of the group or layer as
+objects (or lists) in the rest of the list. The code creates an svg
+file with 8 squares and a time axis above. The file is stored in
+"/tmp/test.svg".
+
+#+BEGIN_SRC lisp
+  (in-package :svg-import-export)
+  (defparameter *test* nil)
+
+  (progn
+    (setf *test*
+          (let ((end-time 100)
+                (xscale 10)
+                (gxoffs 20)
+                (svg-file (make-instance 'svg-file)))
+            (setf (slot-value svg-file 'elements) 
+                  (list
+                   (append (list 
+                            (make-instance 'svg-layer 
+                                           :name "Ebene 1" 
+                                           :id (new-id svg-file 'layer-ids)))
+                           (loop for x from 0 to end-time by 12
+                              collect (make-instance 'svg-rect
+                                                     :x (+ gxoffs (* xscale x)) 
+                                                     :y 200
+                                                     :width (* xscale 10)
+                                                     :height 100
+                                                     :fill-color "#333333"
+                                                     :id (new-id svg-file 'rect-ids))))))
+            (push (svg-zeitachse end-time svg-file
+                                 :gxoffs gxoffs :gyoffs 100 :xscale xscale) 
+                  (elements svg-file))
+            svg-file))
+    (export-svg-file *test*))
+#+END_SRC
+
+If you use emacs with slime installed, you can inspect the elements
+slot of the svg-file object by pressing <C-c I> at the end of the
+following expression:
+
+#+BEGIN_SRC lisp
+  (elements *test*)
+#+END_SRC
+
+Print a svg textobject as svg XML to a stream:
+
+#+BEGIN_SRC lisp
+  (print-to-stream (make-instance 'svg-text) t)
+#+END_SRC
+
+Add a piano-roll layer to the file:
+
+#+BEGIN_SRC lisp
+  (push (svg-piano-roll *test*) (elements *test*))
+#+END_SRC
+
+Export the modified object to "/tmp/test2.svg":
+
+#+BEGIN_SRC lisp
+  (export-svg-file *test* :fname "/tmp/test2.svg")
+#+END_SRC
+
+For a plotting example see [[file:examples/plotting-example.lisp][plotting-example.lisp]] 
+
+** Syntax of the 'elements slot of the svg-file class
+
+#+BEGIN_SRC lisp
+;;; :elements slot:
+
+({elem}*)
+
+;;; elem:
+
+<svg-rect> | 
+<svg-line> | 
+<svg-text> |
+<svg-point> |
+<svg-path> | 
+<svg-clone | 
+(<svg-tl-layer> {elem}*) | 
+(<svg-layer> {elem}*) | 
+(<svg-group> {elem}*)
+#+END_SRC
+
+For the exisiting slots of the different svg classes see the
+rexpective definitions in [[svg-classes.lisp]]
