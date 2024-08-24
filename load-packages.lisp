@@ -20,8 +20,8 @@
 
 (in-package :cl-user)
 
-(pushnew (format nil "~a/" (namestring (asdf:system-relative-pathname :clamps "packages/")))
-      asdf:*central-registry*)
+(pushnew (asdf:system-relative-pathname :clamps "packages/")
+         asdf:*central-registry*)
 
 ;;; (push (asdf:system-relative-pathname :clamps "packages/fudi/") asdf:*central-registry*)
 
@@ -36,6 +36,7 @@
                   :cl-refs
                   :cl-sfz
                   :cl-poolplayer
+                  :svg-import-export
                   :cm-svg
                   :cm-svg.rts
                   :cm-sfz

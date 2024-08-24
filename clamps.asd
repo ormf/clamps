@@ -2,6 +2,9 @@
 
 (in-package :cl-user)
 
+(pushnew (merge-pathnames "local-projects/clamps/packages/svg-import-export/" ql:*quicklisp-home*)
+      asdf:*central-registry*)
+
 (asdf:defsystem #:clamps
   :description "Common Lisp Aided Music Production System"
   :author "Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>"
