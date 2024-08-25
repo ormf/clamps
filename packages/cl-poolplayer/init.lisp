@@ -42,7 +42,6 @@
 ;;; (start-seq #'main-seq-02)
 |#
 
-;;; (cd "/home/orm/work/programmieren/lisp/cl-poolplayer")
 
 #|
 (defun init-poolplayer ()

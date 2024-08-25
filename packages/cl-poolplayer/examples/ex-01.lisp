@@ -99,7 +99,7 @@
 (defparameter *pool2-idxs* (mapcar #'buf-idx (coerce *pool2* 'list)))
 (defparameter *pool31-idxs* (mapcar #'buf-idx (coerce *pool31* 'list)))
 
-(cd "/home/orm/work/programmieren/lisp/cl-poolplayer/")
+(cd "~/quicklisp/local-projects/clamps/packages/cl-poolplayer/")
 (init-poolplayer)
 
 (play-buffer-stretch-env-pan-out* (elt *pool0* 0) :amp -6 :pan 0.5)
