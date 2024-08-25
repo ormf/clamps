@@ -18,31 +18,32 @@
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
-  (defun export-clamps-syms (s backend info)
-    (message "exporting clamps syms")
-    (with-temp-buffer 
-      (insert "(mapcar
-   (lambda (entry)
-     (let ((symbol (intern (car entry)
-  			 ,*clamps-doc-symbols*)))
-       (if (boundp symbol)
-  	 (push (cadr entry) (symbol-value symbol))
-         (set symbol (cdr entry)))))
-   '(\n")
-      (mapcar
-       (lambda (entry)
-         (insert
-          (format "   (\"%s\" \"clamps/%s\")\n"
-                  (org-html-element-title (car entry))
-                  (plist-get (cdr entry) :href))))
-       (cl-remove-if
-        (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
-        (plist-get info :multipage-toc-lookup)))
-      (insert "))\n")
-      (write-region (point-min) (point-max) "../extra/elisp/clamps-lookup.el"))
-    (load (format "%s%s" (file-name-directory (buffer-file-name))
-               "../extra/elisp/clamps-lookup.el"))
-    s)
+    (defun export-clamps-syms (s backend info)
+      (message "exporting clamps syms")
+      (with-temp-buffer 
+        (insert "(defvar *clamps-doc-symbols* (make-vector 63 0))
+  (mapcar
+     (lambda (entry)
+       (let ((symbol (intern (car entry)
+    			 ,*clamps-doc-symbols*)))
+         (if (boundp symbol)
+    	 (push (cadr entry) (symbol-value symbol))
+           (set symbol (cdr entry)))))
+     '(\n")
+        (mapcar
+         (lambda (entry)
+           (insert
+            (format "   (\"%s\" \"clamps/%s\")\n"
+                    (org-html-element-title (car entry))
+                    (plist-get (cdr entry) :href))))
+         (cl-remove-if
+          (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
+          (plist-get info :multipage-toc-lookup)))
+        (insert "))\n")
+        (write-region (point-min) (point-max) "../extra/elisp/clamps-lookup.el"))
+      (load (format "%s%s" (file-name-directory (buffer-file-name))
+                 "../extra/elisp/clamps-lookup.el"))
+      s)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-clamps-syms)
 #  #:\([^ ]+\) →    - [[dict:\1][\1]]

@@ -1,3 +1,4 @@
+(load "/home/orm/work/programmieren/lisp/clamps/doc/../extra/elisp/cm-dict.el")
 (mapcar
  (lambda (entry)
    (let ((symbol (intern (car entry)
@@ -19,7 +20,6 @@
    ("exp-n" "clamps-dict/exp-n.html")
    ("ftom" "clamps-dict/f.html")
    ("fr2ct" "clamps-dict/fr2ct.html")
-   ("fredrik" "clamps-dict/fredrik.html")
    ("get-sfz-preset" "clamps-dict/g-h.html")
    ("get-val" "clamps-dict/get-val.html")
    ("gui" "clamps-dict/gui.html")

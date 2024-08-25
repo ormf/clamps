@@ -1,0 +1,4664 @@
+#+TITLE: Fomus
+#+AUTHOR: David Psenicka
+#+LANGUAGE: en
+#+OPTIONS: html5-fancy:t
+#+OPTIONS: num:nil
+#+OPTIONS: toc:3 h:4 html-multipage-join-empty-bodies:t
+#+OPTIONS: html-multipage-split-level:toc
+#+OPTIONS: html-multipage-toc-to-top:t
+#+OPTIONS: html-multipage-export-directory:fomus
+#+OPTIONS: html-multipage-open:browser
+#+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"../fomus/index.html\">Fomus</a>\n"
+#+OPTIONS: html-multipage-postamble-position:bottom
+#+OPTIONS: html-postamble:nil
+#+OPTIONS: html-multipage-include-default-style:nil
+#+HTML_DOCTYPE: xhtml5
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/fomus.css" />
+#+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+#+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
+#+BEGIN_SRC emacs-lisp :exports results :results: none
+  (defun export-fomus-syms (s backend info)
+    (with-temp-buffer
+      (insert "(setq *clamps-fomus-symbols* (make-vector 63 0))\n")
+      (insert "(mapcar
+   (lambda (entry)
+     (let ((symbol (intern (car entry)
+  			 ,*clamps-fomus-symbols*)))
+       (if (boundp symbol)
+  	 (push (cadr entry) (symbol-value symbol))
+         (set symbol (cdr entry)))))
+   '(\n")
+      (mapcar
+       (lambda (entry)
+         (insert
+          (format "   (\"%s\" \"fomus/%s\")\n"
+                  (org-html-element-title (car entry))
+                  (plist-get (cdr entry) :href))))
+       (cl-remove-if
+        (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
+        (plist-get info :multipage-toc-lookup)))
+      (insert "))\n")
+      (write-region (point-min) (point-max) "../extra/elisp/clamps-fomus-lookup.el"))
+    (load (format "%s%s" (file-name-directory (buffer-file-name))
+               "../extra/elisp/clamps-fomus-lookup.el"))
+    s)
+#+END_SRC
+#+BIND: org-export-filter-multipage-functions (export-fomus-syms)
+
+
+* Disclaimer
+  The original of this FOMUS documentation is part of the Common Lisp
+  Distribution of [[https://fomus.common-lisp.dev/][FOMUS]], Version 0.2.26 from May 24th, 2007, viewable
+  online [[https://fomus.common-lisp.dev/doc/][here]]. It was entirely written by David Psenicka, the author
+  of FOMUS and is integrated into the Clamps documentation here for
+  convenience. The original docbook sources were converted to org-mode
+  using pandoc, edited slightly including case conversion and then
+  exported to multipage HTML with the styling adapted to the overall
+  style of the Clamps HTML Documentation. David Psenicka is not
+  affiliated in any form with or responsible for the adaptations made
+  for this copy and the Author of Clamps doesn't claim or own any
+  intellectual property of its content.
+* Introduction
+:PROPERTIES:
+:CUSTOM_ID: intro
+:END:
+FOMUS (FOrmat MUSic) is a music notation tool for computer music
+composers. It is written in the Lisp programming language, and has been
+tested in the following interpreters:
+[[http://www.cons.org/cmucl/][CMUCL]] (version 19),
+[[http://www.sbcl.org/][SBCL]] (version 0.9.4),
+[[http://openmcl.clozure.com/][OpenMCL]] (version 1),
+[[http://clisp.sourceforge.net/][CLISP]] (version 2),
+[[http://www.franz.com/][Allegro]] (version 7) and
+[[http://www.lispworks.com/][LispWorks]] (version 4). As the program
+becomes more stable, it will also be tested in other lisp
+implementations. Supported operating systems are Linux, Max OS X and
+Windows. The purpose of it is to facilitate the conversion of "raw"
+algorithmic output data into readable music notation, a process that can
+be frustrating and time consuming since it often requires dumping data
+into some intermediary format (such as MIDI) and importing it into a
+notation program that only does a mediocre job of conversion. FOMUS
+attempts to remove this frustration by making a reasonably intelligent
+attempt at spelling notes, quantizing offsets and durations into
+readable rhythms, laying out the information into voices and staves, and
+other tasks (such as where to include clef changes or ottava markings).
+The user may also specify extra information such as articulations, text
+markings, time signature changes, notational details of musical
+instruments, etc.. When the program is run, it outputs a file suitable
+for importing straight into a notation program, after which a small
+amount of editing and layout work should be required to create a
+finished musical score.
+
+=FOMUS=
+
+Following is a list of some of the tasks FOMUS is designed to automate:
+
+- Part grouping and ordering
+- Transposition and checking of instrument ranges
+- Note spelling (semitones and quartertones are currently supported) and
+  cautionary accidentals
+- Rhythmic quantizing (with tuplet choices that minimize the amount of
+  error between input offsets and notational offsets)
+- Distribution of notes into voices and staves
+- Note splitting and tying, taking into account metrical divisions,
+  dotted rhythms, and other special cases
+- Decisions regarding placement of clef changes and ottava brackets
+- Layout of articulations, slurs, beams, dynamic and text markings, and
+  other notational elements
+
+The following output formats are supported:
+
+- MusicXML
+- Common Music Notation
+  (almost implemented)
+- LilyPond
+- MIDI File/Playback through
+  Common Music
+
+MusicXML files will import (more or less) into popular notation programs
+like [[http://www.finalemusic.com/][Finale]] and
+[[http://www.sibelius.com/][Sibelius]].
+
+FOMUS integrates with [[http://commonmusic.sf.net][Common Music]], using
+some of its functionality if present and also functioning as a backend.
+FOMUS has also been designed to allow selection of modules that use
+different algorithms to perform the same tasks. As new functions are
+added, users can select the ones that give them the best results. These
+will be added to the program over time.
+
+FOMUS is still in its initial (alpha) development stage, so please
+expect many bugs. If you wish to report one, please look at the
+=debug-filename= setting to see how to create a debug file and e-mail it
+to [[mailto:dpsenick(at)uiuc(dot)edu][dpsenick(at)uiuc(dot)edu]]. Please
+send me suggestions and comments.
+
+Thanks to Rick Taube, Kilian Sprotte, Mika Kuuskankare and Rob Canning
+for their help and suggestions. Also thanks to Kilian Sprotte for
+developing code for the test suite, available in the SVN repository as
+=fomustest=.
+* Installation
+:PROPERTIES:
+:CUSTOM_ID: install
+:END:
+** Downloading
+:PROPERTIES:
+:CUSTOM_ID: section.install1
+:END:
+FOMUS is available in tarball form
+[[http://common-lisp.net/project/fomus/download][here]]. Download the
+latest version and type something similar to the following at a UNIX
+prompt:
+
+#+begin_example
+cd path_to_install_directory
+tar -zxf path_to_tarball/fomus-0.2.0.tgz
+      
+#+end_example
+
+The current version is also available via Subversion, hosted at
+[[http://common-lisp.net/][Common-Lisp.net]]. Type the following command
+at a UNIX prompt to download the latest version (you must have
+Subversion installed on your machine):
+
+#+begin_example
+mkdir fomus
+svn checkout svn://common-lisp.net/project/fomus/svn/fomus/tags/current fomus
+      
+#+end_example
+
+The development/unstable version can be downloaded as follows:
+
+#+begin_example
+mkdir fomus
+svn checkout svn://common-lisp.net/project/fomus/svn/fomus/trunk fomus
+      
+#+end_example
+
+Future updates will then only require typing =svn update= in the FOMUS
+directory.
+
+** Compiling/Loading
+:PROPERTIES:
+:CUSTOM_ID: section.install2
+:END:
+The program may be compiled and loaded by loading the file =load.lisp=.
+
+#+begin_example
+CL-USER> (load "path_to_fomus_directory/load.lisp")
+      
+#+end_example
+
+...
+
+#+begin_example
+CL-USER> (use-package :fm)
+      
+#+end_example
+
+The package name is =fomus=, and can also be referred to with the
+abbreviations =fms= and =fm=.
+
+A system definition file =fomus.asd= is also provided for use with
+[[http://www.cliki.net/asdf][ASDF]]. To use it, make sure ASDF's central
+registry parameter contains the necessary path information and load it
+using the =operate= function (see the ASDF documentation for more
+information).
+
+** Installing as an Executable
+:PROPERTIES:
+:CUSTOM_ID: install.cmd
+:END:
+The script file =install.sh= can be run at a UNIX command prompt to
+install FOMUS as a command-line executable program. Right now this can
+only be done with SBCL, CMUCL, CLISP and OpenMCL in UNIX (it's been
+tested in OS X and Linux).
+
+Type the following to get a list of installation options:
+
+#+begin_example
+cd path_to_install_directory
+./install.sh --help
+       
+#+end_example
+
+By default, the script tries to install the program into the
+subdirectories in =/usr/local=. The commands for a default installation
+using SBCL would look like this:
+
+#+begin_example
+su -
+cd path_to_install_directory
+./install.sh --sbcl
+       
+#+end_example
+
+There is also an option for uninstalling. To see how to run FOMUS as an
+executable, see [[#interface.cmd]] and [[#interface.text]].
+
+** Customizing the Installation
+:PROPERTIES:
+:CUSTOM_ID: section.install3
+:END:
+By default, FOMUS compiles and loads all of the backends listed in this
+documentation. You can leave any one of these out by adding noe the
+following keywords to the =*features*= list (using =push= or =pushnew=):
+=:fomus-nocmn=, =:fomus-nolilypond=, =:fomus-nomusicxml=,
+=:fomus-nomidi= These must be added before loading or compiling. If you
+are recompiling with different keywords, be sure to delete all =.fasl=
+files first to insure that all parts of the program are consistent.
+
+Also, FOMUS automatically tries to register modules by default when it
+loads into Lisp. Adding the feature =:fomus-noautoreg= tells the
+application to skip this step. Modules will then be inaccessible so only
+FOMUS's built-in functions can be used.
+
+** Simple Emacs Interface
+:PROPERTIES:
+:CUSTOM_ID: section.install4
+:END:
+Here are a few simple lines that you can put in your =.emacs= file. They
+associate =.fms= files with Lisp (actually, this example assumes SLIME
+is being used) and bind the key sequence ="\c-c\c-o"= to run the FOMUS
+command-line program.
+
+#+begin_example
+;; fomus extension--editing works well enough in lisp mode
+(add-to-list 'auto-mode-alist '("\\.fms$" . lisp-mode))
+
+;; save buffers & invoke fomus
+(setq fomus-args "")
+(defun run-fomus ()
+  (interactive)
+  (save-some-buffers)
+  (let ((a (read-from-minibuffer "FOMUS arguments: " fomus-args)))
+    (setq fomus-args a)
+    (shell-command (format "fomus %s %S" a buffer-file-name))))
+
+;; add slime mode hook
+(defun custom-slime-mode-hook ()
+  (local-set-key "\C-c\C-o" 'run-fomus))
+(add-hook 'slime-mode-hook 'custom-slime-mode-hook)
+    
+#+end_example
+
+Another option would be to use SLIME's =slime-interactive-eval= function
+instead of =shell-command=:
+
+#+begin_example
+;; save buffers and invoke fomus in the default Lisp
+(setq fomus-args "")
+(defun run-fomus ()
+  (interactive)
+  (save-some-buffers)
+  (let ((a (read-from-minibuffer "FOMUS arguments: " fomus-args)))
+    (setq fomus-args a)
+    (slime-interactive-eval (format "(fomus %S %s)" buffer-file-name a))))
+       
+#+end_example
+
+* Usage
+:PROPERTIES:
+:CUSTOM_ID: usage
+:END:
+Using FOMUS requires defining at least one part, filling these parts
+with events, then calling FOMUS's main function to process everything
+and output a score file for importing. There are several ways of doing
+this. The following sections explain these different approaches:
+** Interface 1
+:PROPERTIES:
+:CUSTOM_ID: section.usage2
+:END:
+The first approach involves creating all the necessary objects and
+assembling lists, then calling FOMUS's main function to process
+everything. The main function is =fomus= and has the following format:
+
+=(fomus &key setting value ...)=
+
+=setting= above is one of the setting keywords listed in chapter
+[[#settings]], and =value= is its value. Every piece of information
+FOMUS needs can be included in this function call. The most important
+settings are =global=, =parts= and =events=, which contain all of the
+=part=, =timesig=, =note=, =rest= and other objects that directly affect
+what appears on the score. See the individual documentation for these
+for an explanation of how to use them. A few examples are given below
+(illustrations are "raw" output processed with LilyPond version 2.4.2):
+
+#+begin_example
+(fomus
+ :output '(:lilypond :view t)
+ :ensemble-type :orchestra
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+               :dur (if (< off 10) 1/2 1)
+               :note (+ 48 (random 25))
+               :marks (when (<= (random 3) 0)
+                '(:staccato)))))))
+    
+#+end_example
+
+#+attr_html: :width 80%
+#+CAPTION: Fomus Usage Example 1
+[[./img/usage_ex1.jpg]]
+
+#+begin_example
+(fomus
+ :output '(:lilypond :view t)
+ :ensemble-type :orchestra
+ :default-beat 1/4
+ :global (list (make-timesig :off 0 :time '(3 4))
+           (make-timesig :off 7 :time '(5 8)))
+ :parts
+ (list (make-part
+    :name "Piano"
+    :instr :piano
+    :events
+    (loop
+     for basenote in '(54 42)
+     nconc (loop for off = 0 then (+ off dur)
+             and dur = (/ (1+ (random 4)) 2)
+             while (< (+ off dur) 12)
+             collect (make-note :voice '(1 2)
+                    :off off
+                    :dur dur
+                    :note (+ basenote (random 25))))))))
+    
+#+end_example
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/usage_ex2.jpg]]
+
+#+begin_example
+(fomus
+ :output '(:lilypond :view t)
+ :ensemble-type :orchestra
+ :beat-division 4
+ :quartertones t
+ :parts (list
+     (make-part
+      :partid 'flute
+      :name "Flute"
+      :instr :flute)
+     (make-part
+      :partid 'tuba
+      :name "Tuba"
+      :instr :tuba))
+ :events (loop repeat 5
+           for off = (random 1.0) then (+ off (1+ (random 1.0)))
+           and dur = (random 1.0)
+           and inst = (if (eq inst 'flute) 'tuba 'flute)
+           collect (make-note :partid inst
+                  :off off
+                  :dur dur
+                  :note (+ (case inst
+                         (flute 72)
+                         (tuba 36))
+                       (/ (random 25) 2))
+                  :marks (case (random 3)
+                       (0 '(:accent))
+                       (1 '(:staccato))))))
+    
+#+end_example
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/usage_ex3.jpg]]
+
+All of these settings are also present as special variables (see chapter
+[[#settings]]). The following example accomplishes exactly the same
+thing as example [[./img/usage_ex1.jpg]] above:
+
+#+begin_example
+(setf *output* '(:lilypond :view t))
+(fomus
+ :ensemble-type :orchestra
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+               :dur (if (< off 10) 1/2 1)
+               :note (+ 48 (random 25))
+               :marks (when (<= (random 3) 0)
+                '(:staccato)))))))
+    
+#+end_example
+
+Specifying keywords in the =fomus= function always overrides what is
+contained in the special variables. Also, =fomus= accepts one additional
+key, =:allow-other-keys=. Passing a value of =t= to this argument allows
+other keys that FOMUS doesn't recognize to be present in the call. By
+default, =fomus= accepts only keywords listed in [[#settings]].
+
+** Interface 2
+:PROPERTIES:
+:CUSTOM_ID: interface2
+:END:
+FOMUS also provides several functions that are wrappers to the first
+method described above. They create and store the objects internally so
+the user doesn't have to maintain lists of objects and data. The
+functions are:
+
+#+BEGIN_SRC lisp
+(fomus-init &key setting value ...)
+
+(fomus-newpart partid &key slot value ...)
+
+(fomus-newtimesig partids &key slot value ...)
+
+(fomus-newnote partid &key slot value ...)
+
+(fomus-newrest partid &key slot value ...)
+
+(fomus-newmark partid &key slot value ...)
+
+(fomus-exec &key setting value ...)
+#+END_SRC
+
+The user first calls =fomus-init=, which initializes settings and
+insures that FOMUS is ready to accept new data. Setting values may be
+passed to this function in exactly the same way as the =fomus= function
+above, though it isn't necessary in this case to include =global=,
+=parts= or =events=. the functions =fomus-newpart=, =fomus-newtimesig=,
+=fomus-newnote=, =fomus-newrest= and =fomus-newmark= are then used to
+create and store all of the objects that are normally included in the
+=global=, =parts= and =events= settings. The required =partid= or
+=partids= arguments correspond directly to the slots of the
+corresponding objects (see the documentation for each of these in
+[[#objects]] for more information). The /partid/ argument to
+=fomus-newpartm= must be unique or objects that use them to refer to
+parts will refer to more than one. The =slot= keywords can be any of the
+constructor slot keywords in the corresponding object, and the =value=
+argument is the appropriate value for that slot. Internally, FOMUS
+stores all =TIMESIG= objects in the =GLOBAL= setting list, all =PART=
+objects in the =PARTS= list and all other objects (=NOTE=, =REST= and
+=MARK=) in the =EVENTS= list. This means that the user may specify =NIL=
+or a list of part IDs in the PARTID/PARTIDS slots of =TIMESIG= and
+=MARK= objects. When the user is finished calling the =FOMUS-NEW=
+functions, the last thing to do is call =FOMUS-EXEC=. This again accepts
+setting keywords and values (overriding any previous setting values) and
+passes all information to the =fomus= function which does the rest of
+the processing. After =FOMUS-EXEC= is called, all internal data is
+reinitialized as if =FOMUS-INIT= were called with no arguments.
+
+Following are the interface 2 equivalents to some of the examples above:
+
+#+begin_example
+(To be completed.)
+    
+#+end_example
+
+#+begin_example
+(To be completed.)
+    
+#+end_example
+
+** Text File Interface
+:PROPERTIES:
+:CUSTOM_ID: interface.text
+:END:
+You may also create a text file where each line of the file executes one
+of the commands listed in [[#interface2]]. A simple example file is
+given below:
+
+#+begin_example
+init :output (:lilypond :view t)
+(init
+ :filename "outfile"
+ :quality 2)
+
+;; remark
+part 1 :name "Piano" :instr :piano
+
+note 1 :off 0 :dur 1 :note 60
+note 1 :off 1 :dur 1 :note 62 \
+     :marks (:accent) ; remark
+(note 1 
+      :off 2 
+      :dur 1
+      :note 64
+      :marks (:marcato (:textnote "Text")))
+
+off +2
+note 1 :off 2 :dur 1/2 :note c4 ; actual offset is 4
+off -1
+note 1 :off 10 :dur 1/2 :note c4 ; actual offset is 9
+off
+
+note 1 :off 20 :dur 2 :notes (c4 e4 g4 c5)
+    
+#+end_example
+
+Each element is read using the Lisp =READ= command (nothing is
+evaluated), with the exception of expressions that begin with =MAKE-=.
+These are evaluated to avoid having to specify FOMUS classes and/or
+structures with =#S= or =#Z= syntax (the Z reader macro is defined by
+FOMUS). =INIT= lines specify values for FOMUS settings and can contain
+multiple keyword/arguments on a line. As many =INIT= lines as needed may
+appear. The =\= character may be used at the end of a line to
+concatenate it with the following line. Also, as shown in the example
+above, any "entry" may be surrounded by a set of parenthesis to indicate
+that all elements inside them are read/parsed together (like an ordinary
+Lisp expression)--this can also be used to spread entries across several
+lines.
+
+A few extra things are possible with input files to facilitate editing.
+Any section of the file may contain an =OFF= tag optionally followed by
+a number. This tag shifts the offsets of everything that follows by the
+specified amount. An =OFF= tag with no number resets the offset shift
+to 0. Also, a =:NOTES= keyword is available for specifying chords. A
+chord is then specified as a list of notes as shown above. When FOMUS
+reads this it creates a separate note object for each note in the list.
+
+To process this file, use the =fomus= command as follows:
+
+=(FOMUS filename &key value ...)=
+
+#+begin_example
+(fomus "/directory/file.fms")
+    
+#+end_example
+
+#+begin_example
+(fomus "/directory/file.fms" :output :cmn)
+    
+#+end_example
+
+Keyword/argument pairs passed to this function override the settings
+stored in the input file.
+
+The =FOMUS-FILE= function may be used to parse an input file and return
+the objects specified in that file without processing them:
+
+=(FOMUS-FILE filename &key value ...)=
+
+Four return values are returned: a list of =PART= objects, a sorted list
+of =NOTE=, =REST= and =MARK= objects, a list of =TIMESIG= objects (and
+=KEYSIG= objects when implemented), and a list of keyword/argument pairs
+representing the keywords and values found in the =INIT= lines. The
+following example show how you can edit and resave data using these
+files:
+
+#+begin_example
+(multiple-value-bind (parts events globals args)
+    (fomus-file "/directory/myfomusfile.fms")
+  ;; user processing...
+  (apply #'fomus "/directory/myfomusfile.fms"
+     :global globals :parts parts :events events
+     args))
+    
+#+end_example
+
+** Common Music Interface
+:PROPERTIES:
+:CUSTOM_ID: section.usage3
+:END:
+FOMUS may be executed as a backend to Common Music using CM's =EVENTS=
+function. Appending a =".ly"= or =".xml"= extension to the filename
+routes the processing to FOMUS. Parts and time signatures may also
+defined in CM with the =NEW= macro and passed with all of FOMUS's
+settings to =EVENTS=. A description of this interface is given [[dict:fomus-file][here]] in
+the Common Music online documentation. Several examples are given
+below:
+
+#+begin_example
+(To be completed.)
+    
+#+end_example
+
+#+begin_example
+(To be completed.)
+    
+#+end_example
+
+** Command Line Interface
+:PROPERTIES:
+:CUSTOM_ID: interface.cmd
+:END:
+If installed as a command-line executable program (see
+[[#install.cmd]]), FOMUS can be invoked from a UNIX shell prompt to
+process a text file in the format described above in
+[[#interface.text]]. This is intended for users who don't want to use or
+learn Lisp and can generate the data some other way.
+
+#+begin_example
+fomus my_data_file.fms
+    
+#+end_example
+
+Type =fomus -h= to display the command format and list all of the
+available options. Examples of the file format are given in
+[[#interface.text]] and [[#examples.textinput]].
+
+** Chunks
+:PROPERTIES:
+:CUSTOM_ID: interface.chunks
+:END:
+FOMUS can "splice" together the outputs of two or more runs of the
+=fomus= command. This allows sections or parts ("chunks") to be produced
+separately and put together later into a complete score. This allows the
+user to use different arguments and settings values with different
+sections of the score.
+
+This feature is "experimental" at the moment (it will be fully
+functional soon). FOMUS outputs a chunk object automatically on each
+successful run of the =fomus= command. If no outputs are specified, then
+=:CHUNK= or =:NONE= must be given as a backend. A chunk is actually all
+of the measures in the processed output that contain anything other than
+a measure rest (ie. all of the measures that contain notation). So it
+can include either a part, several parts in a range of measures, every
+other measure over a certain range, etc.. Chunks can only be merged
+together if there are no notational overlaps. (At the moment, they can't
+be "relocated" or given an offset--this will be added soon.) FOMUS
+considers parts with matching [[note.partid][PARTID] values to be the
+same and will match them accordingly. New (or non-matching) parts may
+also be merged tegether into one score--FOMUS matches, adds, and
+reorders all of them automatically.
+
+There are several ways to tell FOMUS to merge chunks. Some examples are
+given here in both Lisp and command-line syntax:
+
+#+begin_example
+(fomus (list (fomus ...fomus_args_chunk1...) (fomus ...fomus_args_chunk2...)) :filename "path_to/myoutputfile" :output :musicxml-finale)
+    
+#+end_example
+
+#+begin_example
+(fomus (list "path_to/myfomuschunk1.fms" (fomus ...fomus_args_chunk2...) "path_to/myfomuschunk3.fms") :filename "path_to/myoutputfile" :output :cmn)
+    
+#+end_example
+
+#+begin_example
+fomus -lw path_to/myfomuschunk1.fms path_to/myfomuschunk2.fms path_to/myfomuschunk3.fms
+    
+#+end_example
+
+In each case, two or three chunks are either created from another
+=fomus= command or read in from an input file. The chunks are then
+combined together and output as one file.
+
+** Other Interface Functions
+:PROPERTIES:
+:CUSTOM_ID: section.usage4
+:END:
+*** list-fomus-settings
+:PROPERTIES:
+:CUSTOM_ID: section.usage5
+:END:
+#+begin_src lisp
+(list-fomus-settings)
+#+end_src
+
+Lists all FOMUS settings, their expected types and their default values.
+
+*** list-fomus-modules
+:PROPERTIES:
+:CUSTOM_ID: section.usage6
+:END:
+#+BEGIN_SRC lisp
+(list-fomus-modules &rest type)
+#+END_SRC
+
+Lists all working FOMUS modules and additional backends that can be
+selected as replacements or additions to FOMUS's own functionality. An
+example of a module might be an alternate note-spelling algorithm, a
+different quantizing algorithm or another backend that extends the
+number of output formats available. The code for these modules is
+located in the =modules= subdirectory. Adding new or replacement
+functionality to FOMUS is done by dropping files in here. When FOMUS
+loads it automatically finds all of these files and tries to compile the
+ones that are out of date. Only the ones that compile successfully are
+used, and modules are loaded only on demand when they are called.
+
+An API documentation for writing modules will be available sometime in
+the future.
+
+*** list-fomus-instruments 
+:PROPERTIES:
+:CUSTOM_ID: section.usage7
+:END:
+#+BEGIN_SRC lisp
+(list-fomus-instruments)
+#+END_SRC
+
+Lists all FOMUS instruments, merging/replacing FOMUS's own default
+instruments with the user-specified contents of the =INSTRUMENTS=
+setting.
+
+*** get-instr-syms
+:PROPERTIES:
+:CUSTOM_ID: section.usage8
+:END:
+#+BEGIN_SRC lisp
+(get-instr-syms)
+#+END_SRC
+
+
+Returns a list of available FOMUS instrument ID symbols.
+
+*** list-fomus-percussion
+:PROPERTIES:
+:CUSTOM_ID: section.usage9
+:END:
+#+BEGIN_SRC lisp
+(list-fomus-percussion)
+#+END_SRC
+
+Lists all FOMUS percussion instruments (the contents of the =PERCUSSION=
+setting).
+
+*** get-perc-syms 
+:PROPERTIES:
+:CUSTOM_ID: section.usage10
+:END:
+#+BEGIN_SRC LISP
+(get-perc-syms)
+#+END_SRC
+
+Returns a list of available FOMUS percussion ID symbols.
+
+*** list-fomus-instrgroups 
+:PROPERTIES:
+:CUSTOM_ID: section.usage11
+:END:
+#+begin_src lisp
+(list-fomus-instrgroups &key :format format)
+#+end_src
+
+Lists FOMUS instrument ordering/grouping data, merging/replacing FOMUS's
+own defaults with the contents of the =INSTR-GROUPS= setting. If the
+=FORMAT= argument is =T= (the default), FOMUS formats the results by
+listing the instruments for each grouping in a vertical score-order
+arrangement surrounded by =[]=, ={}= and =||= brackets, denoting whether
+instruments are grouped by brackets, curly braces or barlines only. If
+=FORMAT= is =NIL=, FOMUS outputs the data as nested lists of symbols
+(see the =INSTR-GROUPS= setting for details).
+
+*** list-fomus-clefs 
+:PROPERTIES:
+:CUSTOM_ID: section.usage12
+:END:
+#+BEGIN_SRC LISP
+(list-fomus-clefs)
+#+END_SRC
+
+Prints a list of FOMUS clef symbols.
+
+*** list-fomus-meas-divs 
+:PROPERTIES:
+:CUSTOM_ID: section.usage13
+:END:
+#+BEGIN_SRC LISP
+(list-fomus-meas-divs)
+#+END_SRC
+
+Lists all default measure divisions , merging/replacing FOMUS's own
+defaults with the contents of the =DEFAULT-MEAS-DIVS= setting. (See
+=DEFAULT-MEAS-DIVS= for more information.)
+
+*** list-fomus-tuplet-divs 
+:PROPERTIES:
+:CUSTOM_ID: section.usage14
+:END:
+#+BEGIN_SRC LISP
+(list-fomus-tuplet-divs)
+#+END_SRC
+
+Lists all default tuplet divisions , merging/replacing FOMUS's own
+defaults with the contents of the =DEFAULT-TUPLET-DIVS= setting. (See
+=DEFAULT-TUPLET-DIVS= for more information.)
+
+*** load-init-file
+:PROPERTIES:
+:CUSTOM_ID: section.usage15
+:END:
+#+BEGIN_SRC LISP
+(load-init-file)
+#+END_SRC
+
+Reloads the =.fomus= initialization file in the user's home directory.
+
+*** get-midi-instr 
+:PROPERTIES:
+:CUSTOM_ID: section.usage16
+:END:
+#+begin_src lisp
+(get-midi-instr program-change &key :default default-instr)
+#+end_src
+
+Returns an instrument to match the given MIDI program change value. The
+first =INSTR= structure with this number in its
+[[#instr.midiprgch.im][MIDIPRGCH-IM]] slot is returned. If no
+appropriate instrument is found, the value of either the =DEFAULT-INSTR=
+setting or (if set) the =DEFAULT= argument is returned.
+
+*** marks
+:PROPERTIES:
+:CUSTOM_ID: section.usage17
+:END:
+#+BEGIN_SRC lisp
+(addmark event mark)
+
+(getmark event markid)
+
+(getmarks event markid)
+
+(rmmark event markid)
+
+(combmarks event-list)
+
+(addprop object prop)
+
+(getprop object propid)
+
+(getprops object propid)
+
+(rmprop object propid)
+
+(combprops object-list)
+#+END_SRC
+
+
+These are utility functions for adding, removing and combining marks and
+properties in [[#mark.marks][MARKS]] and [[#timesig.props][PROPS]]
+slots. =ADDMARK= and =ADDPROP= insert a mark or property (a symbol or
+list of symbols and arguments values) in the appropriate slot of the
+object. =GETMARK= and =GETPROP= find a mark or property given an
+identifier. The identifier is a symbol or list specifying the
+mark/property symbol and any number of the arguments following it. The
+function returns the first mark that matches the specified
+symbols/values up to the number of symbols/values given. (For example,
+='(:STARTSLUR- 2)= will return the starting mark for a "level 2" slur.)
+=GETMARKS= and =GETPROPS= return all matching marks/properties. =RMMARK=
+and =RMPROP= remove (as a side-effect) all matching marks/properties
+from the objects. =COMBMARKS= and =COMBPROPS= returns a new
+mark/property list that is a combination of all marks/properties objects
+in the supplied list (with duplicates removed).
+
+* Objects
+:PROPERTIES:
+:CUSTOM_ID: objects
+:END:
+This chapter describes several important classes and structures that
+provide the main way of specifying all of the part, instrument, and
+notational information that is passed to FOMUS for processing. Each
+section gives a description of a class or structure, its constructor,
+and a list of its accessor functions. How these are actually used
+depends on the interface that the user chooses to use (See [[#usage]]
+for more information).
+
+All constructor functions have a corresponding copy function that take
+exactly the same keyword arguments plus one extra argument (the object
+to be copied). Any keyword/argument pairs supplied when a copy function
+is called indicate new replacement values. Objects may therefore be used
+as templates for creating new objects that differ only in one or two
+slot values.
+
+The actual class hierarchy isn't given here since it shouldn't be of any
+concern for most users. It is reflected somewhat in the prefixes that
+appear in the accessor function names.
+
+** Class PART
+:PROPERTIES:
+:CUSTOM_ID: section.objects2
+:END:
+A =part= object represents a written part in the score. they are
+analogous to tracks in a midi sequencer or staves in any notation
+program, though a part may actually represent more than one staff for
+instruments that require it. =part= objects are containers for =note=,
+=rest= and =mark= objects (and optionally =timesig= and =keysig= object
+if they only apply to that particular part). each =part= object also
+specifies an =instr= object which contains specific information on how
+to notate a particular instrument.
+
+=part= objects are passed to fomus by including them in the =​parts​=
+list.
+
+constructor:
+=(make-part &key :id id :partid partid :name name :abbrev abbrev :instr instr :events events :props props :opts opts)=
+
+copy function:
+=(copy-part part &key :id id :partid partid :name name :abbrev abbrev :instr instr :events events :props props :opts opts)=
+
+predicate function: =(partp obj)=
+
+accessors:
+
+- =obj-id= :: this slot isn't used by fomus. the user may use it to
+  store an id value or some miscellaneous data.
+
+- =part-partid= :: this is a symbol or number used as an index or
+  reference to identify the part. it doesn't need to be unique--parts
+  that share the same id symbol are treated as a group. when they appear
+  in [[#note.partid][partid]] or [[#timesig.partids][partids]] slots in
+  classes other than the =part= class they are treated as references to
+  a particular part or group of parts.
+
+- =part-name= :: this is a string value representing the part name that
+  is to appear on the score.
+
+- =part-abbrev= :: this is a string value representing the abbreviated
+  part name that is to appear on the score.
+
+- =part-instr= :: this slot specifies an instrument for the part. all
+  part must be associated with an instrument--if no instrument is given
+  a generic default instrument will be chosen. instruments provide
+  important data for many of fomus's algorithms and determine at least
+  several major aspects of score layout, including the number of staves
+  a part has and whether or not pitches are to be transposed.
+
+  instruments may be specified in one of several ways. if a symbol is
+  provided, it is used to lookup an instrument in a user-defined list or
+  fomus's own predefined list of instruments (see the =instr-groups=
+  setting in the [[#settings]] chapter). the slot may also contain an
+  instance of an instrument object. if a list is given, fomus expects
+  the first element to be a lookup symbol for an instrument and the rest
+  of the list to be keyword/argument pairs specifying slots that are to
+  be modified in the original instrument (as if included in a call to
+  =copy-instr=.
+
+  #+begin_example
+  '(:piano :staves 3 :simultlim 6)
+                  
+  #+end_example
+
+  if an integer from =0= to =127= is provided instead of an identifying
+  symbol, fomus interprets this as a midi program change number and will
+  use the first instrument it finds that has this number in its
+  =midiprgch-im= slot.
+
+- =part-events= :: this is a list of =note=, =rest= or =mark= objects.
+  =timesig= and =keysig= objects may also be included in this list.
+
+- =part-props= :: part properties are specified in the same way that
+  [[#note.marks][marks]] are specified. they are settings that affect
+  only the part they are included in. see [[#marks.partprops]] for a
+  list of these.
+
+- =part-opts= :: this is a keyword/argument pair list specifying options
+  to be passed directly to the backend algorithms. each backend has its
+  own set of options that may be specified alongside options for any
+  other backend. see the [[#outputs]] for more information.
+
+** class timesig
+:properties:
+:custom_id: section.objects3
+:end:
+a =timesig= object indicates a time signature change in the score. they
+may also be used to indicate special barlines and a few other changes.
+fomus uses =timesig= objects to determine where to place measures and
+how to format the events that appear in them. if new time signatures
+appear in the middle of a measure, fomus either splits the measure or
+expands it to a larger size depending on the values of
+=auto-override-timesigs= and =min-auto-timesig-dur=.
+
+each time signature either specifies or implies a value that specifies
+what notational value is equivalent to 1 "beat" duration. fomus uses
+this value to determine how all durational events are notated and where
+they appear in the score. unless otherwise indicated, all offsets and
+durations are expressed in beat units. see the [[#timesig.beat][beat]]
+slot for information on how to specify it.
+
+time signatures are passed to fomus by including them either in the
+=global= list or the [[#part.events][events]] slot list of a =part=
+object. =timesig= objects listed inside a part apply only to that part
+(unless the [[#timesig.partids][partids]] slot indicates otherwise).
+this method most likely won't be used. =timesig= objects in the =global=
+list affect parts according to the contents of their
+[[#timesig.partids][partids]] slot values. a symbol or list of symbols
+in the [[#timesig.partids][partids]] slot applies the time signature to
+the parts that match those symbols. a default
+[[#timesig.partids][partids]] slot value of =nil= indicates that the
+time signature be applied to all parts that don't have any other time
+signature specified at that exact offset. this way you can specify that
+a certain =timesig= object be applied to only several =part= objects
+while another =timesig= object by applied to all of the remaining parts.
+
+constructor:
+=(make-timesig &key :id id :partids partids :off off :time time :comp comp :beat beat :div div :repl repl :props props)=
+
+copy function:
+=(copy-timesig timesig &key :id id :partids partids :off off :time time :comp comp :beat beat :div div :repl repl :props props)=
+
+predicate function: =(timesigp obj)=
+
+accessors:
+
+- =obj-id= :: this slot isn't used by fomus.
+
+- =timesig-partids= :: this is a reference to a particular part or group
+  of parts. if the value of this slot is =nil=, the time signature is
+  applied to all parts that don't have some another =timesig= object
+  defined for them if this =timesig= object is included in the =global=
+  list. if the =timesig= object is in a =part= object's
+  [[#part.events][events]] slot, the time signature is applied to the
+  part. if the value is a symbol, number, or list of symbols or numbers,
+  these values are used to lookup which part or parts the event belongs
+  to.
+
+- =timesig-off= :: this is a number (real, ratio or integer) specifying
+  the absolute position for the onset for this note. the offset is
+  measured in "beats," which may indicate different notational positions
+  depending on previous time signatures and what values are present in
+  their [[#timesig.beat][beat]] slots. the number must be precise and
+  "notatable" (floating point numbers are not recommended and values
+  like 10/3 that don't occur on regular beat divisions are currently
+  impossible for fomus to notate).
+
+- =timesig-time= :: this is a required list of two integers, specifying
+  the numerator and denominator of the printed time signature.
+
+- =timesig-comp= :: if this slot is set to =t=, indicates that the
+  measure is a compound meter. fomus then derives the beat value from
+  the denominator of the time signature. setting this to =t= or =nil=
+  always overrides whatever default action is specified in the
+  =auto-timesig-comp= setting.
+
+- =timesig-beat= :: the [[#timesig.beat][beat]] slot value determines
+  how events are mapped from beat units to notational durations. it is a
+  ratio that specifies what notational duration is equivalent to 1 beat.
+  this duration is expressed as a fraction of a whole note (1/4, for
+  example, specifies a quarter note, 1/2 specifies a half note, and 3/8
+  specifies three eight notes). if the time signature is a compound time
+  signature, the value of this slot is ignored and the beat value is
+  calculated from the denominator (for example, the beat value of a 12/8
+  signature is 3/8). if the slot contains the default value of =nil=,
+  the beat value is either the value of =default-beat= or it is
+  calculated from the denominator (a non-compound 4/8 or 7/8 time
+  signature would have a beat value of 1/8). the beat value of a measure
+  effects how notes are are divided and laid out.
+
+- =timesig-div= :: this is a single list or list of lists containing
+  ratios or integers that add up to the total number of beats in a
+  measure (as specified by either the [[#timesig.time][time]] or
+  [[#timesig.beat][beat]] slots). it represents all of the choices
+  available for dividing up measures following this time signature. if
+  the slot contains the default value of =nil=, fomus looks up divisions
+  first in a user-supplied table if one exists (see the
+  =default-meas-divs= setting) then in fomus's default table. a value
+  usually only needs to be specified here if the user wants to force
+  fomus to divide measures in a specific way rather than choosing
+  between several choices. the following example shows what might be
+  specified for a 7/8 meter:
+
+  #+begin_example
+  '((4 3) (3 4))
+                  
+  #+end_example
+
+  as another example, setting the [[#timesig.div][timesig-div]] slot to
+  ='(1 1 1)= in a 3/4 time signature forces fomus to beam measures in
+  groups of 3 (the default is equivalent to a
+  [[#timesig.div][timesig-div]] setting of ='((2 1) (1 2))=)/
+
+- =timesig-repl= :: this is a list of =timesig= or =timesig-repl=
+  objects that are chosen to replace this =timesig= object when fomus
+  needs to change the length of a measure. this gives the user some
+  control over how fomus fudges measures to make them fit. when fomus
+  changes the length of a measure, it will look here first and then in
+  the (not implemented yet) setting for a replacement that fits (has the
+  correct number of beats). if none is found, fomus will create a new
+  =timesig= object from the current one, modifying the
+  [[#timesig.div][div]] slot by adding on extra beats if necessary.
+
+  =timesig-repl= objects are simply =timesig= objects with missing
+  [[#timesig.off][off]], [[#timesig.partids][partids]] and
+  [[#timesig.repl][repl]] slots, all of them unnecessary in this
+  context. the use of these is optional. if =timesig= objects are given,
+  these slots are just ignored.
+
+- =timesig-props= :: this slot behaves like the [[#note.marks][marks]]
+  slot in =note= or =rest= objects. extra time signature or measure
+  properties may be specified here. see fixme for more details and the
+  =mark= class for an example of how to specify properties.
+
+** class timesig-repl
+:properties:
+:custom_id: section.objects4
+:end:
+a =timesig-repl= object is a "replacement" =timesig= object. they are
+used in the [[#timesig.repl][repl]] slot of =timesig= objects and in the
+fixme setting, and are simply =timesig= objects with missing
+[[#timesig.off][off]], [[#timesig.partids][partids]] and
+[[#timesig.repl][repl]] slots. the use of these is optional. they are
+included for the sake of conciseness and to (hopefully) eliminate
+confusion.
+
+since this class is nearly equivalent to the =timesig= class, no slot
+descriptions are given here. see the =timesig= class for an explanation
+of all the slots. the predicate function =timesigp= returns =t= for both
+=timesig= and =timesig-repl= classes.
+
+constructor:
+=(make-timesig-repl &key :id id :time time :comp comp :beat beat :div div :props props)=
+
+copy function:
+=(copy-timesig-repl timesig-repl &key :id id :time time :comp comp :beat beat :div div :props props)=
+
+predicate function: =(timesigp obj)=
+
+** class keysig
+:properties:
+:custom_id: section.objects5
+:end:
+(this class is not implemented yet.)
+
+** class note
+:properties:
+:custom_id: section.objects6
+:end:
+the =note= object will usually be the only object required to describe
+musical events that occur in the score. it allows the user to specify
+pitch, offset and duration as well as which voice the event belongs to.
+a special slot, [[#note.marks][marks]], allows for a wide variety of
+other information including articulations, clef and staff change
+overrides, "spanners" like slurs or dashed lines with text, etc..
+=note=, =rest= and =mark= objects are all considered "events," and so
+all of their important accessors begin with an =event-= prefix.
+
+=note= objects are passed to fomus by including them either in the
+[[#part.events][events]] slot list of a =part= object or in the global
+=events= list. =note= objects listed inside a part apply only to that
+part (unless the [[#note.partid][partid]] slot indicates otherwise).
+=note= objects in the =events= list are distributed to parts according
+to the contents their [[#note.partid][partid]] slot values.
+
+constructor:
+=(make-note &key :id id :partid partid :voice voice :off off :dur dur :note note :marks marks)=
+
+copy function:
+=(copy-note note &key :id id :partid partid :voice voice :off off :dur dur :note note :marks marks)=
+
+predicate function: =(notep obj)=
+
+accessors:
+
+- =obj-id= :: this slot isn't used by fomus.
+
+- =event-partid= :: this is a reference to a particular part or group of
+  parts. if the value of this slot is =nil=, the event is included in
+  whatever part contains it in its [[#part.events][events]] slot list,
+  or to all parts if it is included in the global =events= list. if the
+  value is a symbol, number, or list of symbols or numbers, these values
+  are used to lookup which part or parts the event belongs to. events
+  belonging to multiple parts are effectively copied into these parts.
+
+- =event-voice= :: this is an integer or a list of integers specifying a
+  voice or selection of voices that this note should belong to. voice
+  numbers are limited to the integers 1 through 4. the default value
+  =nil= specifies voice 1. if a list of choices is given, fomus's voice
+  distribution algorithm will try to make an intelligent decision based
+  on voice leading, pitch, balance and other factors. note that =rest=
+  and =mark= objects use this value slightly differently.
+
+- =event-off= :: this is a number (real, ratio or integer) specifying
+  the absolute position for the onset for this note. the offset is
+  measured in "beats," which may indicate different notational values
+  depending on what the current time signature is and what value is
+  present in its [[#timesig.beat][beat]] slot. fomus's quantizing
+  algorithm tries to fit all offsets and durations into values that make
+  the best use of tuplets within given constraints while minimizing the
+  amount of error. if this quantizing algorithm is switched off, then
+  the user must insure that all offset and duration values are precise
+  and "notatable" (floating point numbers are not recommended in this
+  case).
+
+- =event-dur= :: this is set to either a number to specify a regular
+  duration or a list to specify a grace note. if it's a number (real,
+  ratio or integer) it indicates the note's duration in beats (see
+  =event-off= above). the comments in =event-off= on quantization also
+  apply here. if common music is present and =use-cm= is set to =t=, the
+  value of this slot may also be a symbol, which is parsed by cm using
+  its =rhythm= function. symbols in this case designate notational
+  values and not beats, although numbers are still interpreted with
+  respect to beats and not filtered through cm's =rhythm= function.
+
+  if a grace note is desired then a list of two elements must be
+  specified, the first element being the duration value described above
+  and the second element being an integer value describing the
+  "position" that the grace note occupies. grace notes with the same
+  offset are organized with respect to this position number. lower
+  position grace notes occur earlier in the score than higher position
+  notes. grace notes with the same position form chords, and notes with
+  negative positions are notated with a slash. the duration value at the
+  front of the list is still interpreted in terms of beats and notated
+  as such even though the note does not take up time in the measure.
+  specifying a duration of ='(1/4 -1)=, for example, specifies a grace
+  sixteenth note with a slash if the current beat is 1/4 (a quarter
+  note).
+
+- =event-note= :: this slot either designates a pitch (with an optional
+  choice of spellings) or a percussion instrument if the part is a
+  percussion part. if specifying a pitch, the value may be either a
+  symbol or a number (real, ratio or integer). if a number is used, 60
+  represents middle c, as in a midi file. numbers are rounded depending
+  on the whether semitones or quartertones are specified (see the
+  =quartertones= setting). symbols are assembled by concatenating a note
+  letter name (=a= through =g=), a =+= or =s= for sharp or a =-= or =f=
+  for flat, and an integer designating the register (=4= is the octave
+  above middle c). a few examples are given here:
+
+  #+begin_example
+  'c+4
+                  
+  #+end_example
+
+  #+begin_example
+  'ef5
+                  
+  #+end_example
+
+  quartertones must be specified using numbers. if common music is
+  present and =use-cm= is set to =t=, symbols are filtered through cm's
+  =keynum= function. in this case, the value of =cm-scale= will also be
+  passed to the function if it is set to anything other than =nil=.
+
+  if a list of spelling choices is supplied, fomus will try to use the
+  note spellings in this list. to specify one, the value of the
+  [[#note.note][note]] slot must be a list, the first element of which
+  is the note number or symbol described above and the rest of which is
+  the list of spelling choices. a spelling choice is represented either
+  by a number or symbol. =1=, =+= or =s= designates using a sharp while
+  =-1=, =-= or =f= designates a flat. =0=, =n= designates a natural
+  while repeating one of the above symbols (for example, =++= or =ss=)
+  designates a double sharp or flat. =2= or =-2= also designates a
+  double sharp or flat. quartertones spellings are specified using a
+  list of two elements, the first element specifying the semitone
+  alteration and the second element specifying the quartertone
+  alteration (one of the numbers =-1/2=, =0= or =1/2=). a few examples
+  are given here:
+
+  #+begin_example
+  '(f4 + --)
+                  
+  #+end_example
+
+  #+begin_example
+  '(61.5 (n -1/2))
+                  
+  #+end_example
+
+  if fomus's note spelling algorithm is switched off then all note
+  spellings must be supplied by the user (so each [[#note.note][note]]
+  slot must contain a list of two elements specifying the pitch and its
+  spelling, unless it is spelled with a natural).
+
+- =event-marks= :: this slot is nearly equivalent to the
+  [[#mark.marks][marks]] slot in the =mark= class described below. the
+  contents of the [[#mark.marks][marks]] slots of =mark= objects are
+  actually dumped into the [[#note.marks][marks]] slots of =note= and
+  =rest= objects once voices and staves have been decided. see the
+  =mark= class for more information and [[#marks]] for a more detailed
+  explanation of marks and their usage.
+
+** class rest
+:properties:
+:custom_id: section.objects7
+:end:
+the =rest= objects should rarely be used. fomus handles rests
+automatically and only needs user-defined rests in special cases (such
+as when a fermata needs to appear in all parts). =rest= objects require
+nearly the same information as =note= objects, except that there is no
+[[#note.note][note]] slot, the marks that can be assigned to it are
+limited, and voice information is treated differently
+
+=rest= objects are passed to fomus by including them either in the
+[[#part.events][events]] slot list of a =part= object or in the global
+=events= list. the behavior in either case is exactly the same as with a
+=note= object.
+
+constructor:
+=(make-rest &key :id id :partid partid :voice voice :off off :dur dur :marks marks)=
+
+copy function:
+=(copy-rest rest &key :id id :partid partid :voice voice :off off :dur dur :marks marks)=
+
+predicate function: =(restp obj)=
+
+accessors:
+
+- =obj-id= :: this slot isn't used by fomus.
+
+- =event-partid= :: this slot is equivalent to the
+  [[#note.partid][partid]] slot in the =note= class.
+
+- =event-voice= :: this slot is analogous to but different than the
+  [[#note.voice][voice]] slot in the =note= class. the difference is
+  that when set to a list of voices, the =rest= object is distributed to
+  all the specified voices instead of one that is chosen by fomus.
+
+- =event-off= :: this slot is equivalent to the [[#note.off][off]] slot
+  in the =note= class.
+
+- =event-dur= :: this slot is equivalent to the [[#note.dur][dur]] slot
+  in the =note= class with the exception that rests cannot be grace
+  notes.
+
+- =event-marks= :: this slot is equivalent to the [[#note.marks][marks]]
+  slot in the =note= class. however, the number of marks that can be
+  used in the =rest= class is limited. see the =mark= class for more
+  information and [[#marks]] for a more detailed explanation of marks
+  and their usage.
+
+** class mark
+:properties:
+:custom_id: section.objects8
+:end:
+the =mark= objects allow the user to specify marks outside of a =note=
+or =rest= class. marks designate extra information that to be applied to
+a =note= or =rest= object such as articulations, modifications like
+tremolos or harmonics, printed text, etc.. after voices and staff
+assignments have been established, information in the =mark= objects is
+dumped into the [[#note.marks][marks]] slots of =note= and =rest=
+objects according to the values in the [[#mark.off][off]] and
+[[#mark.partid][partid]] slots.
+
+there are several advantages to using =mark= objects as opposed to
+specifying marks in =note= or =rest= objects. one is that many markings
+(dynamics, for example) might only need to be attached to notes that are
+in one voice, such as the bottom voice of a particular staff. since
+voice assignments for notes might not be known until fomus decides them,
+=mark= objects are the only way of insuring that the marks occur in the
+right place. =mark= objects are also a convenient way of specifying
+marks for a range of parts, and make it easier to apply spanners such as
+slurs without having to juggle =note= objects around.
+
+=mark= objects are passed to fomus by including them either in the
+[[#part.events][events]] slot list of a =part= object or in the global
+=events= list. the behavior in either case is exactly the same as with
+=note= or =rest= objects.
+
+constructor:
+=(make-mark &key :id id :partid partid :voice voice :off off :marks marks)=
+
+copy function:
+=(copy-mark mark &key :id id :partid partid :voice voice :off off :marks marks)=
+
+predicate function: =(markp obj)=
+
+accessors:
+
+- =obj-id= :: this slot isn't used by fomus.
+
+- =event-partid= :: this slot is equivalent to the
+  [[#note.partid][partid]] slot in the =note= or =rest= class.
+
+- =event-voice= :: this slot is equivalent to the [[#rest.voice][voice]]
+  slot in the =rest= class, with the exception that a staff or list of
+  staves can be specified instead of voices. staves are indicated with a
+  list beginning with the symbol =:staff= followed by one or more
+  integer values. the integers represent staff choices and can either be
+  negative or positive, negative indicating that the mark be placed in
+  the uppermost voice of the staff (the staff number is the absolute
+  value of the number given in this case) and positive indicating that
+  the mark be placed in the lowermost voice of the staff. fomus chooses
+  the option from the list that places the mark the closest to the
+  specified offset. following is an example of how to specify staves:
+
+  #+begin_example
+  '(:staff 1 -2)
+                  
+  #+end_example
+
+  specifying a choice of staves like this allows the user to place marks
+  like dynamics that apply to all voices but only need to appear in one
+  place. in the case of the example above, a mark with this value in its
+  [[#mark.voice][voice]] slot that is applied to a grand staff is
+  attached to a note in a voice on the inside of the staff.
+
+  as in the case of the =rest= class, when set to a list of voices, the
+  =mark= object is distributed to all of them.
+
+- =event-off= :: this slot is equivalent to the [[#note.off][off]] slot
+  in the =note= or =rest= class, with the exception that offsets may
+  also be wrapped inside a list and given a positive or negative value
+  (for example, ='(3)=, ='(11.5)= or ='(-11.5)=). when this list is
+  used, it indicates that the marks in the [[#mark.marks][marks]] slot
+  are applied to events just before or after the given offset depending
+  on its sign. positive offset values indicate the mark is to applied to
+  the event just following the offset and negative values indicate the
+  mark is to be applied just before it (the absolute value of it). this
+  makes it easier in some cases to place marks that indicate ends of
+  spanners such as slurs, since marks that indicate the end of the
+  spanner can actually be given the offset where the next spanner
+  begins. fomus will place the end mark in the proper place (the event
+  that immediately precedes the one at the indicated offset).
+
+- =event-marks= :: [[#mark.marks][marks]] slots contain lists of marks.
+  (in a =note= or =rest= object, these marks are "attached" to that
+  event.) marks are specified as either symbols or lists of symbols and
+  numbers. if it is a list, then the first element is the mark symbol
+  followed by one or more arguments. following is an example of what may
+  appear in the [[#mark.marks][marks]] slot:
+
+  #+begin_example
+  '(:accent :startslur- (:startslur- 2 :dotted) (:texttempo "accelerando"))
+                  
+  #+end_example
+
+  the =mark= class can contain one extra mark that =note= or =rest=
+  objects can't contain. the symbol itself is =:mark= and actually
+  specifies another mark that is to be placed in the same voice at a
+  different offset. it has the following format:
+  ='(:mark off mark ...)=, specifying that another mark is to be placed
+  in the same voice at the offset given. this special mark is necessary
+  if the user specifies a staff instead of a voice and the mark is a
+  symbol indicating the start of a spanner. it can also be used as a
+  convenience, since only one =mark= object needs to be instantiated to
+  specify several marks that belong together. by specifying the end
+  symbol here as part of a =mark= mark, fomus recognizes the start and
+  end marks as belonging to each other and will place them in the same
+  voice. (starting and ending marks that aren't paired in the same voice
+  cause errors.) the offset argument that is the second element in this
+  list uses the same extended syntax as the [[#mark.off][off]] slot in
+  this class. the rest of the list after the second element is the mark
+  symbol and the arguments that apply to that symbol. following is an
+  example:
+
+  #+begin_example
+  '(:accent (:startslur- 2) (:mark (-101) :endslur- 2))
+                  
+  #+end_example
+
+  the contents of the [[#mark.marks][marks]] slots of =mark= objects are
+  dumped into the [[#note.marks][marks]] slots of =note= and =rest=
+  objects once voices and staves have been decided. see [[#marks]] for a
+  more detailed explanation of marks and their usage.
+
+** structure instr
+:properties:
+:custom_id: section.objects9
+:end:
+an =instr= structure contain instrument-specific data that's used to
+inform fomus on various aspects of notation. instruments are specified
+in the [[#part.instr][instr]] slot of =part= objects and can be easily
+modified. users can also build their own "database" of instruments by
+creating a fomus initialization file (see [[#init]]).
+
+constructor:
+=(make-instr &key :sym sym :clefs clefs :staves staves :minp minp :maxp maxp :simultlim simultlim :tpose tpose :cleflegls cleflegls :8uplegls 8uplegls :8dnlegls 8dnlegls :percs percs :midiprgch-im midiprgch-im :midiprgch-ex midiprgch-ex)=
+
+copy function:
+=(copy-instr instr &key :sym sym :clefs clefs :staves staves :minp minp :maxp maxp :simultlim simultlim :tpose tpose :cleflegls cleflegls :8uplegls 8uplegls :8dnlegls 8dnlegls :percs percs :midiprgch-im midiprgch-im :midiprgch-ex midiprgch-ex)=
+
+predicate function: =(instrp obj)=
+
+accessors:
+
+- =instr-sym= :: this is a unique symbol identifying the instrument. it
+  is used as a lookup value so that it may easily be specified in =part=
+  objects.
+
+- =instr-clefs= :: this is either a symbol or list of symbols,
+  specifying valid clefs for the instrument in order of preference. the
+  following clefs are supported: =:bass=, =:c-baritone=, =:f-baritone=,
+  =:tenor=, =:alto=, =:mezzosoprano=, =:soprano=, =:treble= and
+  =:percussion=. the user may also add an =-8up= or =-8dn= suffix to the
+  symbol to specify an octave transposition.
+
+- =instr-staves= :: this is an integer specifying the number of staves
+  to use. the default is 1.
+
+- =instr-minp= :: this is an integer specifying the lowest pitch in the
+  instrument's range. it may also be set to =nil=, in which case the
+  lower range is considered to be unlimited. this is only useful if the
+  =check-ranges= setting is set to =t=.
+
+- =instr-maxp= :: this is an integer specifying the highest pitch in the
+  instrument's range. it may also be set to =nil=, in which case the
+  upper range is considered to be unlimited. this is only useful if the
+  =check-ranges= setting is set to =t=.
+
+- =instr-simultlim= :: this is an integer of =1= or greater specifying
+  the maximum number of simultaneous pitches allowed in a single voice.
+  it may also be set to =nil=, indicating that there is no limit.
+
+- =instr-tpose= :: this is set to the value =nil= or an integer
+  indicating the number of semitones to transpose the instrument before
+  notating it. this number only has an effect if the =transpose= setting
+  is set to =t=.
+
+- =instr-cleflegls= :: the value of this slot influences how fomus
+  decides when to change clefs. a clef change isn't considered necessary
+  until the number of ledger lines required exceeds a threshold value.
+  other factors determine if there is actually a clef change or not. if
+  the value is an integer, it designates the threshold number of ledger
+  lines in all cases. if it's a list, the first element of the list must
+  be an integer specifying a default threshold. this is followed by one
+  or more exceptions, each in the form of a list. this exception list
+  contains a clef symbol (see the [[#instr.clefs][clefs]] slot above)
+  followed by one of the two symbols =:up= or =:dn= and ended by an
+  integer specifying the number of ledger lines. an example illustrates
+  this data structure.
+
+  #+begin_example
+  '(2 (:bass :up 3) (:tenor :down 3))
+                  
+  #+end_example
+
+- =instr-8uplegls= :: this value influences how fomus chooses where to
+  place ottava brackets above the staff. an ottava bracket isn't
+  considered necessary until the number of ledger lines required exceeds
+  a threshold value. an integer in this slot indicates the threshold
+  value, while a list of two elements specifies the threshold for the
+  ottava bracket to begin and the threshold below which the number of
+  ledger lines must drop for it to end.
+
+- =instr-8dnlegls= :: this is the same as =instr-8uplegls= above, only
+  for ottava brackets placed below the staff
+
+- =instr-percs= :: this is a list of symbols, =perc= objects, numbers or
+  lists indicating all of the percussion instruments that are to be
+  notated together as a group. =perc= objects provide necessary extra
+  information for notating percussion. all of these value types function
+  to lookup percussion instruments in the same way as the
+  [[#part.instr][part-instr]] slot of the =part= class. symbols are used
+  as lookup values into a user-defined percussion instrument table (see
+  the =percussion= setting) or fomus's own predefined table. lists
+  contain a symbol lookup value followed by keyword-argument pairs
+  signifying values to replace in the predefined percussion table--it
+  will usually be necessary to use a list instead of a symbol since the
+  [[#perc.note][note]] and [[#perc.voice][voice]] slots are empty in
+  fomus's table.
+
+  #+begin_example
+  (list '(:low-tom :note 0 :voice 1) '(:high-tom :note 4 :voice 1)
+        (make-perc :anvil :note -3 :voice 2 :midinote-ex 79))
+                  
+  #+end_example
+
+- =midiprgch-im= :: this is a number from =0= to =127= or a list of such
+  numbers specifying which midi program change values can translate to
+  this instrument. this is used when specifying an instrument as a
+  program change number (see the [[#part.instr][instr]] slot in the
+  =part= class) or calling the =get-midi-instr= function. when given a
+  program change number, fomus finds the first instrument that matches
+  in its list.
+
+- =midiprgch-ex= :: this is usually a number from =0= to =127=
+  specifying which program change value is to be used when exporting
+  midi data. it can also be set to a list, the first element of which is
+  the number mentioned above followed by keyword/value pairs indicating
+  alternate program change values for different playing modes. (for
+  example, the list ='(40 :pizz 45)= is a valid value for a violin
+  instrument.) the keywords currently allowed are =:pizz=, =:stopped=,
+  =:open= and =:harmonic=. (more will be added in future releases.)
+
+** structure perc
+:properties:
+:custom_id: section.objects10
+:end:
+constructor:
+=(make-perc &key :sym sym :staff staff :voice voice :note note :autodur autodur :marks marks :midinote-im midinote-im :midinote-ex midinote-ex)=
+
+copy function:
+=(copy-perc perc &key :sym sym :staff staff :voice voice :note note :autodur autodur :marks marks :midinote-im midinote-im :midinote-ex midinote-ex)=
+
+accessors:
+
+- =perc-sym= :: this is a unique symbol identifying the percussion
+  instrument. it is used as a lookup value so that it may easily be
+  specified in =instr= structures.
+
+- =perc-staff= :: this is an integer of =1= or greater specifying on
+  which staff the instrument appears on.
+
+- =perc-voice= :: this is an integer of =1= or greater specifying a
+  voice that this instrument belongs to. specifying different voices
+  prevents notes belonging to different instruments from being beamed
+  together.
+
+- =perc-note= :: this is an integer or symbol designating where the
+  instrument's notes are to appear on the staff. the value is
+  interpreted with middle c in the center as if notated with an alto
+  clef signature. see =event-note= in the =note= class for information
+  on specifying notes with symbols. percussion notes should not require
+  flats or sharps.
+
+- =perc-autodur= :: if set to =t=, indicates that fomus should determine
+  durations for this instrument. this is appropriate for percussion
+  instruments that don't have long sustain times and can therefore be
+  notated with durations that are simpler to read. notes containing
+  certain marks such as trills and tremolos are left unchanged. this
+  slot is =t= by default.
+
+- =perc-marks= :: contains a list of [[#note.marks][marks]] to be added
+  to =note= objects that specify this percussion instrument. an example
+  value to put here might be =((:text "r.s." :up))= for a "rim shot"
+  percussion instrument.
+
+- =perc-midinote-im= :: represents the midi note or notes used to import
+  midi data. this can either be an integer from =0= to =127= or a list
+  of such integers.
+
+- =perc-midinote-ex= :: an integer value from =0= to =127= representing
+  the midi note used when exporting midi data.
+
+* settings
+:properties:
+:custom_id: settings
+:end:
+settings are arguments or parameters used to pass data to fomus for
+processing. there are a lot of them, but only a few of them are really
+necessary for most users. the most useful ones are listed below--look at
+these first before searching through the complete list. many of the ones
+that aren't on the most useful list exist to provide some way of
+tweaking output or turning various modules on and off. setting values
+can be passed to the =fomus= function as keyword/argument pairs or bound
+as special variables, the names of which are derived by surrounding the
+symbol names with asterisks. all of the variables are exported symbols
+in the =fomus= package.
+
+settings that end in =-module= allow switching and replacing various
+sections of fomus with other algorithms. the code for these modules is
+located in the =modules= subdirectory. adding new or replacement
+functionality to fomus is done by dropping module files in here. the
+documentation here only describes built-in functionality--a complete
+list of modules to choose from may be obtained with the
+=list-fomus-modules= function.
+
+see [[#init]] for an explanation of how to modify default values for any
+of these settings.
+
+** most useful fomus settings
+:properties:
+:custom_id: section.settings2
+:end:
+
+:verbose
+
+:output
+
+:filename
+
+:quality
+
+:global
+
+:parts
+
+:events
+
+:input-beat-value
+
+:input-offset
+
+:beat-division
+
+:max-tuplet
+
+:min-tuplet-dur
+
+:max-tuplet-dur
+
+:quartertones
+
+:acc-throughout-meas
+
+:auto-cautionary-accs
+
+:auto-percussion-durs
+
+:default-grace-dur
+** complete fomus settings
+:properties:
+:custom_id: section.settings3
+:end:
+*** program settings
+:properties:
+:custom_id: section.settings4
+:end:
+
+:verbose
+
+:debug-filename
+
+:use-cm
+
+:cm-scale
+
+:output
+
+:filename
+
+:quality
+*** backend options
+:properties:
+:custom_id: section.settings5
+:end:
+
+:lilypond-exe
+
+:lilypond-opts
+
+:lilypond-out-ext
+
+:lilypond-view-exe
+
+:lilypond-view-opts
+
+:lilypond-version
+
+:lilypond-filehead
+
+:lilypond-scorehead
+
+:lilypond-text-markup
+
+:lilypond-textdyn-markup
+
+:lilypond-texttempo-markup
+
+:lilypond-textnote-markup
+
+:lilypond-textacc-markup
+
+:cmn-view-exe
+
+:cmn-view-opts
+*** global
+:properties:
+:custom_id: section.settings6
+:end:
+
+:title
+
+:subtitle
+
+:composer
+
+:timesig-style
+
+:tuplet-style
+*** objects
+:properties:
+:custom_id: section.settings7
+:end:
+
+:global
+
+:parts
+
+:events
+*** parts
+:properties:
+:custom_id: section.settings8
+:end:
+
+:check-ranges
+
+:transpose
+
+:instruments
+
+:percussion
+
+:default-instr
+
+:percussion
+
+:instr-groups
+
+:ensemble-type
+*** time signatures
+:properties:
+:custom_id: section.settings9
+:end:
+
+:default-timesig
+
+:default-beat
+
+:min-auto-timesig-dur
+
+:auto-timesig-comp
+*** plugins
+:properties:
+:custom_id: section.settings10
+:end:
+
+:auto-accs-module
+
+:auto-beam-module
+
+:auto-multivoice-comb-module
+
+:auto-distr-rests-module
+
+:auto-ottavas-module
+
+:auto-quantize-module
+
+:auto-staff/clefs-module
+
+:auto-voices-module
+
+:split-module
+
+:tuplet-function
+*** plugins on/off
+:properties:
+:custom_id: section.settings11
+:end:
+
+:auto-accidentals
+
+:auto-cautionary-accs
+
+:auto-beams
+
+:auto-multivoice-notes
+
+:auto-multivoice-rests
+
+:auto-grace-slurs
+
+:auto-ottavas
+
+:auto-override-timesigs
+
+:auto-quantize
+
+:auto-staff/clef-changes
+
+:auto-voicing
+
+:auto-percussion-durs
+
+:auto-pizz/arco
+
+:auto-dyn-nodup
+*** quantizing
+:properties:
+:custom_id: section.settings12
+:end:
+
+:input-beat-value
+
+:input-offset
+
+:beat-division
+
+:min-tuplet-dur
+
+:max-tuplet-dur
+
+:max-tuplet
+*** staves
+:properties:
+:custom_id: section.settings13
+:end:
+
+:grandstaff-hide-rests
+
+:min-grandstaff-hide-rests-dur
+
+:min-multivoice-chords-dur
+*** ottavas
+:properties:
+:custom_id: section.settings14
+:end:
+:max-ottava-rest-dist
+*** accidentals
+:properties:
+:custom_id: section.settings15
+:end:
+
+:quartertones
+
+:acc-throughout-meas
+
+:use-double-accs
+*** cautionary accidentals
+:properties:
+:custom_id: section.settings16
+:end:
+
+:acc-caut-acc-dist
+
+:caut-acc-next-meas
+
+:caut-acc-octaves
+
+:caut-acc-ottavas
+*** grace notes
+:properties:
+:custom_id: section.settings17
+:end:
+
+:default-grace-dur
+
+:default-grace-num
+
+:effective-grace-dur-mul
+*** measure/tuplet divisions
+:properties:
+:custom_id: section.settings18
+:end:
+
+:default-tuplets
+
+:default-meas-divs
+
+:default-tuplet-divs
+*** note splitting/tying
+:properties:
+:custom_id: section.settings19
+:end:
+
+:dotted-note-level
+
+:double-dotted-notes
+
+:shortlongshort-notes-level
+
+:syncopated-notes-level
+
+:tuplet-dotted-rests
+
+:min-split-all-parts-dur
+*** beams
+:properties:
+:custom_id: section.settings20
+:end:
+
+:long-eighth-beams
+
+:long-eighth-beam-count
+
+:comp-long-eighth-beam-count
+** alphabetical listing of settings
+:properties:
+:custom_id: section.settings21
+:end:
+- =:acc-caut-acc-dist= :: this number represents the maximum distance a
+  cautionary accidental may be from the note that causes it.
+
+- =:acc-throughout-meas= :: if set to =t=, accidentals carry to the end
+  of the measure. if set to =nil=, accidentals affect only the note they
+  precede.
+
+- =:auto-accidentals= :: if set to =t=, fomus automatically determines
+  note spellings. if set to =nil=, a generic set of note spellings is
+  used (all notes receive flats except for f sharp). the user may supply
+  note spellings to override fomus's spellings.
+
+- =:auto-accs-module= :: designates which module is to be used for
+  determining note spellings. fomus's built-in values are =t=, =:acc1=,
+  =t= represents the default module and is equivalent to =:acc1=.
+
+- =:auto-beam-module= :: designates which module is to be used for
+  beaming. fomus's built-in values are =t= and =:beams1=. =t= represents
+  the default module and is equivalent to =:beams1=.
+
+- =:auto-beams= :: if set to =t=, fomus determines beaming based on time
+  signature information and decisions it makes regarding irregular
+  measure divisions. if set to =nil=, beaming decisions are made by the
+  backend notation program.
+
+- =:auto-cautionary-accs= :: if set to =t=, fomus inserts several
+  different kinds of cautionary accidentals. the user can supply her own
+  cautionary accidentals with the =:cautacc= mark.
+
+- =:auto-distr-rests-module= :: designates which module is to be used
+  for determining how rests are distributed among staves. fomus's
+  built-in values are =t= and =:rests1=. =t= represents the default
+  module and is equivalent to =:rests1=.
+
+- =:auto-dyn-nodup= :: if set to =t=, indicates that fomus should
+  eliminate all redundant dynamic markings.
+
+- =:auto-grace-slurs= :: if set to =t=, fomus automatically puts slurs
+  over all grace notes. if set to =nil=, the user must supply all grace
+  note slurs with =:startgraceslur-=, =:graceslur-= and =:endgraceslur-=
+  marks.
+
+- =:auto-multivoice-comb-module= :: designates which module is to be
+  used for determining how simultaneous notes from different voices are
+  combined into chords on the same staff. fomus's built-in values are
+  =t= and =:comb1=. =t= represents the default module and is equivalent
+  to =:comb1=.
+
+- =:auto-multivoice-notes= :: if set to =t=, fomus combines simultaneous
+  notes from different voices into chords.
+
+- =:auto-multivoice-rests= :: if set to =t=, fomus combines equivalent
+  simultaneous rests from different voices into single rests.
+
+- =:auto-ottavas= :: if set to =t=, fomus automatically determines where
+  to place ottava brackets. if set to =nil=, the user must supply all
+  ottava brackets with =:8up=, =:8down= and related spanner marks.
+
+- =:auto-ottavas-module= :: designates which module is to be used for
+  determining where ottava brackets occur. fomus's built-in values are
+  =t= and =:ottavas1=. =t= represents the default module and is
+  equivalent to =:ottavas1=.
+
+- =:auto-override-timesigs= :: if set to =t=, fomus extends or contracts
+  measures within certain bounds, adding new time signatures as
+  necessary to fit measures into the user-supplied time signatures given
+  in the =global= or =parts= settings. if set to =nil=, fomus simply
+  cuts the last measure (also inserting a new time signature) before a
+  new time signature change, resulting in measures of arbitrary sizes
+  depending on where the cut occurs.
+
+- =:auto-percussion-durs= :: if set to =t=, fomus determines the
+  durations of all percussion instruments that have their
+  [[#perc.autodur][autodur]] slot set to =t=. percussion instruments
+  that don't need to be notated precisely with respect to duration are
+  then notated with durations that are simpler to read (without tying
+  together groups of notes).
+
+- =:auto-pizz/arco= :: if set to =t=, indicates that fomus should
+  convert each consecutive group of =:pizz= marks it finds to a single
+  pair of =:pizz= and =:arco= marks. this makes it easier to notate
+  pizz. and arco changes by simply attaching =:pizz= marks where they
+  belong.
+
+- =:auto-timesig-comp= :: if set to =t=, fomus automatically interprets
+  time signatures such as 6/8, 9/4, etc. as compound meters. if set to
+  =nil=, the user must indicate that a meter is compound by setting the
+  [[#timesig.comp][comp]] slot in the appropriate
+  [[#class.timesig][timesig]] object.
+
+- =:auto-quantize= :: if set to =t=, fomus quantizes offsets and
+  durations so that everything fits into the closest fitting tuplets and
+  beat divisions possible. if set to =nil=, all offset and duration
+  values must be precise ratios or integers-- floating point numbers are
+  treated with the =rationalize= function in this case (this isn't
+  recommended). if no quantizing is done and offsets and durations of
+  events don't fit into anything that is "notatable" then fomus will
+  complain with an error.
+
+- =:auto-quantize-module= :: designates which module is to be used for
+  quantizing. fomus's built-in values are =t=, =:quantize1-rmse= and
+  =:quantize1-ave=. =:quantize1-mse= finds the closest fit to notation
+  by minimizing the root mean squared error between the user's values
+  and possible notational values. =:quantize1-ave= finds the closets fit
+  by minimizing average error. =t= represents the default module and is
+  equivalent to =:quantize1-rmse=.
+
+- =:auto-staff/clef-changes= :: if set to =t=, fomus automatically
+  determines staff and clef changes for voices. if set to =nil=, the
+  user must supply all staff and clef changes with =:staff=, =:clef= and
+  related marks.
+
+- =:auto-staff/clefs-module= :: designates which module is to be used to
+  determine automatic staff and clef changes. fomus's built-in values
+  are =t= and =:staves/clefs1=. =t= represents the default module and is
+  equivalent to =:staves/clefs1=.
+
+- =:auto-voices-module= :: designates which module is to be used for
+  determining how notes are distributed into separate voices. fomus's
+  built-in values are =t= and =:voices1=. =t= represents the default
+  module and is equivalent to =:voices1=.
+
+- =:auto-voicing= :: if set to =t=, fomus automatically decides how to
+  distribute notes among multiple voices, given the choices specified in
+  the =note=, =rest= and =mark= objects. if set to =nil=, the user must
+  specify explicitly which voice an event belongs to.
+
+- =:beat-division= :: the value of this setting is used by the
+  quantizing algorithm to determine how to round offsets and durations.
+  if only an integer is given, it represents the number of divisions per
+  beat in a non-compound meter-- the compound meter value is then
+  calculated by multiplying the first number by 3/2. if specified as a
+  list of two integers, the first integer represents the number of
+  divisions per beat in a non-compound meter while the second represents
+  the number of divisions in a compound meter. the first number must be
+  a power of 2 while the second number 3/2 or 3/4 times a power of 2.
+
+  a =beat-division= of 2, for example, tells fomus to quantize to
+  eighth-note values (if the current beat is a quarter-note). in a
+  compound 12/4 meter, this setting also tells fomus to quantize to an
+  eighth-note value (2 multiplied by 3/2 is 3, and there are 3
+  eighth-notes per beat). in the same compound 12/4 meter, a setting of
+  ='(4 6)= would cause durations to be quantized to sixteenth notes
+  (there are 6 sixteenth notes per beat).
+
+  =beat-division= specifies only approximately how durations are
+  quantized inside tuplets. it is completely predictable only when the
+  =max-tuplet= setting is set to =nil= or the notation contains nothing
+  that would generate any kind of tuplet. when tuplets are allowed and
+  fomus tries to create them, it divides them into units that are as
+  close as possible in duration to the non-tuplet divisional units. for
+  example, if =beat-division= is set to =16= and it's allowable for
+  fomus to try to divide one beat into a septuplet, then it's possible
+  for notes to be quantized to either 16 or 14 divisions per beat (since
+  a septuplet divides evenly into 14 units and 1/14 is the closest
+  septuplet divisional duration to 1/16).
+
+- =:caut-acc-next-meas= :: when set to =nil=, indicates that cautionary
+  accidentals may occur only in the same measure as the note that causes
+  them. when set to =1=, specifies that cautionary accidentals may occur
+  only if they are in the measure immediately after the note that causes
+  them. when set to =t= or =2=, specifies that cautionary accidentals
+  may occur in any measure after the note that causes them.
+
+- =:caut-acc-octaves= :: when set to =t=, the cautionary accidental
+  algorithm places cautionary accidentals at all octave transpositions
+  from the note that causes them. when set to the integer =1= or
+  greater, specifies the maximum number of octaves a cautionary
+  accidental can be from the note that causes it.
+
+- =:caut-acc-ottavas= :: when set to =t=, the cautionary accidental
+  algorithm considers the presence of ottava brackets, placing
+  cautionary accidentals where apparent octave transpositions might
+  cause confusion.
+
+- =:check-ranges= :: when set to =t=, activates a check that prints
+  warnings if it finds notes out of range for their instruments. the
+  minp and maxp slots in the appropriate =instr= object must be set for
+  this to have any effect.
+
+- =:cm-scale= :: if set to =t=, indicates that the value of =cm-scale=
+  will be used to parse note symbols (as the value of the =:in= keyword
+  argument) if cm is present and being used.
+
+- =:cmn-view-exe= :: this is a string specifying the path and filename
+  to the executable for the common music notation viewer application.
+  the full pathname may or may not need to be specified depending on the
+  lisp implementation. the default application depends on what is
+  installed on the user's machine, and should be an application
+  appropriate for viewing postscript or eps files.
+
+- =:cmn-view-opts= :: this is a list of strings representing options to
+  be passed to the cmn viewer application executable.
+
+- =:comp-long-eighth-beam-count= :: this is set to an integer greater
+  than =0=, specifying the number of eighth notes that need to be
+  present to be beamed as groups of 6 in compound meters. this setting
+  is only effective if =long-eighth-beams= is set to =t=.
+
+- =:composer= :: this is an optional string value containing the
+  composer's name.
+
+- =:debug-filename= :: if set to a string, represents the name of a file
+  to which debug information is dumped each time the =fomus= function is
+  called. if you wish to report a bug, please send the contents of this
+  file.
+
+- =:default-beat= :: specifies a default value for the
+  [[#timesig.beat][beat]] slot of [[#class.timesig][timesig]] objects
+  that are not compound time signatures. this setting is =1/4= by
+  default, specifying that for non-compound meters a quarternote is
+  equivalent to 1 beat. in compound time signatures the beat is always
+  infered from the denominator (for example, in a 12/8 meter the beat is
+  3/8).
+
+- =:default-grace-dur= :: if fomus needs to convert a note into a grace
+  note, this value is used as the grace note's duration.
+
+- =:default-grace-num= :: if fomus needs to convert a note into a grace
+  note, this value is used as the grace note's default position number.
+  this value together with the grace note's context determines the
+  actual position (when necessary, fomus will increment or decrement
+  this value to determine the actual position number). see the
+  [[#note.dur][dur]] slot in class =note= for more information.
+
+- =:default-instr= :: this is a default =instr= object to be used in
+  cases when another instrument isn't specified.
+
+- =:default-meas-divs= :: this list is a table containing possible ways
+  of dividing measures into smaller segments or divisions. these
+  segments affect how notes are split, tied and beamed. entries in this
+  list replace entries in fomus's own default table if they exist. each
+  member of this list is itself a list, containing an integer or ratio
+  lookup value as the first element followed by one or more lists of
+  integers/ratios that each add up to the first number.
+
+  #+begin_example
+  :default-meas-divs
+    '((3 (2 1) (1 2))
+      (4 (2 2))
+      (5 (3 2) (2 3))
+      (6 (4 2) (2 4))
+      (7 (4 3) (3 4)))
+                
+  #+end_example
+
+  the numbers in these lists correspond to the number of beats in a
+  measure, multiplied or divided by 2 if necessary. in most cases, only
+  specify integers should be necessary, though ratios may also be used.
+  for example, if a 7/8 measure with a quarter-note beat is processed,
+  fomus first tries to lookup a set of divisions using the index number
+  7/2, then 7, 14, etc.. this way the lookup value =7= is sufficient for
+  any meter with a numerator of 7, though it's possible to supply more
+  specific entries such as =7/2= (for measures that contain 3 + 1/2
+  beats).
+
+- =:default-timesig= :: if no time signature is specified in the
+  =global= or =parts= lists, this default one is used.
+
+- =:default-tuplet-divs= :: this list is a table containing possible
+  ways of dividing tuplets into smaller segments or divisions. these
+  segments affect how notes are split, tied and beamed. entries in this
+  replace entries in fomus's own default table if they exist. each
+  member of this list is itself a list, containing an integer lookup
+  value as the first element followed by one or more lists of integers
+  that each add up to the first number.
+
+  #+begin_example
+  :default-meas-divs
+    '((3 (2 1) (1 2))
+      (4 (2 2))
+      (5 (3 2) (2 3) (4 1) (1 4))
+      (6 (4 2) (2 4))
+      (7 (4 3) (3 4)))
+                
+  #+end_example
+
+  the numbers in this list correspond to numerators of tuplet ratios (or
+  multiples or divisions of two). when fomus needs to find possible
+  divisions for a triplet, for example, it uses the entries in the list
+  corresponding to lookup value =3=. if it needs to lookup divisions for
+  a sextuplet, it will first try to lookup the number =6= and then use
+  =3= if an entry for =6= doesn't exist.
+
+- =:default-tuplets= :: this list is a lookup table indicating what
+  ratios fomus should use when deciding how to notate tuplets. each list
+  element is itself a list of two integers specifying a tuplet ratio, or
+  how many durational units should be used in place of another. ='(7 4)=
+  thus specifies that septuplet eighth notes are to be used in place of
+  4 eighth notes. fomus searches this table by finding a match for
+  number of tuplet divisions (the first integer in each pair) and
+  checking the second integer to see if it's appropriate for the context
+  it is in (a power of 2 of the actual number of durational units).
+  thus, several entries for septuplets might exist: ='(7 4)= for the
+  majority of cases and ='(7 5)= for cases where, for example, 7 eighth
+  notes might span an entire 5/8 measure or a section of a larger
+  tuplet.
+
+  #+begin_example
+  :default-meas-divs '((3 2) (6 5) (5 4) (7 4) (7 5) (13 8) (13 10))
+                
+  #+end_example
+
+  the default value is =nil=. if fomus doesn't find an entry for a
+  tuplet division here, it determines its own depending on the value of
+  =tuplet-function=.
+
+- =:dotted-note-level= :: indicates how dotted notes are allowed to
+  appear. possible values are =t=, =:all=, =:top= and =:sig=. =:all=
+  specifies that they can appear anywhere, =:top= specifies that they
+  can appear only if they occupy an entire measure, and =:sig= specifies
+  that they can appear if they occupy durations larger than a beat. =t=
+  is equivalent to =:all=.
+
+- =:double-dotted-notes= :: if set to =t=, indicates that double-dotted
+  notes are allowed.
+
+- =:effective-grace-dur-mul= :: if fomus needs to determine the
+  effective duration of a grace note (for scoring or comparison
+  purposes), it multiplies the value of this setting with the duration
+  given in the grace note's [[#note.dur][dur]] slot.
+
+- =:ensemble-type= :: this setting determines how parts are both ordered
+  and grouped together with brackets and barlines in the score. setting
+  this to a symbol specifies a lookup value for a ordering/grouping
+  table entry specified in the =instr-groups= setting or fomus's own
+  default table. it may also be set to an ordering/grouping data
+  structure, in which case this specified ordering/grouping is used
+  instead. an ordering/grouping data structure is a list of symbols or
+  nested lists of symbols that specify both the groups and the layout
+  order of parts. a symbol specifies an instrument while a list contains
+  a group type (a symbol designating what type of bracket is to appear
+  on the left-hand margin of the score and how barlines are to appear)
+  followed by more instrument symbols or lists (see the example below).
+  a group type is one of the symbols =:group=, =:grandstaff= or
+  =:choirgroup=.
+
+  a look at the following examples might make this clearer:
+
+  #+begin_example
+  :ensemble-type :orchestra
+                
+  #+end_example
+
+  #+begin_example
+  :ensemble-type
+    '((:my-orchestra
+       (:group (:group :piccolo :flute) (:group :oboe :english-horn)
+               (:group :bf-clarinet :a-clarinet :bass-clarinet)
+               (:group :bassoon :contra-bassoon))
+       (:group (:group :horn) (:group :c-trumpet :bf-trumpet)
+               (:group :alto-trombone :tenor-trombone :bass-trombone)
+               (:group :tuba))
+        :timpani :percussion
+       (:grandstaff :piano) 
+       (:group (:group :violin) (:group :viola) (:group :violoncello)
+               (:group :contrabass))))
+                
+  #+end_example
+
+- =:events= :: this is a global list of events to be processed by fomus.
+  an event can be a =note=, =rest= or =mark= object. a =note= or =rest=
+  object must have a symbol or number in its [[note.partid]artid]]
+  slot specifying which part it belongs to. a =mark= object may have a
+  default [[#note.partid][partid]] value of =nil= to specify all parts
+  or a symbol/number or list of symbols/numbers to specify only those
+  parts. (note that specifying part id information isn't necessary when
+  event objects are listed in the [[#part.events][events]] slot of a
+  =part= object. including these objects in the events list provides an
+  alternative to listing them inside =part= objects.) see [[#objects]]
+  for more detailed descriptions of these objects and their uses.
+
+- =:filename= :: this string represents the path and filename to which
+  fomus adds an appropriate extension when it saves output in various
+  formats. this setting in combination with the =output= setting
+  determines the actual output filenames.
+
+  #+begin_example
+  :filename "path_to_output_directory/myoutput"
+                
+  #+end_example
+
+- =:global= :: this is a list of objects that have "global" influence
+  over other events in the =parts= and =events= settings. only objects
+  of type =timesig= and =keysig= are allowed here (=keysig= isn't
+  implemented yet). when a global object's [[#timesig.partids][partids]]
+  slot is set to the default value of =nil= the object affects all parts
+  that don't already have a =timesig= or =keysig= attached to them at
+  that point. when its [[#timesig.partids][partids]] slot is set to
+  symbol or list of symbols the object affects those parts only. this
+  enables the specification of multiple simultaneous time signatures and
+  polymeters (not implemented yet).
+
+- =:grandstaff-hide-rests= :: when set to =t= or =:some=, indicates that
+  fomus hides some rests when combining multiple voices in a grand
+  staff. this makes the notation easier to read for multi-staff
+  instruments by eliminating rests that aren't necessary. when set to
+  =:all= indicates that all rests in all parts are hidden (this could be
+  more useful in the future when proportional notation is supported).
+  when set to =nil= indicates that no rests are hidden.
+
+- =:input-beat-value= :: when set to some real number greater than =0=,
+  indicates that this durational value is to be interpreted as one beat.
+  fomus scales all input objects by dividing offsets and durations by
+  this value before doing any other processing. a value of =nil= is the
+  default and is equivalent to =1=.
+
+- =:input-offset= :: when set to some real number, indicates that this
+  durational value is to be interpreted as one beat. fomus shifts all
+  input objects by adding this value to all offsets before doing any
+  other processing. a value of =nil= is the default and is equivalent to
+  =0=.
+
+- =:instr-groups= :: the value of this setting is a table in the form of
+  a list that provides a way of adding instrument orderings and
+  groupings to fomus's own default table. these tables map symbol lookup
+  values to ordering/grouping data structures which specify how parts
+  are both ordered and grouped together with brackets and barlines in
+  the score. the user may choose one of these groupings by setting
+  =ensemble-type= to a symbol lookup value. the user-supplied list is
+  searched first so user-supplied orderings/groupings can override
+  fomus's default orderings/groupings.
+
+  the setting is a list of lists, the first element in each inner list
+  containing a symbol specifying a unique lookup name. these are
+  followed by grouping/ordering definitions: symbols or nested lists of
+  symbols that specify both the groups and the layout order of parts. in
+  this data structure a symbol specifies an instrument while a list
+  contains a group type (a symbol designating what type of bracket is to
+  appear on the left-hand margin of the score and how barlines are to
+  appear) followed by more instrument symbols or lists (see the example
+  below). a group type is one of the symbols =:group=, =:grandstaff= or
+  =:choirgroup=.
+
+  a look at the following example might make this clearer:
+
+  #+begin_example
+  :instr-groups
+    '((:orchestra
+       (:group (:group :piccolo :flute) (:group :oboe :english-horn)
+               (:group :bf-clarinet :a-clarinet :bass-clarinet)
+               (:group :bassoon :contra-bassoon))
+       (:group (:group :horn) (:group :c-trumpet :bf-trumpet)
+               (:group :alto-trombone :tenor-trombone :bass-trombone)
+               (:group :tuba))
+        :timpani :percussion
+       (:grandstaff :piano) 
+       (:group (:group :violin) (:group :viola) (:group :violoncello)
+               (:group :contrabass)))
+      (:ensemble
+       :piccolo :flute :oboe :english-horn :bf-clarinet :a-clarinet :bassoon
+       :contra-bassoon (:grandstaff :piano)))
+                
+  #+end_example
+
+- =:instruments= :: the user can use this setting to specify additional
+  =instr= objects that are added to the default instrument list. fomus
+  searches this list before its own default list when resolving symbols
+  to instrument definitions, so they may be replacements or
+  modifications of existing instruments. the contents are either
+  instrument objects created with =make-instr= or lists specifying
+  modifications to fomus's default instruments (or a combination of
+  both). if a list is specified, it contains a symbol specifying a
+  default instrument followed by keyword/argument pairs indicating slot
+  values that replace existing default values (see the
+  [[#part.instr][instr]] slot in the =part= object and
+  [[#example.part.instr.slot.setting]] for an example of this).
+
+  #+begin_example
+  :instrument
+    (list (make-instr :recorder :clefs :treble)
+          '(:piano :staves 3 :simultlim 6))
+                
+  #+end_example
+
+- =:lilypond-exe= :: this is a string specifying the path and filename
+  to the lilypond executable. the full pathname may or may not need to
+  be specified depending on the lisp implementation.
+
+- =:lilypond-filehead= :: this is a string or list of strings
+  representing text to be inserted directly into a lilypond output file.
+  each string in the list is followed by a carriage return. the text is
+  inserted near the top of the file at a point before any score or part
+  data appears.
+
+- =:lilypond-opts= :: this is a list of strings representing options to
+  be passed to the lilypond executable. the default is currently
+  ='("--ps")= for linux or ='("--pdf")= for os x/windows, specifying
+  that lilypond should generate either a postscript or pdf format file.
+
+- =:lilypond-out-ext= :: this is a string specifying the extension for
+  the output filename that is created when lilypond is run. the default
+  is ="ps"= for linux and ="pdf"= for os x/windows.
+
+- =:lilypond-scorehead= :: this is a string or list of strings
+  representing text to be inserted directly into a lilypond output file
+  at the beginning of a score block. each string in the list is followed
+  by a carriage return.
+
+- =:lilypond-text-markup= :: this is a "wrapper" string specifying
+  lilypond markup instructions to be used when printing text above or
+  below the staff. the string must have an =~a= or similar substring to
+  indicate where to place the actual text (as if in a call to =format=).
+  the default value is ="\markup{\italic{~a}}"=.
+
+- =:lilypond-textacc-markup= :: this is a "wrapper" string specifying
+  lilypond markup instructions to be used when engraving accidentals as
+  text. the string must have an =~a= or similar substring to indicate
+  where to place the actual text (as if in a call to =format=). the
+  default value is ="\\markup{\\tiny{~a}}"=.
+
+- =:lilypond-textdyn-markup= :: this is a "wrapper" string specifying
+  lilypond markup instructions to be used when printing text in a
+  dynamic-type font. the string must have an =~a= or similar substring
+  to indicate where to place the actual text (as if in a call to
+  =format=). the default value is
+  ="\markup{\dynamic{\italic{\bold{~a}}}}"=.
+
+- =:lilypond-textnote-markup= :: this is a "wrapper" string specifying
+  lilypond markup instructions to be used when printing text above
+  single notes. the string must have an =~a= or similar substring to
+  indicate where to place the actual text (as if in a call to =format=).
+  the default value is ="\markup{\italic{~a}}"=.
+
+- =:lilypond-texttempo-markup= :: this is a "wrapper" string specifying
+  lilypond markup instructions to be used when printing text in a heavy
+  "tempo" font. the string must have an =~a= or similar substring to
+  indicate where to place the actual text (as if in a call to =format=).
+  the default value is ="\markup{\bold{\huge{~a}}}"=.
+
+- =:lilypond-version= :: if set to a string (for example, ="2.8"=),
+  forces fomus to output lilypond files for that version.
+
+- =:lilypond-view-exe= :: this is a string specifying the path and
+  filename to the executable for the lilypond viewer application. the
+  full pathname may or may not need to be specified depending on the
+  lisp implementation. the default application depends on what is
+  installed on the user's machine, and should be one appropriate for
+  viewing postscript files.
+
+- =:lilypond-view-opts= :: this is a list of strings representing
+  options to be passed to the lilypond viewer application executable.
+
+- =:long-eighth-beam-count= :: this is set to an integer greater than
+  =0=, specifying the number of eighth notes that need to be present to
+  be beamed as a group of 4. this setting is only effective if
+  =long-eighth-beams= is set to =t=.
+
+- =:long-eighth-beams= :: if set to =t=, specifies that the beaming
+  algorithm should beam eighth notes into groups of up to 4 under
+  certain conditions (if enough of them are present). if set to
+  =:always=, specifies that eighth notes are always beamed in groups
+  of 4. if set to =nil=, specifies that eighth notes are never beamed in
+  groups of 4.
+
+- =:max-ottava-rest-dist= :: this is a real number greater than =0=,
+  specifying the maximum distance an ottava bracket will span over a
+  group of contiguous rests.
+
+- =:max-tuplet= :: if set to an integer, represents the largest tuplet
+  allowed. if set to a list of integers, represents the largest tuplets
+  allowed for each nested tuplet level (and also specifies how many
+  levels of tuplet nesting are allowed by the length of the list). a
+  value of ='(7 3)=, for example, specifies two levels of tuplet nesting
+  with septuplets being the maximum allowed in the outer level and
+  triplets being the maximum in the inner level. a value of =nil=
+  specifies that no tuplets are to be used.
+
+- =:max-tuplet-dur= :: this is the largest duration in beats that a
+  tuplet can span.
+
+- =:min-auto-timesig-dur= :: if =auto-override-timesigs= is set to =t=,
+  fomus automatically generates new time signatures as necessary to fit
+  measures into the time signatures specified in the =global= and
+  =parts= list. the value of this setting represents the smallest
+  duration (in beats) of any such time signature that is generated. see
+  [[#class.timesig][timesig]] and [[#class.timesig.repl][timesig-repl]]
+  for more information.
+
+- =:min-grandstaff-hide-rests-dur= :: this is a real number greater than
+  =0=, specifying the minimum duration that a group of simultaneous
+  rests must occupy in order for some of them to be hidden. this is
+  applicable only when there are multiple voices on a staff, in cases
+  where several simultaneous rests can be shown as one rest.
+  =auto-multivoice-rests= must also be set to =t= for this to have any
+  effect.
+
+- =:min-multivoice-chords-dur= :: this is a real number greater than
+  =0=, specifying the minimum duration a group of simultaneous notes in
+  separate voices must span to be combined into chords. this is
+  applicable only when there are multiple voices on a staff, and if
+  =auto-multivoice-notes= is set to =t=.
+
+- =:min-split-all-parts-dur= :: this is the smallest duration that fomus
+  will consider when deciding whether or not to "split" or divide all
+  parts together or separately. (splitting means splitting and tying
+  notes as necessary to properly notate a given rhythm in a given
+  measure.) a unit of music must be larger than this value to be
+  considered--units equal to or smaller than this duration are not
+  considered. fomus splits measures in all parts together up to a
+  certain point to insure that the notation is consistently divided in
+  all parts. a 5/8 measure, for example, will be consistently divided as
+  either 3 + 2 to 2 + 3 in all parts together (as long as the value of
+  this setting is smaller than the duration of a 5/8 measure).
+
+- =:min-tuplet-dur= :: this is the smallest duration in beats that a
+  tuplet can span.
+
+- =:parts= :: this is a list of =part= objects, each representing a
+  stave or grand staff in the score. at least one part must be
+  specified.
+
+- =:output= :: this is either a list or a list of lists specifying one
+  or more output files with optional keyword/argument pairs for tweaking
+  their contents. fomus's built-in output symbols are =:data= or
+  =:fomus=, =:raw=, =:musicxml=, =:musicxml-sibelius=,
+  =:musicxml-finale=, =:cmn=, =:lilypond= and =:midi=. more information
+  on these is given in [[#outputs]]. the following are examples of valid
+  output specifications:
+
+  #+begin_example
+  :output '(:data (:lilypond :view t))
+                
+  #+end_example
+
+  #+begin_example
+  :output '(:lilypond :filename "myfile.ly" :view nil)
+                
+  #+end_example
+
+  #+begin_example
+  :output :cmn
+                
+  #+end_example
+
+- =:percussion= :: this is a list of =percussion= objects serving as a
+  lookup table for information pertaining to percussion notation.
+  =percussion= objects are listed in =instr= objects to define
+  collections of percussion instruments that are notated together on a
+  single staff. fomus searches this user setting list before its own
+  default list when resolving symbols to percussion instrument
+  definitions, so they may be replacements or modifications of fomus's
+  predefined percussion instruments. the contents are either percussion
+  objects created with =make-perc= or lists specifying modifications to
+  fomus's default percussion objects (or a combination of both). if a
+  list is specified, it contains a symbol specifying a default
+  percussion instrument followed by keyword/argument pairs indicating
+  slot values that replace existing default values (see the
+  [[#instr.percs][percs]] slot in the =instr= object for an example of
+  this).
+
+  #+begin_example
+  :instrument
+    (list (make-perc :anvil :note -3 :voice 2 :midinote-ex 79)
+          '(:triangle :note 0 :voice 1))
+                
+  #+end_example
+
+  see the documentation for =percussion= objects for more information.
+
+- =:quality= :: this is a real number indicating how much fomus should
+  trade speed of computation for "quality" of output. setting it lower
+  increases speed while setting it higher gives better results. the
+  default is =1=, which is reasonable for relatively uncomplicated
+  scores with a small number of parts. the most effective values are
+  between approximately =-3= and =3=, though complex scores might show a
+  little improvement (better guesses within a larger context) with
+  values of =5= or more. after a certain point increasing this value
+  only makes the program run slower with no noticeable improvement in
+  output.
+
+- =:quartertones= :: if set to =t=, fomus rounds pitches to quartertone
+  values and uses quartertone notation in the score. this only works if
+  the algorithm specified by the =auto-accs-module= setting supports it.
+  fomus's default module =:nokey1= supports quartertones.
+
+- =:shortlongshort-notes-level= :: indicates how "short-long-short" note
+  patterns are allowed to appear. an example of such a pattern is an
+  eighth note followed by a quarter note then an eighth note, and is
+  treated as an exception to insure that the middle note isn't split in
+  the middle and tied. possible values are =t=, =:all=, =:top= and
+  =:sig=. =:all= specifies that this pattern can appear anywhere, =:top=
+  specifies that it can appear only if it occupies an entire measure,
+  and =:sig= specifies that it can appear if it occupies a duration
+  larger than a beat. =t= is equivalent to =:all=.
+
+- =:split-module= :: designates which module is to be used for splitting
+  and tying notes. fomus's built-in values are =t= and =:split1=. =t=
+  represents the default module and is equivalent to =:split1=.
+
+- =:subtitle= :: this is an optional string value containing the
+  subtitle of the composition.
+
+- =:syncopated-notes-level= :: when set to =t=, indicates that a certain
+  syncopated note pattern, a short note followed by any number of long
+  notes then a short note, may appear. an example of such a pattern is
+  an eighth note followed by several quarter notes then an eighth note.
+  this can only occur if the pattern occupies the duration of an entire
+  measure.
+
+- =:timesig-style= :: this indicates how time signature are printed. it
+  can be set to =:fraction= or =:common=, specifying that either
+  fractional or common time signatures are to be used in the backend
+  (given the choice). the default value of =nil= is equivalent to
+  specifying =:fraction=.
+
+- =:title= :: this is an optional string value containing the title of
+  the composition.
+
+- =:transpose= :: when set to =t=, activates a transposition function
+  that automatically transposes note values. the [[#instr.tpose][tpose]]
+  slot of the appropriate =instr= objects must be set for this to have
+  any effect.
+
+- =:tuplet-dotted-rests= :: if set to =t=, specifies whether or not
+  dotted rests are allowed inside tuplets of irregular (ie. not a power
+  of 2) divisions. for example, a quintuplet might be divided into a
+  dotted eight rest followed by an eighth note if =tuplet-dotted-rests=
+  is true.
+
+- =:tuplet-function= :: designates which function is to be used for
+  determining tuplet ratios. fomus's built-in values are =t=, =:pow2=
+  and =:dur=. =t= represents the default function and is equivalent to
+  =:pow2=. =:pow2= determines tuplet ratios based on the rule that the
+  number of tuplet divisions replace (in most cases) the number of
+  durational units equaling the next lowest power of two. fomus thus
+  notates 7 in the time of 4 and 13 in the time of 8. =:dur= determines
+  ratios by finding the closest number of durational units to the number
+  of tuplet divisions. fomus then notates 7 in the time of 8 and 13 in
+  the time of 16.
+
+- =:tuplet-style= :: specifies how tuplets are to be printed. the
+  possible values are =:ratio= or =:single=. the default value of =nil=
+  is equivalent to =:single=.
+
+- =:use-cm= :: if set to =t=, indicates that fomus should use common
+  music functions if present. note symbols are then parsed by cm using
+  the value of =cm-scale= as if it were passed as the =:in= argument to
+  cm's =keynum= function. also, durations specified as symbols indicate
+  notational durations and are interpreted as such using cm's =rhythm=
+  function. numbers are still interpreted by fomus in terms of beats.
+
+- =:use-double-accs= :: if set to =t=, the note spelling algorithm
+  considers double sharps and double flats in addition to single sharps
+  and flats.
+
+- =:verbose= :: this must be set to a value from =0= to =2=, indicating
+  the amount of printed output. a value of =0= represents minimal output
+  while a value of =2= represents maximal output.
+
+* marks
+:properties:
+:custom_id: marks
+:end:
+marks are symbols or lists of symbols with arguments that appear in the
+[[marks][marks]] slots of =note=, =rest= and =mark= objects. all
+extra information (articulations, ornamentations, etc.) that doesn't
+have a special slot in these objects is indicated with marks. a few
+"marks" can also appear in =timesig= and =part= objects, but are called
+properties--for these, the syntax is exactly the same.
+
+two types of marks exist:
+
+- simple marks that apply only to the =note=, =rest= or =mark= object
+  they are included in.
+
+- marks that indicate they are to be applied over a range of these
+  objects. these marks are distinguished by a trailing dash character at
+  the end of the symbol (for example, =:startslur-= and =:endslur-=).
+  exceptions that don't have a trailing dash are =:startwedge>= and
+  =:startwedge<= and related marks.
+
+the second type is mostly used to indicate "spanners," or items in the
+score that occur across a range of notes such as slurs or ottava
+brackets. most of them come in a group of three, one prefixed with the
+string =start=, another with no prefix, and the last one with the prefix
+=end=. (for example, =:startslur-=, =:slur-= and =:endslur-=.) spanner
+marks may be indicated in two different ways:
+
+- the =start= and =end= marks are inserted in the objects that occur
+  where the spanner begins and ends.
+
+- the =start= mark is inserted in the object at the point where the
+  spanner starts and the mark without a prefix is placed in subsequent
+  objects up to the point where the spanner ends. the last object with a
+  mark in it before a new =start= mark is found is considered to be the
+  end of the spanner.
+
+in either case, care must be taken to insert all marks that belong
+together either in the same voice or the same staff, depending on the
+type of mark.
+
+** fomus marks
+:properties:
+:custom_id: section.marks2
+:end:
+formats for marks and their arguments are shown in a pseudo lambda-list
+style format with =&optional= symbols to designate optional arguments.
+some arguments are shown as a choice between several options or symbols,
+each separated by a pipe character. in most cases, it doesn't matter in
+what order the arguments appear--fomus figures out which is which by the
+data types (reorderable arguments like this are shown by a double arrow
+figure). also, spanner marks that belong together are shown together and
+separated with forward slashes. the following list is a reference for
+the some of the arguments given in the following sections:
+
+- =art-order= :: an integer for articulations specifying relative
+  closeness to the notehead (lower numbered articulations are closer
+  than higher numbered ones).
+- =clef= :: a valid clef symbol (see the
+  clefs
+  slot in structure
+  instr
+  for a list of these symbols).
+- =level= :: this integer distinguishes between inner and outer levels
+  of spanner markings. the default value is 1. smaller numbers are
+  "inner" markings occurring close to the staff while larger numbers are
+  "outer" markings occurring farther away from the staff. there are two
+  methods of designating which level a mark is to appear on. the first
+  is to use the same few level numbers repeatedly (for example,
+  1
+  may be used to designate the 1st or innermost level and
+  2
+  to designate the 2nd level, as in two levels of slur markings). this
+  method allows the user to be "lazy" and leave out matching
+  start
+  and
+  end
+  marks--
+  fomus
+  can supply the missing marks by finding the next
+  start
+  or
+  end
+  marks in that level. the second method is to use a separate number for
+  each start/end pair--in this case, all
+  start
+  marks must have matching
+  end
+  marks or
+  fomus
+  will try to supply missing marks for each individual "level" and
+  create a mess.
+- =note= :: a valid note symbol or number (see the
+  note
+  slot in the
+  note
+  class).
+- =staffnum(s)= :: one or more valid staff numbers (numbering starts at
+  1, indicating the topmost staff).
+- =string= :: a text string.
+- =trem-subdiv= :: a durational value (a ratio or integer) for a tremolo
+  subdivision. it is specified in beats (for example, if one beat equals
+  a quarter note value, a tremolo with a value of
+  1/2
+  indicates an eighth-note tremolo,
+  1/4
+  indicates a sixteenth-note tremolo, etc.). if the optional
+  :notated
+  keyword is given, the number is instead interpreted as a written
+  duration regardless of the beat value (so in this case, 1/8 indicates
+  an eighth-note tremolo, 1/16 indicates a sixteenth-note tremolo,
+  etc.). the absence of a number indicates an unmeasured tremolo and is
+  notated with three tremolo beams.
+
+marks with no arguments can always be indicated with a symbol only (the
+enclosing list isn't necessary). also, many of these symbols closely
+correspond to symbols used in some of the backend formats (musicxml and
+lilypond). not all symbols are supported in all of the backends.
+
+*** articulations
+:properties:
+:custom_id: section.marks4
+:end:
+these marks add articulation symbols to notes. multiple levels of slurs
+may be specified (fomus applies extra sorting to slurs to insure that
+smaller ones occur in the "innermost" level while larger ones occur in
+the "outermost" level). the =:graceslur-= marks are slurs reserved for
+gracenotes, and are automatically added by fomus by default.
+
+(
+:staccato &optional
+art-order
+)
+(
+:staccatissimo &optional
+art-order
+)
+(
+:accent &optional
+art-order
+)
+(
+:marcato &optional
+art-order
+)
+(
+:tenuto &optional
+art-order
+)
+(
+:portato &optional
+art-order
+)
+(
+:startslur- &optional
+level
+<->
+:dotted
+)
+/
+(:slur- &optional
+level
+)
+/
+(:endslur- &optional
+level
+)
+:startgraceslur-
+/
+:graceslur-
+/
+:endgraceslur-
+*** dynamics
+:properties:
+:custom_id: section.marks5
+:end:
+these add common dynamic markings. the =:wedge>= and =:wedge<= marks
+create wedge-shaped crescendo and decrescendo markings.
+
+all of the dynamics marks may be appended with an asterisk (for example
+=fff*= or =:startwedge<*=). these marks are equivalent to the
+non-asterisk versions, the only difference being that during midi
+playback dynamics changes will affect all voices in a part. this allows
+the user to specify one set of notated dynamics markings for a part with
+multiple voices (using =mark= objects, for example), but have the midi
+playback rendered more accurately.
+
+:ffffff
+
+:fffff
+
+:ffff
+
+:fff
+
+:ff
+
+:f
+
+:mf
+
+:mp
+
+:p
+
+:pp
+
+:ppp
+
+:pppp
+
+:ppppp
+
+:pppppp
+
+:sfz
+
+:sff
+
+:rfz
+
+:fp
+
+:sf
+
+:sp
+
+:spp
+
+:startwedge>
+
+/
+
+:wedge>
+
+/
+
+:endwedge>
+
+:startwedge</
+
+:wedge</
+
+:endwedge<
+
+*** tempo/duration
+:properties:
+:custom_id: section.marks6
+:end:
+these are notation symbols that affect duration. three different types
+of fermatas may be specified (the default is =:short= if none is
+specified). breath marks may be set to occur before or after the note
+it's attached to (the default is =:after=). the =:autodur= mark
+indicates that fomus should determine the duration of the note,
+appropriate for events such as pizzicatos or other percussive-type
+attacks that don't require a specific duration but only a simply notated
+one. this has an effect only if the =auto-percussion-durs= setting is
+set to =t=.
+
+
+(:fermata &optional :short || :long || :verylong)
+
+(:breath &optional :before || :after)
+
+(:autodur)
+*** ornamentations
+:properties:
+:custom_id: section.marks7
+:end:
+these marks add common ornamentation markings. glissandi and portamenti
+may be set to occur before or after a note (the default for both is
+=:before=). a =:tremolo= mark is notated by placing slashes over the
+note stems while the =:tremolofirst= and =:tremolosecond= marks refer to
+the chordal tremolos commonly found in piano scores. these are processed
+by separating the notes marked "first" from the ones marked "second"
+into separately notated chords and placing a tremolo-style beam over
+them. the optional =:notated= keyword indicates that the subdivision
+number is to be interpreted as a written duration. the optional =:up=
+and =:down= keywords in the =:arpeggio= mark specify that a direction is
+to be notated using an arrowhead. The optional =note= arguments are for
+specifying the trill note. Only half and whole step trills are currently
+supported (and unison trills for percussion instruments).
+
+(
+:TREMOLO &optional
+trem-subdiv
+<->
+:NOTATED
+)
+(
+:TREMOLOFIRST &optional
+trem-subdiv
+<->
+:NOTATED
+)
+(
+:TREMOLOSECOND &optional
+trem-subdiv
+<->
+:NOTATED
+)
+(
+:LONGTRILL &optional
+note
+)
+(
+:ARPEGGIO &optional
+:UP
+||
+:DOWN
+)
+(
+:GLISSANDO &optional
+:BEFORE
+||
+:AFTER
+)
+(
+:PORTAMENTO &optional
+:BEFORE
+||
+:AFTER
+)
+(
+:TRILL &optional
+note
+)
+(
+:MORDENT &optional
+note
+)
+(
+:PRALL &optional &optional
+note
+)
+*** Effects
+:PROPERTIES:
+:CUSTOM_ID: section.marks8
+:END:
+These marks are for special instrument-specific effects or instructions.
+If the =AUTO-PIZZ/ARCO= setting is set to =T=, the =:ARCO= marks
+shouldn't be needed--FOMUS inserts them where they are necessary.
+Harmonics are specified by attaching one or more =:HARMONIC= marks, each
+indicating an extra note to appear above the base note. Specifying
+=:SOUNDING= (the default) causes a small parenthesized notehead to
+appear while specifying =:TOUCHED= causes a diamond notehead to appear.
+The actual results may vary depending on the backend (extra editing may
+be required). Notes are indicated with either a symbol or number, as in
+the [[#note.note][NOTE]] slot in the =NOTE= class. (Extra accidentals
+are not specified here.)
+
+:PIZZ
+:ARCO
+(
+:HARMONIC
+note
+<-> &optional
+:TOUCHED
+||
+:SOUNDING
+)
+(
+:OPEN &optional
+art-order
+)
+(
+:STOPPED &optional
+art-order
+)
+(
+:UPBOW &optional
+art-order
+)
+(
+:DOWNBOW &optional
+art-order
+)
+(
+:THUMB &optional
+art-order
+)
+(
+:LEFTHEEL &optional
+art-order
+)
+(
+:RIGHTHEEL &optional
+art-order
+)
+(
+:LEFTTOE &optional
+art-order
+)
+(
+:RIGHTTOE &optional
+art-order
+)
+*** Text
+:PROPERTIES:
+:CUSTOM_ID: section.marks9
+:END:
+Different kinds of text may be attached to events. =:TEXTNOTE= is for
+text that appears over a single note (for example, "sul G"), =:TEXT= and
+=:TEXT-= are for italicized texts that appear above or beneath the
+staff, =:TEXTTEMPO= indicates tempo changes (and is printed in a larger
+boldface font), and =:TEXTDYN= is for texts appearing in a dynamics-type
+font. For text spanners, "levels" may be specified to influence the
+order of their placement on the score.
+
+(
+:TEXTNOTE
+string
+)
+(
+:TEXT
+string
+<-> &optional
+:UP
+||
+:DOWN
+)
+(
+:STARTTEXT-
+string
+<-> &optional
+level
+<->
+:UP
+||
+:DOWN
+)
+/
+(:TEXT- &optional
+level
+)
+/
+(:ENDTEXT- &optional
+level
+)
+(
+:TEXTTEMPO
+string
+<-> &optional
+:UP
+||
+:DOWN
+)
+(
+:TEXTDYN
+string
+<-> &optional
+:UP
+||
+:DOWN
+)
+*** Notation
+:PROPERTIES:
+:CUSTOM_ID: section.marks10
+:END:
+Most of these behave as user overrides to FOMUS's automatic algorithms.
+=:CAUTACC= indicates that a cautionary accidental is to be placed before
+the note. =:FORCEACC= forces an accidental spelling. =:NOTEHEAD=
+indicates a different notehead. The =:CLEF= and =:CLEF-= spanner marks
+indicate clef changes and regions where a certain clef is required. A
+clef spanner must occur in a single voice. The =:STAFF= and =:STAFF-=
+spanner marks indicate staff choice overrides for instruments with more
+than one staff (ie. a grandstaff). All marks containing =8UP= and
+=8DOWN= are overrides for ottava brackets and must be specified for
+notes that appear in a single staff rather than a voice. The =:TIE= mark
+ties a note to the following or previous note depending on whether
+=:BEFORE= or =:AFTER= (default) is supplied and whether or note the
+adjacent note is the same.
+
+:CAUTACC
+:FORCEACC
+(
+:NOTEHEAD
+:HARMONIC
+||
+:DIAMOND
+||
+:X
+||
+:XCIRCLE
+||
+:TRIANGLE
+||
+:SLASH
+)
+(
+:CLEF
+clef
+)
+(
+:STARTCLEF
+clef
+)
+/
+:CLEF-
+/
+:ENDCLEF-
+(
+:STAFF &rest
+staffnum(s)
+)
+(
+:STARTSTAFF &rest
+staffnum(s)
+)
+/
+:STAFF-
+/
+:ENDSTAFF-
+:8UP
+:START8UP-
+/
+:8UP-
+/
+:END8UP-
+:8DOWN
+:START8DOWN-
+/
+:8DOWN-
+/
+:END8DOWN-
+(
+:TIE &optional
+:BEFORE
+||
+:AFTER
+)
+*** Other
+:PROPERTIES:
+:CUSTOM_ID: section.marks11
+:END:
+The =:IGNORE= has no effect. It is intended to be useful for
+automatically generating FOMUS input files.
+
+:IGNORE
+** TIMESIG Properties
+:PROPERTIES:
+:CUSTOM_ID: section.marks12
+:END:
+These are marks that are specified in =TIMESIG= objects (and are called
+properties rather than marks). They either affect one location in the
+score at the =TIMESIG= object's offset or the entire region of the score
+governed by that time signature.
+
+At the moment there's only one property, =:BARLINE= that changes the
+type of barline that appears at the =TIMESIG='s offset.
+
+(
+:BARLINE
+:SINGLE
+||
+:DOUBLE
+||
+:FINAL
+||
+:REPEATLEFT
+||
+:REPEATRIGHT
+||
+:REPEATLEFTRIGHT
+||
+:INVISIBLE
+)
+** PART Properties
+:PROPERTIES:
+:CUSTOM_ID: marks.partprops
+:END:
+These are "marks" that are specified in =PART= objects (and are called
+properties rather than marks). They either change how the part appears
+in the score or affect all of the objects in that part some way.
+
+At the moment there's only one property, =:DISTR= that allows the user
+to distribute notes or rests across several other parts. This is done by
+voice so that the user may specify multiple parts for a single
+instrument but insert all of the events into only one of them. The user
+may then, for example, treat four violins as one instrument, inserting
+note events for all four instruments into one part and letting FOMUS's
+voice separating algorithm figure out how they are distributed to the
+actual parts that appear in the score.
+
+The syntax of this property is given below. The =PARTID= argument
+specifies the part that notes and rests are moved to once all voices
+have been determined. The =VOICE= or =VOICEFROM= arguments specify which
+events are to be moved. =VOICETO=, if given, specifies the voice the
+events will have once they have been moved. If =VOICETO= isn't given,
+then the new voice defaults to the position of the argument in the list.
+=(:DISTR (PRT1 2 3) (PRT2 1 4))= is then equivalent to
+=(:DISTR (PRT1 (2 1) (3 2)) (PRT2 (1 1) (4 2)))=--events in voices 2 and
+3 are distributed to the part =PRT1= as voices 1 and 2 while events in
+voices 1 and 4 are distributed to =PRT2= as voices 1 and 2.
+
+(
+:DISTR (
+partid
+voice
+| ( |
+voicefrom
+voiceto
+) ...) ...)
+
+* Outputs
+:PROPERTIES:
+:CUSTOM_ID: outputs
+:END:
+This chapter explains options specific to each of the possible output
+formats. One or more outputs or backends may be selected with the
+=OUTPUT= setting. Most options are passed as keyword/argument pairs via
+this setting or in the [[parts][OPTS]] slot of the =PART= class.
+Current possible output symbols are =:DATA= or =:FOMUS=, =:CHUNK=,
+=:NONE=, =:MUSICXML=, =:MUSICXML-SIBELIUS=, =:MUSICXML-FINALE=, =:CMN=,
+=:LILYPOND= and =:MIDI=.
+
+The base output filename is specified using the =FILENAME= setting. It
+may be overridden by the =filename= option present in each of the
+outputs. Each output adds its own extension (for example, a LilyPond
+file gets a =.ly= extension added).
+
+** Data
+:PROPERTIES:
+:CUSTOM_ID: section.outputs2
+:END:
+This produces a file with extension =.fms= containing a dump of the data
+that is sent to FOMUS before any processing occurs. If this is the only
+output specified, FOMUS simply saves the data and returns without
+further processing. It may be specified using either the =:DATA= or
+=:FOMUS= keywords in the =OUTPUT= setting. The file is editable and can
+be reloaded for editing and processing by calling the =fomus= function
+with the name of the file. See [[#interface.text]] for a description of
+this file format.
+
+** LilyPond
+:PROPERTIES:
+:CUSTOM_ID: section.outputs3
+:END:
+FOMUS currently creates notation files for LilyPond versions 2.4 and
+2.6. The =OUTPUT= setting keyword to use is =:LILYPOND=. FOMUS outputs a
+slightly different file depending on whether LilyPond version 2.4 or 2.6
+is installed to insure that it compiles correctly (a file for one
+version may give an error when compiled in the other version). A =.ly=
+extension is added to the base filename to make the complete output
+filename. When FOMUS loads it looks for LilyPond and viewer application
+executables in several locations in the filesystem. If these executables
+are in an uncommon location or the user wants to specify these herself,
+several options exist for setting the pathnames and changing command
+line arguments. When setup correctly, FOMUS can automatically compile
+the output file and launch a viewer (a PostScript viewing application in
+Gnome or KDE or the Preview application in OS X).
+
+Tremolos might be represented by displaying slash marks (like in the
+MusicXML =:XML-1NOTE-TREMOLO-KLUDGE= and =:XML-MULTINOTE-TREMOLO-KLUDGE=
+options) in rare cases where they can't be indicated properly.
+
+# *** LilyPond Options
+# :PROPERTIES:
+# :CUSTOM_ID: section.outputs4
+# :END:
+# :FILENAME
+# :PROCESS
+# :VIEW
+# :EXE
+# :OPTS
+# :VIEW-EXE
+# :VIEW-OPTS
+# :VERSION
+# :FILEHEAD
+# :SCOREHEAD
+# :LILY-PARTHEAD
+# :LILY-PARTNAME
+# :OUT-EXT
+# :TEXT-MARKUP
+# :TEXTDYN-MARKUP
+# :TEXTTEMPO-MARKUP
+# :TEXTNOTE-MARKUP
+# :TEXTACC-MARKUP
+*** Alphabetical Listing of LilyPond Options
+:PROPERTIES:
+:CUSTOM_ID: section.outputs5
+:END:
+- =:EXE= :: This is a string specifying the path and filename to the
+  LilyPond executable. The full pathname may or may not need to be
+  specified depending on the Lisp implementation. This overrides the
+  =LILYPOND-EXE= setting if used.
+
+- =:OPTS= :: This is a list of strings representing options to be passed
+  to the LilyPond executable. The default is currently ='("--ps")= for
+  Linux or ='("--pdf")= for OS X/Windows, specifying that LilyPond
+  should generate either a PostScript or PDF format file. This overrides
+  the =LILYPOND-OPTS= setting if used.
+
+- =:FILEHEAD= :: This is a string or list of strings representing text
+  to be inserted directly into the output file. Each string in the list
+  is followed by a carriage return. The text is inserted near the top of
+  the file at a point before any score or part data appears.
+
+- =:FILENAME= :: This is a string representing the output filename. It
+  overrides the =FILENAME= setting if used.
+
+- =:OUT-EXT= :: This is a string specifying the extension for the output
+  filename that is created when LilyPond is run. The default is ="ps"=
+  for Linux and ="pdf"= for OS X/Windows. This overrides the
+  =LILYPOND-OUT-EXT= setting if used.
+
+- =:LILY-PARTHEAD= :: This option is specified in =PART= part objects
+  and is valid only for that part. It is a string or list of strings
+  representing text to be inserted directly into the output file. Each
+  string is followed by a carriage return. The text inserted at the
+  beginning of a staff section just before note, rest and other
+  information appears for that part in the file.
+
+- =:LILY-PARTNAME= :: This option is specified in =PART= part objects
+  and is valid only for that part. It is a string representing a part
+  name used to uniquely identify the part in the output file. If it
+  isn't supplied, FOMUS automatically generates a name.
+
+- =:PROCESS= :: If set to =T=, indicates that FOMUS should call LilyPond
+  to process the output file once it's been written. If set to =NIL=,
+  only the output file is written and no processing occurs (unless
+  =VIEW= is set to =T=).
+
+- =:SCOREHEAD= :: This is a string or list of strings representing text
+  to be inserted directly into the output file at the beginning of a
+  score block. Each string in the list is followed by a carriage return.
+
+- =:TEXT-MARKUP= :: This is a "wrapper" string specifying LilyPond
+  markup instructions to be used when printing text above or below the
+  staff. The string must have an =~A= or similar substring to indicate
+  where to place the actual text (as if in a call to =FORMAT=). The
+  default value is ="\markup{\italic{~A}}"=.
+
+- =:TEXTACC-MARKUP= :: This is a "wrapper" string specifying LilyPond
+  markup instructions to be used when engraving accidentals as text. The
+  string must have an =~A= or similar substring to indicate where to
+  place the actual text (as if in a call to =FORMAT=). The default value
+  is ="\\markup{\\tiny{~A}}"=.
+
+- =:TEXTDYN-MARKUP= :: This is a "wrapper" string specifying LilyPond
+  markup instructions to be used when printing text in a dynamic-type
+  font. The string must have an =~A= or similar substring to indicate
+  where to place the actual text (as if in a call to =FORMAT=). The
+  default value is ="\markup{\dynamic{\italic{\bold{~A}}}}"=.
+
+- =:TEXTNOTE-MARKUP= :: This is a "wrapper" string specifying LilyPond
+  markup instructions to be used when printing text above single notes.
+  The string must have an =~A= or similar substring to indicate where to
+  place the actual text (as if in a call to =FORMAT=). The default value
+  is ="\markup{\italic{~A}}"=.
+
+- =:TEXTTEMPO-MARKUP= :: This is a "wrapper" string specifying LilyPond
+  markup instructions to be used when printing text in a heavy "tempo"
+  font. The string must have an =~A= or similar substring to indicate
+  where to place the actual text (as if in a call to =FORMAT=). The
+  default value is ="\markup{\bold{\huge{~A}}}"=.
+
+- =:VERSION= :: If set to a string (for example, ="2.8"=), forces FOMUS
+  to output LilyPond files for that version.
+
+- =:VIEW= :: If set to =T=, indicates that FOMUS should call LilyPond to
+  process the output file then open the results with a viewer program
+  for immediate viewing. If set to =NIL=, no viewer application is
+  opened.
+
+- =:VIEW-EXE= :: This is a string specifying the path and filename to
+  the executable for the viewer application. The full pathname may or
+  may not need to be specified depending on the Lisp implementation. The
+  default application depends on what is installed on the user's
+  machine, and should be one appropriate for viewing PostScript files.
+  This overrides the =LILYPOND-VIEW-EXE= setting if used.
+
+- =:VIEW-OPTS= :: This is a list of strings representing options to be
+  passed to the viewer application executable. This overrides the
+  =LILYPOND-VIEW-OPTS= setting if used.
+
+** MusicXML
+:PROPERTIES:
+:CUSTOM_ID: section.outputs6
+:END:
+FOMUS outputs MusicXML version 1.1 format files when the =:MUSICXML=
+keyword is used in the =OUTPUT= setting. An =.xml= extension is
+automatically added to make the complete output filename. The output
+file is importable into a number of different notation programs, though
+the quality of the results will vary. FOMUS doesn't including any
+information about positioning--this is left up to the program doing the
+importing to decide. So far, MusicXML has been tested on Sibelius
+version 4.1 and Finale version 2006. Although the MusicXML format itself
+can support almost all of the notational elements that FOMUS supports, a
+few things don't seem to work correctly or don't import at all into
+either of these programs. The following major issues were found:
+
+- Sibelius often imports rhythms incorrectly when they involve tuplets.
+- Finale imports tuplets/rhythms incorrectly when they involve nested
+  tuplets.
+- There's not much support for importing tremolos.
+
+Most of these are easily fixed with the exception of the improper
+rhythm/tuplet problems. Until there are better solutions for these
+problems, there are some options for getting around some of them:
+
+# *** MusicXML Options
+# :PROPERTIES:
+# :CUSTOM_ID: section.outputs7
+# :END:
+# :FILENAME
+# :XML-1NOTE-TREMOLO-KLUDGE
+# :XML-MULTINOTE-TREMOLO-KLUDGE
+# :XML-HARMONIC-KLUDGE
+# :XML-PARTGROUPS-KLUDGE
+*** Alphabetical Listing of MusicXML Options
+:PROPERTIES:
+:CUSTOM_ID: section.outputs8
+:END:
+- =:FILENAME= :: This is a string representing the output filename. It
+  overrides the =FILENAME= setting if used.
+
+- =:XML-1NOTE-TREMOLO-KLUDGE= :: If set to =T=, indicates to insert a
+  =//= symbol wherever there is a single-note tremolo. The number of
+  slashes indicates the number of tremolo lines that would normally be
+  added to the note. The default is =NIL=.
+
+- =:XML-HARMONIC-KLUDGE= :: If set to =T=, FOMUS fudges an artificial
+  harmonic by changing the notehead to a diamond shape. This appears
+  correct when imported into Finale and Siblius, but doesn't make use of
+  the special XML tags reserved for specifying this type of harmonic (a
+  minor issue). The default is =NIL=.
+
+- =:XML-PARTGROUPS-KLUDGE= :: If set to =T=, parts are not grouped
+  together by brackets or braces. These must then be added manually once
+  the notation data has been imported. The default is =NIL=.
+
+- =:XML-MULTINOTE-TREMOLO-KLUDGE= :: If set to =T=, indicates to insert
+  a =//-= symbol wherever there is a multiple-note tremolo (such as
+  those sometimes found in piano scores). The number of slashes
+  indicates the number of tremolo beam-lines that would normally be
+  added to the beam or beams connecting the two notes or chords. The
+  default is =NIL=.
+
+** MusicXML for Sibelius
+:PROPERTIES:
+:CUSTOM_ID: section.outputs9
+:END:
+This is equivalent to the [[#musicxml][MusicXML]] output with "kludge"
+options set appropriately for Sibelius version 4. Use the
+=:MUSICXML-SIBELIUS= keyword in the =OUTPUT= setting for this.
+
+** MusicXML for Finale
+:PROPERTIES:
+:CUSTOM_ID: section.outputs10
+:END:
+This is equivalent to the [[#musicxml][MusicXML]] output with "kludge"
+options set appropriately for Finale. Use the =:MUSICXML-FINALE= keyword
+in the =OUTPUT= setting for this.
+
+** Common Music Notation
+:PROPERTIES:
+:CUSTOM_ID: section.outputs11
+:END:
+This backend produces files in Lisp syntax suitable for loading and
+processing with Common Music Notation. The =OUTPUT= setting for this is
+=:CMN=. A =.cmn= extension is added to the base filename to make the
+complete output filename. The file can be compiled and viewed
+automatically if CMN is loaded and an =.eps= file viewing application (a
+PostScript viewing application in Gnome or KDE or the Preview
+application in OS X) has been found or is specified by the user.
+
+# *** CMN Options
+# :PROPERTIES:
+# :CUSTOM_ID: section.outputs12
+# :END:
+# :FILENAME
+# :PROCESS
+# :VIEW
+# :SCORE-ATTR
+# :OUT-EXT
+# :VIEW-EXE
+# :VIEW-OPTS
+*** Alphabetical Listing of CMN Options
+:PROPERTIES:
+:CUSTOM_ID: section.outputs13
+:END:
+- =:FILENAME= :: This is a string representing the output filename. It
+  overrides the =FILENAME= setting if used.
+
+- =:OUT-EXT= :: This is a string specifying the extension for the output
+  filename that is created when the score file is loaded and CMN is
+  called. The default is ="eps"=.
+
+- =:PROCESS= :: If set to =T=, indicates that FOMUS should load the
+  score file and call CMN to process the output file once it's been
+  written. If set to =NIL=, only the output file is written and no
+  processing occurs (unless =VIEW= is set to =T=).
+
+- =:SCORE-ATTR= :: This is a list of extra CMN score attributes to be
+  inserted into the score file. The default is =NIL=.
+
+- =:VIEW= :: If set to =T=, indicates that FOMUS should load the score
+  file and call CMN to process the output file, then open the results
+  with a viewer program for immediate viewing. If set to =NIL=, no
+  viewer application is opened.
+
+- =:VIEW-EXE= :: This is a string specifying the path and filename to
+  the executable for the viewer application. The full pathname may or
+  may not need to be specified depending on the Lisp implementation. The
+  default application depends on what is installed on the user's
+  machine, and should be an application appropriate for viewing
+  PostScript or EPS files. This overrides the =CMN-VIEW-EXE= setting if
+  used.
+
+- =:VIEW-OPTS= :: This is a list of strings representing options to be
+  passed to the viewer application executable. It overrides the
+  =CMN-VIEW-OPTS= setting if used.
+
+** MIDI
+:PROPERTIES:
+:CUSTOM_ID: section.outputs14
+:END:
+This requires Common Music to output MIDI data. The purpose of this
+backend is to allow the user to hear the results after any changes and
+adjustments made to the music (for example, quantizing). It should not
+be used as input to a score notation program, since the output data will
+not precisely match the input data. FOMUS attempts to accurately
+simulate most of FOMUS's markings (trills, dynamic markings, etc.).
+Users can override how marks are interpretted by using the =EVENTS-FUN=
+option to provide their own instructions. Output can also be tweaked
+using most of the options listed below.
+
+See the =INSTR= and =PERC= structures for information on how to define
+MIDI data for FOMUS's instruments.
+
+MIDI output is be routed either to a file or to Common Music's realtime
+scheduler, the latter being advantageous if more than 16 channels are
+necessary (see the =PLAY= option). Also, the =CM-ARGS= option may be
+used to send Common Music specific arguments to its =EVENTS= or =RTS=
+function, whichever is used. FOMUS uses floating point velocity (or
+amplitude) values (0.0 to 1.0).
+
+# *** MIDI Options
+# :PROPERTIES:
+# :CUSTOM_ID: section.outputs15
+# :END:
+# :FILENAME
+# :MIDI-FILENAME
+# :PLAY
+# :CM-ARGS
+# :EVENTS-FUN
+# :DELAY
+# :NPORTS
+# :TEMPO
+# :ARPATT
+# :BREATH-DUR
+# :INSTR-PER-CH
+# :FERMATA-MULTS
+# :GRACE-DUR-SECS
+# :HARMATT
+# :MIN-AMP
+# :MINDUR-SECS
+# :PBEND-WIDTH
+# :PORTATO-MULT
+# :SLUR-ADDDUR
+# :STACCATISSIMO-MULT
+# :STACCATO-MULT
+# :TENUTO-ADDDUR
+# :TRAMP
+# :TRDUR-SECS
+# :TROVLP-ADDDUR
+# :MIDI-FILENAME
+*** Alphabetical Listing of MIDI Options
+:PROPERTIES:
+:CUSTOM_ID: section.outputs16
+:END:
+- =:arpatt= :: A real number from =0= to =1= specifying the amount of
+  attenuation to apply to arpeggios to make them sound more natural (a
+  crescendo is also added). The number is subtracted from the velocities
+  of the events.
+
+- =:breath-dur= :: A real number greater than =0= specifying the
+  duration in beats of a breath mark.
+
+- =:cm-args= :: This is a list of arguments that are sent to Common
+  Music's =EVENTS= or =RTS= function, whichever is used. FOMUS overrides
+  the =:TEMPO= and =:PLAY= keyword arguments to these functions.
+
+- =:delay= :: a real number greater than or equal to =0= specifying a
+  delay time in seconds to be inserted at the beginning of the MIDI file
+  or output (useful if the score takes several seconds to appear on the
+  screen).
+
+- =:events-fun= :: This options provides a way of overriding FOMUS's
+  default interpretation of marks into MIDI events. It is a function of
+  the form =(lambda (ev mark arg1 arg2) ...)=, where =ev= is either a
+  single Common Music =MIDI= object or a list of such objects, =mark= is
+  a keyword symbol specifying what modifications should occur, and
+  =arg1= and =arg2= are input arguments specific to each mark. The
+  function may either modify the =MIDI= event objects or create new ones
+  using Common Music functions (or return a mixture of both). The return
+  value is either a single =MIDI= object, a list of =MIDI= objects,
+  =NIL= or ='(NIL)=. Returning =NIL= indicates that FOMUS should use its
+  default function to interpret the mark. ='(NIL)= indicates that the
+  return value actually is an empty list of events (and that the default
+  function should not be called)--they will then be deleted from the
+  output.
+
+  The user should not worry about how multiple marks will affect either
+  other. For example, a note with both =:TREMOLO= and =:ACCENT= marks
+  will be passed to the user function first with the =:TREMOLO= keyword.
+  Next (assuming the user returned multiple =MIDI= events) only the
+  first note of the tremolo is passed to this function with the
+  =:accent= keyword. The user function should then only deal directly
+  with what it is given and allow FOMUS to handle the sorting out of
+  these details and applying them to the correct notes. Also, the
+  dynamic markings =:pppppp= through =:ffffff= are translated before any
+  other dynamics-related markings, so user code should set the
+  amplitudes of =midi= objects to some initial value in these cases.
+  Subsequent handling of other dynamics-related marks can then alter
+  MIDI amplitude values in whatever ways are appropriate.
+
+  Marks that are sent via the =mark= argument are listed here (with
+  =arg1= and =arg2= if appropriate). Marks beginning with =:span-=
+  accompany a list of events to modify and correspond to what are called
+  "spanner" marks in [[#marks]]. =:ffffff=, =:fffff=, =:ffff=, =:fff=,
+  =:ff=, =:f=, =:mf=, =:mp=, =:p=, =:pp=, =:ppp=, =:pppp=, =:ppppp=,
+  =:pppppp=, =:rfz=, =:sfz=, =:spp=, =:sp=, =:sff=, =:sf=, =:fp=,
+  =:staccato=, =:staccatissimo=, =:portato=, =:tenuto=, =:marcato=,
+  =:accent=, =:span-slur (arg1 is the slur level)=,
+  =:fermata (arg1 is either :short, :long or :verylong)=, =:breath=,
+  =:tremolo= (=arg1= is the number of tremolo subdivisions, =arg2= is
+  1/8 for eighth-note subdivions, 1/16 for sixteenths, etc.),
+  =:span-tremfirst= (=arg1= and =arg2= are the same as with =:tremolo=),
+  =:span-tremsecond= (=arg1= and =arg2= are the same as with
+  =:tremolo=), =:trill= (=arg1= is the additional trill pitch),
+  =:longtrill= (=arg1= is the additional trill pitch), =:prall= (=arg1=
+  is the additional prall pitch), =:mordent= (=arg1= is the additional
+  mordent pitch), =:span-arp= (=arg1= is either =:up=, =:down= or =nil=,
+  =arg2= is the offset of the previous note), =:span-port=,
+  =:span-gliss=, =:span-wedge<= (=arg1= is the destination amplitude or
+  velocity, =arg2= is the offset of the event following the last event
+  of the wedge), =:span-wedge>= (=arg1= and =arg2= are the same as with
+  =:span-wedge<=), =:harmonic= (=arg1= is either =:sounding= or
+  =:touched=, =arg2= is the sounding pitch in either case), =:arco=,
+  =:pizz=, =:stopped=, =:open=, =:flageolet=
+
+- =:fermata-mults= :: This is a list of three real numbers greater than
+  =0=, specifying how much to increase (by multiplying) the durations of
+  notes that have fermatas over them. The three values each correspond
+  to short, long and very long fermatas.
+
+- =:filename= :: this is a string representing the output filename. It
+  overrides the =FILENAME= setting if used.
+
+- =:grace-dur-secs= :: A real number greater than =0= specifying the
+  default MIDI grace note duration in seconds.
+
+- =:harmatt= :: A real number from =0= to =1= specifying the amount of
+  attenuation to apply to harmonics to make them sound closer to what is
+  expected. The number is subtracted from the velocities of the events.
+
+- =:instr-per-ch= :: When set to an integer value greater than or equal
+  to =1=, specifies how many parts with similar instruments (ie. with
+  equivalent MIDI program change values) are stuffed into one MIDI
+  channel or track. A value of =NIL= indicates that all parts with the
+  same program change indicated in their =INSTR= objects are to be put
+  into a single channel.
+
+- =:midi-filename= :: This is a part option (see the =PART= class). It
+  is a string representing a filename for a separate output file--FOMUS
+  fills this with MIDI data only for the part that it is specified in.
+  These strings are "merged" with =FILENAME= using Lisp's
+  =MERGE-PATHNAMES= function so that if a full path isn't specified it
+  appears in the same directory as [[#midi.filename][filename]]. Parts
+  with the same =midi-filename= are grouped together so that all of
+  their output is written to one file.
+
+- =:min-amp= :: A real number from =0= to =1= specifying a minimum
+  velocity value for all midi events.
+
+- =:mindur-secs= :: This real number specifies an absolute minimum
+  duration in seconds for all midi events.
+
+- =:nports= :: if realtime playback is specified using the =PLAY=
+  option, this integer value specifies the number of ports to use. The
+  default is =1=. If output is to a MIDI file, then this value will be
+  =1= regardless of what is specified.
+
+- =:pbend-width= :: This is equivalent to the =:PITCH-BEND-WIDTH= option
+  used when opening MIDI streams in Common Music. It is a real number
+  greater than =0=, specifying the maximum pitch bend range in semitones
+  used to calculate pitch bend values for quartertone playback. The
+  default is =2=.
+
+- =:play= :: If set to =NIL= or =T=, specifies that output is to a MIDI
+  file. =T= indicates that the output should be played automatically
+  (equivalent to sending =:PLAY T= to Common Music's =EVENTS= function).
+  If set to a Common Music MIDI stream, indicates that the =RTS=
+  function should be used and the MIDI events scheduled for realtime
+  playback.
+
+- =:portato-mult= :: A real number greater than =0= indicating the
+  amount to increase (by multiplying) the duration of MIDI events with
+  portato markings.
+
+- =:slur-adddur= :: A real number greater than or equal to =0=
+  indicating the amount of beats to add to the duration of slurred
+  events (causing them to overlap slightly).
+
+- =:staccatissimo-mult= :: A real number greater than =0= indicating the
+  amount to increase (by multiplying) the duration of MIDI events with
+  staccatissimo markings.
+
+- =:STACCATO-MULT= :: A real number greater than =0= indicating the
+  amount to increase (by multiplying) the duration of MIDI events with
+  staccato markings.
+
+- =:TEMPO= :: A real number greater than or equal to =0= specifying the
+  MIDI playback tempo.
+
+- =:TENUTO-ADDDUR= :: A real number greater than or equal to =0=
+  indicating the amount of beats to add to the duration of MIDI events
+  with tenuto markings.
+
+- =:TRAMP= :: A real number from =0= to =1= specifying the amount of
+  amplification to apply to MIDI events that are a part of a trill or
+  tremolo. The number is added to the velocities of the events.
+
+- =:TRDUR-SECS= :: A real number greater than =0= indicating the
+  duration in seconds of an individual MIDI event in a trill or tremolo.
+  (For tremolos it is the minimum duration of an individual MIDI event.)
+
+- =:TROVLP-ADDDUR= :: A real number greater than or equal to =0=
+  indicating the amount of beats to add to the duration of MIDI events
+  that are a part of a trill or tremolo.
+
+** CHUNK
+:PROPERTIES:
+:CUSTOM_ID: section.outputs17
+:END:
+(See [[#interface.chunks]].) This keyword tells FOMUS to process the
+input and output a chunk. Use it when there are no other backends
+specified (FOMUS complains otherwise). The =:NONE= keyword can also be
+used.
+
+* Initialization File
+:PROPERTIES:
+:CUSTOM_ID: init
+:END:
+All of FOMUS's default settings may be overridden using an
+initialization file that FOMUS looks for every time it loads. This file
+is named =.fomus= and must be created in the user's home directory. To
+specify default settings, simply list keyword/argument pairs as if they
+were keyword arguments to the =fomus= command.
+
+#+begin_example
+:output '((:data) (:lilypond :view t))
+
+:lilypond-exe "/usr/local/bin/lilypond"
+:lilypond-opts '("--ps")
+:lilypond-out-ext "ps"
+
+:lilypond-view-exe "/usr/bin/ggv"
+:cmn-view-exe "/usr/bin/ggv"
+
+:verbose 1
+:composer "David Psenicka"
+:min-tuplet-dur 1
+:max-tuplet 13
+:caut-acc-ottavas t
+      
+#+end_example
+
+* Examples
+:PROPERTIES:
+:CUSTOM_ID: examples
+:END:
+These examples (will eventually) show most of FOMUS's functionality and
+hopefully eliminate the need to spend countless hours figuring out
+settings, how to create objects, etc.. Examples using different
+interfaces (see [[#usage]]) are given. The images were all generated
+using LilyPond 2.8.
+
+** Lisp Examples
+:PROPERTIES:
+:CUSTOM_ID: section.examples2
+:END:
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+               :dur (if (< off 10) 1/2 1)
+               :note (+ 48 (random 25)))))))
+    
+#+end_src
+
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_simp_ex.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+               :dur (if (< off 10) 1/2 1)
+               :note (+ 48 (random 25))
+               :marks (case (random 3)
+                (0 nil)
+                (1 '(:staccato))
+                (2 '(:accent))))))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_accents.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :quartertones t
+ :parts
+ (list
+  (make-part
+   :name "Flute"
+   :instr :flute
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+               :dur (if (< off 10) 1/2 1)
+               :note (+ 70 (/ (random 4) 2)))))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_qtones.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :verbose 1
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop for v from 1 to 2
+     nconc (loop
+        for off from 0 to 10 by 1/2
+        collect (make-note :off off
+                   :dur (if (< off 10) 1/2 1)
+                   :note (+ 60 (random 25))
+                   :voice v
+                   :marks (when (= (random 3) 0)
+                        '(:startslur-))))))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_poly_slurs.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :verbose 1
+ :ensemble-type :orchestra
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop repeat 3
+     nconc (loop
+        for off from 0 to 10 by 1/2
+        collect (make-note :off off
+                   :dur (if (< off 10) 1/2 1)
+                   :note (+ 48 (random 25))
+                   :voice '(1 2)))))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_pno_chords.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop repeat 10
+     for off = (random 30.0)
+     and dur = (1+ (random 3.0))
+     collect (make-note :off off :dur dur :note (+ 60 (random 25)))))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_chords.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+     (make-part
+      :partid :flute
+      :name "Flute"
+      :instr :flute
+      :events (loop for o from 0 to 20 by 1/2
+            collect (make-note :off o :dur 1/2 :note 72)))
+     (make-part
+      :partid :tuba
+      :name "Tuba"
+      :instr :tuba
+      :events (loop for o from 0 to 20 by 1/2
+            collect (make-note :off o :dur 1/2 :note 48))))
+ :events (loop repeat 10
+           collect (make-mark :partid (case (random 2) (0 :flute) (1 :tuba))
+                  :off (random 20.0)
+                  :marks '(:accent))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_mark_objs.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+     (make-part
+      :name "Percussion"
+      :instr (list :percussion :percs (list (make-perc :woodblock :note 'e4)
+                        (make-perc :snaredrum :note 'a3)))
+      :events (loop for o from 0 to 20 by 1/2 collect
+            (make-note :off o :dur 1/2
+                   :note (case (random 2)
+                       (0 :woodblock)
+                       (1 :snaredrum)))))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_perc1.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+     (make-part
+      :name "Percussion"
+      :instr (list :percussion :percs (list (make-perc :woodblock :voice 1 :note 'e4)
+                        (make-perc :snaredrum :voice 2 :note 'a3)))
+      :events (loop for o from 0 to 20 by 1/2 collect
+            (make-note :off o :dur 1/2
+                   :note (case (random 2)
+                       (0 :woodblock)
+                       (1 :snaredrum)))))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_perc2.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+     (make-part
+      :name "Snare Drum"
+      :instr '(:percussion :percs ((:snare-drum :note a3)))
+      :events (loop for o from 0 to 40 by 1/2 when (= (random 2) 0) collect
+            (make-note :off o
+                   :note :snare-drum)))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_perc_autodurs.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :ensemble-type :orchestra
+ :global (list (make-timesig :off 0 :time '(3 4)))
+ :parts (list
+     (make-part
+      :name "Flute 1"
+      :instr :flute
+      :events (list (make-note :off 0 :dur 1 :note 60)))
+     (make-part
+      :partid 'fl2
+      :name "Flute 2"
+      :instr :flute
+      :events (list (make-note :off 0 :dur 1 :note 60)))
+     (make-part
+      :partid 'cl1
+      :name "Clarinet 1"
+      :instr :bf-clarinet
+      :events (list (make-note :off 0 :dur 1 :note 60)))
+     (make-part
+      :name "Clarinet 2"
+      :instr :bf-clarinet
+      :events (list (make-note :off 0 :dur 1 :note 60)))
+     (make-part
+      :name "Violin 1"
+      :instr :violin
+      :events (list (make-note :off 0 :dur 1 :note 60)))
+     (make-part
+      :name "Violin 2"
+      :instr :violin
+      :events (list (make-note :off 0 :dur 1 :note 60)))
+     (make-part
+      :name "Cello 1"
+      :instr :cello
+      :events (list (make-note :off 0 :dur 1 :note 48)))
+     (make-part
+      :name "Cello 2"
+      :instr :cello
+      :events (list (make-note :off 0 :dur 1 :note 48)))
+     (make-part
+      :name "Tuba"
+      :instr :tuba
+      :events (list (make-note :off 0 :dur 1 :note 36)))))
+    
+#+end_src
+
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/:ex_orch_sco.jpg]]
+
+#+begin_src lisp
+(fomus
+ :output '(:lilypond :view t)
+ :filename "test.xxx"
+ :verbose 1
+ :global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1) :props '((:keysig :dmaj))))
+ :auto-cautionary-accs t
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr '(:piano :simultlim 1)
+   :events
+   (loop
+    for off from 0 to 8 by 1/2
+    collect (make-note :off off
+               :dur (if (< off 10) 1/2 1)
+               :note (+ 48 (random 25)))))))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_keysigs1.jpg]]
+
+#+begin_src lisp
+(let ((c1 (fomus
+       :output :chunk
+       :global (list (make-timesig :off 0 :time '(5 8)))
+       :auto-cautionary-accs t
+       :parts
+       (list
+        (make-part
+         :partid 'hp                ; identical ids are matched
+         :name "Harpsichord"
+         :instr :harpsichord
+         :events
+         (loop
+          for off from 0 to 8 by 1/2
+          collect (make-note :off off
+                 :dur (if (< off 8) 1/2 1)
+                 :note (+ 48 (random 25))))))))
+      (c2 (fomus
+       :output :chunk
+       :global (list (make-timesig :off 0 :time '(5 8)))
+       :auto-cautionary-accs t
+       :parts
+       (list
+        (make-part
+         :partid 'hp
+         :name "Harpsichord"
+         :instr :harpsichord
+         :events
+         (loop
+          for off from 10 to 16 by 1/2
+          collect (make-note :off off
+                 :dur (if (< off 16) 1/2 1)
+                 :note (+ 48 (random 25)))))))))
+  (fomus (list c1 c2)
+     :output '(:lilypond :view t)))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/file:ex_chunks1.jpg]]
+
+** Common Music Examples
+:PROPERTIES:
+:CUSTOM_ID: section.examples3
+:END:
+#+begin_src lisp
+(defparameter *part* (new fms:part :instr :piano :partid 'pno))
+
+(defun polygen (voice len minp maxp)
+  (process repeat len
+       output (new fms:note
+            :off (now)
+            :voice voice
+            :partid 'pno
+            :note (between minp maxp)
+            :dur 1/2)
+       wait 1/2))
+
+(events (list (polygen 1 20 60 80) (polygen 2 20 40 60)) "/tmp/fomus.ly" :parts *part* :view t)
+
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_cm_poly1.jpg]]
+
+#+begin_src lisp
+(defparameter *part* (new fms:part :instr '(:piano :simultlim 1) :partid 'pno))
+
+(defun polygen (voice len minp maxp)
+  (process repeat len
+       output (new fms:note
+            :off (now)
+            :voice voice
+            :partid 'pno
+            :note (between minp maxp)
+            :dur 1/2)
+       wait 1/2))
+
+(events (list (polygen '(1 2) 20 50 80) (polygen '(1 2) 20 40 70)) "/tmp/fomus.ly" :parts *part* :view t)
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_cm_poly2.jpg]]
+
+#+begin_src lisp
+(defparameter *part* (new fms:part :instr '(:piano :simultlim 1) :partid 'pno))
+
+(defun polygen (voice len minp maxp)
+  (process repeat len
+       output (new fms:note
+            :off (now)
+            :voice voice
+            :partid 'pno
+            :note (between minp maxp)
+            :dur 1/2)
+       wait 1/2))
+
+(events (list (polygen '(1 2 3) 20 50 70) (polygen '(1 2 3) 20 50 70) (polygen '(1 2 3) 20 50 70))
+    "/tmp/fomus.ly" :parts *part* :view t)
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_cm_poly3pt.jpg]]
+
+#+begin_src lisp
+(defparameter *parts*
+  (list (new fms:part :name "Violin 1" :instr :violin :partid 'vlns
+         :props '((:distr (v2 2) (v3 3) (v4 4) (v5 5) (v6 6))))
+    (new fms:part :name "Violin 2" :instr :violin :partid 'v2)
+    (new fms:part :name "Violin 3" :instr :violin :partid 'v3)
+    (new fms:part :name "Violin 4" :instr :violin :partid 'v4)
+    (new fms:part :name "Violin 5" :instr :violin :partid 'v5)
+    (new fms:part :name "Violin 6" :instr :violin :partid 'v6)))
+
+(defun polygen (voice len minp maxp)
+  (process repeat len
+       output (new fms:note
+            :off (now)
+            :voice voice
+            :partid 'vlns
+            :note (between minp maxp)
+            :dur 1/2)
+       wait 1/2))
+
+(events (list (polygen '(1 2 3 4 5 6) 20 55 70)
+          (polygen '(1 2 3 4 5 6) 20 60 75)
+          (polygen '(1 2 3 4 5 6) 20 65 80)
+          (polygen '(1 2 3 4 5 6) 20 70 85)
+          (polygen '(1 2 3 4 5 6) 20 75 90)
+          (polygen '(1 2 3 4 5 6) 20 80 95))
+    "/tmp/fomus.ly" :parts *parts* :quality 3 :view t)
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_cm_poly6pt.jpg]]
+
+** Text Input File Examples
+:PROPERTIES:
+:CUSTOM_ID: examples.textinput
+:END:
+Any of the following may be reproduced by saving the example to a file
+and using the so-called text file or command line interface to process
+it (see [[#interface.text]] and [[#interface.cmd]] for more
+information). When an output isn't specified in the file, this must be
+given in the Lisp function call or at the command line. Some examples
+are:
+
+#+begin_src lisp
+(fomus "/directory/file.fms") ; use values in file
+
+(fomus "/directory/file.fms" :output :musicxml) ; output to MusicXML format
+
+(fomus "/directory/file.fms" :output '(:lilypond :view t)) ; output to LilyPond and open for viewing
+    
+#+end_src
+
+#+begin_src lisp
+# print help message
+fomus -h
+
+# use values in file
+fomus /directory/file.fms
+
+# output to MusicXML
+fomus -x /directory/file.fms
+
+# output to LilyPond and open for viewing
+fomus -lw /directory/file.fms
+    
+#+end_src
+
+#+begin_src lisp
+INIT :output :lilypond
+INIT :filename "/mydir/output"
+
+PART 1 :name "Piano" :instr :piano
+
+NOTE 1 :voice 1 :off 0 :dur 1/2 :note 54
+NOTE 1 :voice 1 :off 1/2 :dur 1/2 :note 60
+NOTE 1 :voice 1 :off 1 :dur 1/2 :note 51
+NOTE 1 :voice 1 :off 3/2 :dur 1/2 :note 61
+NOTE 1 :voice 1 :off 2 :dur 1/2 :note 61
+NOTE 1 :voice 1 :off 5/2 :dur 1/2 :note 61
+NOTE 1 :voice 1 :off 3 :dur 1/2 :note 58
+NOTE 1 :voice 1 :off 7/2 :dur 1/2 :note 65
+NOTE 1 :voice 1 :off 4 :dur 1/2 :note 65
+NOTE 1 :voice 1 :off 9/2 :dur 1/2 :note 58
+NOTE 1 :voice 1 :off 5 :dur 1/2 :note 56
+NOTE 1 :voice 1 :off 11/2 :dur 1/2 :note 50
+NOTE 1 :voice 1 :off 6 :dur 1/2 :note 65
+NOTE 1 :voice 1 :off 13/2 :dur 1/2 :note 62
+NOTE 1 :voice 1 :off 7 :dur 1/2 :note 55
+NOTE 1 :voice 1 :off 15/2 :dur 1/2 :note 49
+NOTE 1 :voice 1 :off 8 :dur 1/2 :note 70
+NOTE 1 :voice 1 :off 17/2 :dur 1/2 :note 72
+NOTE 1 :voice 1 :off 9 :dur 1/2 :note 62
+NOTE 1 :voice 1 :off 19/2 :dur 1/2 :note 54
+NOTE 1 :voice 1 :off 10 :dur 1 :note 68
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_txt_simp_ex.jpg]]
+
+#+begin_src lisp
+INIT :output (:lilypond :view t)
+INIT :filename "/tmp/output"
+
+PART 1 :name "Piano" :instr :piano
+
+NOTE 1 :voice 1 :off 0 :dur 0.5 :note 53 :marks (:staccato)
+NOTE 1 :voice 1 :off 0.5 :dur 0.5 :note 53 :marks (:accent)
+NOTE 1 :voice 1 :off 1 :dur 0.5 :note 55 :marks (:staccato)
+NOTE 1 :voice 1 :off 1.5 :dur 0.5 :note 62
+NOTE 1 :voice 1 :off 2 :dur 0.5 :note 49
+NOTE 1 :voice 1 :off 2.5 :dur 0.5 :note 50
+NOTE 1 :voice 1 :off 3 :dur 0.5 :note 52 :marks (:staccato)
+NOTE 1 :voice 1 :off 3.5 :dur 0.5 :note 61
+
+NOTE 1 :voice 1 :off 4 :dur 0.5 :note 57
+NOTE 1 :voice 1 :off 4.5 :dur 0.5 :note 63
+NOTE 1 :voice 1 :off 5 :dur 0.5 :note 61 :marks (:staccato)
+NOTE 1 :voice 1 :off 5.5 :dur 0.5 :note 72 :marks (:staccato)
+NOTE 1 :voice 1 :off 6 :dur 0.5 :note 51
+NOTE 1 :voice 1 :off 6.5 :dur 0.5 :note 58
+NOTE 1 :voice 1 :off 7 :dur 0.5 :note 51
+NOTE 1 :voice 1 :off 7.5 :dur 0.5 :note 70 :marks (:accent)
+
+NOTE 1 :voice 1 :off 8 :dur 0.5 :note 52 :marks (:staccato)
+NOTE 1 :voice 1 :off 8.5 :dur 0.5 :note 59 :marks (:accent)
+NOTE 1 :voice 1 :off 9 :dur 0.5 :note 54 :marks (:staccato)
+NOTE 1 :voice 1 :off 9.5 :dur 0.5 :note 68
+NOTE 1 :voice 1 :off 10 :dur 1 :note 48 :marks (:staccato)
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_txt_accents.jpg]]
+
+#+begin_src lisp
+PART prc :name "Percussion" :instr (:percussion :percs ((MAKE-PERC :sym :woodblock :staff 1 :voice 1 :note e4 :autodur t :midinote-im nil :midinote-ex nil) \
+                                                        (MAKE-PERC :sym :snaredrum :staff 1 :voice 1 :note a3 :autodur t :midinote-im nil :midinote-ex nil)))
+
+NOTE prc :voice 1 :off 0 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 1/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 1 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 3/2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 5/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 3 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 7/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 4 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 9/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 5 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 11/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 6 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 13/2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 7 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 15/2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 8 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 17/2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 9 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 19/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 10 :dur 1/2 :note :snaredrum
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_txt_perc.jpg]]
+
+#+begin_src lisp
+;; Example by Rob Canning
+
+init :output (:lilypond :view t)
+
+part 1 :name "Piano" :instr :piano
+(note 1 :off 0 :dur 0.25 :note 82 :marks (:ignore))
+(note 1 :off 0.25 :dur 0.25 :note 87 :marks (:ignore))
+(note 1 :off 0.5 :dur 0.25 :note 48 :marks (:staccato))
+(note 1 :off 0.75 :dur 0.25 :note 76 :marks (:ignore))
+(note 1 :off 1 :dur 0.25 :note 83 :marks (:marcato))
+(note 1 :off 1.25 :dur 0.25 :note 51 :marks (:accent))
+(note 1 :off 1.5 :dur 0.25 :note 82 :marks (:ignore))
+(note 1 :off 1.75 :dur 0.25 :note 76 :marks (:endslur- (:fermata)))
+(note 1 :off 2 :dur 0.5 :note 57 :marks (:ignore))
+(note 1 :off 2.5 :dur 0.25 :note 45 :marks (:portato))
+(note 1 :off 2.75 :dur 0.25 :note 50 :marks (:marcato))
+(note 1 :off 3 :dur 0.25 :note 36 :marks (:ignore))
+(note 1 :off 3.25 :dur 0.25 :note 51 :marks (:accent))
+(note 1 :off 3.5 :dur 0.25 :note 46 :marks (:ignore))
+(note 1 :off 3.75 :dur 0.25 :note 51 :marks (:ignore))
+(note 1 :off 4 :dur 0.25 :note 79 :marks (:staccato))
+(note 1 :off 4.25 :dur 8 :note 40 :marks (:startslur- (:textnote "id=479")))
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_canning.jpg]]
+
+#+begin_src lisp
+PART p1 :name "Perc" \
+        :instr (:percussion :percs ((:snare-drum :note a3) \
+                                    (:low-wood-block :note e4) (:high-wood-block :note g4) \
+                                    (MAKE-PERC :rim-shot :staff 1 :voice 1 :note c4 :autodur t :midinote-im nil :midinote-ex 40))) \
+        :opts (:midi-filename "part1")
+
+NOTE p1 :voice 1 :off 1 :dur (1/2 -100) :note :snare-drum
+NOTE p1 :voice 1 :off 1 :dur 1/2 :note :snare-drum :marks (:sf :accent)
+NOTE p1 :voice 1 :off 5/2 :dur 1/2 :note :snare-drum :marks (:p)
+NOTE p1 :voice 1 :off 4 :dur 1/2 :note :snare-drum
+NOTE p1 :voice 1 :off 11/2 :dur 1/2 :note :snare-drum
+NOTE p1 :voice 1 :off 6 :dur 1/2 :note :snare-drum :marks (:sf :accent)
+NOTE p1 :voice 1 :off 15/2 :dur 1/2 :note :snare-drum
+NOTE p1 :voice 1 :off 8 :dur 1/2 :note :snare-drum :marks (:sf :accent)
+NOTE p1 :voice 1 :off 17/2 :dur 1/2 :note :snare-drum
+
+NOTE p1 :voice 1 :off 10 :dur (1/2 -100) :note :high-wood-block
+NOTE p1 :voice 1 :off 10 :dur 1/2 :note :low-wood-block
+NOTE p1 :voice 1 :off 10.5 :dur 1/2 :note :low-wood-block
+NOTE p1 :voice 1 :off 11 :dur 1/2 :note :low-wood-block
+NOTE p1 :voice 1 :off 11.5 :dur 1/2 :note :low-wood-block
+NOTE p1 :voice 1 :off 12 :dur 1/2 :note :high-wood-block :marks (:sf :accent)
+NOTE p1 :voice 1 :off 12.5 :dur 1/2 :note :low-wood-block
+NOTE p1 :voice 1 :off 13 :dur 1/2 :note :low-wood-block
+NOTE p1 :voice 1 :off 13.5 :dur 1/2 :note :low-wood-block
+NOTE p1 :voice 1 :off 14 :dur 1/2 :note :low-wood-block
+    
+#+end_src
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_percfile.jpg]]
+
+#+begin_src lisp
+INIT :output '(:lilypond :view t)
+INIT :filename "overser"
+INIT :quartertones t
+
+PART h :name nil :instr :piano
+
+TIMESIG :off 0 :time (20 4)
+NOTE h :voice 1 :off 0 :dur 1 :note 42.999996
+NOTE h :voice 1 :off 1 :dur 1 :note 54.999996
+NOTE h :voice 1 :off 2 :dur 1 :note 62.019547
+NOTE h :voice 1 :off 3 :dur 1 :note 67.0
+NOTE h :voice 1 :off 4 :dur 1 :note 70.86313
+NOTE h :voice 1 :off 5 :dur 1 :note 74.01955
+NOTE h :voice 1 :off 6 :dur 1 :note 76.688255
+NOTE h :voice 1 :off 7 :dur 1 :note 79.0
+NOTE h :voice 1 :off 8 :dur 1 :note 81.03909
+NOTE h :voice 1 :off 9 :dur 1 :note 82.86313
+NOTE h :voice 1 :off 10 :dur 1 :note 84.513176
+NOTE h :voice 1 :off 11 :dur 1 :note 86.01955
+NOTE h :voice 1 :off 12 :dur 1 :note 87.40528
+NOTE h :voice 1 :off 13 :dur 1 :note 88.68826
+NOTE h :voice 1 :off 14 :dur 1 :note 89.88269
+NOTE h :voice 1 :off 15 :dur 1 :note 91.0
+NOTE h :voice 1 :off 16 :dur 1 :note 92.04956
+NOTE h :voice 1 :off 17 :dur 1 :note 93.03909
+NOTE h :voice 1 :off 18 :dur 1 :note 93.97514
+NOTE h :voice 1 :off 19 :dur 1 :note 94.86313
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_overser.jpg]]
+
+#+begin_src lisp
+INIT :output '(:lilypond :view t)
+INIT :filename "marks1"
+
+PART h :name nil :instr :piano
+
+TIMESIG :off 0 :time (5 4)
+NOTE h :voice 1 :off 0 :dur 1 :note 50 :marks (:IGNORE)
+NOTE h :voice 1 :off 1 :dur 1 :note 51 :marks (:STACCATO)
+NOTE h :voice 1 :off 2 :dur 1 :note 52 :marks (:MARCATO)
+NOTE h :voice 1 :off 3 :dur 1 :note 53 :marks (:STACCATISSIMO)
+NOTE h :voice 1 :off 4 :dur 1 :note 54 :marks (:ACCENT)
+NOTE h :voice 1 :off 5 :dur 1 :note 55 :marks (:TENUTO)
+NOTE h :voice 1 :off 6 :dur 1 :note 56 :marks (:PORTATO)
+NOTE h :voice 1 :off 7 :dur 1 :note 57 :marks (:STARTSLUR-)
+NOTE h :voice 1 :off 8 :dur 1 :note 58 :marks (:ENDSLUR-)
+NOTE h :voice 1 :off 9 :dur 1 :note 59 :marks (:P)
+NOTE h :voice 1 :off 10 :dur 1 :note 60 :marks (:F :MARCATO)
+NOTE h :voice 1 :off 11 :dur 1 :note 61 :marks (:SF :ACCENT)
+NOTE h :voice 1 :off 12 :dur 1 :note 62 :marks (:STARTWEDGE>)
+NOTE h :voice 1 :off 13 :dur 1 :note 63
+NOTE h :voice 1 :off 14 :dur 1 :note 64 :marks (:ENDWEDGE> :P)
+NOTE h :voice 1 :off 15 :dur 1 :note 65 :marks (:PIZZ)
+NOTE h :voice 1 :off 16 :dur 1 :note 66 
+NOTE h :voice 1 :off 17 :dur 1 :note 67 :marks (:MORDENT)
+NOTE h :voice 1 :off 18 :dur 1 :note 68 :marks ((:TRILL 70))
+NOTE h :voice 1 :off 19 :dur 1 :note 69 :marks (:FERMATA)
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_marksfile1.jpg]]
+
+#+begin_src lisp
+INIT :output '(:lilypond :view t)
+INIT :filename "marks2"
+
+PART z :name nil :instr :piano
+
+TIMESIG :off 0 :time (5 4)
+NOTE z :voice 1 :off 0 :dur 2 :note 50 :marks (:tremolo)
+NOTE z :voice 1 :off 2 :dur 2 :note 52 :marks ((:tremolo 1/2))
+NOTE z :voice 1 :off 5 :dur 1 :note 55 :marks ((:glissando :after))
+NOTE z :voice 1 :off 6 :dur 1 :note 56
+NOTE z :voice 1 :off 7 :dur 1 :note 57 :marks ((:breath :after))
+NOTE z :voice 1 :off 8 :dur 1 :note 58 :marks ((:notehead :x))
+NOTE z :voice 1 :off 9 :dur 1 :note 59 :marks ((:textnote ":("))
+NOTE z :voice 1 :off 10 :dur 1 :note 60 :marks ((:textnote ":)"))
+NOTE z :voice 1 :off 11 :dur 1 :note 61 :marks ((:textnote "L.H."))
+NOTE z :voice 1 :off 12 :dur 1 :note 62 :marks ((:textdyn "pppppppppp"))
+NOTE z :voice 1 :off 13 :dur 1 :note 63
+NOTE z :voice 1 :off 14 :dur 1 :note 64 :marks ((:texttempo "Fast"))
+NOTE z :voice 1 :off 15 :dur 1 :note 65 
+NOTE z :voice 1 :off 16 :dur 1 :note 66 :marks ((:starttext- "rit." :up))
+NOTE z :voice 1 :off 17 :dur 1 :note 67
+NOTE z :voice 1 :off 18 :dur 1 :note 68
+NOTE z :voice 1 :off 19 :dur 1 :note 69 :marks (:endtext-)
+    
+#+end_src
+
+#+attr_html: :width 80%
+#+CAPTION: Example
+[[./img/ex_marksfile2.jpg]]

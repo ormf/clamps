@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-23 Fr 16:21 -->
+<!-- 2024-08-24 Sa 20:55 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Dictionary</title>
@@ -55,7 +55,6 @@
 <ul class="ul-toc-level-2">
 <li class="toc-hidden toc-level-2"><a href="f.html"class="toc-entry">ftom</a></li>
 <li class="toc-hidden toc-level-2"><a href="fr2ct.html"class="toc-entry">fr2ct</a></li>
-<li class="toc-hidden toc-level-2"><a href="fredrik.html"class="toc-entry">fredrik</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="g-h.html"class="toc-entry">G - H</a>
@@ -156,9 +155,9 @@
 <header>
 <h1 class="title">Clamps Dictionary</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="list-sfz-presets.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-org1db407c" class="outline-3">
-<h3 id="org1db407c">load-sfz-preset</h3>
-<div class="outline-text-3" id="text-org1db407c">
+<div id="page-text-body"><div id="outline-container-orga6db549" class="outline-3">
+<h3 id="orga6db549">load-sfz-preset</h3>
+<div class="outline-text-3" id="text-orga6db549">
 <p>
 Function
 </p>
@@ -172,12 +171,12 @@ Load a sfz file into a preset with the id name. In case this preset
 already exists, the old one will only be overwritten if force is
 set to t. This function normally doesn't need to be called
 explicitely. The preferred mechanism to deal with sfz presets is by
-using a combination of <a href="add-sfz-preset.html#orgf849b35">add-sfz-preset</a> and <a href="e.html#org1cf6aef">ensure-sfz-preset</a>.
+using a combination of <a href="add-sfz-preset.html#org9f84849">add-sfz-preset</a> and <a href="e.html#orga01969e">ensure-sfz-preset</a>.
 </p>
 </div>
-<div id="outline-container-org9d9acce" class="outline-4">
-<h4 id="org9d9acce">Arguments</h4>
-<div class="outline-text-4" id="text-org9d9acce">
+<div id="outline-container-orgabc5208" class="outline-4">
+<h4 id="orgabc5208">Arguments</h4>
+<div class="outline-text-4" id="text-orgabc5208">
 <p>
 <code>file</code> Path or filename of the sfz file to load
 </p>
@@ -198,7 +197,7 @@ are
 
 <ul class="org-ul">
 <li><p>
-<a href="play-sfz-loop.html#org0820766">#'play-sfz-loop</a>
+<a href="play-sfz-loop.html#org874d3f4">#'play-sfz-loop</a>
 </p>
 
 <p>
@@ -208,7 +207,7 @@ the whole sample.
 </p></li>
 
 <li><p>
-<a href="play-sfz-one-shot.html#org889aa99">#'play-sfz-one-shot</a>
+<a href="play-sfz-one-shot.html#orge166e6c">#'play-sfz-one-shot</a>
 </p>
 
 <p>
@@ -217,31 +216,31 @@ Just play sample once even if duration exceeds sample length.
 </ul>
 </div>
 </div>
-<div id="outline-container-org6181a57" class="outline-4">
-<h4 id="org6181a57">Example</h4>
-<div class="outline-text-4" id="text-org6181a57">
+<div id="outline-container-org2001e03" class="outline-4">
+<h4 id="org2001e03">Example</h4>
+<div class="outline-text-4" id="text-org2001e03">
 <div class="org-src-container">
 <pre class="src src-lisp"><span style="color: #ffff00;">(</span>load-sfz-preset <span style="color: #87cefa;">"~/quicklisp/local-projects/clamps/packages/cl-sfz/snd/sfz/Flute-nv/000_Flute-nv.sfz"</span> <span style="color: #7fffd4;">:flute-nv</span><span style="color: #ffff00;">)</span>
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org3259ca6" class="outline-4">
-<h4 id="org3259ca6">See also</h4>
-<div class="outline-text-4" id="text-org3259ca6">
+<div id="outline-container-orge5d4f1b" class="outline-4">
+<h4 id="orge5d4f1b">See also</h4>
+<div class="outline-text-4" id="text-orge5d4f1b">
 <ul class="org-ul">
-<li><a href="add-sfz-preset.html#orgf849b35">add-sfz-preset</a></li>
+<li><a href="add-sfz-preset.html#org9f84849">add-sfz-preset</a></li>
 
-<li><a href="e.html#org1cf6aef">ensure-sfz-preset</a></li>
+<li><a href="e.html#orga01969e">ensure-sfz-preset</a></li>
 
-<li><a href="remove-sfz-preset.html#org8ae2f68">remove-sfz-preset</a></li>
+<li><a href="remove-sfz-preset.html#org1b61ca6">remove-sfz-preset</a></li>
 </ul>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Orm Finnendahl</p>
-<p class="date">Created: 2024-08-23 Fr 16:21</p>
+<p class="date">Created: 2024-08-24 Sa 20:55</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </div><nav id="nav-right"><a href="logger-level.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>

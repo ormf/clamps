@@ -432,7 +432,7 @@ code {
 }
 
 .toc-level-2 .toc-entry {
-    color: #3e6bae;
+    color: var(--anchor-toc);
     pointer-events: auto;
 }
 

@@ -103,8 +103,7 @@ header {
     display: grid; /* direct childs haben normalen Seitenfluss */
     grid-template-rows: 1fr;
     grid-template-columns: 25em 1fr;
-    grid-template-areas: 
-                         "nav content";
+    grid-template-areas: "nav content";
 }
 
 #table-of-contents {
@@ -327,8 +326,14 @@ pre {
   color: var(--code-text);
 }
 
+figure {
+    padding-left: 0.8em;
+    background: white;
+    color: #333;
+}
 img {
-    background: var(--img-background);
+    margin: 1em;
+    background: grey;
 }
 
 .outline-4, .outline-3, .outline-2, .outline-1 {
@@ -435,7 +440,7 @@ code {
 
 .toc-level-2 .toc-entry {
     margin-top: 0em;
-    color: #3e6bae;
+    color: var(--anchor-toc);
     pointer-events: auto;
 }
 

@@ -17,7 +17,7 @@
 
 <p>
 <p>
-Implements <a href="http://common-lisp.net/project/fomus/">Fomus</a>
+Implements <a href="http://common-lisp.net/project/fomus/" target="_top" >Fomus</a>
 manuscript output
 to <a
 href="http://www.lilypond.org/web/">Lilypond</a>, <a
@@ -26,12 +26,12 @@ files. This class is automatically chosen when you specify a file with
 a .ly, .xml or .dat extension.  To work with Fomus, load it and then
 compute scores
 using <a
-href="http://common-lisp.net/project/fomus/doc/ch04.html">Fomus
+href="../fomus/05_00_00_objects.html" target="_top">Fomus
 objects</a>. Use the package prefix <code>fms</code> to reference
 Fomus symbols, for
 example <a
-href="http://common-lisp.net/project/fomus/doc/ch04s02.html">fms:part</a>, <a
-href="http://common-lisp.net/project/fomus/doc/ch04s06.html">fms:note</a>,
+href="../fomus/05_01_00_class-part.html" target="_top">fms:part</a>, <a
+href="../fomus/05_05_00_class-note.html" target="_top">fms:note</a>,
 etc.
 </p>
 
@@ -46,7 +46,7 @@ etc.
 <dd>
 The list
 of <a
-href="file:///Users/hkt/Desktop/fomusdoc/ch04s02.html">fms:part</a>
+href="../fomus/05_01_00_class-part.html" target="_top">fms:part</a>
 objects defining the musical parts to be included in the score.
 </dd>
 
@@ -56,8 +56,9 @@ objects defining the musical parts to be included in the score.
 <dd>
 A list
 of <a
-href="http://common-lisp.net/project/fomus/doc/ch05s03.html#setting.global">global</a>
-score objects such as <a href="http://common-lisp.net/project/fomus/doc/ch04s03.html">time signatures</a> and <a href="http://common-lisp.net/project/fomus/doc/ch04s05.html">key signatures</a>.
+href="../fomus/06_02_03_global.html" target="_top">global</a>
+score objects such as <a href="../fomus/05_02_00_class-timesig.html" target="_top">time signatures</a> and
+<a href="../fomus/05_04_00_class-keysig.html" target="_top">key signatures</a>.
 </dd>
 
 <dt>
@@ -69,11 +70,12 @@ computed file, otherwise it will not. The default value is false.</dd>
 
 <p>
 In addition to the initializations listed above,
-all <a href="http://common-lisp.net/project/fomus/doc/ch05.html">Fomus
-keyword settings</a> are also available as keyword initializations
+all <a href="../fomus/06_00_00_settings.html" target="_top">Fomus keyword settings</a> are
+also available as keyword initializations
 to <code>fomus-file</code>. There are lots of these Fomus manuscript
-settings to keep track of, the function <code>fms:list-fomus-settings</code> will
-be particularly helpful in this regard.
+settings to keep track of, the
+function <code>fms:list-fomus-settings</code> will be particularly
+helpful in this regard.
 </p>
 
 <h4>Examples:</h4>

@@ -15,6 +15,11 @@
                          :export #'org-overview-export
                          :store #'org-overview-store-link)
 
+(org-link-set-parameters "fomus"
+                         :follow #'org-fomus-open
+                         :export #'org-fomus-export
+                         :store #'org-fomus-store-link)
+
 (defcustom org-dict-command 'man
   "The Emacs command to be used to display a man page."
   :group 'org-link
@@ -118,6 +123,43 @@ PATH should be a topic that can be thrown at the man command."
                       (car
                        (symbol-value
                         (intern-soft link *clamps-overview-symbols*)))))
+        (desc (or description link)))
+    (pcase format
+      (`html (format "<a href=\"%s\">%s</a>" path desc))
+      (`latex (format "\\href{%s}{%s}" path desc))
+      (`texinfo (format "@uref{%s,%s}" path desc))
+      (`ascii (format "%s (%s)" desc path))
+      (_ path))))
+
+(defcustom org-fomus-command 'man
+  "The Emacs command to be used to display a man page."
+  :group 'org-link
+  :type '(choice (const man) (const woman)))
+
+(defun org-fomus-open (path _)
+  "Visit the manpage on PATH.
+PATH should be a topic that can be thrown at the man command."
+  (funcall org-fomus-command path))
+
+(defun org-fomus-store-link (&optional _interactive?)
+  "Store a link to a man page."
+  (when (memq major-mode '(Man-mode woman-mode))
+    ;; This is a man page, we do make this link.
+    (let* ((page (org-man-get-page-name))
+           (link (concat "fomus:" page))
+           (description (format "Link to clamps fomus page for %s" page)))
+      (org-link-store-props
+       :type "fomus"
+       :link link
+       :description description))))
+
+(defun org-fomus-export (link description format _)
+  "Export a clamps fomus link from Org files."
+  (message "fomus link: \"%s\" \"%s\" \"%s\"" link description format)
+  (let ((path (format "../%s"
+                      (car
+                       (symbol-value
+                        (intern-soft link *clamps-fomus-symbols*)))))
         (desc (or description link)))
     (pcase format
       (`html (format "<a href=\"%s\">%s</a>" path desc))

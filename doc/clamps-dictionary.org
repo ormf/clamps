@@ -19,16 +19,20 @@
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: clamps-dict.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
-    (defun export-dict-to-clamps (s backend info)
-      (with-temp-buffer 
+  (defun export-dict-to-clamps (s backend info)
+    (let ((filename (buffer-file-name)))
+      (with-temp-buffer
+        (insert
+         (format "(load \"%s%s\")\n" (file-name-directory filename)
+                 "../extra/elisp/cm-dict.el"))
         (insert "(mapcar
-     (lambda (entry)
-       (let ((symbol (intern (car entry)
-    			 ,*common-music-symbols*)))
-         (if (boundp symbol)
-    	 (push (cadr entry) (symbol-value symbol))
-           (set symbol (cdr entry)))))
-     '(\n")
+   (lambda (entry)
+     (let ((symbol (intern (car entry)
+  			 ,*common-music-symbols*)))
+       (if (boundp symbol)
+  	 (push (cadr entry) (symbol-value symbol))
+         (set symbol (cdr entry)))))
+   '(\n")
         (mapcar
          (lambda (entry)
            (insert
@@ -41,8 +45,8 @@
         (insert "))\n")
         (write-region (point-min) (point-max) "../extra/elisp/clamps-dict.el"))
       (load (format "%s%s" (file-name-directory (buffer-file-name))
-               "../extra/elisp/clamps-dict.el"))
-      s)
+                    "../extra/elisp/clamps-dict.el"))
+      s))
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-dict-to-clamps)
 # \[\[\([^\[]+\)\]\] → [[\1][\1]]

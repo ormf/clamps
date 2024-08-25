@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-23 Fr 08:51 -->
+<!-- 2024-08-25 So 13:05 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Fomus</title>
@@ -19,7 +19,7 @@
 <a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
 <a class="top-menu top-menu-active" href="../fomus/index.html">Fomus</a>
 </div>
-<div id="org-div-nav-menu">Next: <a accesskey="n" href="05_03_00_class-timesig-repl.html"> Class TIMESIG-REPL </a>,&nbsp;Previous: <a accesskey="p" href="05_01_00_class-part.html"> Class PART </a>,&nbsp;Up: <a accesskey="u" href="05_00_00_objects.html"> Objects </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_disclaimer.html"> Disclaimer </a></div><div id="content" class="content">
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="05_02_01_methods.html"> Methods </a>,&nbsp;Previous: <a accesskey="p" href="05_01_02_accessors.html"> Accessors </a>,&nbsp;Up: <a accesskey="u" href="05_00_00_objects.html"> Objects </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_disclaimer.html"> Disclaimer </a></div><div id="content" class="content">
 <nav id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
@@ -64,39 +64,78 @@
 </li>
 <li class="toc-level-1"><a href="05_00_00_objects.html"class="toc-entry">Objects</a>
 <ul class="ul-toc-level-2">
-<li class="toc-level-2"><a href="05_01_00_class-part.html"class="toc-entry">Class PART</a></li>
-<li class="toc-level-2"><a href="05_02_00_class-timesig.html"class="toc-entry toc-active">Class TIMESIG</a></li>
-<li class="toc-level-2"><a href="05_03_00_class-timesig-repl.html"class="toc-entry">Class TIMESIG-REPL</a></li>
-<li class="toc-level-2"><a href="05_04_00_class-keysig.html"class="toc-entry">Class KEYSIG</a></li>
-<li class="toc-level-2"><a href="05_05_00_class-note.html"class="toc-entry">Class NOTE</a></li>
-<li class="toc-level-2"><a href="05_06_00_class-rest.html"class="toc-entry">Class REST</a></li>
-<li class="toc-level-2"><a href="05_07_00_class-mark.html"class="toc-entry">Class MARK</a></li>
-<li class="toc-level-2"><a href="05_08_00_structure-instr.html"class="toc-entry">Structure INSTR</a></li>
-<li class="toc-level-2"><a href="05_09_00_structure-perc.html"class="toc-entry">Structure PERC</a></li>
+<li class="toc-level-2"><a href="05_01_00_class-part.html"class="toc-entry">Class Part</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_01_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_01_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_02_00_class-timesig.html"class="toc-entry toc-active">Class Timesig</a>
+<ul class="ul-toc-level-3">
+<li class="toc-level-3"><a href="05_02_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-level-3"><a href="05_02_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_03_00_class-timesig-repl.html"class="toc-entry">Class Timesig-repl</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_03_01_methods.html"class="toc-entry">Methods</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_04_00_class-keysig.html"class="toc-entry">Class Keysig</a></li>
+<li class="toc-level-2"><a href="05_05_00_class-note.html"class="toc-entry">Class Note</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_05_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_05_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_06_00_class-rest.html"class="toc-entry">Class Rest</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_06_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_06_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_07_00_class-mark.html"class="toc-entry">Class Mark</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_07_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_07_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_08_00_structure-instr.html"class="toc-entry">Structure Instr</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_08_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_08_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_09_00_structure-perc.html"class="toc-entry">Structure Perc</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_09_00_structure-perc.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_09_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="06_00_00_settings.html"class="toc-entry">Settings</a>
 <ul class="ul-toc-level-2">
-<li class="toc-hidden toc-level-2"><a href="06_01_00_most-useful-fomus-settings.html"class="toc-entry">Most Useful FOMUS Settings</a></li>
-<li class="toc-hidden toc-level-2"><a href="06_02_00_complete-fomus-settings.html"class="toc-entry">Complete FOMUS Settings</a>
+<li class="toc-hidden toc-level-2"><a href="06_01_00_most-useful-fomus-settings.html"class="toc-entry">Most useful Fomus Settings</a></li>
+<li class="toc-hidden toc-level-2"><a href="06_02_00_complete-fomus-settings.html"class="toc-entry">Complete Fomus Settings</a>
 <ul class="ul-toc-level-3">
-<li class="toc-hidden toc-level-3"><a href="06_02_00_complete-fomus-settings.html"class="toc-entry">Program Settings</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_02_backend-options.html"class="toc-entry">Backend Options</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_03_global.html"class="toc-entry">Global</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_04_objects.html"class="toc-entry">Objects</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_05_parts.html"class="toc-entry">Parts</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_06_time-signatures.html"class="toc-entry">Time Signatures</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_07_plugins.html"class="toc-entry">Plugins</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_08_plugins-on-off.html"class="toc-entry">Plugins On/Off</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_09_quantizing.html"class="toc-entry">Quantizing</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_10_staves.html"class="toc-entry">Staves</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_11_ottavas.html"class="toc-entry">Ottavas</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_12_accidentals.html"class="toc-entry">Accidentals</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_13_cautionary-accidentals.html"class="toc-entry">Cautionary Accidentals</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_14_grace-notes.html"class="toc-entry">Grace Notes</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_15_measure-tuplet-divisions.html"class="toc-entry">Measure/Tuplet Divisions</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_16_note-splitting-tying.html"class="toc-entry">Note Splitting/Tying</a></li>
-<li class="toc-hidden toc-level-3"><a href="06_02_17_beams.html"class="toc-entry">Beams</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_00_complete-fomus-settings.html"class="toc-entry">program settings</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_02_backend-options.html"class="toc-entry">backend options</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_03_global.html"class="toc-entry">global</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_04_objects.html"class="toc-entry">objects</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_05_parts.html"class="toc-entry">parts</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_06_time-signatures.html"class="toc-entry">time signatures</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_07_plugins.html"class="toc-entry">plugins</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_08_plugins-on-off.html"class="toc-entry">plugins on/off</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_09_quantizing.html"class="toc-entry">quantizing</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_10_staves.html"class="toc-entry">staves</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_11_ottavas.html"class="toc-entry">ottavas</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_12_accidentals.html"class="toc-entry">accidentals</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_13_cautionary-accidentals.html"class="toc-entry">cautionary accidentals</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_14_grace-notes.html"class="toc-entry">grace notes</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_15_measure-tuplet-divisions.html"class="toc-entry">measure/tuplet divisions</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_16_note-splitting-tying.html"class="toc-entry">note splitting/tying</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_17_beams.html"class="toc-entry">beams</a></li>
 </ul>
 </li>
 <li class="toc-hidden toc-level-2"><a href="06_03_00_alphabetical-listing-of-settings.html"class="toc-entry">Alphabetical Listing of Settings</a></li>
@@ -104,7 +143,7 @@
 </li>
 <li class="toc-level-1"><a href="07_00_00_marks.html"class="toc-entry">Marks</a>
 <ul class="ul-toc-level-2">
-<li class="toc-hidden toc-level-2"><a href="07_01_00_fomus-marks.html"class="toc-entry">FOMUS Marks</a>
+<li class="toc-hidden toc-level-2"><a href="07_01_00_fomus-marks.html"class="toc-entry">Fomus Marks</a>
 <ul class="ul-toc-level-3">
 <li class="toc-hidden toc-level-3"><a href="07_01_01_articulations.html"class="toc-entry">Articulations</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_01_02_dynamics.html"class="toc-entry">Dynamics</a></li>
@@ -116,48 +155,80 @@
 <li class="toc-hidden toc-level-3"><a href="07_01_08_other.html"class="toc-entry">Other</a></li>
 </ul>
 </li>
-<li class="toc-hidden toc-level-2"><a href="07_02_00_timesig-properties.html"class="toc-entry">TIMESIG Properties</a></li>
-<li class="toc-hidden toc-level-2"><a href="07_03_00_part-properties.html"class="toc-entry">PART Properties</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_02_00_timesig-properties.html"class="toc-entry">Timesig properties</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_03_00_part-properties.html"class="toc-entry">Part Properties</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="08_00_00_outputs.html"class="toc-entry">Outputs</a>
 <ul class="ul-toc-level-2">
 <li class="toc-hidden toc-level-2"><a href="08_01_00_data.html"class="toc-entry">Data</a></li>
-<li class="toc-hidden toc-level-2"><a href="08_02_00_lilypond.html"class="toc-entry">LilyPond</a>
+<li class="toc-hidden toc-level-2"><a href="08_02_00_lilypond.html"class="toc-entry">Lilypond</a>
 <ul class="ul-toc-level-3">
-<li class="toc-hidden toc-level-3"><a href="08_02_01_lilypond-options.html"class="toc-entry">LilyPond Options</a></li>
-<li class="toc-hidden toc-level-3"><a href="08_02_02_alphabetical-listing-of-options.html"class="toc-entry">Alphabetical Listing of Options</a></li>
+<li class="toc-hidden toc-level-3"><a href="08_02_01_alphabetical-listing-of-lilypond-options.html"class="toc-entry">Alphabetical Listing of LilyPond Options</a></li>
 </ul>
 </li>
 <li class="toc-hidden toc-level-2"><a href="08_03_00_musicxml.html"class="toc-entry">MusicXML</a>
 <ul class="ul-toc-level-3">
-<li class="toc-hidden toc-level-3"><a href="08_03_01_musicxml-options.html"class="toc-entry">MusicXML Options</a></li>
-<li class="toc-hidden toc-level-3"><a href="08_03_02_alphabetical-listing-of-options.html"class="toc-entry">Alphabetical Listing of Options</a></li>
+<li class="toc-hidden toc-level-3"><a href="08_03_01_alphabetical-listing-of-musicxml-options.html"class="toc-entry">Alphabetical Listing of MusicXML Options</a></li>
 </ul>
 </li>
 <li class="toc-hidden toc-level-2"><a href="08_04_00_musicxml-for-sibelius.html"class="toc-entry">MusicXML for Sibelius</a></li>
 <li class="toc-hidden toc-level-2"><a href="08_05_00_musicxml-for-finale.html"class="toc-entry">MusicXML for Finale</a></li>
 <li class="toc-hidden toc-level-2"><a href="08_06_00_common-music-notation.html"class="toc-entry">Common Music Notation</a>
 <ul class="ul-toc-level-3">
-<li class="toc-hidden toc-level-3"><a href="08_06_01_cmn-options.html"class="toc-entry">CMN Options</a></li>
-<li class="toc-hidden toc-level-3"><a href="08_06_02_alphabetical-listing-of-options.html"class="toc-entry">Alphabetical Listing of Options</a></li>
+<li class="toc-hidden toc-level-3"><a href="08_06_01_alphabetical-listing-of-cmn-options.html"class="toc-entry">Alphabetical Listing of CMN Options</a></li>
 </ul>
 </li>
 <li class="toc-hidden toc-level-2"><a href="08_07_00_midi.html"class="toc-entry">MIDI</a>
 <ul class="ul-toc-level-3">
-<li class="toc-hidden toc-level-3"><a href="08_07_01_midi-options.html"class="toc-entry">MIDI Options</a></li>
-<li class="toc-hidden toc-level-3"><a href="08_07_02_alphabetical-listing-of-options.html"class="toc-entry">Alphabetical Listing of Options</a></li>
+<li class="toc-hidden toc-level-3"><a href="08_07_01_alphabetical-listing-of-midi-options.html"class="toc-entry">alphabetical listing of midi options</a></li>
 </ul>
 </li>
-<li class="toc-hidden toc-level-2"><a href="08_08_00_chunk.html"class="toc-entry">CHUNK</a></li>
+<li class="toc-hidden toc-level-2"><a href="08_08_00_chunk.html"class="toc-entry">Chunk</a></li>
 </ul>
 </li>
 <li class="toc-level-1"><a href="09_00_00_initialization-file.html"class="toc-entry">Initialization File</a></li>
 <li class="toc-level-1"><a href="10_00_00_examples.html"class="toc-entry">Examples</a>
 <ul class="ul-toc-level-2">
-<li class="toc-hidden toc-level-2"><a href="10_01_00_lisp-examples.html"class="toc-entry">Lisp Examples</a></li>
-<li class="toc-hidden toc-level-2"><a href="10_02_00_common-music-examples.html"class="toc-entry">Common Music Examples</a></li>
-<li class="toc-hidden toc-level-2"><a href="10_03_00_text-input-file-examples.html"class="toc-entry">Text Input File Examples</a></li>
+<li class="toc-hidden toc-level-2"><a href="10_01_00_lisp-examples.html"class="toc-entry">Lisp Examples</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="10_01_00_lisp-examples.html"class="toc-entry">Simple Example</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_02_staccato-and-accent-marks.html"class="toc-entry">Staccato and Accent Marks</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_03_quartertones.html"class="toc-entry">Quartertones</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_04_polyphony-with-slurs.html"class="toc-entry">Polyphony with Slurs</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_05_piano-chords.html"class="toc-entry">Piano Chords</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_06_quantizing-chords.html"class="toc-entry">Quantizing/Chords</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_07_mark-objects.html"class="toc-entry">Mark Objects</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_08_percussion-1.html"class="toc-entry">Percussion 1</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_09_percussion-2.html"class="toc-entry">Percussion 2</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_10_percussion-with-automatic-durations.html"class="toc-entry">Percussion with Automatic Durations</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_11_semi-orchestra-score.html"class="toc-entry">Semi-Orchestra Score</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_12_key-signatures.html"class="toc-entry">Key Signatures</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_13_chunks.html"class="toc-entry">Chunks</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="10_02_00_common-music-examples.html"class="toc-entry">Common Music Examples</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="10_02_00_common-music-examples.html"class="toc-entry">2 Part Polyphony</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_02_02_2-part-polyphony-fomus-chooses-the-voice.html"class="toc-entry">2 Part Polyphony (FOMUS Chooses the Voice)</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_02_03_3-part-polyphony.html"class="toc-entry">3 Part Polyphony</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_02_04_6-part-polyphony.html"class="toc-entry">6 Part Polyphony</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="10_03_00_text-input-file-examples.html"class="toc-entry">Text Input File Examples</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="10_03_01_text-input-commands-from-lisp.html"class="toc-entry">Text Input Commands (From Lisp)</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_02_text-input-commands-command-line.html"class="toc-entry">Text Input Commands (Command Line)</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_03_simple-text-input-example.html"class="toc-entry">Simple Text Input Example</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_04_staccato-and-accent-marks.html"class="toc-entry">Staccato and Accent Marks</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_05_percussion.html"class="toc-entry">Percussion</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_06_articulations.html"class="toc-entry">Articulations</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_07_more-percussion.html"class="toc-entry">More Percussion</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_08_overtone-series-using-quartertones.html"class="toc-entry">Overtone Series (using Quartertones)</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_09_marks-1.html"class="toc-entry">Marks 1</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_10_marks-2.html"class="toc-entry">Marks 2</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -165,163 +236,47 @@
 </nav>
 <header>
 <h1 class="title">Fomus</h1>
-</header><div id="page-main-body"><nav id="nav-left"><a href="05_01_00_class-part.html" class="nav-left"><i class="angle-left"></i></a></nav>
+</header><div id="page-main-body"><nav id="nav-left"><a href="05_01_02_accessors.html" class="nav-left"><i class="angle-left"></i></a></nav>
 <div id="page-text-body"><div id="outline-container-section.objects3" class="outline-3">
-<h3 id="section.objects3">Class TIMESIG</h3>
+<h3 id="section.objects3">Class Timesig</h3>
 <div class="outline-text-3" id="text-section.objects3">
 <p>
-A <code>TIMESIG</code> object indicates a time signature change in the score. They
+a <code>timesig</code> object indicates a time signature change in the score. they
 may also be used to indicate special barlines and a few other changes.
-FOMUS uses <code>TIMESIG</code> objects to determine where to place measures and
-how to format the events that appear in them. If new time signatures
-appear in the middle of a measure, FOMUS either splits the measure or
+fomus uses <code>timesig</code> objects to determine where to place measures and
+how to format the events that appear in them. if new time signatures
+appear in the middle of a measure, fomus either splits the measure or
 expands it to a larger size depending on the values of
-<code>AUTO-OVERRIDE-TIMESIGS</code> and <code>MIN-AUTO-TIMESIG-DUR</code>.
+<code>auto-override-timesigs</code> and <code>min-auto-timesig-dur</code>.
 </p>
 
 <p>
-Each time signature either specifies or implies a value that specifies
-what notational value is equivalent to 1 "beat" duration. FOMUS uses
+each time signature either specifies or implies a value that specifies
+what notational value is equivalent to 1 "beat" duration. fomus uses
 this value to determine how all durational events are notated and where
-they appear in the score. Unless otherwise indicated, all offsets and
-durations are expressed in beat units. See the 
+they appear in the score. unless otherwise indicated, all offsets and
+durations are expressed in beat units. see the 
 slot for information on how to specify it.
 </p>
 
 <p>
-Time signatures are passed to FOMUS by including them either in the
-<code>GLOBAL</code> list or the slot list of a <code>PART</code>
-object. <code>TIMESIG</code> objects listed inside a part apply only to that part
+time signatures are passed to fomus by including them either in the
+<code>global</code> list or the slot list of a <code>part</code>
+object. <code>timesig</code> objects listed inside a part apply only to that part
 (unless the slot indicates otherwise).
-This method most likely won't be used. <code>TIMESIG</code> objects in the <code>GLOBAL</code>
+this method most likely won't be used. <code>timesig</code> objects in the <code>global</code>
 list affect parts according to the contents of their
-slot values. A symbol or list of symbols
+slot values. a symbol or list of symbols
 in the slot applies the time signature to
-the parts that match those symbols. A default
-slot value of <code>NIL</code> indicates that the
+the parts that match those symbols. a default
+slot value of <code>nil</code> indicates that the
 time signature be applied to all parts that don't have any other time
-signature specified at that exact offset. This way you can specify that
-a certain <code>TIMESIG</code> object be applied to only several <code>PART</code> objects
-while another <code>TIMESIG</code> object by applied to all of the remaining parts.
+signature specified at that exact offset. this way you can specify that
+a certain <code>timesig</code> object be applied to only several <code>part</code> objects
+while another <code>timesig</code> object by applied to all of the remaining parts.
 </p>
-
-<p>
-Constructor:
-<code>(MAKE-TIMESIG &amp;key :ID id :PARTIDS partids :OFF off :TIME time :COMP comp :BEAT beat :DIV div :REPL repl :PROPS props)</code>
-</p>
-
-<p>
-Copy Function:
-<code>(COPY-TIMESIG timesig &amp;key :ID id :PARTIDS partids :OFF off :TIME time :COMP comp :BEAT beat :DIV div :REPL repl :PROPS props)</code>
-</p>
-
-<p>
-Predicate Function: <code>(TIMESIGP obj)</code>
-</p>
-
-<p>
-Accessors:
-</p>
-
-<dl class="org-dl">
-<dt><code>OBJ-ID</code></dt><dd>This slot isn't used by FOMUS.</dd>
-
-<dt><code>TIMESIG-PARTIDS</code></dt><dd>This is a reference to a particular part or group
-of parts. If the value of this slot is <code>NIL</code>, the time signature is
-applied to all parts that don't have some another <code>TIMESIG</code> object
-defined for them if this <code>TIMESIG</code> object is included in the <code>GLOBAL</code>
-list. If the <code>TIMESIG</code> object is in a <code>PART</code> object's
-slot, the time signature is applied to the
-part. If the value is a symbol, number, or list of symbols or numbers,
-these values are used to lookup which part or parts the event belongs
-to.</dd>
-
-<dt><code>TIMESIG-OFF</code></dt><dd>This is a number (real, ratio or integer) specifying
-the absolute position for the onset for this note. The offset is
-measured in "beats," which may indicate different notational positions
-depending on previous time signatures and what values are present in
-their slots. The number must be precise and
-"notatable" (floating point numbers are not recommended and values
-like 10/3 that don't occur on regular beat divisions are currently
-impossible for FOMUS to notate).</dd>
-
-<dt><code>TIMESIG-TIME</code></dt><dd>This is a required list of two integers, specifying
-the numerator and denominator of the printed time signature.</dd>
-
-<dt><code>TIMESIG-COMP</code></dt><dd>If this slot is set to <code>T</code>, indicates that the
-measure is a compound meter. FOMUS then derives the beat value from
-the denominator of the time signature. Setting this to <code>T</code> or <code>NIL</code>
-always overrides whatever default action is specified in the
-<code>AUTO-TIMESIG-COMP</code> setting.</dd>
-
-<dt><code>TIMESIG-BEAT</code></dt><dd>The slot value determines
-how events are mapped from beat units to notational durations. It is a
-ratio that specifies what notational duration is equivalent to 1 beat.
-This duration is expressed as a fraction of a whole note (1/4, for
-example, specifies a quarter note, 1/2 specifies a half note, and 3/8
-specifies three eight notes). If the time signature is a compound time
-signature, the value of this slot is ignored and the beat value is
-calculated from the denominator (for example, the beat value of a 12/8
-signature is 3/8). If the slot contains the default value of <code>NIL</code>,
-the beat value is either the value of <code>DEFAULT-BEAT</code> or it is
-calculated from the denominator (a non-compound 4/8 or 7/8 time
-signature would have a beat value of 1/8). The beat value of a measure
-effects how notes are are divided and laid out.</dd>
-
-<dt><code>TIMESIG-DIV</code></dt><dd><p>
-This is a single list or list of lists containing
-ratios or integers that add up to the total number of beats in a
-measure (as specified by either the or
-slots). It represents all of the choices
-available for dividing up measures following this time signature. If
-the slot contains the default value of <code>NIL</code>, FOMUS looks up divisions
-first in a user-supplied table if one exists (see the
-<code>DEFAULT-MEAS-DIVS</code> setting) then in FOMUS's default table. A value
-usually only needs to be specified here if the user wants to force
-FOMUS to divide measures in a specific way rather than choosing
-between several choices. The following example shows what might be
-specified for a 7/8 meter:
-</p>
-
-<pre class="example" id="orgc6340c7">
-'((4 3) (3 4))
-                
-</pre>
-
-<p>
-As another example, setting the slot to
-<code>'(1 1 1)</code> in a 3/4 time signature forces FOMUS to beam measures in
-groups of 3 (the default is equivalent to a
-setting of <code>'((2 1) (1 2))</code>)/
-</p></dd>
-
-<dt><code>TIMESIG-REPL</code></dt><dd><p>
-This is a list of <code>TIMESIG</code> or <code>TIMESIG-REPL</code>
-objects that are chosen to replace this <code>TIMESIG</code> object when FOMUS
-needs to change the length of a measure. This gives the user some
-control over how FOMUS fudges measures to make them fit. When FOMUS
-changes the length of a measure, it will look here first and then in
-the (not implemented yet) setting for a replacement that fits (has the
-correct number of beats). If none is found, FOMUS will create a new
-<code>TIMESIG</code> object from the current one, modifying the
-slot by adding on extra beats if necessary.
-</p>
-
-<p>
-<code>TIMESIG-REPL</code> objects are simply <code>TIMESIG</code> objects with missing
-, and
-slots, all of them unnecessary in this
-context. The use of these is optional. If <code>TIMESIG</code> objects are given,
-these slots are just ignored.
-</p></dd>
-
-<dt><code>TIMESIG-PROPS</code></dt><dd>This slot behaves like the 
-slot in <code>NOTE</code> or <code>REST</code> objects. Extra time signature or measure
-properties may be specified here. See FIXME for more details and the
-<code>MARK</code> class for an example of how to specify properties.</dd>
-</dl>
 </div>
 </div>
-</div><nav id="nav-right"><a href="05_03_00_class-timesig-repl.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</div><nav id="nav-right"><a href="05_02_01_methods.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
 </body>
 </html>

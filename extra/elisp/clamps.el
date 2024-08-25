@@ -5,6 +5,7 @@
 
 (defvar *clamps-doc-symbols* (make-vector 63 0))
 (defvar *clamps-overview-symbols* (make-vector 63 0))
+(defvar *clamps-fomus-symbols* (make-vector 63 0))
 
 (defun export-dict-to-clamps (data _backend info)
   (with-temp-buffer 
