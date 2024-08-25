@@ -67,12 +67,12 @@
   Clamps is a collection of tools, developed over the course of some
   decades primarily for the artistic work of its author, biased by his
   conceptual and aesthetic ideas. It is put together and made public
-  in the hope it might be useful for others, but -like one of the
-  integral characteristics of the beauty of Art in general- without
+  in the hope it might be useful for others, but --like one of the
+  integral characteristics of the beauty of Art in general-- without
   any explict or implicit warranty that it fits any purpose
   whatsoever.
   
-  The Documentation of Clamps is split into four parts, accessible
+  The Documentation of Clamps is split into five parts, accessible
   using the Top Menu:
 
   - The [[Introduction][Overview]] explains the raison d'etre of Clamps and gives a
@@ -102,6 +102,9 @@
     are linked in the Emacs Lisp Interface with the same /<C-c C-d c>/
     keyboard shortcut as the CM Dictionary.
 
+  - [[../fomus/index.html][Fomus]] is a reproduction of the original documentation of [[https://fomus.common-lisp.dev/][FOMUS]],
+    added here for convenience.
+    
 #+HTML: <h4>Note</h4>
 #+LATEX: NOTE
 
@@ -180,7 +183,7 @@
    top of the following packages which do the heavy lifting of Clamps'
    functionality:
 
-   - [[Incudine][Incudine]]
+   - [[#Incudine.overview][Incudine]]
      
    - [[Common Music][Common Music]]
 
@@ -193,7 +196,9 @@
    These systems and their contribution to Clamps are described in the
    following subsections.
 *** Incudine
-
+    :PROPERTIES:
+    :CUSTOM_ID: Incudine.overview
+    :END:
     [[https://incudine.sourceforge.net/][Incudine]] is the backbone of the system for everything related to
     [[https://en.wikipedia.org/wiki/Real-time_computing][Real-time computing]] or [[https://en.wikipedia.org/wiki/Digital_signal_processing][DSP]]. It is actively developed and
     maintained at the time of writing this manual by Tito Latini and
@@ -215,9 +220,9 @@
     the last Common Lisp version 2.12, released around
     2008/2009. Although this version already contained realtime
     capablilities, this functionality has been adapted in Clamps using
-    [[Incudine][Incudine]]. Clamps extends the functionality of CM by adding classes
+    Incudine. Clamps extends the functionality of CM by adding classes
     for [[https://en.wikipedia.org/wiki/SVG][SVG]] import/export as well as [[https://en.wikipedia.org/wiki/SFZ_(file_format)][SFZ]] and sample based in-/output
-    realized using [[Incudine][Incudine]].
+    realized with Incudine.
 *** FOMUS
     [[https://fomus.sourceforge.net/][FOMUS]] is a system for score output originally developed in Common
     Lisp in 2005-2007 by David Psenicka. It integrates well with
@@ -228,12 +233,12 @@
     [[https://github.com/ormf/cl-ats][ATS]] was originally developed by Juan Pampin in the early 2000s
     using Common Lisp for the analysis, transformation and
     (re)synthesis of audio files using FFT based algorithms similar to
-    [[https://www.klingbeil.com/spear/][SPEAR]]. It predates SPEAR by nearly a decade and has been published
-    with an open source license making it eligible for integration
-    into Clamps. In addition to the analysis of sinusoidal components
-    performed by SPEAR it also captures and synthesizes the residual
-    noise component of the analyzed audio files. For Clamps the
-    synthesis engine has been completely rewritten in [[Incudine][Incudine]].
+    [[https://www.klingbeil.com/spear/][SPEAR]]. ATS has been published with an open source license making
+    it eligible for integration into Clamps. In addition to the
+    analysis of sinusoidal components performed by SPEAR it also
+    captures and synthesizes the residual noise component of the
+    analyzed audio files. For Clamps, the synthesis engine has been
+    completely rewritten in Incudine.
 
 *** CLOG
     [[https://github.com/rabbibotton/clog][CLOG]] is a web based system written by David Botton in Common Lisp
@@ -400,6 +405,9 @@
     Dictionary]] or [[../clamps-dict/index.html][Clamps Dictionary]], which is integrated in the
     browser-based clamps documentatiion.
 *** Incudine
+    :PROPERTIES:
+    :CUSTOM_ID: Incudine-Help
+    :END:
     Incudine has different formats to get help. It is available in the
     Internet at the [[https://incudine.sourceforge.net/][Incudine Home Page]]. Local documentation can be
     generated in different formats, like /[[https://en.wikipedia.org/wiki/Texinfo][texinfo]]/, /html/ or any
