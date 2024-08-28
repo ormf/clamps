@@ -935,17 +935,36 @@ the function will blow the stack!"
 
 |#
 
-(defun call/collecting (f n tail)
+(defun call/collecting (f n &optional (tail '()))
+  "Call function /f/ /n/ times, with idx [0..n-1] as argument,
+collecting its results. Return results with tail appended.
+
+@Arguments
+
+f - Function of one argument (an integer in the range [0..n])
+n - Positive integer
+tail - A list collected into by prepending to it
+
+@Examples
+
+(call/collecting (lambda (x) (* x x)) 4 '()) ; => (0 1 4 9)
+
+(call/collecting (lambda (x) (1+ x)) 4 '(hallo)) ; => (1 2 3 4 hallo)
+"
   (let ((c (make-collector)))
     (dotimes (i n (collector-contents c tail))
       (collect-into c (funcall f i)))))
 
 (defmacro v-collect ((v n &optional (tail '())) form)
-  "return a list of n elems prepended to tail by evaluating form n times
-with the symbol n bound to the iteration index in the lexical scope of
-form.
+  "Return a list of /n/ elems prepended to tail by evaluating form /n/
+times with the symbol /v/ bound to the iteration index in the lexical
+scope of form.
 
-Example:
+@Arguments
+v - Symbol used as variable name
+n - Integer indicating the number of iterations.
+
+@Examples
 
 (v-collect (n 10) (* n n)) ;-> (0 1 4 9 16 25 36 49 64 81)
 "
@@ -997,9 +1016,14 @@ index in the lexical scope of form."
 |#
 
 (defun repeat (n elem)
-  "return a list with n occurences of elem.
-Example:
+  "return a list with n occurences of elem. All occurences of elem are
+#'eq to each other.
 
+@Arguments
+n - Integer indicationg the number of iterations
+elem - Any Lisp Object to be repeated.
+
+@Examples
 (repeat 10 5) ;-> (5 5 5 5 5 5 5 5 5 5)
 "
   (v-collect (v n) elem))
@@ -1007,25 +1031,31 @@ Example:
 ;;; (repeat 10 5)
 
 (defun range (&rest args)
-  "like clojure's range.
+  "Like clojure's range: Return a list of nums from start (inclusive) to
+end (exclusive) by step. Start and step are optional args defaulting
+to 0 and 1 respectively.
+
 Arities:
+
 (range end) 
+
 (range start end) 
+
 (range start end step) 
 
-Return a list of nums from start (inclusive) to end (exclusive) by
-step. Start and step are optional args defaulting to 0 and 1
-respectively.
-
-Example:
+@Examples
 
 (range 1 10 2) ;-> (1 3 5 7 9)
+
+@Note
+Unlike clozure's range function, this range function is not
+lazy: (range) will return the empty list.
 "
   (destructuring-bind (start end step)
       (cond
         ((third args) args)
         ((second args) (list (first args) (second args) 1))
-        (t (list 0 (first args) 1)))
+        (t (list 0 (or (first args) 0) 1)))
     (loop for i from start below end by step collect i)))
 
 #|
@@ -1323,7 +1353,31 @@ values, the key and the value of each property in the proplist."
 
 
 (defun n-lin (x min max)
-  "linear interpolation for normalized x."
+  "Return the linear interpolation for a normalized value in the range
+/[min..max]/ as a float value.
+
+@Arguments
+x - An input value in the range /[0..1]/ to be interpolated.
+min - The output value for /x = 0/.
+max - The output value for /x = 1/.
+@Examples
+#+BEGIN_SRC lisp
+(n-lin 0 10 20) ; => 10.0
+
+(n-lin 0.5 10 20) ; => 15.0
+
+(n-lin 1 10 20)  ; => 20.0
+#+END_SRC
+
+@See-also
+exp-n
+lin-n
+m-exp
+m-lin
+n-exp
+n-exp-dev
+n-lin-dev
+"
   (float (+ min (* (- max min) x))))
 
 ;;; (n-lin 0 10 1000) -> 10
@@ -1331,15 +1385,59 @@ values, the key and the value of each property in the proplist."
 ;;; (n-lin 1 10 1000) -> 1000
 
 (defun lin-n (val min max)
-  "return normalized val linearly between min and max.
+  "Return the reverse linear interpolation for a value in the range
+/[min..max]/ as a normalized float value.
 
-(lin-n min min max) -> 0
-(lin-n max min max) -> 1
+@Arguments
+x - An input value in the range /[min..max]/ to be interpolated.
+min - The minimum value.
+max - The maximum value.
+
+@Examples
+
+(lin-n 10 10 20) ; => 0.0
+
+(lin-n 15 10 20) ; => 0.5
+
+(lin-n 20 10 20) ; => 1.0
+
+@See-also
+exp-n
+m-exp
+m-lin
+n-exp
+n-exp-dev
+n-lin
+n-lin-dev
 "
   (float (/ (- val min) (- max min)) 1.0))
 
 (defun n-exp (x min max)
-  "linear interpolation for normalized x."
+  "Return the exponential interpolation for a normalized value in the
+range /[min..max]/ as a float value.
+
+@Arguments
+x - An input value in the range /[0..1]/ to be interpolated.
+min - The output value for /x = 0/.
+max - The output value for /x = 1/.
+@Examples
+#+BEGIN_SRC lisp
+(n-exp 0 1 100) ; => 1.0
+
+(n-exp 0.5 1 100) ; => 10.0
+
+(n-exp 1 1 100) ; => 100.0
+#+END_SRC
+
+@See-also
+exp-n
+lin-n
+m-exp
+m-lin
+n-exp-dev
+n-lin
+n-lin-dev
+"
   (float (* min (expt (/ max min) x))))
 
 ;;; (n-exp 0 10 1000) -> 10
@@ -1347,16 +1445,61 @@ values, the key and the value of each property in the proplist."
 ;;; (n-exp 1 10 1000) -> 1000
 
 (defmacro exp-n (val min max)
-  "return normalized val exponentially between min and max:
+  "Return the reverse exponential interpolation for a value in the range
+/[min..max]/ as a normalized float value. /Min/ and /max/ have to be
+positive numbers.
 
-(exp-n min min max) -> 0
-(exp-n max min max) -> 1
+@Arguments
+x - An input value in the range /[min..max]/ to be interpolated.
+min - The minimum value.
+max - The maximum value.
+@Examples
+
+(exp-n 1 1 100) ; => 0.0
+
+(exp-n 10 1 100) ; => 0.5
+
+(exp-n 100 1 100) ; => 1.0
+
+@See-also
+lin-n
+m-exp
+m-lin
+n-exp
+n-exp-dev
+n-lin
+n-lin-dev
 "
   (let ((quot (if (zerop min) 0 (/ max min))))
     `(log ,(/ val min) ,quot)))
 
 (defun m-exp (x min max)
-  "exp interpolation for midivalues (x = [0..127])"
+  "Return the exponential interpolation for a MIDI value in the range
+/[min..max]/ as a float value. The min and max values have to be
+positive.
+
+@Arguments
+x - An input value in the range /[0..127]/ to be interpolated.
+min - The output value for /x = 0/.
+max - The output value for /x = 127/.
+@Examples
+#+BEGIN_SRC lisp
+(m-exp 0 1 100) ; => 1.0 (100.0%)
+
+(m-exp 64 1 100) ; => 10.18296
+
+(m-exp 127 1 100) ; => 100.0
+#+END_SRC
+
+@See-also
+exp-n
+lin-n
+m-lin
+n-exp
+n-exp-dev
+n-lin
+n-lin-dev
+"
   (n-exp (/ x 127) min max))
 
 (defun n-exp-zero (x min max)
@@ -1374,7 +1517,31 @@ values, the key and the value of each property in the proplist."
 ;;; (n-exp 1 10 1000) -> 1000
 
 (defun m-lin (x min max)
-  "linear interpolation for midivalues (x = [0..127])"
+  "Return the linear interpolation for a MIDI value in the range
+/[min..max]/ as a float value.
+
+@Arguments
+x - An input value in the range /[0..127]/ to be interpolated.
+min - The output value for /x = 0/.
+max - The output value for /x = 127/.
+@Examples
+#+BEGIN_SRC lisp
+(m-lin 0 10 20) ; => 10.0
+
+(m-lin 64 10 20) ; => 15.039371
+
+(m-lin 127 10 20)  ; => 20.0
+#+END_SRC
+
+@See-also
+exp-n
+lin-n
+m-exp
+n-exp
+n-exp-dev
+n-lin
+n-lin-dev
+"
   (float (+ min (* (- max min) (/ x 127))) 1.0))
 
 (defun ntom (n)
@@ -1408,8 +1575,30 @@ values, the key and the value of each property in the proplist."
   (r-lin 0 max))
 
 (defun n-exp-dev (x max)
-  "return a random deviation factor, the deviation being exponentially
-interpolated between 1 for x=0 and [1/max..max] for x=1."
+  "Return a random deviation factor, the deviation being exponentially
+interpolated between /1/ for /x = 0/ and /[1/max..max]/ for /x = 1/.
+
+@Arguments
+x - An input value in the range /[0..1]/ to be interpolated.
+max - The maximum deviation factor for /x = 1/;
+@Examples
+#+BEGIN_SRC lisp
+(n-exp-dev 0 4) ; => 1.0
+
+(n-exp-dev 0.5 4) ; a random value exponentially distributed in the range [0.5..2.0]
+
+(n-exp-dev 1 4) ; a random value exponentially distributed in the range [0.25..4.0]
+#+END_SRC
+
+@See-also
+exp-n
+lin-n
+m-exp
+m-lin
+n-exp
+n-lin
+n-lin-dev
+"
   (r-exp
    (n-exp x 1 (/ max))
    (n-exp x 1 max)))
@@ -1420,8 +1609,30 @@ interpolated between 1 for x=0 and [1/max..max] for x=1."
   (n-exp-dev (random 1.0) max))
 
 (defun n-lin-dev (x max)
-  "return a random deviation offset, the deviation being linearly
-interpolated between 0 for x=0 and [-max..max] for x=1."
+  "Return a random deviation value, the deviation being linearly
+interpolated between /0/ for /x = 0/ and /[-max..max]/ for /x = 1/.
+
+@Arguments
+x - An input value in the range /[0..1]/ to be interpolated.
+max - The maximum deviation value for /x = 1/;
+@Examples
+#+BEGIN_SRC lisp
+(n-lin-dev 0 4) ; => 0
+
+(n-lin-dev 0.5 4) ; a random value linearly distributed in the range [-2.0..2.0]
+
+(n-lin-dev 1 4) ; a random value linearly distributed in the range [-4.0..4.0]
+#+END_SRC
+
+@See-also
+exp-n
+lin-n
+m-exp
+m-lin
+n-exp
+n-exp-dev
+n-lin
+"
   (if (zerop x)
       0
       (float (* max (- x (random (* 2.0 x)))) 1.0)))
@@ -1591,8 +1802,17 @@ modified in the body to enable returning a value."
         ,value)))
 
 (defun r-elt (seq)
-  "retrieve element from seq applying the #'elt function recursively
-with idxs taken from the rest arg."
+  "Return a random element of seq.
+
+@Arguments
+seq - a sequence fulfilling the predicate /(typep seq 'sequence)/
+like a list or a vector.
+
+@Examples
+(r-elt #(1 2 3 4)) ; => 1, 2, 3 or 4
+
+(r-elt '(dog cat bird cow)) ; => dog, cat, bird or cow
+"
   (elt seq (random (length seq))))
 
 (defun getf-or-elt (seq id)

@@ -27,6 +27,18 @@
   (sample (- (or (getf entry :pitch-keycenter) 60) (/ (or (getf entry :tune) 0) 100))))
 
 (defun sfz->lsample (sfz-entry dir &key (play-fn #'cl-sfz:play-sfz-loop))
+  "Convert an entry of a sfz file into a lsample.
+
+@Arguments
+sfz-entry - Instance of sfz class.
+:play-fn - The play function to play the lsample. Possible options are:
+         - #'play-sfz-loop
+         - #'play-sfz-one-shot
+
+@See-also
+sfz
+lsample
+"
   (let* ((abs-filepath (abs-path (getf sfz-entry :sample) dir))
          (buffer (incudine-bufs:of-buffer-load abs-filepath)))
     (of-incudine-dsps:make-lsample

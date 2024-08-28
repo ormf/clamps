@@ -21,16 +21,25 @@
 (in-package :cl-midictl)
 
 (defun ccin (ccnum &optional (channel *global-midi-channel*))
+  "Return the last received MIDI CC value of controller number /ccnum/
+at MIDI channel /channel/. Setfable.
+
+@Arguments
+ccnum - Integer in the range [0..127] indicating the Controller Number.
+channel - Integer in the range [0..15] indicating the MIDI channel.
+"
   (get-val (aref (aref *midi-cc-state* channel) ccnum)))
 
 (defsetf ccin (ccnum &optional (channel *global-midi-channel*)) (value)
+  "Set the last received MIDI CC value of controller number <ccnum> at
+MIDI channel <channel>."
   `(progn
      (set-val (aref (aref *midi-cc-state* ,channel) ,ccnum) ,value)
      ,value))
 
 (defun get-ref (controller ref-idx)
-  "return the ref-object of a midi-controller given the idx according to
-cc-nums."
+  "return the ref-object of the midi-controller <controller> given the
+<ref-idx> indexing into the cc-nums slot of the controller."
   (with-slots (cc-nums cc-state) controller
     (aref cc-state (aref cc-nums ref-idx))))
 
@@ -40,8 +49,21 @@ cc-nums."
                 127 0)))
 
 (defun buchla-scale (curr old target &key (max 127))
-  "scale the target fader by interpolating using the curr and old values
-of the source fader."
+  "Set the <target> fader by interpolating between 0 and <max>, using
+the <curr> and <old> values of a source fader.
+
+The function serves the purpose of avoiding jumps when working with
+non motorized hardware faders: If the value of the software target
+of the hardware fader has changed (e.g. by a preset or some program
+logic) without the hardware fader being updated, moving the
+hardware fader will not cause a jump in the target:
+
+If the hardware fader moves up (> curr old), the remaining space
+above the fader will interpolate the target software fader between
+its current value and the maximum value, if it moves down (< curr
+old), the software target will be interpolated between the current
+value and 0 using the remaining space below the hardware fader.
+"
   (float
    (cond
      ((= old target) curr)

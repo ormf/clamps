@@ -138,7 +138,7 @@
 (defclass midi-controller ()
   ((id :initform nil :initarg :id :accessor id)
    (gui-update-off :initform nil :accessor gui-update-off)
-   (gui :initform nil :accessor gui)
+   (gui :initform nil :accessor mc-gui)
    (chan :initform 0 :initarg :chan :accessor chan)
    (cc-map :initform (make-array 128 :initial-contents (loop for i below 128 collect i))
            :initarg :cc-map :accessor cc-map)
@@ -161,11 +161,12 @@
    ;;; and velo.
    (note-fns :initform nil :initarg :note-fns :accessor note-fns)
    (unwatch :initform nil :initarg :unwatch :accessor unwatch))
-  (:documentation "generic class for midi-controllers. An instance
-  should get initialized with #'add-midi-controller and get removed
-  with #'remove-midi-controller, using its id as argument in order to
-  close the gui and remove its handler functions from
-  *midi-controllers*."))
+  (:documentation "Generic class for midi controllers. An instance should get
+initialized with <<add-midi-controller>> and removed with
+<<remove-midi-controller>>, using its id as argument in order to close
+the gui and remove its handler functions from the midi controller
+registry.
+"))
 
 (defgeneric (setf midi-input) (new-midi-in instance)
   (:method (new-midi-in (instance midi-controller))
@@ -227,13 +228,35 @@ controller actions."))
 
 ;;; central registry for midi controllers:
 
-(defun add-midi-controller (class &rest args)
-  "register midi-controller by id and additionally by pushing it onto
-the hash-table entry of its midi-input."
-  (apply #'make-instance class args))
+(defun add-midi-controller (class id &rest args)
+  "Register a MIDI controller of class /class/ with ID /id/ and optional
+initialization argumens /args/.
+
+@Arguments
+class - The class of the midi controller to add.
+id - Keyword or Symbol used as ID of the instance.
+args - Initialization arguments appropriate for the class.
+
+@See-also
+find-controller
+remove-midi-controller
+remove-all-midi-controllers
+
+"
+  (apply #'make-instance class :id id args))
 
 (defun remove-midi-controller (id)
-  (let ((instance (gethash id *midi-controllers*)))
+  "Unregister and delete the instance of a midi controller with ID /id/.
+
+@Arguments
+id - Keyword or Symbol used as ID of the instance.    
+
+@See-also
+add-midi-controller
+find-controller
+remove-all-midi-controllers
+
+"  (let ((instance (gethash id *midi-controllers*)))
     (format t "~&removing: ~a~%" id)
     (if instance
         (progn
@@ -246,28 +269,42 @@ the hash-table entry of its midi-input."
               (warn "couldn't remove midi-controller ~a" instance))))))
 
 (defun remove-all-midi-controllers ()
+  "Unregister and delete all currently registered MIDI controller instances.
+
+@See-also
+add-midi-controller
+find-controller
+remove-midi-controller
+"
   (loop
-    for key being the hash-keys of *midi-controllers*
-    for v being the hash-values of *midi-controllers*
-    do
-       (unless (consp v)
-         (format t "~&removing: ~a~%" v)
-         (if v
-             (if (member v (gethash (midi-input v) *midi-controllers*))
-                 (progn
-                   (setf (gethash (midi-input v) *midi-controllers*)
-                         (delete v (gethash (midi-input v) *midi-controllers*)))
-                   (format t "removing ~a: ~a" key (remhash key *midi-controllers*)))
-                     (warn "couldn't remove midi-controller ~a" v))))))
+     for key being the hash-keys of *midi-controllers*
+     for v being the hash-values of *midi-controllers*
+     do
+        (unless (consp v)
+          (format t "~&removing: ~a~%" v)
+          (if v
+              (if (member v (gethash (midi-input v) *midi-controllers*))
+                  (progn
+                    (setf (gethash (midi-input v) *midi-controllers*)
+                          (delete v (gethash (midi-input v) *midi-controllers*)))
+                    (format t "removing ~a: ~a" key (remhash key *midi-controllers*)))
+                  (warn "couldn't remove midi-controller ~a" v))))))
 
 (defun find-controller (id)
-  (gethash id *midi-controllers*))
+  "Return MIDI controller instance with ID /id/.
 
-(defun ensure-controller (id)
-  (let ((controller (gethash id *midi-controllers*)))
-    (if controller
-        controller
-        (error "controller ~S not found!" id))))
+@Arguments
+id - Keyword or Symbol used as ID of a midicontroller instance .
+
+@See-also
+add-midi-controller
+remove-midi-controller
+remove-all-midi-controllers
+
+"  (let ((controller (gethash id *midi-controllers*)))
+     (if controller
+         controller
+         (error "controller ~S not found!" id))))
 
 ;;; (ensure-controller :nk2)
 ;;; (setf *midi-debug* nil)
@@ -306,21 +343,26 @@ instance."
      (dolist (fn (aref (aref *midi-note-fns* channel) d1)) (funcall fn 0)))))
 
 (defun start-midi-receive (input)
-  "general receiver/dispatcher for all midi input of input arg. On any
-midi input it scans all elems of *midi-controllers* and calls their
-handle-midi-in method in case the event's midi channel matches the
-controller's channel."
+  "Start the clamps generic midi handler and all registered MIDI responders
+of input stream /input/.
+
+@Arguments
+input - Input MIDI stream of type /<jackmidi:input-stream>/.
+
+@See-also
+stop-midi-receive
+"
   (incudine.util:msg :info "removing-responders")
   (remove-all-responders input)
   (make-responder input
-     (lambda (st d1 d2)
-       (let ((chan (status->channel st))
-             (opcode (status->opcode st)))
-         (generic-midi-handler opcode d1 d2 chan)
-         (dolist (controller (gethash input *midi-controllers*))
-           (declare (type midi-controller controller))
-           (if (= chan (chan controller))
-               (handle-midi-in controller opcode d1 d2))))))
+                  (lambda (st d1 d2)
+                    (let ((chan (status->channel st))
+                          (opcode (status->opcode st)))
+                      (generic-midi-handler opcode d1 d2 chan)
+                      (dolist (controller (gethash input *midi-controllers*))
+                        (declare (type midi-controller controller))
+                        (if (= chan (chan controller))
+                            (handle-midi-in controller opcode d1 d2))))))
   (recv-start input)
   (update-all-controllers input)
   :midi-rcv-started)
@@ -328,8 +370,15 @@ controller's channel."
 ;;; (start-midi-receive *midi-in1*)
 
 (defun stop-midi-receive (input)
-  "remove all responders of input and stop general receiver/dispatcher
-of the input."
+  "Stop the clamps generic midi handler and remove all registered MIDI
+responders of input stream /input/.
+
+@Arguments
+input - Input MIDI stream of type /<jackmidi:input-stream>/.
+
+@See-also
+start-midi-receive
+"
   (remove-all-responders input)
   (recv-stop input))
 

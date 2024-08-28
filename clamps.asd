@@ -30,6 +30,43 @@
 (defparameter *sfz-preset-lookup* (make-hash-table))
 
 (defun clamps (&rest args)
+  "Start Clamps including the gui.
+
+Besides starting the Gui the function also:
+
+- Starts the osc responder for Inkscape.
+- Starts the realtime engine calling #'rts.
+- Creates groups and buses for incudine dsps (see the
+Chapter <<clamps:General Incudine Setup>>.
+- Starts the documentation acceptor for the searchable online doc
+at /http://localhost:8282/overview/index.html/.
+
+@Arguments
+gui-root - ist the path where to put the /www/ subfolder for files
+accessible by the gui (nicknamed /<clamps-gui-root>/ throughout
+this dictionary).
+
+open - is a flag indicating whether to open the #'clamps-base-url in a
+browser window after starting the gui.
+
+In the given path the following directories
+will be created:
+
+- /<clamps-gui-root>/www//
+- /<clamps-gui-root>/www/svg//
+
+file path for svg files used in the /<clamps-base-url>/svg-display/ page
+of the Gui.
+
+Any files which need to be accessible by the Gui have to be put
+into the /<clamps-gui-root>/www// subdirectory with their filenames
+relative to this directory.
+
+@See-also
+clamps-base-url
+clamps-restart-gui
+clamps-gui-root
+"
   (flet ((clampscall (fn &rest args)
            (apply (find-symbol (string fn) :clamps) args))
          (cmvar (var)

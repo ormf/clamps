@@ -64,7 +64,31 @@ to be supplied. The sym of the stream gets interned as a parameter."
      (values ',sym)))
 
 (defun rts (&key (rt-wait 0))
-  (declare (ignore rt-wait))
+  "Start the real-time system of Clamps. This functions sets the
+following special variables:
+
+*midi-in1* - The default Midi Input
+*midi-out1* - The default Midi Output
+*rts-out* - The default output for realtime messages from
+Clamps/CM.
+
+It also starts the rt engine of incudine calling
+/incudine:rt-start/.
+
+@Arguments
+rt-wait - Time in seconds to wait before starting.
+@Note
+
+This command is an replacement of the /rts/ command of CM, described
+<<../cm-dict/index.html#rts-fn.html><here>>, so none of the options
+mentioned there or the decription in
+<<../cm-dict/index.html#rts-topic.html><RTS>> apply to Clamps. Other
+related CM functions, like /rts-pause/, /rts-continue/ and /rts-stop/
+also don't work in Clamps.
+
+@See-also
+rts?
+"  (declare (ignore rt-wait))
 ;;;  (cm)
   (let ((result (cl-midictl:start-midi-engine)))
     (setf *midi-in1* (first result))
@@ -82,7 +106,11 @@ to be supplied. The sym of the stream gets interned as a parameter."
   :cm-rts-started)
 
 (defun rts? (&optional arg)
-  (declare (ignore arg))
+  "Checks if rts is started and running.
+
+@See-also
+rts
+"  (declare (ignore arg))
   (and (eq :started (incudine:rt-status))
        *cm-rts-started*))
 

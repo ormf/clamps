@@ -37,8 +37,6 @@
                   :cl-sfz
                   :cl-poolplayer
                   :svg-import-export
-                  :cm-svg
-                  :cm-svg.rts
                   :cm-sfz
                   :cm-poolevt
                   :cm-poolplayer

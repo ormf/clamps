@@ -42,7 +42,8 @@
    (tr-stop :accessor tr-stop)
    (tr-play :accessor tr-play)
    (tr-rec :accessor tr-rec)
-   (cc-nums :accessor cc-nums)))
+   (cc-nums :accessor cc-nums))
+  (:documentation "Class for a Nanoktl2 midi controller."))
 
 (export '(nanoktl2-midi
           nk2-faders nk2-fader-update-fns

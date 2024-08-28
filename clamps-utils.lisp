@@ -78,12 +78,29 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
   (values))
 
 (defun clamps:idump (node)
+  "Dump all active dsps of /node/ to the /incudine:\ast{}logger-stream\ast{}/
+output.
+
+@Arguments
+node - The id of the node
+
+@Note
+If /(idump)/ doesn't create any output although dsps are running,
+reset the logger-stream using <<reset-logger-stream>>.
+"
   (unless incudine.util:*logger-stream*
     (reset-logger-stream))
   (dump (incudine:node node)))
 
 (defun clamps:set-tempo (bpm)
-  (setf cm:*tempo* bpm)
+  "Set the tempo in beats per minute for both, CM and Incudine.
+
+@Arguments
+bpm - Number of beats per minute.
+
+@See-also
+set-bpm
+"  (setf cm:*tempo* bpm)
   (setf (bpm *tempo*) bpm))
 
 (defvar *clamps-doc-acceptor* (make-instance 'hunchentoot:easy-acceptor
@@ -91,8 +108,11 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
         :document-root (asdf:system-relative-pathname :clamps "doc/")))
 
 (defun start-doc-acceptor ()
-  (unless (hunchentoot::acceptor-listen-socket *clamps-doc-acceptor*)
-    (hunchentoot:start *clamps-doc-acceptor*)))
+  "Start the doc acceptor for online documentation. This is done
+automatically on startup to make the clamps documentation
+accessible at the URL /https://localhost:8282/.
+"  (unless (hunchentoot::acceptor-listen-socket *clamps-doc-acceptor*)
+     (hunchentoot:start *clamps-doc-acceptor*)))
 
 (setf (fdefinition 'clamps::set-bpm) #'clamps:set-tempo)
 
@@ -103,7 +123,14 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
   (n-exp (apply #'interp x (flatten bp)) min max))
 
 (defun plot-2d (seq)
-  "plot a linear sequence by grouping the elements in 2."
+  "Convenience wrapper around <<plot>>: A flat sequence of numbers is
+interpreted as 2-d coordinate pairs.
+
+@Examples
+#+BEGIN_SRC lisp
+(plot-2d '(2 1 4 3 6 10)) <=> (plot '((2 1) (4 3) (6 10)))
+#+END_SRC
+"
   (plot (ou:group seq 2))
   (values))
 
@@ -112,22 +139,110 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
   (plot (ou:group seq 3))
   (values))
 
-(defvar *standard-pitch* 440.0)
+(defvar *standard-pitch* 440.0
+  "Tuning reference for /ftom/ and /mtof/ in Hz. Defaults to 440.
+
+@Important-Note
+
+Don't set this value directly! Rather use the <set-standard-pitch>
+function which changes the standard pitch reference for the entire
+/Clamps/ system.
+
+@See-also
+<ftom>
+<mtof>
+<set-standard-pitch>")
 
 (defun set-standard-pitch (freq)
+  "Set the ∗​standard-pitch​∗ reference of Clamps to freq in Hz.
+
+@Arguments
+
+=freq= Frequency of A4 in Hz.
+
+@See-also
+*standard-pitch*
+"
   (setf *standard-pitch* (float freq 1.0))
   (setf oid::*standard-pitch* (float freq 1.0)))
 
 (defun ftom (f &key (tuning-base *standard-pitch*))
-  (+ 69 (* 12 (log (/ f tuning-base) 2))))
+  "Convert frequency in Hz to pitch in Midicents.
 
-(defun mtof (m &key (tuning-base *standard-pitch*))
-  (* tuning-base (expt 2 (/ (- m 69) 12))))
+@Arguments
+freq - Frequency in Hz.
+:tuning-base - Frequency of A4 in Hz.
 
-(defun fr2ct (fr)
-  "Return interval in midicent of frequency ratio fr."
-  (* 12 (log fr 2)))
+@Examples
+
+(ftom 440) ; => 69.0
+
+(ftom 269.3) ; => 60.500526
+
+(ftom 415 :tuning-base 415) ; => 69.0
+
+@See-also
+mtof
+"
+  (+ 69 (* 12 (log (/ f tuning-base ) 2))))
+
+(defun mtof (midi-value &key (tuning-base *standard-pitch*))
+  "Convert pitch in Midicts to frequency in Hz.
+
+@Arguments
+midi-value - Pitch in Midicents.
+:tuning-base - Frequency of A4 in Hz.
+
+@Examples
+(mtof 69) ; => 440
+
+(mtof 60.5) ; => 269.29178
+
+(mtof 69 :tuning-base 415) ; => 415
+
+@See-also
+ftom
+"
+  (* tuning-base (expt 2 (/ (- midi-value 69) 12))))
+
+(defun fr2ct (ratio)
+       "Return the Midicents interval of /ratio/.
+
+@Arguments
+ratio - The frequency ratio of the interval.
+@Examples
+#+BEGIN_SRC lisp
+(fr2ct 2) ;; => 12.0
+
+(fr2ct 4/5) ;; => -3.863137
+
+(fr2ct 3/2) ;; => 7.01955
+
+(fr2ct 1/2) ;; => -12.0
+#+END_SRC
+
+@See-also
+ct2fr
+"
+  (* 12 (log ratio 2)))
 
 (defun ct2fr (ct)
-  "Return frequency ratio of interval ct in midicent."
+  "Return the frequency ratio of the Midicents interval /cent/.
+
+@Arguments
+cent - The interval in Midicents.
+@Examples
+#+BEGIN_SRC lisp
+(ct2fr 12) ;; => 2
+
+(ct2fr 1) ;; => 1.0594631
+
+(ct2fr 7) ;; => 1.4983071
+
+(ct2fr -12) ;; => 1/2
+#+END_SRC
+
+@See-also
+fr2ct
+"
   (expt 2 (/ ct 12)))

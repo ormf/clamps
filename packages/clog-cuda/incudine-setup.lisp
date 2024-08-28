@@ -109,8 +109,12 @@
   )
 
 (defun node-free-unprotected ()
- (dogroup (n (node 200))
-   (free n)))
+  "Free all Incudine nodes of /group 200/.
+
+@See-also
+rts-hush
+" (dogroup (n (node 200))
+    (free n)))
 
 ;;; (setup-io)
 ;;; (dump (node 0))

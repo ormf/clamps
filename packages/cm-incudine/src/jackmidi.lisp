@@ -19,8 +19,19 @@
 
 (defconstant +ml-opcode-mask+ #xf0)
 (defconstant +ml-channel-mask+ #x0f)
-(defparameter *midi-in1* nil)
-(defparameter *midi-out1* nil)
+(defparameter *midi-in1* nil
+  "Default clamps MIDI input stream of type /<jackmidi:input-stream>/.
+
+@See-also
+*midi-out1*
+")
+(defparameter *midi-out1* nil
+  "Default clamps MIDI output stream of type
+/<jackmidi:output-stream>/.
+
+@See-also
+*midi-in1*
+")
 (defparameter *stream-recv-responders* (make-hash-table))
 (defparameter  *midi-rcv-type-dummy* nil)
 (defparameter  *midi-obj-name-dummy* nil)

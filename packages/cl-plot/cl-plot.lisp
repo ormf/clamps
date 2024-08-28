@@ -54,16 +54,76 @@ Common Lisp's #'map."
    :input :stream))
 
 (defgeneric plot (data &rest args &key region header options grid &allow-other-keys)
-  (:documentation "Plot input data. In case of sequence input data,
-  the :data-fn key specifies a function which is applied to each
-  element of the sequence (with its idx as first argument and the
-  element as second argument) and should return the data of one
-  gnuplot dataset as values. The default data-fn handles numbers in
-  the sequence as y values and their index is taken as x value. In
-  case the sequence is comprised of subsequences, the first elements
-  of the sublists are interpreted as x y &rest z ... values.
+  (:documentation "Method
+Plot /obj/ using <<http://www.gnuplot.info/><GnuPlot>>.
 
-  plot returns the original data list."))
+@Arguments
+
+obj - The object to be plotted. Currently the following object
+types are implemented:
+
+- =seq= A sequence of numbers, interpreted as y-values of
+successive x-values starting at 0.
+
+Pairs as elements of /seq/ are interpreted as 2d coordinates of
+data points. Vectors, arrays or lists are valid sequences.
+
+- =Function= A function of one argument. Displays the values of
+applying function to x-values in the range /[0..1]/.
+
+
+- =incudine:buffer= Display the contents of an incudine
+buffer. For a sample buffer this acts like a waveform display,
+but any buffer data can be displayed.
+
+:region - A list of two values defining the left and right margin of
+x-values of the plot.
+
+:header - A string supplied as a header to GnuPlot before initiating
+the plot command.
+
+:options - A string with options for GnuPlot.
+:grid - Boolean indicating whether to use a grid.
+@Examples
+#+BEGIN_SRC lisp
+(plot '(5 4 6 1 9)) ; => (5 4 6 1 9)
+#+END_SRC
+#+attr_html: :width 50%
+#+CAPTION: output of (plot '(5 4 6 1 9))
+[[./img/plot-01.svg]]
+#+BEGIN_SRC lisp
+(plot '((-2 5) (0 8) (4 -2) (6 10)))  ; => ((-2 5) (0 8) (4 -2) (6 10))
+#+END_SRC
+#+attr_html: :width 50%
+#+CAPTION: output of (plot '((-2 5) (0 8) (4 -2) (6 10)))
+[[./img/plot-02.svg]]
+#+BEGIN_SRC lisp
+(defun my-fn (x) (* x x)) ; => my-fn
+
+(plot #'my-fn)  ; => #<function my-fn>
+#+END_SRC
+#+attr_html: :width 50%
+#+CAPTION: output of (plot #'my-fn)
+[[./img/plot-03.svg]]
+#+BEGIN_SRC lisp
+(plot #'my-fn :region '(-10 10)) ; => #<function my-fn>
+#+END_SRC
+#+attr_html: :width 50%
+#+CAPTION: output of (plot #'my-fn :region '(-10 10))
+[[./img/plot-04.svg]]
+#+BEGIN_SRC lisp
+(ensure-sfz-preset :flute-nv)
+
+(plot (first (sfz-preset-buffer :flute-nv 60)))
+#+END_SRC
+#+attr_html: :width 50%
+#+CAPTION: output of (plot (first (sfz-preset-buffer :flute-nv 60)))
+[[./img/plot-05.svg]]
+
+@See-also
+plot-2d
+svg
+"))
 
 ;;;  default function for the :data-fn arg of plot. The Return value
 ;;;  should be of the format (values x y &rest z ...)

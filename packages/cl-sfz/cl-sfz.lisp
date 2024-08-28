@@ -176,18 +176,53 @@ all applicable sample-defs at the keynum's array-index."
              12)))
 
 (defun load-sfz-preset (file name &key force (play-fn #'play-sfz-loop))
-  "load sfz file into a preset with the id name. In case this preset
-already exists, the old one will only be overwritten if :force is set
-to t."
+  "Load a sfz file into a preset with the id name. In case this preset
+already exists, the old one will only be overwritten if force is
+set to t. This function normally doesn't need to be called
+explicitely. The preferred mechanism to deal with sfz presets is by
+using a combination of <<add-sfz-preset>> and <<ensure-sfz-preset>>.
+
+@Arguments
+file - Path or filename of the sfz file to load
+name - symbol to identify the preset (preferably a keyword, but any
+symbol works)
+
+:force - Force loading of the preset even if it already exists.
+:play-fn - The play-fn to use when playing a sound. Possible choices
+are
+
+#'play-sfz-loop
+
+If loop points are set, play the loop in case the duration
+exceeds (- loop-end start). If no loop points are set, loop
+the whole sample.
+
+#'play-sfz-one-shot
+
+Just play sample once even if duration exceeds sample length.
+
+@Examples
+
+(load-sfz-preset \"~/quicklisp/local-projects/clamps/packages/cl-sfz/snd/sfz/Flute-nv/000_Flute-nv.sfz\" :flute-nv)
+
+@See-also
+add-sfz-preset
+ensure-sfz-preset
+remove-sfz-preset
+"
   (when (or force (not (gethash name *sfz-tables*)))
     (format t "loading ~S from ~a~%" name file)
     (setf (gethash name *sfz-tables*)
           (get-keynum-array file :play-fn play-fn))))
 
-;;; (load-sfz-preset "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv)
-
 (defun list-sfz-presets (&key (loaded nil))
-  "return a sorted list of all registered sfz-presets."
+  "Return a sorted list of all sfz preset names.
+
+@Arguments
+:loaded - Boolean to indicate whether only the preset names of
+loaded presets should be returned. If /nil/ all registered preset
+names are returned.
+"
   (if loaded (sort (loop for k being each hash-key of *sfz-tables* collect k) #'string<)
       (sort (loop for k being each hash-key of cl-user:*sfz-preset-lookup* collect k) #'string<)))
 
@@ -198,25 +233,46 @@ to t."
    (aref (get-sfz-preset preset) (round pitch))))
 
 (defun sfz-preset-loaded? (preset)
-  (if (gethash preset *sfz-tables*) t))
+  "Predicate to test if sfz preset is loaded.
+
+@Arguments
+preset - Keyword or symbol of registered preset.
+@Examples
+#+BEGIN_SRC lisp
+;;; Directly after Clamps startup:
+
+(sfz-preset-loaded? :flute-nv) ;; => nil
+
+(output (new sfz))
+;; => loading :flute-nv from ~/quicklisp/local-procects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz
+;; No values
+
+(sfz-preset-loaded? :flute-nv) ;; => t
+#+END_SRC
+
+@See-also
+add-sfz-preset
+get-sfz-preset
+"  (if (gethash preset *sfz-tables*) t))
 
 (defun remove-sfz-preset (name)
-  (remhash name *sfz-tables*))
+  "Remove the soundfile map associated with name. This is the opposite of <<load-sfz-preset>>.
+
+@Arguments
+name - Keyword or symbol of the registered preset.
+@Note
+The soundfile buffers of the samples used in the sfz description
+and the association between the preset name and the sfz file are
+*not* removed! Only the association between the preset name, the
+keynums and the buffers are removed.
+
+@See-also
+load-sfz-preset
+get-sfz-preset
+"  (remhash name *sfz-tables*))
 
 (defun db->amp (db)
   (expt 10 (/ db 20)))
-
-(defun sfz->lsample (sfz-entry dir &key (play-fn #'of-incudine-dsps:play-lsample*))
-  (let* ((abs-filepath (of-incudine-dsps:abs-path (getf sfz-entry :sample) dir))
-         (buffer (of-buffer-load abs-filepath)))
-    (of-incudine-dsps::make-lsample
-     :filename abs-filepath
-     :buffer buffer
-     :play-fn play-fn
-     :keynum (of-incudine-dsps:get-keynum sfz-entry)
-     :amp (incudine::db->linear (getf sfz-entry :volume 0))
-     :loopstart (incudine::sample (or (getf sfz-entry :loop-start) 0))
-     :loopend (incudine::sample (or (getf sfz-entry :loop-end) (buffer-frames buffer))))))
 
 #|
 (defun play-sample (pitch db dur &key (pan 0.5) (preset :flute-nv) (sfz-tables *sfz-tables*) (startpos 0))
@@ -243,10 +299,39 @@ to t."
 
 
 (defun add-sfz-preset (preset file)
-  "add preset to file association to 'cl-user:*sfz-preset-lookup*."
+  "Register the association between a preset name and its corresponding sfz
+file.
+
+@Arguments
+preset - A keyword or symbol to name the preset
+file - A string or path to the associated sfz file. If the file
+path is relative, it will be searched recursively in all paths of
+/cl-user::*sfz-file-path*/.
+
+@Note
+This function only stores the association between the preset
+name and its sfz file. Loading of its samples into memory is done
+implicitely when the preset is used by a playing function like
+<<#'play-sfz>> or by using <<#'ensure-sfz-preset>> or its synonym
+<<#'get-sfz-preset>>.
+
+@See-also
+ensure-sfz-preset
+get-sfz-preset
+sfz
+sfz-preset-loaded?
+"
   (setf (gethash preset cl-user:*sfz-preset-lookup*) file))
+
 (defun sfz-preset-file (preset)
-  "get the full path of the file of perset."
+  "Return the full path of /preset/.
+
+@Arguments
+preset - Keyword or symbol of a registered sfz preset.
+
+@See-also
+add-sfz-preset
+"
   (and
    (boundp 'cl-user:*sfz-preset-lookup*)
    (boundp 'cl-user:*sfz-preset-path*)
@@ -257,6 +342,32 @@ to t."
            cl-user:*sfz-preset-path*)))))
 
 (defun get-sfz-preset (preset &key force (play-fn  #'play-sfz-loop))
+  "Load the sfz definition of /preset/ and all its samples into the
+system if it hasn't been loaded previously. If force is /t/, force
+reload. Optionally set a play function.
+
+The association between the preset name and its sfz file has to be
+established before using <<add-sfz-preset>>, otherwise a warning is
+issued and no file is loaded.
+
+@Arguments
+preset - A keynum or symbol to serve as a name of the preset.
+:force - A boolean indicating to force a reload even if the preset
+has been loaded before.
+
+:play-fn - The play function to be used. Possible options are:
+
+#'play-sfz-loop
+
+#'play-sfz-one-shot
+
+@See-also
+add-sfz-preset
+ensure-sfz-preset
+load-sfz-preset
+remove-sfz-preset
+sfz-preset-loaded?
+"
   (or
    (and (not force) (gethash preset *sfz-tables*))
    (let ((sfz-preset-file (sfz-preset-file preset)))
@@ -269,8 +380,29 @@ to t."
 (setf (fdefinition 'ensure-sfz-preset) #'get-sfz-preset)
 
 (defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
-  "general function: Plays sample looping or one-shot depending on the
-'play-fn slot in the lsample definition."
+  "Play a sfz preset with stereo panning to incudine's audio outputs
+or a bus using the /play-fn/ of the sample to be played.
+
+@Arguments
+pitch - Pitch in Midicent.
+db - Amplitude in dB. /0/ corresponds to a
+scaling factor of /1/, /-100/ to a scaling factor of /0/.
+
+dur - Duration in seconds.
+:pan - Number in the range /[0..1]/ defining equal power panning
+between /out0/ and /out1/.
+
+:preset - The name of a registered preset. If the preset hasn't been
+loaded it will get loaded before playback starts.
+
+:startpos - The startposition in the sample in seconds.
+:out1 - Zero based index of the first outlet.
+:out2 - Zero based index of the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
+
+@See-also
+play-sfz-loop
+play-sfz-one-shot
+"
   (let ((map (get-sfz-preset preset)))
     (if map 
         (let* ((out2 (or out2 (mod (1+ out1) 8)))
@@ -282,9 +414,9 @@ to t."
           (cond
             ((eql play-fn #'play-sfz-loop)
              (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan
-                                                (of-incudine-dsps:lsample-loopstart sample)
-                                                (of-incudine-dsps:lsample-loopend sample) startpos out1 out2
-                                                :head 200)
+                                             (of-incudine-dsps:lsample-loopstart sample)
+                                             (of-incudine-dsps:lsample-loopend sample) startpos out1 out2
+                                             :head 200)
              )
             (t
              (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan startpos out1 out2
@@ -304,7 +436,33 @@ to t."
 |#
 
 (defun play-sfz-loop (pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
-  "Plays sample looping independent of the 'play-fn slot in the lsample definition."
+  "Play a sfz preset with stereo panning to incudine's audio outputs
+or a bus. Loop the sound according to the loop settings of the
+sample in the sfz file or loop the whole sound if not present. This
+function always uses loop playback regardless of the setting of
+/play-fn/ in the sample to be played.
+
+
+@Arguments
+pitch - Pitch in Midicent.
+db - Amplitude in dB. /0/ corresponds to a scaling factor of /1/,
+/-100/ to a scaling factor of /0/.
+
+dur - Duration in seconds.
+:pan - Number in the range /[0..1]/ defining equal power panning
+between /out0/ and /out1/.
+
+:preset - The name of a registered preset. If the preset hasn't been
+loaded it will get loaded before playback starts.
+
+:startpos - The startposition in the sample in seconds.
+:out1 - Zero based index of the first outlet.
+:out2 - Zero based index of the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
+
+@See-also
+play-sfz
+play-sfz-one-shot
+"
   (let ((map (get-sfz-preset preset)))
     (if map
         (let* ((sample (random-elem (aref map (round pitch))))
@@ -321,7 +479,30 @@ to t."
 ;;; (play-sfz-loop 60 0 10 :pan 0 :out1 1)
 
 (defun play-sfz-one-shot (pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
-  "Plays sample once independent of the 'play-fn slot in the lsample definition."
+  "Play a sfz preset with stereo panning to incudine's audio outputs
+or a bus once (regardless of the setting of /play-fn/ in the sample
+to be played).
+
+@Arguments
+pitch - Pitch in Midicent.
+db - Amplitude in dB. /0/ corresponds to a
+scaling factor of /1/, /-100/ to a scaling factor of /0/.
+
+dur - Duration in seconds.
+:pan - Number in the range /[0..1]/ defining equal power panning
+between /out0/ and /out1/.
+
+:preset - The name of a registered preset. If the preset hasn't been
+loaded it will get loaded before playback starts.
+
+:startpos - The startposition in the sample in seconds.
+:out1 - Zero based index of the first outlet.
+:out2 - Zero based index of the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
+
+@See-also
+play-sfz
+play-sfz-loop
+"
   (let ((map (get-sfz-preset preset)))
     (if map
         (let* ((sample (random-elem (aref map (round pitch))))

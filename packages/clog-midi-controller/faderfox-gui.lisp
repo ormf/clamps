@@ -73,7 +73,7 @@
   (let ((midi-controller
           (or (find-controller id)
               (add-midi-controller 'faderfox-midi
-                                   :id id
+                                   id
                                    :chan chan
                                    :midi-input *midi-in1*
                                    :midi-output *midi-out1*))))

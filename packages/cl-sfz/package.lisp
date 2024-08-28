@@ -13,6 +13,7 @@
    #:ensure-sfz-preset
    #:get-sfz-preset
    #:sfz-preset-buffer
+   #:sfz-preset-file
    #:sfz-get-range
    #:sfz-preset-loaded?
    #:sf-table-get-range

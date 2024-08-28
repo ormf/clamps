@@ -251,7 +251,14 @@
 (defun svg->browser (svg-file &key (bar-lines 1) (staff-systems 1)
                                 (piano-roll 0) (scale 1)
                                 (timescale 1/32) (inverse 0))
-  "display svg file in browser at \"https://localhost:8080/svg-display\""
+  "Display =svg-file= in the SVG Player Gui, located at
+/<clamps-base-url>/svg-display/.
+
+@Arguments
+svg-file - String naming the svg-file to display/play. The
+filename is interpreted relative to the /<clamps-gui-root>/svg/
+directory.
+"
   (set-val cm.svgd:svg-file svg-file)
   (set-val cm.svgd:piano-roll piano-roll)
   (set-val cm.svgd:staff-systems staff-systems)

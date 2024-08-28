@@ -1,4 +1,7 @@
 *~
+#*
+\.#*
+doc/#*
 *.fasl
 clamps
 init-clamps.lisp

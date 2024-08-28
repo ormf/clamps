@@ -222,9 +222,10 @@
   (let ((midi-controller (or
                           (find-controller id)
                           (add-midi-controller 'nanoktl2-preset-midi
+                                               id
                                                :midi-input *midi-in1*
                                                :midi-output *midi-out1*
-                                               :id id :chan chan)))
+                                               :chan chan)))
         (margin "0.2em"))
     (with-slots (fader s-buttons m-buttons r-buttons
                  track-left track-right

@@ -41,14 +41,43 @@
   ((value :initarg :value :accessor ref-value)
    (setter :initarg :setter :initform '() :reader ref-setter)
    (fun :initarg :fun  :initform '() :reader ref-fun)
-   (update :initarg :update  :initform '() :accessor ref-update)))
+   (update :initarg :update  :initform '() :accessor ref-update))
+  (:documentation
+   "A /ref-object/ is a special class used in the /cl-refs/
+package. Its slots shouldn't be accessed or manipulated directly,
+but rather using the public functions of the cl-refs package listed
+below. For information how to use ref-objects refer to <<clamps:cl-refs>> in
+the Clamps documentation.
+
+@See-also
+get-val
+make-computed
+make-ref
+set-val
+watch
+"))
 
 (defmethod print-object ((obj ref-object) stream)
   (format stream "#<ref ~S>" (ref-value obj)))
 
 ;;; constructor
 (defun make-ref (val &rest args)
-  (apply #'make-instance 'ref-object :value val args))
+  "Return an instance of <<ref-object>> with initial value /val/.
+
+@Arguments
+val - Initial value of the created instance. It can be of any
+type.
+
+args - Optional args supplied to make-instance. They are used
+internally and are not intended to be used directly when working
+with /cl-refs/.
+
+@See-also
+get-val
+make-computed
+set-val
+watch
+"  (apply #'make-instance 'ref-object :value val args))
 
 ;;; this is the setter. It updates the value and calls all listeners.
 (defun %set-val (ref val &key (force nil))
@@ -75,7 +104,22 @@ recalcuations and problems with circular dependencies."
   (ref-value ref))
 
 (defun set-val (ref value &key (force nil))
-  "set the value of ref in the context of a freshly cleared *refs-seen*."
+  "Set the value of ref-object /ref/ to /value/ if different than
+previous value. If /force/ is non-nil, set in any case. Return
+value.
+
+@Arguments
+ref - An instance of <<ref-object>>
+value - Any value of any type to be set.
+force - A boolean indicating to set the value even if it is eql to
+the previous value of the ref-object.
+
+@See-also
+get-val
+make-computed
+make-ref
+watch
+"
   (let ((*refs-seen* nil))
     (%set-val ref value :force force))
   (setf *refs-seen* nil) ;;; just to make sure that the global variable is cleared (not really necessary).
@@ -85,9 +129,17 @@ recalcuations and problems with circular dependencies."
 ;;; to the listeners. This is very cool.
 
 (defun get-val (ref)
-  "get the value of ref, updating listeners and dependencies of the
-listener's ref if *curr-ref* is set in the dynamic scope of the call
-to get-val (see #'make-computed and #'watch)."
+  "Return the value of /ref-object/.
+
+@Arguments
+ref-object - An instance of <<ref-object>>.
+
+@See-also
+make-computed
+make-ref
+set-val
+watch
+"
   (when *curr-ref*
     (pushnew *curr-callback* (ref-listeners ref))
     (pushnew ref (ref-dependencies *curr-ref*)))
@@ -146,8 +198,26 @@ to get-val (see #'make-computed and #'watch)."
 ;;; Together with the getter it tracks which object was accessed and adds it to the dependencies.
 
 (defun make-computed (fn &optional (setter nil))
-  "define/create a ref variable using fn to calculate its value with
-automagic update whenever any ref value in fn changes."
+  "Return a <<ref-object>> which recalculates and sets its value using
+/fn/ whenever a ref-object accessed with <<get-val>> in the body of
+/fn/ is changed.
+
+Refer to <<clamps:Defining relations>> in the Clamps documentation for
+examples.
+
+@Arguments
+fn - Function of no arguments to call whenever a value accessed
+using <<get-val>> in the body of the function is changed.
+
+setter - Function of one argument called with the value of the
+ref-object returned by /make-computed/ whenever it changes.
+
+@See-also
+get-val
+make-ref
+set-val
+watch
+"
 ;;; let* is sequential to avoid nesting of multiple let
   (let* ((new-ref (make-ref nil :fun fn :setter setter))
          (update-callback (lambda (&optional old new) (declare (ignorable old new)) (funcall (ref-update new-ref)))))
@@ -194,39 +264,55 @@ automagic update whenever any ref value in fn changes."
 ;;; dependencies.
 
 (defun watch (f)
-  (let* ((new-ref (make-ref nil :fun f))
-         (update-callback (lambda (&optional old new)
-                            (declare (ignorable old new))
-                            (funcall (ref-update new-ref)))))
-    (with-updating-deps
-      (setf (ref-update new-ref)
-            (lambda ()
-              (on-deps-update (clear-dependencies new-ref update-callback))
-              ;; the let below establishes a dynamic context for the
-              ;; funcall in its body. If *curr-ref* is non-nil, any
-              ;; #'get-val access to a ref in ref-fun will push the
-              ;; update-callback to the listeners of the ref and the
-              ;; ref to the dependencies of the new-ref. In the first
-              ;; call to watch, *update-deps* is set to T to ensure
-              ;; all dependencies/listeners get registered. Subsequent
-              ;; calls to ref-update depend on the value of
-              ;; *update-deps* in the dynamic context in which they
-              ;; are called to avoid unnecessary duplicate registering
-              ;; of the dependencies/listeners on each update
-              ;; triggered by value changes in the observed refs.
-              (let ((*curr-ref* (on-deps-update new-ref)) 
-                    (*curr-callback* update-callback))
-                ;; Note: storing the new value doesn't seem to make sense as the
-                ;; object's value isn't supposed to be read anywhere. Watch is rather
-                ;; used for its side effects only.
-                (setf (ref-value new-ref) (funcall (ref-fun new-ref))))
-              new-ref))
-      ;; call the update function once to register a call to it in all
-      ;; ref-objects read in <f>.
-      (funcall (ref-update new-ref)))
-    (lambda () ;;; return the unwatch/cleanup fn
-      (clear-dependencies new-ref update-callback)
-      (makunbound 'new-ref))))
+  "Call /fn/ whenever a value accessed using <<get-val>> in the body of
+the function is changed.
+
+/watch/ returns a function to remove the relation, /watch/ has
+established. Refer to the chapter /Clamps Packages/Misc
+Packages/cl-refs/ in the <<../clamps/index.html><Clamps>>
+documentation for examples.
+
+@Arguments
+fn - Function of no arguments to call
+
+@See-also
+get-val
+make-computed
+make-ref
+set-val
+"  (let* ((new-ref (make-ref nil :fun f))
+          (update-callback (lambda (&optional old new)
+                             (declare (ignorable old new))
+                             (funcall (ref-update new-ref)))))
+     (with-updating-deps
+       (setf (ref-update new-ref)
+             (lambda ()
+               (on-deps-update (clear-dependencies new-ref update-callback))
+               ;; the let below establishes a dynamic context for the
+               ;; funcall in its body. If *curr-ref* is non-nil, any
+               ;; #'get-val access to a ref in ref-fun will push the
+               ;; update-callback to the listeners of the ref and the
+               ;; ref to the dependencies of the new-ref. In the first
+               ;; call to watch, *update-deps* is set to T to ensure
+               ;; all dependencies/listeners get registered. Subsequent
+               ;; calls to ref-update depend on the value of
+               ;; *update-deps* in the dynamic context in which they
+               ;; are called to avoid unnecessary duplicate registering
+               ;; of the dependencies/listeners on each update
+               ;; triggered by value changes in the observed refs.
+               (let ((*curr-ref* (on-deps-update new-ref)) 
+                     (*curr-callback* update-callback))
+                 ;; Note: storing the new value doesn't seem to make sense as the
+                 ;; object's value isn't supposed to be read anywhere. Watch is rather
+                 ;; used for its side effects only.
+                 (setf (ref-value new-ref) (funcall (ref-fun new-ref))))
+               new-ref))
+       ;; call the update function once to register a call to it in all
+       ;; ref-objects read in <f>.
+       (funcall (ref-update new-ref)))
+     (lambda () ;;; return the unwatch/cleanup fn
+       (clear-dependencies new-ref update-callback)
+       (makunbound 'new-ref))))
 #|
 (defun remove-watch (ref)
   (when (ref-cleanup ref) (funcall (ref-cleanup ref))))

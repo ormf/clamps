@@ -36,6 +36,15 @@
 (defparameter *ats-snd-directory* (pathname "/tmp/"))
 
 (defun ats->browser (ats-snd &key (reload t))
+     "Display the ats struct /ats-snd/ graphically in the interactive ATS
+Player located at /<clamps-base-url>/ats-display/ in the Gui.
+
+@Arguments
+ats-snd - The ats struct to display.
+
+@See-also
+clamps-base-url
+"
   (let ((svg-file (format nil "~a.svg"
                           (string-downcase (ats-sound-name ats-snd))))
         (play-state (get-val ats-play))

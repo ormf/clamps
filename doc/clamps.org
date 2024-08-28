@@ -50,7 +50,24 @@
 
 
 * General
-# #+TOC: headlines 3
+** Package Naming
+   The additional packages developed for clamps serve different
+   purposes, reflected in their name.
+
+   - Packages implementing basic functionalities. Their name starts
+     with /cl-/
+
+   - Packages extending Common Music. Their name starts with /cm-/
+
+   - Packages adding dsp related functionality. Their name contains
+     /cuda/ or /incudine/.
+
+   - Packages adding GUI functionality. Their name contains /clog/.
+
+   Note that there are packages with similar names, like /cl-sfz/ or
+   /cm-sfz/. The /cl-/ part is a more general implementation of basic
+   functionality, while the /cm-/ part adds the specific extensions
+   for the integration into Common Music.
 ** clamps
 *** Startup
    The clamps package is loaded from the REPL using quicklisp:
@@ -162,6 +179,90 @@
 
 * Midi
 ** cl-midictl
+   cl-midictl implements the basic infrastructure for dealing with
+   MIDI in/output, a registry for midi-controllers and implements
+   basic classes for midi-controllers.
+*** Receiving and handling MIDI Input
+    MIDI input handling is started using the function
+    [[clamps-dict:start-midi-receive][start-midi-receive]].
+
+*** Exported Symbols
+    cl-midictl exports the following symbols:
+
+  - [[dict:#midi-in1][*​midi-in1​*]]
+  - [[dict:#midi-out1][*​midi-out1​*]]
+  - [[dict:start-midi-receive][start-midi-receive]]
+  - [[dict:stop-midi-receive][stop-midi-receive]]
+  - [[dict:add-midi-controller][add-midi-controller]]
+  - [[dict:remove-midi-controller][remove-midi-controller]]
+  - [[dict:remove-all-midi-controllers][remove-all-midi-controllers]]
+  - [[dict:midi-controller][midi-controller]]
+  - [[dict:ccin][ccin]]
+  - [[dict:find-controller][find-controller]]
+  - [[dict:nanoktl2-midi][nanoktl2-midi]]
+  - [[dict:nanoktl2-preset-midi][nanoktl2-preset-midi]]
+  - [[dict:#nanoktl2-presets-file][*​nanoktl2-presets-file​*]]
+  - [[dict:save-presets][save-presets]]
+  - [[dict:load-presets][load-presets]]
+  - [[dict:set-player-buttons][set-player-buttons]]
+  - [[dict:init-nk2][init-nk2]]
+  - [[dict:gui][gui]]
+  - [[dict:echo][echo]]
+  - [[dict:chan][chan]]
+  - [[dict:#midi-debug][*​midi-debug​*]]
+  - [[dict:#midi-cc-state][*​midi-cc-state​*]]
+  - [[dict:#midi-cc-fns][*​midi-cc-fns​*]]
+  - [[dict:#oscin][*​oscin​*]]
+  - [[dict:start-osc-midi-receive][start-osc-midi-receive]]
+  - [[dict:stop-osc-midi-receive][stop-osc-midi-receive]]
+  - [[dict:osc-midi-write-short][osc-midi-write-short]]
+  - [[dict:cc-map][cc-map]]
+  - [[dict:id][id]]
+  - [[dict:chan][chan]]
+  - [[dict:midi-input][midi-input]]
+  - [[dict:midi-output][midi-output]]
+  - [[dict:last-note-on][last-note-on]]
+  - [[dict:cc-state][cc-state]]
+  - [[dict:cc-fns][cc-fns]]
+  - [[dict:note-state][note-state]]
+  - [[dict:note-fns][note-fns]]
+  - [[dict:toggle-slot][toggle-slot]]
+  - [[dict:handle-midi-in][handle-midi-in]]
+  - [[dict:nk2-faders][nk2-faders]]
+  - [[dict:nk2-last-cc][nk2-last-cc]]
+  - [[dict:nk2-fader-modes][nk2-fader-modes]]
+  - [[dict:nk2-fader-update-fns][nk2-fader-update-fns]]
+  - [[dict:s-buttons][s-buttons]]
+  - [[dict:m-buttons][m-buttons]]
+  - [[dict:r-buttons][r-buttons]]
+  - [[dict:track-left][track-left]]
+  - [[dict:track-right][track-right]]
+  - [[dict:bank-buttons][bank-buttons]]
+  - [[dict:cycle][cycle]]
+  - [[dict:set-marker][set-marker]]
+  - [[dict:marker-left][marker-left]]
+  - [[dict:marker-right][marker-right]]
+  - [[dict:tr-rewind][tr-rewind]]
+  - [[dict:tr-ffwd][tr-ffwd]]
+  - [[dict:tr-stop][tr-stop]]
+  - [[dict:tr-play][tr-play]]
+  - [[dict:tr-rec][tr-rec]]
+  - [[dict:cc-nums][cc-nums]]
+  - [[dict:gui][gui]]
+  - [[dict:gui-update-off][gui-update-off]]
+  - [[dict:with-gui-update-off][with-gui-update-off]]
+  - [[dict:faderfox-midi][faderfox-midi]]
+  - [[dict:curr-player][curr-player]]
+  - [[dict:faderfox-midi-f.orm][faderfox-midi-f.orm]]
+  - [[dict:update-state][update-state]]
+  - [[dict:update-all-controllers][update-all-controllers]]
+  - [[dict:update-preset-buttons][update-preset-buttons]]
+  - [[dict:handle-player-switch][handle-player-switch]]
+  - [[dict:get-ref][get-ref]]
+  - [[dict:start-midi-engine][start-midi-engine]]
+  - [[dict:presets][presets]]
+  - [[dict:unwatch][unwatch]]
+
 ** clog-midi-controller
 * CM Extensions
 ** cm-svg
