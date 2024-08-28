@@ -19,6 +19,10 @@
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: clamps-dict.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
+  (defun extract-link (string)
+  (if (= (aref (string-trim string) 0) 42)
+      (replace-regexp-in-string "\\*​\\(.+\\)​\\*" "#\\1" string)
+      string))
   (defun export-dict-to-clamps (s backend info)
     (let ((filename (buffer-file-name)))
       (with-temp-buffer
@@ -37,7 +41,7 @@
          (lambda (entry)
            (insert
             (format "   (\"%s\" \"clamps-dict/%s\")\n"
-                    (org-html-element-title (car entry))
+                    (extract-link (org-html-element-title (car entry)))
                     (plist-get (cdr entry) :href))))
          (cl-remove-if
           (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
@@ -108,6 +112,28 @@
     - [[sfz][sfz]]
     
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** buchla-scale
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+   #+BEGIN_SRC lisp
+     (buchla-scale curr old target &key (max 127))
+   #+END_SRC
+
+   Set the <target> fader by interpolating between 0 and <max>, using
+   the <curr> and <old> values of a source fader.
+
+   The function serves the purpose of avoiding jumps when working with
+   non motorized hardware faders: If the value of the software target
+   of the hardware fader has changed (e.g. by a preset or some program
+   logic) without the hardware fader being updated, moving the
+   hardware fader will not cause a jump in the target:
+
+   If the hardware fader moves up (> curr old), the remaining space
+   above the fader will interpolate the target software fader between
+   its current value and the maximum value, if it moves down (< curr
+   old), the software target will be interpolated between the current
+   value and 0 using the remaining space below the hardware fader.
 * C - D
 ** ct2fr
    Function
@@ -117,7 +143,7 @@
    Return the frequency ratio of the Midicents interval /cent/.
 *** Arguments
    =cent= The interval in Midicents.
-*** Example
+*** Examples
     #+BEGIN_SRC lisp
       (ct2fr 12) ;; => 2
 
@@ -176,21 +202,20 @@
    #+BEGIN_SRC lisp
      (clamps-base-url)
    #+END_SRC
-   Return the base url to access the Clamps Gui (nicknamed /<clamps-base-url>/ in this
-   dictionary).
+   Return the base url to access the Clamps Gui (nicknamed
+   /<clamps-base-url>/ in this dictionary).
 
    Its default location is http://localhost:54619.
 
-   /<clamps-base-url>/ in the browser side is corresponding to the
+   /<clamps-base-url>/ on the browser side is corresponding to the
    path /<clamps-gui-root>/, so an address named
    /<clamps-base-url>/<file>/ will load the file located at
    /<clamps-gui-root>/<file>/ as HTML into the browser window.
-*** Example
 
-    The location for the [[svg->browser][SVG Player Gui]] is at
-    /<clamps-base-url>/svg-display/ which translates to the URL
+   The location for the [[svg->browser][SVG Player Gui]] is at
+   /<clamps-base-url>/svg-display/ which translates to the URL
 
-    [[http://localhost:54619/svg-display]]
+   [[http://localhost:54619/svg-display]]
 
 *** See also
     - [[clamps][clamps]]
@@ -335,7 +360,7 @@ Function
    Return the Midicents interval of /ratio/.
 *** Arguments
     =ratio= The frequency ratio of the interval.
-*** Example
+*** Examples
 #+BEGIN_SRC lisp
   (fr2ct 2) ;; => 12.0
 
@@ -385,6 +410,8 @@ Function
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** get-val
    Function
+
+   Home Package: [[clamps:cl-refs][cl-refs]]
    #+BEGIN_SRC lisp
      (get-val ref-object)
    #+END_SRC
@@ -500,7 +527,7 @@ Function
       - [[play-sfz-one-shot][#'play-sfz-one-shot]]
 
         Just play sample once even if duration exceeds sample length.
-*** Example
+*** Examples
    #+BEGIN_SRC lisp
      (load-sfz-preset "~/quicklisp/local-projects/clamps/packages/cl-sfz/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv)
    #+END_SRC
@@ -608,6 +635,8 @@ Function
     - [[n-lin-dev][n-lin-dev]]
 ** make-computed
    Function
+
+   Home Package: [[clamps:cl-refs][cl-refs]]
    #+BEGIN_SRC lisp
      (make-computed fn &optional (setter nil))
    #+END_SRC
@@ -662,6 +691,25 @@ Function
 *** See also
     - [[clamps-base-url][clamps-base-url]]
     - [[gui][gui]]
+** *​midi-in1​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-in1
+   :END:
+   Parameter
+
+   Default clamps MIDI input stream of type /<jackmidi:input-stream>/.
+*** See also
+    - [[#midi-out1][*​midi-out1​*]]
+** *​midi-out1​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-out1
+   :END:
+   Parameter
+
+   Default clamps MIDI output stream of type
+   /<jackmidi:output-stream>/.
+*** See also
+    - [[#midi-in1][*​midi-in1​*]]
 ** mtof
    Function
    #+BEGIN_SRC lisp
@@ -983,7 +1031,7 @@ Function
    =:options= A string with options for GnuPlot.
 
    =:grid= Boolean indicating whether to use a grid.
-*** Examples:
+*** Examples
     #+BEGIN_SRC lisp
       (plot '(5 4 6 1 9)) ; => (5 4 6 1 9)
     #+END_SRC
@@ -1029,7 +1077,7 @@ Function
    #+END_SRC
    Convenience wrapper around [[plot][plot]]: A flat sequence of numbers is
    interpreted as 2-d coordinate pairs.
-*** Example
+*** Examples
     #+BEGIN_SRC lisp
       (plot-2d '(2 1 4 3 6 10)) <=> (plot '((2 1) (4 3) (6 10)))
     #+END_SRC
@@ -1142,12 +1190,16 @@ Function
 * S - V
 ** set-bpm
    Function
+
+   Home Package: [[clamps:clamps-utils][clamps-utils]]
    #+BEGIN_SRC lisp
    (set-bpm bpm)
    #+END_SRC
    Synonym for [[set-tempo][set-tempo]]
 ** set-tempo
    Function
+
+   Home Package: [[clamps:clamps-utils][clamps-utils]]
    #+BEGIN_SRC lisp
    (set-tempo bpm)
    #+END_SRC
@@ -1158,6 +1210,8 @@ Function
     - [[set-bpm][set-bpm]]
 ** set-standard-pitch
    Function
+
+   Home Package: [[clamps:clamps-utils][clamps-utils]]
    #+BEGIN_SRC lisp
      (set-standard-pitch freq)
    #+END_SRC
@@ -1168,6 +1222,8 @@ Function
     - [[\ast{}standard-pitch\ast{}][\ast{}standard-pitch\ast{}]]
 ** set-val
    Function
+
+   Home Package: [[clamps:cl-refs][cl-refs]]
    #+BEGIN_SRC lisp
      (set-val ref value  &key (force nil))
    #+END_SRC
@@ -1191,6 +1247,9 @@ Function
     - [[watch][watch]]
 ** sfz
    Class   
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
+
    #+BEGIN_SRC lisp
      (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
    #+END_SRC
@@ -1236,7 +1295,7 @@ Function
    - [[sfz-startpos][sfz-startpos]]
 
    - [[sfz-chan][sfz-chan]]
-*** Examples:
+*** Examples
 #+BEGIN_SRC lisp
   (new sfz)
   ;; => #i(sfz keynum 60 amplitude 1 duration 1 preset :flute-nv
@@ -1273,6 +1332,8 @@ Function
     - [[play-sfz-one-shot][play-sfz-one-shot]]
 ** sfz-amplitude
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-amplitude sfz)
    #+END_SRC
@@ -1283,6 +1344,8 @@ Function
     - [[sfz][sfz]]
 ** sfz-chan
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-channel sfz)
    #+END_SRC
@@ -1293,6 +1356,8 @@ Function
     - [[sfz][sfz]]
 ** sfz-duration
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-duration sfz)
    #+END_SRC
@@ -1303,6 +1368,8 @@ Function
     - [[sfz][sfz]]
 ** sfz-get-range
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-get-range ref)
    #+END_SRC
@@ -1316,6 +1383,8 @@ Function
     - [[add-sfz-preset][add-sfz-preset]]
 ** sfz-keynum
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-keynum sfz)
    #+END_SRC
@@ -1326,6 +1395,8 @@ Function
     - [[sfz][sfz]]
 ** sfz-pan
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-pan sfz)
    #+END_SRC
@@ -1337,6 +1408,8 @@ Function
     - [[sfz][sfz]]
 ** sfz-preset-file
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-preset-file preset)
    #+END_SRC
@@ -1347,6 +1420,8 @@ Function
     - [[add-sfz-preset][add-sfz-preset]]
 ** sfz-preset-loaded?
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-preset-loaded? preset)
    #+END_SRC
@@ -1354,7 +1429,7 @@ Function
    Predicate to test if sfz preset is loaded.
 *** Arguments
     =preset= Keyword or symbol of registered preset.
-*** Examples:
+*** Examples
     #+BEGIN_SRC lisp
       ;;; Directly after Clamps startup:
 
@@ -1372,6 +1447,8 @@ Function
     - [[get-sfz-preset][get-sfz-preset]]
 ** sfz-play-fn
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-play-fn sfz)
    #+END_SRC
@@ -1382,6 +1459,8 @@ Function
     - [[sfz][sfz]]
 ** sfz-preset
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-preset sfz)
    #+END_SRC
@@ -1392,6 +1471,8 @@ Function
     - [[sfz][sfz]]
 ** sfz-startpos
    Function
+
+   Home Package: [[clamps:cl-sfz][cl-sfz]]
    #+BEGIN_SRC lisp
      (sfz-startpos sfz)
    #+END_SRC
@@ -1402,6 +1483,8 @@ Function
     - [[sfz][sfz]]
 ** \ast{}standard-pitch\ast{}
    Variable
+
+   Home Package: [[clamps:clamps-utils][clamps-utils]]
 
    The tuning reference for /ftom/ and /mtof/ in Hz. Defaults to /440/.
 *** Important Note:
@@ -1416,7 +1499,9 @@ function which changes the standard pitch reference for the entire
 
     - [[set-standard-pitch][set-standard-pitch]]
 ** start-doc-acceptor
-Function
+   Function
+
+   Home Package: [[clamps:clamps-utils][clamps-utils]]
    #+Begin_src lisp
      (start-doc-acceptor)
    #+End_src
@@ -1424,10 +1509,43 @@ Function
    automatically on startup to make the clamps documentation
    accessible at the URL /https://localhost:8282/.
 *** See also
+** start-midi-receive
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]
+   #+BEGIN_SRC lisp
+     (start-midi-receive input)
+   #+END_SRC
+
+   Start the clamps generic midi handler and all registered MIDI responders
+   of input stream /input/.
+*** Arguments
+    =input= Input MIDI stream of type /<jackmidi:input-stream>/.
+*** See also
+    - [[stop-midi-receive][stop-midi-receive]]
+** stop-midi-receive
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]
+   #+BEGIN_SRC lisp
+     (stop-midi-receive input)
+   #+END_SRC
+
+   Stop the clamps generic midi handler and all registered MIDI responders
+   of input stream /input/.
+*** Arguments
+    =input= Input MIDI stream of type /<jackmidi:input-stream>/.
+*** See also
+    - [[start-midi-receive][start-midi-receive]]
+
 ** svg
    Class
+
+   Home Package: [[clamps:cl-svg][cm-svg]]
 ** svg->browser
    Function
+
+   Home Package: [[clamps:cm-svg][cm-svg]]
    #+BEGIN_SRC lisp
    (svg->browser svg-file)
    #+END_SRC
@@ -1438,7 +1556,9 @@ Function
     filename is interpreted relative to the /<clamps-gui-root>/svg/
     directory.
 ** svg-gui-path
-Function
+   Function
+
+   Home Package: [[clamps:clamps][clamps]]
    #+Begin_src lisp
      (svg-gui-path file)
    #+End_src
@@ -1451,6 +1571,8 @@ Function
 * W - Z
 ** watch
    Function
+
+   Home Package: [[clamps:cl-refs][cl-refs]]
    #+BEGIN_SRC lisp
      (watch fn)
    #+END_SRC
@@ -1471,5 +1593,420 @@ Function
 
     - [[set-val][set-val]]
    
+* DONE
+
+** find-controller
+   Function
+  
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+   #+BEGIN_SRC lisp
+     (find-controller id)
+   #+END_SRC
+
+   Return MIDI controller instance with ID /id/.
+*** Arguments
+    =id= Keyword or Symbol used as ID of a midicontroller instance .
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+
+** add-midi-controller
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+   #+BEGIN_SRC lisp
+     (cl-midictl:add-midi-controller class id &rest args)
+   #+END_SRC
+
+   Add a MIDI controller of class /class/ with ID /id/ and optional
+   initialization argumens /args/.
+
+*** Arguments
+    =class= The class of the midi controller to add.
+    =id= Keyword or Symbol used as ID of the instance.
+    =args= Initialization arguments appropriate for the class.
+
+*** See also
+    - [[find-controller][find-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+
+** remove-midi-controller
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+   #+BEGIN_SRC lisp
+     (remove-midi-controller id)
+   #+END_SRC
+
+   Remove the instance of a midi controller with ID /id/.
+*** Arguments
+    =id= Keyword or Symbol used as ID of the instance.    
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[find-controller][find-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+
+** remove-all-midi-controllers
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+   #+BEGIN_SRC lisp
+     (remove-all-midi-controllers)
+   #+END_SRC
+
+   Remove all currently registered MIDI controller instances.
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[find-controller][find-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+
+** midi-controller
+   Class
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]
+
+   Generic class for midi controllers. An instance should get
+   initialized with [[add-midi-controller][add-midi-controller]] and removed with
+   [[remove-midi-controller][remove-midi-controller]], using its id as argument in order to close
+   the gui and remove its handler functions from the midi controller
+   registry.
+   
+*** Slots
+    #+BEGIN_SRC lisp
+      (id :initform nil :initarg :id :accessor id)
+      (gui-update-off :initform nil :accessor gui-update-off)
+      (gui :initform nil :accessor gui)
+      (chan :initform 0 :initarg :chan :accessor chan)
+      (cc-map :initform (make-array 128 :initial-contents (loop for i below 128 collect i))
+              :initarg :cc-map :accessor cc-map)
+      (midi-input :initform nil :initarg :midi-input :accessor midi-input)
+      (midi-output :initform nil :initarg :midi-output :accessor midi-output)
+      (echo :initarg :echo :initform t :accessor echo
+            :documentation "en/disable direct updates in hw-controller when midi-input is received. (default: t)")
+      (last-note-on :initform 0 :initarg :last-note-on :accessor last-note-on)
+      (cc-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-ref 0)))
+                :initarg :cc-state :accessor cc-state)
+      (note-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-ref 0)))
+                :initarg :note-state :accessor note-state)
+      ;;; storage of functions to call for individual cc events. An entry
+      ;;; of the array is a list of functions accepting one arg: the
+      ;;; controller value.
+      (cc-fns :initform (make-array 128 :initial-element nil)
+              :initarg :cc-fns :accessor cc-fns)
+      ;;; storage of functions to call for individual note-on/off
+      ;;; events. This is a list of functions accepting two args: keynum
+      ;;; and velo.
+      (note-fns :initform nil :initarg :note-fns :accessor note-fns)
+      (unwatch :initform nil :initarg :unwatch :accessor unwatch)
+    #+END_SRC
+
+** ccin
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]
+   #+BEGIN_SRC lisp
+     (ccin ccnum &optional (channel *global-midi-channel*))
+   #+END_SRC
+
+   Return the last received MIDI CC value of controller number /ccnum/
+   at MIDI channel /channel/. Setfable.
+*** Arguments
+    =ccnum= Integer in the range [0..127] indicating the Controller Number.
+
+    =channel= Integer in the range [0..15] indicating the MIDI channel.
+** nanoktl2-midi
+   Class
+
+   Superclass: [[midi-controller][midi-controller]]
+   
+   Home Package: [[clamps:cl-midictl][cl-midictl]]
+   
+   Class for a Nanoktl2 midi controller.
+*** Slots
+    #+BEGIN_SRC lisp
+      (nk2-faders :accessor nk2-faders)
+      (nk2-fader-update-fns :accessor nk2-fader-update-fns :initform (coerce (loop repeat 16 collect nil) 'vector))
+      (nk2-fader-modes :accessor nk2-fader-modes :initform (coerce (loop repeat 16 collect :scale) 'vector))
+      (nk2-fader-last-cc :accessor nk2-fader-last-cc :initform (coerce (loop repeat 16 collect 0) 'vector))
+      (hide-fader :accessor hide-fader :initform nil)
+      (s-buttons :accessor s-buttons)
+      (m-buttons :accessor m-buttons)
+      (r-buttons :accessor r-buttons)
+      (track-left :accessor track-left)
+      (track-right :accessor track-right)
+      (cycle :accessor nk-cycle)
+      (set-marker :accessor set-marker)
+      (marker-left :accessor marker-left)
+      (marker-right :accessor marker-right)
+      (tr-rewind :accessor tr-rewind)
+      (tr-ffwd :accessor tr-ffwd)
+      (tr-stop :accessor tr-stop)
+      (tr-play :accessor tr-play)
+      (tr-rec :accessor tr-rec)
+      (cc-nums :accessor cc-nums)
+    #+END_SRC
 
 * TODO
+** nanoktl2-preset-midi
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** *​nanoktl2-presets-file​*
+   :PROPERTIES:
+   :CUSTOM_ID: nanoktl2-presets-file
+   :END:
+   Parameter
+** save-presets
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** load-presets
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** set-player-buttons
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** init-nk2
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** gui
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** echo
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** chan
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** *​midi-debug​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-debug
+   :END:
+   Parameter
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** *​midi-cc-state​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-cc-state
+   :END:
+   Parameter
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** *​midi-cc-fns​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-cc-fns
+   :END:
+   Parameter
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** *​oscin​*
+   :PROPERTIES:
+   :CUSTOM_ID: osc-in
+   :END:
+   Parameter
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** start-osc-midi-receive
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** stop-osc-midi-receive
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** osc-midi-write-short
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** cc-map
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** id
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** chan
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** midi-input
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** midi-output
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** last-note-on
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** cc-state
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** cc-fns
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** note-state
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** note-fns
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** toggle-slot
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** handle-midi-in
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** nk2-faders
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** nk2-last-cc
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** nk2-fader-modes
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** nk2-fader-update-fns
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** s-buttons
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** m-buttons
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** r-buttons
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** track-left
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** track-right
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** bank-buttons
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** cycle
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** set-marker
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** marker-left
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** marker-right
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** tr-rewind
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** tr-ffwd
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** tr-stop
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** tr-play
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** tr-rec
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** cc-nums
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** gui
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** gui-update-off
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** with-gui-update-off
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** faderfox-midi
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** curr-player
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** faderfox-midi-f.orm
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** update-state
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** update-all-controllers
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** update-preset-buttons
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** handle-player-switch
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** get-ref
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** start-midi-engine
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** presets
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
+** unwatch
+   Function
+
+   Home Package: [[clamps:cl-midictl][cl-midictl]]   
