@@ -1045,11 +1045,15 @@ Arities:
 
 @Examples
 
-(range 1 10 2) ;-> (1 3 5 7 9)
+(range 8) ; => (0 1 2 3 4 5 6 7) 
+
+(range 3 9) ; => (3 4 5 6 7 8) 
+
+(range 1 10 2) ; => (1 3 5 7 9)
 
 @Note
 Unlike clozure's range function, this range function is not
-lazy: (range) will return the empty list.
+lazy: As a precaution (range) will return the empty list.
 "
   (destructuring-bind (start end step)
       (cond
