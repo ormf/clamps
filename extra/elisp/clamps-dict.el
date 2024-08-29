@@ -274,6 +274,7 @@
    ("rotate" "clamps-dict/rotate.html")
    ("set-basedir" "clamps-dict/s.html")
    ("set-bpm" "clamps-dict/set-bpm.html")
+   ("set-bpm" "clamps-dict/set-bpm-1.html")
    ("set-marker" "clamps-dict/set-marker.html")
    ("set-on-data" "clamps-dict/set-on-data.html")
    ("set-tempo" "clamps-dict/set-tempo.html")

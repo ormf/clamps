@@ -2200,7 +2200,7 @@
    package. Its slots shouldn't be accessed or manipulated directly,
    but rather using the public functions of the cl-refs package listed
    below. For information how to use ref-objects refer to
-   [[clamps:cl-refs][cl-refs]] in the Clamps documentation.
+   [[clamps:cl-refs][cl-refs]] in the Clamps Packages documentation.
 *** See also
     - [[get-val][get-val]]
     - [[make-computed][make-computed]]
@@ -2786,15 +2786,14 @@
 ** watch
    Function
    #+BEGIN_SRC lisp
-     (watch f)
+     (watch fn)
    #+END_SRC
    Call /fn/ whenever a value accessed using [[get-val][get-val]] in the body of
    the function is changed.
    
    /watch/ returns a function to remove the relation, /watch/ has
-   established. Refer to the chapter /Clamps Packages/Misc
-   Packages/cl-refs/ in the [[../clamps/index.html][Clamps]]
-   documentation for examples.
+   established. Refer to the chapter [[clamps:cl-refs][cl-refs]] in the Clamps
+   Packages documentation for examples.
 *** Arguments
     =fn= -- Function of no arguments to call
 

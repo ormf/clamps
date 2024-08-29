@@ -13,7 +13,8 @@
 #+OPTIONS: html-preamble:"<a class=\"top-menu top-menu-active\" href=\"./index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n<a class=\"top-menu\" href=\"../fomus/index.html\">Fomus</a>\n"
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/overview.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/overview.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/htmlize.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
@@ -51,6 +52,7 @@
           s)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-overview-syms)
+#+BIND: org-html-htmlize-output-type 'css
 
 # fomus documentation integrieren
 

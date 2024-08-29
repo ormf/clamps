@@ -33,8 +33,7 @@
 (require :slynk)
 (require :cffi)
 (require :sb-introspect)
-(require :clamps)
-(require :cl-ppcre)
+(ql:quickload :clamps)
 
 (defpackage :clamps.doc
   (:use :cl)
@@ -217,7 +216,7 @@
    package. Its slots shouldn't be accessed or manipulated directly,
    but rather using the public functions of the cl-refs package listed
    below. For information how to use ref-objects refer to
-   <<clamps:cl-refs>> in the Clamps documentation.
+   <<clamps:cl-refs>> in the Clamps Packages documentation.
 
 @See-also
 get-val
@@ -715,3 +714,4 @@ file."
 
 (write-dict "/home/orm/work/programmieren/lisp/clamps/doc/clamps-dictionary.org")
 (sb-ext:quit)
+

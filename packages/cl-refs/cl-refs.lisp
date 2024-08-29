@@ -40,14 +40,14 @@
 (defclass ref-object (ref-object-super)
   ((value :initarg :value :accessor ref-value)
    (setter :initarg :setter :initform '() :reader ref-setter)
-   (fun :initarg :fun  :initform '() :reader ref-fun)
+   (fn :initarg :fn  :initform '() :reader ref-fn)
    (update :initarg :update  :initform '() :accessor ref-update))
   (:documentation
    "A /ref-object/ is a special class used in the /cl-refs/
 package. Its slots shouldn't be accessed or manipulated directly,
 but rather using the public functions of the cl-refs package listed
 below. For information how to use ref-objects refer to <<clamps:cl-refs>> in
-the Clamps documentation.
+the Clamps Packages documentation.
 
 @See-also
 get-val
@@ -263,14 +263,13 @@ watch
 ;;; unwatch function to remove the ref-object and all its
 ;;; dependencies.
 
-(defun watch (f)
+(defun watch (fn)
   "Call /fn/ whenever a value accessed using <<get-val>> in the body of
 the function is changed.
 
 /watch/ returns a function to remove the relation, /watch/ has
-established. Refer to the chapter /Clamps Packages/Misc
-Packages/cl-refs/ in the <<../clamps/index.html><Clamps>>
-documentation for examples.
+established. Refer to the chapter <<clamps:cl-refs>> in the Clamps
+Packages documentation for examples.
 
 @Arguments
 fn - Function of no arguments to call
@@ -280,7 +279,7 @@ get-val
 make-computed
 make-ref
 set-val
-"  (let* ((new-ref (make-ref nil :fun f))
+"  (let* ((new-ref (make-ref nil :fun fn))
           (update-callback (lambda (&optional old new)
                              (declare (ignorable old new))
                              (funcall (ref-update new-ref)))))
@@ -290,7 +289,7 @@ set-val
                (on-deps-update (clear-dependencies new-ref update-callback))
                ;; the let below establishes a dynamic context for the
                ;; funcall in its body. If *curr-ref* is non-nil, any
-               ;; #'get-val access to a ref in ref-fun will push the
+               ;; #'get-val access to a ref in ref-fn will push the
                ;; update-callback to the listeners of the ref and the
                ;; ref to the dependencies of the new-ref. In the first
                ;; call to watch, *update-deps* is set to T to ensure
@@ -305,7 +304,7 @@ set-val
                  ;; Note: storing the new value doesn't seem to make sense as the
                  ;; object's value isn't supposed to be read anywhere. Watch is rather
                  ;; used for its side effects only.
-                 (setf (ref-value new-ref) (funcall (ref-fun new-ref))))
+                 (setf (ref-value new-ref) (funcall (ref-fn new-ref))))
                new-ref))
        ;; call the update function once to register a call to it in all
        ;; ref-objects read in <f>.

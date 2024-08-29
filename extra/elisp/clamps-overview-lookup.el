@@ -1,13 +1,14 @@
+
 (defvar *clamps-overview-symbols*)
 (setq *clamps-overview-symbols* (make-vector 63 0))
 (mapcar
- (lambda (entry)
-   (let ((symbol (intern (car entry)
-			 *clamps-overview-symbols*)))
-     (if (boundp symbol)
-	 (push (cadr entry) (symbol-value symbol))
-       (set symbol (cdr entry)))))
- '(
+     (lambda (entry)
+       (let ((symbol (intern (car entry)
+    			 *clamps-overview-symbols*)))
+         (if (boundp symbol)
+    	 (push (cadr entry) (symbol-value symbol))
+           (set symbol (cdr entry)))))
+     '(
    ("What is Clamps?" "overview/01_00_introduction.html")
    ("Why Clamps?" "overview/01_02_why-clamps.html")
    ("External components of Clamps" "overview/01_03_external-components-of-clamps.html")

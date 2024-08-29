@@ -13,7 +13,8 @@
 #+OPTIONS: html-postamble:nil
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/clamps.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/htmlize.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
@@ -51,6 +52,7 @@
           s)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-clamps-syms)
+#+BIND: org-html-htmlize-output-type 'css
 #  #:\([^ ]+\) →    - [[dict:\1][\1]]
 
 
