@@ -6,7 +6,7 @@
 #+OPTIONS: toc:3 h:4 html-multipage-join-empty-bodies:t
 #+OPTIONS: html-multipage-split-level:toc
 #+OPTIONS: html-multipage-toc-to-top:t
-#+OPTIONS: html-multipage-export-directory:fomus
+#+OPTIONS: html-multipage-export-directory:html/fomus
 #+OPTIONS: html-multipage-open:browser
 #+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"../fomus/index.html\">Fomus</a>\n"
 #+OPTIONS: html-multipage-postamble-position:bottom

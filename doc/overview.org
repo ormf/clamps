@@ -6,7 +6,7 @@
 #+OPTIONS: toc:2 h:3 html-multipage-join-empty-bodies:t
 #+OPTIONS: html-multipage-split:toc
 #+OPTIONS: html-multipage-toc-to-top:t
-#+OPTIONS: html-multipage-export-directory:overview
+#+OPTIONS: html-multipage-export-directory:html/clamps-doc/overview
 #+OPTIONS: html-multipage-open:nil
 #+OPTIONS: html-multipage-postamble-position:bottom
 #+OPTIONS: html-postamble:nil
@@ -18,30 +18,37 @@
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
-  (defun export-overview-syms (s backend info)
-    (with-temp-buffer 
-      (insert "(mapcar
-   (lambda (entry)
-     (let ((symbol (intern (car entry)
-  			 ,*clamps-overview-symbols*)))
-       (if (boundp symbol)
-  	 (push (cadr entry) (symbol-value symbol))
-         (set symbol (cdr entry)))))
-   '(\n")
-      (mapcar
-       (lambda (entry)
-         (insert
-          (format "   (\"%s\" \"overview/%s\")\n"
-                  (org-html-element-title (car entry))
-                  (plist-get (cdr entry) :href))))
-       (cl-remove-if
-        (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
-        (plist-get info :multipage-toc-lookup)))
-      (insert "))\n")
-      (write-region (point-min) (point-max) "../extra/elisp/clamps-overview-lookup.el"))
-    (load (format "%s%s" (file-name-directory (buffer-file-name))
-               "../extra/elisp/clamps-overview-lookup.el"))
-    s)
+      (load (format "%s%s" (file-name-directory (buffer-file-name))
+                    "../extra/elisp/clamps-dict.el"))
+      (load (format "%s%s" (file-name-directory (buffer-file-name))
+                    "../extra/elisp/clamps-lookup.el"))
+        (defun export-overview-syms (s backend info)
+          (with-temp-buffer 
+            (insert "
+    (defvar *clamps-overview-symbols*)
+    (setq *clamps-overview-symbols* (make-vector 63 0))
+    (mapcar
+         (lambda (entry)
+           (let ((symbol (intern (car entry)
+        			 ,*clamps-overview-symbols*)))
+             (if (boundp symbol)
+        	 (push (cadr entry) (symbol-value symbol))
+               (set symbol (cdr entry)))))
+         '(\n")
+            (mapcar
+             (lambda (entry)
+               (insert
+                (format "   (\"%s\" \"overview/%s\")\n"
+                        (org-html-element-title (car entry))
+                        (plist-get (cdr entry) :href))))
+             (cl-remove-if
+              (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
+              (plist-get info :multipage-toc-lookup)))
+            (insert "))\n")
+            (write-region (point-min) (point-max) "../extra/elisp/clamps-overview-lookup.el"))
+          (load (format "%s%s" (file-name-directory (buffer-file-name))
+                     "../extra/elisp/clamps-overview-lookup.el"))
+          s)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-overview-syms)
 
@@ -425,7 +432,7 @@
 
     #+attr_html: :width 80%
     #+CAPTION: Context help of function arguments in the Minibuffer
-    [[file:./img/function-help.png]]
+    [[./img/function-help.png]]
 ** Finding Source Definitions
     To jump to the source definition of any compiled expression, use
     the /<C-.>/ key. This will jump to definitions in other files,

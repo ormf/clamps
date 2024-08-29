@@ -6,7 +6,7 @@
 #+OPTIONS: toc:3 h:4 html-multipage-join-empty-bodies:t
 #+OPTIONS: html-multipage-split-level:toc
 #+OPTIONS: html-multipage-toc-to-top:t
-#+OPTIONS: html-multipage-export-directory:clamps
+#+OPTIONS: html-multipage-export-directory:html/clamps-doc/clamps
 #+OPTIONS: html-multipage-open:nil
 #+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu top-menu-active\" href=\"./index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n<a class=\"top-menu\" href=\"../fomus/index.html\">Fomus</a>\n"
 #+OPTIONS: html-multipage-postamble-position:bottom
@@ -18,32 +18,37 @@
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
-    (defun export-clamps-syms (s backend info)
-      (message "exporting clamps syms")
-      (with-temp-buffer 
-        (insert "(defvar *clamps-doc-symbols* (make-vector 63 0))
-  (mapcar
-     (lambda (entry)
-       (let ((symbol (intern (car entry)
-    			 ,*clamps-doc-symbols*)))
-         (if (boundp symbol)
-    	 (push (cadr entry) (symbol-value symbol))
-           (set symbol (cdr entry)))))
-     '(\n")
-        (mapcar
-         (lambda (entry)
-           (insert
-            (format "   (\"%s\" \"clamps/%s\")\n"
-                    (org-html-element-title (car entry))
-                    (plist-get (cdr entry) :href))))
-         (cl-remove-if
-          (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
-          (plist-get info :multipage-toc-lookup)))
-        (insert "))\n")
-        (write-region (point-min) (point-max) "../extra/elisp/clamps-lookup.el"))
       (load (format "%s%s" (file-name-directory (buffer-file-name))
-                 "../extra/elisp/clamps-lookup.el"))
-      s)
+                    "../extra/elisp/clamps-dict.el"))
+      (load (format "%s%s" (file-name-directory (buffer-file-name))
+                    "../extra/elisp/clamps-overview-lookup.el"))
+      (defun export-clamps-syms (s backend info)
+          (message "exporting clamps syms")
+          (with-temp-buffer 
+            (insert "(defvar *clamps-doc-symbols*)
+      (setq *clamps-doc-symbols* (make-vector 63 0))
+      (mapcar
+         (lambda (entry)
+           (let ((symbol (intern (car entry)
+        			 ,*clamps-doc-symbols*)))
+             (if (boundp symbol)
+        	 (push (cadr entry) (symbol-value symbol))
+               (set symbol (cdr entry)))))
+         '(\n")
+            (mapcar
+             (lambda (entry)
+               (insert
+                (format "   (\"%s\" \"clamps/%s\")\n"
+                        (org-html-element-title (car entry))
+                        (plist-get (cdr entry) :href))))
+             (cl-remove-if
+              (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
+              (plist-get info :multipage-toc-lookup)))
+            (insert "))\n")
+            (write-region (point-min) (point-max) "../extra/elisp/clamps-lookup.el"))
+          (load (format "%s%s" (file-name-directory (buffer-file-name))
+                     "../extra/elisp/clamps-lookup.el"))
+          s)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-clamps-syms)
 #  #:\([^ ]+\) →    - [[dict:\1][\1]]
@@ -184,7 +189,7 @@
    basic classes for midi-controllers.
 *** Receiving and handling MIDI Input
     MIDI input handling is started using the function
-    [[clamps-dict:start-midi-receive][start-midi-receive]].
+    [[dict:start-midi-receive][start-midi-receive]].
 
 *** Exported Symbols
     cl-midictl exports the following symbols:

@@ -20,7 +20,7 @@
 
 (defpackage :clamps
   (:export #:reset-logger-stream #:idump #:clamps #:clamps-restart-gui #:clamps-gui-root #:clamps-base-url
-           #:svg-gui-path #:set-tempo #:start-doc-acceptor #:clamps-start
+           #:svg-gui-path #:set-tempo #:set-bpm #:start-doc-acceptor #:clamps-start
            #:gui #:meters)
   (:shadowing-import-from #:incudine
                           #:rescale-envelope #:init #:stop

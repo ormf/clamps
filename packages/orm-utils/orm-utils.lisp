@@ -950,27 +950,33 @@ tail - A list collected into by prepending to it
 (call/collecting (lambda (x) (* x x)) 4 '()) ; => (0 1 4 9)
 
 (call/collecting (lambda (x) (1+ x)) 4 '(hallo)) ; => (1 2 3 4 hallo)
+
+@See-also
+v-collect
 "
   (let ((c (make-collector)))
     (dotimes (i n (collector-contents c tail))
       (collect-into c (funcall f i)))))
 
-(defmacro v-collect ((v n &optional (tail '())) form)
-  "Return a list of /n/ elems prepended to tail by evaluating form /n/
+(defmacro v-collect ((v n &optional (tail '())) &rest body)
+  "Return a list of /n/ elems prepended to tail by evaluating /body/ /n/
 times with the symbol /v/ bound to the iteration index in the lexical
 scope of form.
 
 @Arguments
-v - Symbol used as variable name
+v - Symbol used as variable name.
 n - Integer indicating the number of iterations.
-
+body - Function body being evaluated n times.
 @Examples
 
 (v-collect (n 10) (* n n)) ;-> (0 1 4 9 16 25 36 49 64 81)
+
+@See-also
+call/collecting
 "
   `(call/collecting (lambda (,v) 
                       (declare (ignorable ,v))
-                      ,form)
+                      ,@body)
                     ,n ,tail))
 
 ;;; (v-collect (n 10) (* n n)) ;-> (0 1 4 9 16 25 36 49 64 81)

@@ -1,12 +1,13 @@
-(defvar *clamps-doc-symbols* (make-vector 63 0))
+(defvar *clamps-doc-symbols*)
+(setq *clamps-doc-symbols* (make-vector 63 0))
 (mapcar
-   (lambda (entry)
-     (let ((symbol (intern (car entry)
+ (lambda (entry)
+   (let ((symbol (intern (car entry)
   			 *clamps-doc-symbols*)))
-       (if (boundp symbol)
+     (if (boundp symbol)
   	 (push (cadr entry) (symbol-value symbol))
-         (set symbol (cdr entry)))))
-   '(
+       (set symbol (cdr entry)))))
+ '(
    ("Package Naming" "clamps/01_00_00_general.html")
    ("clamps" "clamps/01_02_00_clamps.html")
    ("Startup" "clamps/01_02_00_clamps.html")
@@ -44,4 +45,4 @@
    ("plot" "clamps/07_05_00_plot.html")
    ("cm-utils" "clamps/07_06_00_cm-utils.html")
    ("orm-utils" "clamps/07_07_00_orm-utils.html")
-))
+   ))

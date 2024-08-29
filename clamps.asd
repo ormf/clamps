@@ -41,26 +41,25 @@ Chapter <<clamps:General Incudine Setup>>.
 - Starts the documentation acceptor for the searchable online doc
 at /http://localhost:8282/overview/index.html/.
 
-@Arguments
-gui-root - ist the path where to put the /www/ subfolder for files
-accessible by the gui (nicknamed /<clamps-gui-root>/ throughout
-this dictionary).
-
-open - is a flag indicating whether to open the #'clamps-base-url in a
-browser window after starting the gui.
-
 In the given path the following directories
 will be created:
 
 - /<clamps-gui-root>/www//
-- /<clamps-gui-root>/www/svg//
+- /<clamps-gui-root>/www/svg/
 
-file path for svg files used in the /<clamps-base-url>/svg-display/ page
-of the Gui.
+The latter is the file path for svg files used in the
+/<clamps-base-url>/svg-display/ page of the Gui.
 
 Any files which need to be accessible by the Gui have to be put
 into the /<clamps-gui-root>/www// subdirectory with their filenames
 relative to this directory.
+
+@Arguments
+gui-root - String or Pathname indicating where to put the /www/ subfolder
+for files accessible by the gui (nicknamed /<clamps-gui-root>/).
+
+open - Boolean indicating whether to open the /<clamps-base-url>/ in a
+browser window after starting the gui.
 
 @See-also
 clamps-base-url

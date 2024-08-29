@@ -284,10 +284,11 @@ This command is bound to the Keyboard Sequence /<C-.>/ in emacs.
   (cm::set-standard-hush))
 
 (defun reset-logger-stream ()
-  "Resets /incudine:*logger-stream*/ to /\ast{}error-output\ast{}/. Call this
-function, if calls to /incudine.util:msg/ don't produce any output
-in the REPL.
+  "Resets /incudine:*logger-stream*/ to /*​error-output​*/ Call this
+function, if calls to /incudine.util:msg/ don't produce any output in
+the REPL.
 
+@Note
 This function needs to be called if /Clamps/ is started from a Lisp
 Image.
 "  (setf incudine.util:*logger-stream* *error-output*))

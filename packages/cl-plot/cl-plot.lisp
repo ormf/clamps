@@ -122,7 +122,6 @@ the plot command.
 
 @See-also
 plot-2d
-svg
 "))
 
 ;;;  default function for the :data-fn arg of plot. The Return value

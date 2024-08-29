@@ -1,0 +1,116 @@
+
+htmlize.el,4659
+(defconst htmlize-version 92,4109
+(defgroup htmlize 94,4144
+(defcustom htmlize-head-tags 98,4232
+(defcustom htmlize-output-type 103,4369
+(defcustom htmlize-use-images 124,5318
+(defcustom htmlize-force-inline-images 129,5463
+(defcustom htmlize-max-alt-text 138,5854
+(defcustom htmlize-transform-image 148,6228
+(defcustom htmlize-generate-hyperlinks 160,6704
+(defcustom htmlize-hyperlink-style 170,7149
+(defcustom htmlize-replace-form-feeds 185,7474
+(defcustom htmlize-html-charset 201,8236
+(defcustom htmlize-convert-nonascii-to-entities 226,9359
+(defcustom htmlize-ignore-face-size 253,10665
+(defcustom htmlize-css-name-prefix 263,11150
+(defcustom htmlize-use-rgb-txt 272,11531
+(defvar htmlize-face-overrides 290,12289
+(defcustom htmlize-untabify 307,12939
+(defcustom htmlize-html-major-mode 312,13069
+(defcustom htmlize-pre-style 320,13409
+(defvar htmlize-before-hook 327,13646
+(defvar htmlize-after-hook 332,13801
+(defvar htmlize-file-hook 338,14023
+(defconst htmlize-image-mime-type-alist343,14164
+(defun htmlize-next-change 354,14570
+(defun htmlize-overlay-faces-at 359,14740
+(defun htmlize-next-face-change 362,14855
+(defmacro htmlize-lexlet 382,15772
+(defvar htmlize-basic-character-table393,16103
+(defvar htmlize-extended-character-cache 428,17619
+(defun htmlize-protect-string 430,17690
+(defun htmlize-attr-escape 466,19530
+(defsubst htmlize-concat 478,19951
+(defun htmlize-format-link 485,20180
+(defun htmlize-escape-or-link 494,20501
+(defun htmlize-display-prop-to-html 514,21283
+(defun htmlize-string-to-html 529,21864
+(defun htmlize-default-transform-image 548,22683
+(defun htmlize-alt-text 578,23978
+(defun htmlize-generate-image 584,24174
+(defconst htmlize-ellipsis 604,25201
+(defun htmlize-match-inv-spec 606,25269
+(defun htmlize-decode-invisibility-spec 611,25428
+(defun htmlize-add-before-after-strings 635,26454
+(defun htmlize-copy-prop 664,27567
+(defun htmlize-get-text-with-display 678,28173
+(defun htmlize-buffer-substring-no-invisible 687,28564
+(defun htmlize-trim-ellipsis 710,29675
+(defconst htmlize-tab-spaces719,30036
+(defun htmlize-untabify-string 727,30305
+(defun htmlize-extract-text 769,32265
+(defun htmlize-despam-address 785,32983
+(defun htmlize-make-tmp-overlay 793,33280
+(defun htmlize-delete-tmp-overlays 800,33504
+(defun htmlize-make-link-overlay 805,33688
+(defun htmlize-create-auto-links 808,33802
+(defun htmlize-shadow-form-feeds 834,34822
+(defun htmlize-defang-local-variables 848,35472
+(defvar htmlize-x-library-search-path860,35929
+(defun htmlize-get-color-rgb-hash 886,36668
+(defvar htmlize-color-rgb-hash 925,38329
+(defun htmlize-face-color-internal 929,38412
+(defun htmlize-face-foreground 950,39345
+(defun htmlize-face-background 955,39541
+(defun htmlize-color-to-rgb 964,39857
+(cl-defstruct htmlize-fstruct999,41464
+(defun htmlize-face-set-from-keyword-attr 1011,42087
+(defun htmlize-face-size 1037,43098
+(defun htmlize-face-css-name 1060,43933
+(defun htmlize-face-to-fstruct-1 1085,45032
+(defun htmlize-face-to-fstruct 1103,45908
+(defmacro htmlize-copy-attr-if-set 1118,46608
+(defun htmlize-merge-size 1131,47163
+(defun htmlize-merge-two-faces 1139,47460
+(defun htmlize-merge-faces 1148,47784
+(defun htmlize-attrlist-to-fstruct 1168,48546
+(defun htmlize-decode-face-prop 1189,49524
+(defun htmlize-get-override-fstruct 1223,50811
+(defun htmlize-make-face-map 1234,51330
+(defun htmlize-unstringify-face 1258,52350
+(defun htmlize-faces-in-buffer 1264,52518
+(defun htmlize-faces-at-point 1291,53654
+(defmacro htmlize-method 1327,55309
+(defun htmlize-method-function 1332,55522
+(defvar htmlize-memoization-table 1344,56118
+(defmacro htmlize-memoize 1346,56185
+(defun htmlize-default-doctype 1360,56709
+(defun htmlize-default-body-tag 1367,56994
+(defun htmlize-default-pre-tag 1372,57145
+(defun htmlize-css-specs 1381,57363
+(defun htmlize-css-insert-head 1408,58557
+(defun htmlize-css-text-markup 1442,60100
+(defun htmlize-inline-css-body-tag 1460,60799
+(defun htmlize-inline-css-pre-tag 1465,60986
+(defun htmlize-inline-css-text-markup 1473,61254
+(defun htmlize-font-body-tag 1493,61944
+(defun htmlize-font-pre-tag 1499,62181
+(defun htmlize-font-text-markup 1507,62478
+(defun htmlize-buffer-1 1533,63916
+(defmacro htmlize-with-fontify-message 1665,70448
+(defun htmlize-ensure-fontified 1678,70964
+(defun htmlize-buffer 1699,71692
+(defun htmlize-region 1721,72669
+(defun htmlize-region-for-paste 1735,73171
+(defun htmlize-region-save-screenshot 1748,73773
+(defun htmlize-make-file-name 1758,74176
+(defun htmlize-file 1782,75113
+(defun htmlize-many-files 1834,77587
+(defun htmlize-many-files-dired 1871,79183
+
+htmlize-pkg.el,31
+(define-package "htmlize" 1,0
+
+htmlize-autoloads.el,0

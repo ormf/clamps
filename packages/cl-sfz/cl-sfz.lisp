@@ -184,22 +184,18 @@ using a combination of <<add-sfz-preset>> and <<ensure-sfz-preset>>.
 
 @Arguments
 file - Path or filename of the sfz file to load
+
 name - symbol to identify the preset (preferably a keyword, but any
 symbol works)
 
 :force - Force loading of the preset even if it already exists.
+
 :play-fn - The play-fn to use when playing a sound. Possible choices
-are
+are:
 
-#'play-sfz-loop
+- <<#'play-sfz-loop>>
 
-If loop points are set, play the loop in case the duration
-exceeds (- loop-end start). If no loop points are set, loop
-the whole sample.
-
-#'play-sfz-one-shot
-
-Just play sample once even if duration exceeds sample length.
+- <<#'play-sfz-one-shot>>
 
 @Examples
 
@@ -351,15 +347,16 @@ established before using <<add-sfz-preset>>, otherwise a warning is
 issued and no file is loaded.
 
 @Arguments
-preset - A keynum or symbol to serve as a name of the preset.
+preset - A keynum or symbol to serve as the name/id of the preset.
+
 :force - A boolean indicating to force a reload even if the preset
 has been loaded before.
 
 :play-fn - The play function to be used. Possible options are:
 
-#'play-sfz-loop
+- <<#'play-sfz-loop>>
 
-#'play-sfz-one-shot
+- <<#'play-sfz-one-shot>>
 
 @See-also
 add-sfz-preset
@@ -445,10 +442,12 @@ function always uses loop playback regardless of the setting of
 
 @Arguments
 pitch - Pitch in Midicent.
+
 db - Amplitude in dB. /0/ corresponds to a scaling factor of /1/,
 /-100/ to a scaling factor of /0/.
 
 dur - Duration in seconds.
+
 :pan - Number in the range /[0..1]/ defining equal power panning
 between /out0/ and /out1/.
 
@@ -456,7 +455,9 @@ between /out0/ and /out1/.
 loaded it will get loaded before playback starts.
 
 :startpos - The startposition in the sample in seconds.
+
 :out1 - Zero based index of the first outlet.
+
 :out2 - Zero based index of the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used.
 
 @See-also
@@ -480,8 +481,9 @@ play-sfz-one-shot
 
 (defun play-sfz-one-shot (pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
   "Play a sfz preset with stereo panning to incudine's audio outputs
-or a bus once (regardless of the setting of /play-fn/ in the sample
-to be played).
+or a bus once (regardless of the setting of /play-fn/ in the sample to
+be played). Playback stops after /dur/ seconds or at the end of the
+sample, if /dur/ is longer than the length of the sample.
 
 @Arguments
 pitch - Pitch in Midicent.

@@ -1,3 +1,5 @@
+(defvar *clamps-overview-symbols*)
+(setq *clamps-overview-symbols* (make-vector 63 0))
 (mapcar
  (lambda (entry)
    (let ((symbol (intern (car entry)
