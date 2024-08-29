@@ -1,0 +1,29 @@
+#+LANGUAGE: de
+#+OPTIONS: html5-fancy:t
+#+OPTIONS: toc:nil
+#+OPTIONS: tex:t
+#+HTML_DOCTYPE: xhtml5
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="/home/orm/.config/emacs/org-mode/ox-custom/css/org-manual-style.css" />
+#+INFOJS_OPT: path:scripts/org-info-de.js
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX: \setlength\parindent{0pt}
+#+LATEX_HEADER: \usepackage[top=0.5cm, left=2cm, bottom=0.5cm, right=2cm]{geometry}
+#+LATEX_HEADER: \usepackage{fontspec} % For loading fonts
+#+LATEX_HEADER: \defaultfontfeatures{Mapping=tex-text}
+#+LATEX_HEADER: \setmainfont[Scale=0.9]{Calibri}
+#+LATEX_HEADER: \setsansfont[Scale=0.9]{Calibri}[Scale=MatchLowercase]
+#+LATEX_HEADER: \setmonofont[Scale=0.7]{DejaVu Sans Mono}[Scale=MatchLowercase]
+#+TITLE: README.org
+
+
+* Clamps Documentation
+  The complete HTML documentation is contained in
+  "clamps/doc/clamps-doc.tgz". Unpacking the archive will result in a
+  folder called "clamps-doc" which contains the subfolders of the 5
+  parts of the documentation, which can be opened with a Webbrowser.
+
+  Make sure, the file index.html exists in the subfolders fomus,
+  clamps, clamps-dict and overview and is an alias of the first page
+  of each book.
+
+  The file cm-dict
