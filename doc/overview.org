@@ -111,6 +111,7 @@
     are linked in the Emacs Lisp Interface with the same /<C-c C-d c>/
     keyboard shortcut as the CM Dictionary.
 
+    
   - [[../fomus/index.html][Fomus]] is a reproduction of the original documentation of [[https://fomus.common-lisp.dev/][FOMUS]],
     added here for convenience.
     

@@ -86,7 +86,8 @@
 #+OPTIONS: html-toc-title:\"Index\"
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/clamps-dictionary.css\" />
+#+HTML_HEAD: <link rel=\"stylesheet\" type=\"text/css\" href=\"./css/clamps-dictionary.css\" />
+#+HTML_HEAD: <link rel=\"stylesheet\" type=\"text/css\" href=\"./css/htmlize.css\" />
 #+HTML_HEAD: <link href=\"./pagefind/pagefind-ui.css\" rel=\"stylesheet\">
 #+HTML_HEAD: <script src=\"./pagefind/pagefind-ui.js\"></script>
 # #+SETUPFILE: clamps-dict.setup
@@ -131,6 +132,7 @@
   (setq max-lisp-eval-depth 10000)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-dict-to-clamps)
+#+BIND: org-html-htmlize-output-type 'css
 # \\[\\[\\([^\\[]+\\)\\]\\] → [[\\1][\\1]]
 # C-x 8 RET 200b RET C-x 8 0
 
@@ -638,12 +640,24 @@ result."
             (let ((doc (documentation symbol 'function))
                   (lambda-list (function-lambda-list symbol)))
               (funcall format-entry-function name
-                       (cons (string-downcase name) (strip-package-names lambda-list))
+                       (cl-ppcre:regex-replace
+                        "\\(function ([^)]+)\\)"
+                        (cl-ppcre:regex-replace
+                         "\\(quote nil\\)"
+                         (format nil "~a"
+                                 (cons (string-downcase name)
+                                       (strip-package-names lambda-list)))
+                         "'()")
+                        "#'\\1")
                        (cond
                          ((macro-function symbol) 'macro)
                          (t (type-of (symbol-function symbol))))
                        (and doc (transcode-docstring doc))
                        stream)))))))
+
+(cl-ppcre:regex-replace "\\(function ([^)]+)\\)"
+                        "(function +)"
+                        "#'\\1")
 
 (defun split-letters (sym-list)
   "split the list into sublists with unique first letter."
@@ -713,5 +727,6 @@ file."
 (format t "loaded config~%")
 
 (write-dict "/home/orm/work/programmieren/lisp/clamps/doc/clamps-dictionary.org")
-(sb-ext:quit)
+;; (sb-ext:quit)
+
 

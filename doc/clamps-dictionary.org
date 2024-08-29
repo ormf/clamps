@@ -14,7 +14,8 @@
 #+OPTIONS: html-toc-title:"Index"
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps-dictionary.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/clamps-dictionary.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/htmlize.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 # #+SETUPFILE: clamps-dict.setup
@@ -59,6 +60,7 @@
   (setq max-lisp-eval-depth 10000)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-dict-to-clamps)
+#+BIND: org-html-htmlize-output-type 'css
 # \[\[\([^\[]+\)\]\] → [[\1][\1]]
 # C-x 8 RET 200b RET C-x 8 0
 
@@ -148,7 +150,7 @@
 ** all-permutations
    Function
    #+BEGIN_SRC lisp
-     (all-permutations seq &key (test (function eql)))
+     (all-permutations seq &key (test #'eql))
    #+END_SRC
    get all permutations of a sequence. Make sure to supply a :test
    function in case the elements can't be compared with #'eql, otherwise
@@ -260,7 +262,7 @@
 ** call/collecting
    Function
    #+BEGIN_SRC lisp
-     (call/collecting f n &optional (tail (quote nil)))
+     (call/collecting f n &optional (tail '()))
    #+END_SRC
    Call function /f/ /n/ times, with idx [0..n-1] as argument,
    collecting its results. Return results with tail appended.
@@ -483,7 +485,7 @@
 ** count-elements
    Function
    #+BEGIN_SRC lisp
-     (count-elements seq &key (test (function eql)) (key (function identity)) (sort t))
+     (count-elements seq &key (test #'eql) (key (function identity)) (sort t))
    #+END_SRC
    count the number of occurences of all mutually different elems in
    seq extracted from the list items according to the :key function.
@@ -632,7 +634,7 @@
 ** differentiate
    Function
    #+BEGIN_SRC lisp
-     (differentiate seq &key (modifier (function -)) (start (first seq)))
+     (differentiate seq &key (modifier #'-) (start (first seq)))
    #+END_SRC
    return differences between subsequent elements of seq.
 ** do-proplist
@@ -678,7 +680,7 @@
 ** ensure-sfz-preset
    Function
    #+BEGIN_SRC lisp
-     (ensure-sfz-preset preset &key force (play-fn (function play-sfz-loop)))
+     (ensure-sfz-preset preset &key force (play-fn #'play-sfz-loop))
    #+END_SRC
    Load the sfz definition of /preset/ and all its samples into the
    system if it hasn't been loaded previously. If force is /t/, force
@@ -831,7 +833,7 @@
 ** flatten-fn
    Function
    #+BEGIN_SRC lisp
-     (flatten-fn seq &key (test (function atom)) (key (function identity)))
+     (flatten-fn seq &key (test #'atom) (key (function identity)))
    #+END_SRC
    remove all brackets except the outmost in seq. Use test and key to
    determine where to stop removing brackets.
@@ -890,7 +892,7 @@
 ** get-duplicates
    Function
    #+BEGIN_SRC lisp
-     (get-duplicates list &key (test (function eql)) (once nil))
+     (get-duplicates list &key (test #'eql) (once nil))
    #+END_SRC
    return all duplicate elems of list satisfying the test predicate.
    If once is set, return each duplicate element only once (default ist nil).
@@ -922,7 +924,7 @@
 ** get-sfz-preset
    Function
    #+BEGIN_SRC lisp
-     (get-sfz-preset preset &key force (play-fn (function play-sfz-loop)))
+     (get-sfz-preset preset &key force (play-fn #'play-sfz-loop))
    #+END_SRC
    Load the sfz definition of /preset/ and all its samples into the
    system if it hasn't been loaded previously. If force is /t/, force
@@ -993,7 +995,7 @@
 ** group-by-key
    Function
    #+BEGIN_SRC lisp
-     (group-by-key source &key (test (function =)) (key (function car)))
+     (group-by-key source &key (test #'=) (key (function car)))
    #+END_SRC
    group elems of source into sublists depending on test and key. Source has
    to be sorted according to test!
@@ -1149,7 +1151,7 @@
 ** load-sfz-preset
    Function
    #+BEGIN_SRC lisp
-     (load-sfz-preset file name &key force (play-fn (function play-sfz-loop)))
+     (load-sfz-preset file name &key force (play-fn #'play-sfz-loop))
    #+END_SRC
    Load a sfz file into a preset with the id name. In case this preset
    already exists, the old one will only be overwritten if force is
@@ -1374,7 +1376,7 @@
 ** make-lsample
    Function
    #+BEGIN_SRC lisp
-     (make-lsample &key ((filename filename) nil) ((buffer buffer) nil) ((play-fn play-fn) (function play-lsample-oneshot*)) ((keynum keynum) +sample-zero+) ((loopstart loopstart) +sample-zero+) ((amp amp) (sample 0)) ((loopend loopend) +sample-zero+) ((id id) nil))
+     (make-lsample &key ((filename filename) nil) ((buffer buffer) nil) ((play-fn play-fn) #'play-lsample-oneshot*) ((keynum keynum) +sample-zero+) ((loopstart loopstart) +sample-zero+) ((amp amp) (sample 0)) ((loopend loopend) +sample-zero+) ((id id) nil))
    #+END_SRC
 ** make-oasr
    Function
@@ -1554,7 +1556,7 @@
 ** n-apply
    Function
    #+BEGIN_SRC lisp
-     (n-apply n fn &key (initial-value (quote nil)) (collect nil))
+     (n-apply n fn &key (initial-value '()) (collect nil))
    #+END_SRC
    call fn n times accumulating the results in acc. fn should accept two
    values, the current n and the accumulated results of previous
@@ -2331,7 +2333,7 @@
 ** rfind
    Function
    #+BEGIN_SRC lisp
-     (rfind item tree &key (test (function eql)))
+     (rfind item tree &key (test #'eql))
    #+END_SRC
 ** rotate
    Function
@@ -2473,7 +2475,7 @@
 ** sfz->lsample
    Function
    #+BEGIN_SRC lisp
-     (sfz->lsample sfz-entry dir &key (play-fn (function play-sfz-loop)))
+     (sfz->lsample sfz-entry dir &key (play-fn #'play-sfz-loop))
    #+END_SRC
    Convert an entry of a sfz file into a lsample.
 *** Arguments
@@ -2554,7 +2556,7 @@
 ** sort-by
    Function
    #+BEGIN_SRC lisp
-     (sort-by list &key (test (function <)) (key (function identity)))
+     (sort-by list &key (test #'<) (key (function identity)))
    #+END_SRC
 ** spit
    Function
@@ -2565,7 +2567,7 @@
 ** splice
    Function
    #+BEGIN_SRC lisp
-     (splice list &key (key (function first)) (test (function eq)))
+     (splice list &key (key #'first) (test (function eq)))
    #+END_SRC
    put the elements of list which contain the same key element into
    sublists and return a list of all sublists.
@@ -2764,7 +2766,7 @@
 ** v-collect
    Macro
    #+BEGIN_SRC lisp
-     (v-collect (v n &optional (tail (quote nil))) &rest body)
+     (v-collect (v n &optional (tail '())) &rest body)
    #+END_SRC
    Return a list of /n/ elems prepended to tail by evaluating /body/ /n/
    times with the symbol /v/ bound to the iteration index in the lexical

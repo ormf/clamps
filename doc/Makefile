@@ -17,6 +17,7 @@ html:
 	cp -r css/clamps-css html/clamps-doc/clamps/css
 	cp -r css/overview-css html/clamps-doc/overview/css
 	cp -r css/clamps-dict-css html/clamps-doc/clamps-dict/css
+	rm -f html/clamps-doc/index.html
 	cd html/clamps-doc && ln -s overview/01_00_introduction.html index.html && cd ../..
 
 archive:
