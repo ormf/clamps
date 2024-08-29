@@ -485,7 +485,7 @@
 ** count-elements
    Function
    #+BEGIN_SRC lisp
-     (count-elements seq &key (test #'eql) (key (function identity)) (sort t))
+     (count-elements seq &key (test #'eql) (key #'identity) (sort t))
    #+END_SRC
    count the number of occurences of all mutually different elems in
    seq extracted from the list items according to the :key function.
@@ -833,7 +833,7 @@
 ** flatten-fn
    Function
    #+BEGIN_SRC lisp
-     (flatten-fn seq &key (test #'atom) (key (function identity)))
+     (flatten-fn seq &key (test #'atom) (key #'identity))
    #+END_SRC
    remove all brackets except the outmost in seq. Use test and key to
    determine where to stop removing brackets.
@@ -995,7 +995,7 @@
 ** group-by-key
    Function
    #+BEGIN_SRC lisp
-     (group-by-key source &key (test #'=) (key (function car)))
+     (group-by-key source &key (test #'=) (key #'car))
    #+END_SRC
    group elems of source into sublists depending on test and key. Source has
    to be sorted according to test!
@@ -2556,7 +2556,7 @@
 ** sort-by
    Function
    #+BEGIN_SRC lisp
-     (sort-by list &key (test #'<) (key (function identity)))
+     (sort-by list &key (test #'<) (key #'identity))
    #+END_SRC
 ** spit
    Function
@@ -2567,7 +2567,7 @@
 ** splice
    Function
    #+BEGIN_SRC lisp
-     (splice list &key (key #'first) (test (function eq)))
+     (splice list &key (key #'first) (test #'eq))
    #+END_SRC
    put the elements of list which contain the same key element into
    sublists and return a list of all sublists.

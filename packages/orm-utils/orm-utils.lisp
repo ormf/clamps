@@ -1863,6 +1863,28 @@ Unix with lsof installed."
                                              :output out)))))
 
 (defmacro defparameter* (&rest pairs)
+  "Form for the definition of multiple parameters. /Pairs/ are one or
+more elements, being the arguments of a single defparameter form.
+
+@Arguments
+
+pairs - one or more elements, either a Symbol or a list of 1-3
+elements with a Symbol as first and a String as third element.
+
+@Examples
+
+(defparameter* *a* (*b*) (*c* 1) (*d* 1 \"parameter d\"))
+
+;; The above form is the same as:
+
+(progn
+  (defparameter *a* nil)
+  (defparameter *b* nil)
+  (defparameter *c* 1)
+  (defparameter *d* \"parameter d\"))
+@See-also
+defvar*
+"
   `(progn
      ,@(loop for entry in pairs
              collect (cond
@@ -1874,7 +1896,28 @@ Unix with lsof installed."
                         `(defparameter ,(first entry) ,(second entry)))))))
 
 (defmacro defvar* (&rest pairs)
-  `(progn
+  "Form for the definition of multiple variable. /Pairs/ are one or
+more elements, being the arguments of a single defparameter form.
+
+@Arguments
+
+pairs - one or more elements, either a Symbol or a list of 1-3
+elements with a Symbol as first and a String as third element.
+
+@Examples
+
+(defvar* *a* (*b*) (*c* 1) (*d* 1 \"variable d\"))
+
+;; The above form is the same as:
+
+(progn
+  (defvar *a* nil)
+  (defvar *b* nil)
+  (defvar *c* 1)
+  (defvar *d* \"variable d\"))
+@See-also
+defparameter*
+"  `(progn
      ,@(loop for entry in pairs
              collect (cond
                        ((symbolp entry)

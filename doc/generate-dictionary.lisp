@@ -640,9 +640,9 @@ result."
             (let ((doc (documentation symbol 'function))
                   (lambda-list (function-lambda-list symbol)))
               (funcall format-entry-function name
-                       (cl-ppcre:regex-replace
+                       (cl-ppcre:regex-replace-all
                         "\\(function ([^)]+)\\)"
-                        (cl-ppcre:regex-replace
+                        (cl-ppcre:regex-replace-all
                          "\\(quote nil\\)"
                          (format nil "~a"
                                  (cons (string-downcase name)
