@@ -18,8 +18,6 @@ html:
 	cp -r css/clamps-dict-css html/clamps-doc/clamps-dict/css
 
 archive:
-	cd html
-	tar czvf ../clamps-doc.tgz html/clamps-doc
-	cd ..
+	cd html && tar czvf ../clamps-doc.tgz clamps-doc && cd ..
 
 .PHONY: clean html clamps-dictionary.org archive
