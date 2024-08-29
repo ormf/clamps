@@ -2,6 +2,7 @@ clean:
 	rm -rf html/clamps-doc/overview
 	rm -rf html/clamps-doc/clamps
 	rm -rf html/clamps-doc/clamps-dict
+	rm -f html/clamps-doc/index.html
 
 clamps-dictionary.org:
 	sbcl --load generate-dictionary.lisp
@@ -16,8 +17,10 @@ html:
 	cp -r css/clamps-css html/clamps-doc/clamps/css
 	cp -r css/overview-css html/clamps-doc/overview/css
 	cp -r css/clamps-dict-css html/clamps-doc/clamps-dict/css
+	ln -s html/clamps-doc/overview/01_00_00_introduction.html \
+	      html/clamps-doc/index.html
 
 archive:
-	cd html && tar czvf ../clamps-doc.tgz clamps-doc && cd ..
+	cd html && tar czvfh ../clamps-doc.tgz clamps-doc && cd ..
 
 .PHONY: clean html clamps-dictionary.org archive
