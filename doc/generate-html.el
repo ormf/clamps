@@ -9,6 +9,7 @@
 (load (format "%s%s" *clamps-doc-dir* "/../extra/elisp/font-lock-add-ons.el"))
 
 (require 'org)
+(require 'org-element)
 (require 'ox)
 (require 'ox-html)
 (require 'htmlize)
