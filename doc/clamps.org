@@ -271,15 +271,24 @@
   - [[dict:unwatch][unwatch]]
 
 ** clog-midi-controller
+   TBA
 * CM Extensions
 ** cm-svg
+   TBA
 ** cm-svg.rts
+   TBA
 ** cm-sfz
+   TBA
 ** cm-poolevt
+   TBA
 ** cm-poolplayer
+   TBA
 ** cm-fomus
+   TBA
 ** cm-incudine
+   TBA
 ** cm-all
+   TBA
 * Incudine Extensions
 ** General Incudine Setup
    :PROPERTIES:
@@ -304,7 +313,9 @@
    shortcut have to be put into group 200 using the /:before/ or
    /:after/ keywords when starting the dsp.
 ** of-incudine-dsps
+   TBA
 ** incudine-bufs
+   TBA
 * Gui
 ** General GUI Setup
    The gui is realized in a browser using the [[https://github.com/rabbibotton/clog][CLOG]] package available
@@ -314,12 +325,17 @@
   [[cl-refs][ cl-refs]] to establish and handle the connection between the gui
    elements and the Common Lisp Code.
 ** clog-dsp-widgets
+   TBA
 ** ats-cuda-display
+   TBA
 * Networking
 ** cuda-usocket-osc
+   TBA
 ** fudi
+   TBA
 * Misc Packages
 ** ats-cuda
+   TBA
 ** cl-refs
    /cl-refs/ is a package dealing with the state (= value) of
    variables of an application and their synchronization.
@@ -634,9 +650,13 @@
 
      #+END_SRC
 ** cl-sfz
+   TBA
 ** cl-poolplayer
+   TBA
 ** plot
+   TBA
 ** cm-utils
+   TBA
 ** orm-utils
    orm-utils is a collection of utilities developed for general
    purpose use. Ist is included here for completeness only.
