@@ -12,9 +12,18 @@
    performances. In that respect it combines features of systems like
    OpenMusic, SuperCollider or the Pure Data/Max family of software.
 
-   The components rely on and extend software not written by the
-   author. The most important are listed under Dependencies in
-   [[https://github.com/ormf/clamps-install][clamps-install]].
+   The components of Clamps rely on and extend software not written by
+   the author. The most important are:
+
+   - [[#Incudine.overview][Incudine]]
+     
+   - [[Common Music][Common Music]]
+
+   - [[FOMUS][FOMUS]]
+
+   - [[ATS][ATS]]
+     
+   - [[CLOG][CLOG]]
 
 ** Installation
 
