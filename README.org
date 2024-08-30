@@ -32,10 +32,10 @@
    repository. There is a compressed archive containing all
    documentation as cross-referenced HTML.
 
-   Alternatively, to get an overview, open =doc/overview.org= in the
-   GitHub repository view. More specific information can be obtained
-   from =doc/clamps.org=. =doc/clamps-dictionary.org= contains an API
-   reference with examples.
+   Alternatively, to get an overview, see
+   [[https://github.com/ormf/clamps/blob/main/doc/overview.org][clamps/doc/overview.org]]. More specific information about the
+   packages can be obtained from [[https://github.com/ormf/clamps/blob/main/doc/clamps.org][clamps/doc/clamps.org]] and
+   [[https://github.com/ormf/clamps/blob/main/doc/clamps-dictionary.org][doc/clamps-dictionary.org]] contains an API reference with examples.
 
    Please note that the documentation currently is in progress as
-   clamps hasn't yet been officially released.
+   clamps hasn't been officially released yet.
