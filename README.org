@@ -4,12 +4,12 @@
 
 ** Overview
 
-   Clamps (*C*ommon *L*isp *A*ided *M*usic *P*roduction *S*ystem) is a
-   system for realtime and non-realtime music production written in
-   Common Lisp. It enables a seamless workflow between high-level
-   structures to define musical processes all the way down to low
-   level dsp definitions for sound creation including browser based
-   interfaces for interactive work and control useable for live
+   Clamps, short for "Common Lisp Aided Music Production System", is a
+   software system for realtime and non-realtime music production
+   written in Common Lisp. It enables a seamless workflow between
+   high-level structures to define musical processes all the way down
+   to low level dsp definitions for sound creation including browser
+   based interfaces for interactive work and control useable for live
    performances. In that respect it combines features of systems like
    OpenMusic, SuperCollider or the Pure Data/Max family of software.
 
