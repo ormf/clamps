@@ -28,11 +28,11 @@ jobs:
     - name: Build HTML documentation
       run: |
         export EMACSLOADPATH="/tmp/org-mode/lisp:$EMACSLOADPATH"
-        cd docs
+        cd doc
         make html
 
     - name: Upload HTML documentation as an artifact
       uses: actions/upload-artifact@v3
       with:
         name: html-docs
-        path: docs/_build/html
+        path: doc//html
