@@ -13,12 +13,8 @@
    OpenMusic, SuperCollider or the Pure Data/Max family of software.
 
    The components rely on and extend software not written by the
-   author. The most important are listed under Dependencies.
-
-   There is extensive documentation contained in the repository. To
-   browse the documentation online use this link:
-
-   [[Online doc not yet available]]
+   author. The most important are listed under Dependencies in
+   [[https://github.com/ormf/clamps-install][clamps-install]].
 
 ** Installation
 
