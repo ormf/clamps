@@ -26,31 +26,16 @@
    [[https://github.com/ormf/clamps-install][clamps-install]] has been created. Please consult the installation
    instructions there.
 
-** Prerequisites
+** Documentation
 
-   - Jack
+   For Documentation refer to the =doc= folder in this
+   repository. There is a compressed archive containing all
+   documentation as cross-referenced HTML.
 
-   - SBCL
+   Alternatively, to get an overview, open =doc/overview.org= in the
+   GitHub repository view. More specific information can be obtained
+   from =doc/clamps.org=. =doc/clamps-dictionary.org= contains an API
+   reference with examples.
 
-   - Quicklisp
-
-   - Gnu Emacs
-
-   - git
-** Dependencies
-
-   - Incudine
-
-     Used for sample accurate scheduling, the definition of the DSP
-     parts and realtime IO (Audio, MIDI, OSC...).
-
-   - Common Music (including FOMUS)
-
-     Used as a high level interface for algorithmic composition,
-     im/export from/to MIDI, SVG, Notation and realtime output (using
-     incudine).
-
-   - CLOG
-
-     Used for browser based interactive GUI definitions.
-     
+   Please note that the documentation currently is in progress as
+   clamps hasn't yet been officially released.

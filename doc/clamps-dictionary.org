@@ -620,11 +620,51 @@
    #+BEGIN_SRC lisp
      (defparameter* &rest pairs)
    #+END_SRC
+   Form for the definition of multiple parameters. /Pairs/ are one or
+   more elements, being the arguments of a single defparameter form.
+*** Arguments
+    =pairs= -- one or more elements, either a Symbol or a list of 1-3
+    elements with a Symbol as first and a String as third element.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defparameter* *a* (*b*) (*c* 1) (*d* 1 "parameter d"))
+
+      ;; The above form is the same as:
+
+      (progn
+        (defparameter *a* nil)
+        (defparameter *b* nil)
+        (defparameter *c* 1)
+        (defparameter *d* "parameter d"))
+    #+END_SRC
+*** See also
+    - [[defvar*][defvar*]]
 ** defvar*
    Macro
    #+BEGIN_SRC lisp
      (defvar* &rest pairs)
    #+END_SRC
+   Form for the definition of multiple variable. /Pairs/ are one or
+   more elements, being the arguments of a single defparameter form.
+*** Arguments
+    =pairs= -- one or more elements, either a Symbol or a list of 1-3
+    elements with a Symbol as first and a String as third element.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defvar* *a* (*b*) (*c* 1) (*d* 1 "variable d"))
+
+      ;; The above form is the same as:
+
+      (progn
+        (defvar *a* nil)
+        (defvar *b* nil)
+        (defvar *c* 1)
+        (defvar *d* "variable d"))
+    #+END_SRC
+*** See also
+    - [[defparameter*][defparameter*]]
 ** delete-props
    Function
    #+BEGIN_SRC lisp
