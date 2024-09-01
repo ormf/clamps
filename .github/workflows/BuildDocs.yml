@@ -19,6 +19,11 @@ jobs:
     - name: Install system dependencies
       run: sudo apt-get update && sudo apt-get install -y emacs-nox make curl jackd2 qjackctl pulseaudio-module-jack a2jmidid emacs inkscape python3-pip sbcl git lilypond
 
+    - name: Install quicklisp
+      run: |
+        curl -LO https://beta.quicklisp.org/quicklisp.lisp
+        sbcl --no-userinit --load quicklisp.lisp --eval '(quicklisp-quickstart:install)' --eval '(ql:add-to-init-file)' --eval '(sb-ext:quit)'
+
     - name: Clone org-mode repository
       run: |
         git clone https://git.savannah.gnu.org/git/emacs/org-mode.git /tmp/org-mode
@@ -30,7 +35,7 @@ jobs:
         cd /tmp
         git clone https://github.com/ormf/clamps-install.git
         cd clamps-install
-        sh clamps-install-osc.sh
+        ./clamps-install.sh
 
     - name: Build HTML documentation
       run: |
