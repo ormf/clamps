@@ -22,7 +22,8 @@ jobs:
     - name: Install quicklisp
       run: |
         curl -LO https://beta.quicklisp.org/quicklisp.lisp
-        sbcl --no-userinit --load quicklisp.lisp --eval '(quicklisp-quickstart:install)' --eval '(ql:add-to-init-file)' --eval '(sb-ext:quit)'
+        sbcl --no-userinit --load quicklisp.lisp --eval '(quicklisp-quickstart:install)' --eval '(sb-ext:quit)'
+        echo '(load "quicklisp/setup.lisp")' > .sbclrc
 
     - name: Clone org-mode repository
       run: |
@@ -35,7 +36,7 @@ jobs:
         cd /tmp
         git clone https://github.com/ormf/clamps-install.git
         cd clamps-install
-        ./clamps-install.sh
+        bash clamps-install.sh
 
     - name: Build HTML documentation
       run: |
