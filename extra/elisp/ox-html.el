@@ -5212,7 +5212,7 @@ Return output directory's name."
                                 f))))
                 (if (listp file) (mapcar post file) (funcall post file))))))
         (if (member system-type '(darwin gnu/linux gnu))
-            (shell-command (format "ln -s %s %s/index.html" (get-text-property 0 :output-file (car output)) dir)))
+            (shell-command (format "cp -f %s %s/index.html" (get-text-property 0 :output-file (car output)) dir)))
         (let ((len (length output)))
           (if (<= len 1)
               (message "%s file written to %s, done!\n" len dir)

@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "DTD/xhtml1-frameset.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
+    <title>Common Music Dictionary</title>
+    <link rel="stylesheet" type="text/css" href="../css/cm.css" />
+    <base target="manpage"/>
+    <script type="text/javascript">
+      window.onload = function () {
+      if(window.location.hash) {
+      var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+      window.frames['manpage'].location.href = hash;
+      window.location.hash = '';
+      // hash found
+      } else {
+      // No hash found
+      init();
+      }
+      }
+      const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
+      const localStorageTheme = localStorage.getItem("clamps-doc-theme");
+      var currentThemeSetting;
+      
+      function calculateSettingAsThemeString({ localStorageTheme, systemSettingDark }) {
+      if (localStorageTheme !== null) {
+          return localStorageTheme;
+      }      
+      if (systemSettingDark.matches) {
+          return "dark";
+      }
+      return "light";
+      }
+      function toggleTheme () {
+
+    if (currentThemeSetting == "light")
+        currentThemeSetting = "dark";
+    else
+        currentThemeSetting = "light";
+      localStorage.setItem("clamps-doc-theme", currentThemeSetting);
+      document.querySelector("html").setAttribute("data-theme", currentThemeSetting);
+}
+
+      function init() {
+      currentThemeSetting = calculateSettingAsThemeString({ localStorageTheme, systemSettingDark })
+      let mainBody = document.getElementById('page-body');
+      const topButtons = document.createElement('div');
+      const tocButton = document.createElement('button');
+      const themeButton = document.createElement('button');
+      //    console.log(navLeft);
+      console.log('init clamps-doc.js');
+      console.log(document.getElementById(currentThemeSetting));
+      topButtons.setAttribute('id', 'top-buttons');
+      tocButton.setAttribute('id', 'toc-button');
+      themeButton.setAttribute('id', 'theme-button');
+      mainBody.insertBefore(topButtons, mainBody.firstChild);
+      topButtons.appendChild(tocButton);
+      topButtons.appendChild(themeButton);
+      
+      <!-- tocButton.addEventListener('click', () => { -->
+      <!-- toggleToc(); -->
+      <!-- }); -->
+      themeButton.addEventListener('click', () => {
+      //      alert('New button clicked!');
+      toggleTheme();
+      });
+      document.querySelector("html").setAttribute("data-theme", currentThemeSetting);
+      localStorage.setItem("theme", currentThemeSetting);
+      }
+      
+    </script>
+  </head>
+  <div id="page-body">
+    <div class="org-div-top-insert"><a class="top-menu" target="_top" href="../overview/index.html">Overview</a><a class="top-menu" target="_top" href="../clamps/index.html">Clamps Packages</a><a class="top-menu top-menu-active" target="_top" href="./index.html">CM Dictionary</a><a class="top-menu" target="_top" href="../clamps-dict/index.html">Clamps Dictionary</a><a class="top-menu" target="_top" href="../fomus/index.html">Fomus</a></div>
+    <div class="body-content">
+    <iframe class="toc-frame" src="terms.html" frameborder="0">
+    </iframe>
+    <iframe class="text-frame" id="content" name="manpage" src="syntax.html" frameborder="0">
+    </iframe>
+    </div>
+  </div>
+  </html>

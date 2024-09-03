@@ -17,6 +17,8 @@
 
 (in-package :cm)
 
+(export '(rts-hush) 'cm)
+
 (defparameter *incudine-default-input* nil)
 (defparameter *incudine-default-output* nil)
 (defparameter *incudine-default-latency* 5)
@@ -27,15 +29,20 @@
 (defparameter *rtsdebug* nil)
 
 (defun incudine-rts-hush ()
+  "Flush pending events from incudine's event queue, send out an all
+notes off message to all 16 channels of *​midi-out1​* and call
+<<node-free-unprotected>>."
   (incudine:flush-pending)
   (dotimes (chan 16) (cm::sprout
                       (cm::new cm::midi-control-change :time 0
                         :controller 123 :value 127 :channel chan)))
-;;;  (incudine::node-free-unprotected)
-  (scratch::node-free-all)
-  )
+  (incudine::node-free-unprotected))
 
 (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
+
+(setf (documentation 'rts-hush 'function)
+      (documentation 'incudine-rts-hush 'function))
+
 
 (defun set-standard-hush ()
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush))

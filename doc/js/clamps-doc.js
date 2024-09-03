@@ -1,0 +1,92 @@
+function calculateSettingAsThemeString({ localStorageTheme, systemSettingDark }) {
+  if (localStorageTheme !== null) {
+    return localStorageTheme;
+  }
+
+  if (systemSettingDark.matches) {
+    return "dark";
+  }
+  return "light";
+}
+
+var r = document.querySelector(':root');
+var tocHidden;
+
+function setTocStartState () {
+    let localStorageTocHidden = localStorage.getItem("clamps-toc-hidden");
+    if (localStorageTocHidden != null && localStorageTocHidden == "false") {
+        console.log("toc-start: hidden = false");
+        tocHidden = "true";
+    }
+    else {
+        tocHidden = "false";
+        console.log("toc-start: hidden = true");
+    }
+    toggleToc();
+}
+
+const localStorageTheme = localStorage.getItem("clamps-doc-theme");
+
+const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+var currentThemeSetting = calculateSettingAsThemeString({ localStorageTheme, systemSettingDark });
+
+function toggleTheme () {
+
+    if (currentThemeSetting == "light")
+        currentThemeSetting = "dark";
+    else
+        currentThemeSetting = "light";
+    localStorage.setItem("clamps-doc-theme", currentThemeSetting);
+    document.querySelector("html").setAttribute("data-theme", currentThemeSetting);
+}
+
+function toggleToc () {
+    let rs = getComputedStyle(r);
+    if (tocHidden == "false") {
+        // document.getElementById("table-of-contents").hidden = true;
+        console.log('setting toc hidden');
+        tocHidden = "true";
+        document.getElementById("table-of-contents").classList.remove('toc-open');
+        document.getElementById("table-of-contents").classList.add('toc-closed');
+    }
+    else {
+        tocHidden = "false";
+        console.log('setting toc visible');
+        document.getElementById("table-of-contents").classList.remove('toc-closed');
+        document.getElementById("table-of-contents").classList.add('toc-open');
+    }
+    localStorage.setItem("clamps-toc-hidden", tocHidden);
+}
+
+function init() {
+    let mainBody = document.querySelector('body');
+    const topButtons = document.createElement('div');
+    const tocButton = document.createElement('button');
+    const themeButton = document.createElement('button');
+//    console.log(navLeft);
+    console.log('init clamps-doc.js');
+
+    topButtons.setAttribute('id', 'top-buttons');
+    tocButton.setAttribute('id', 'toc-button');
+    themeButton.setAttribute('id', 'theme-button');
+    mainBody.insertBefore(topButtons, mainBody.firstChild);
+    topButtons.appendChild(tocButton);
+    topButtons.appendChild(themeButton);
+
+    tocButton.addEventListener('click', () => {
+        //      alert('New button clicked!');
+        toggleToc();
+    });
+    themeButton.addEventListener('click', () => {
+        //      alert('New button clicked!');
+        toggleTheme();
+    });
+    setTocStartState();
+    document.querySelector("html").setAttribute("data-theme", currentThemeSetting);
+    localStorage.setItem("theme", currentThemeSetting);
+}
+
+document.querySelector("html").setAttribute("data-theme", currentThemeSetting);
+localStorage.setItem("theme", currentThemeSetting);
+window.onload = (event) => { init(); }

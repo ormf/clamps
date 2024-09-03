@@ -208,6 +208,7 @@
    ("nanoktl2-preset-gui" "clamps-dict/nanoktl2-preset-gui.html")
    ("nanoktl2-preset-midi" "clamps-dict/nanoktl2-preset-midi.html")
    ("new-id" "clamps-dict/new-id.html")
+   ("node-free-unprotected" "clamps-dict/node-free-unprotected.html")
    ("node-group" "clamps-dict/node-group.html")
    ("ntom" "clamps-dict/ntom.html")
    ("of-buffer-load" "clamps-dict/o.html")

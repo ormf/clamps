@@ -13,10 +13,12 @@
 #+OPTIONS: html-postamble:nil
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/clamps.css" />
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/htmlize.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/themes.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
+#+HTML_HEAD: <script src="../js/clamps-doc.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
       (load (format "%s%s" (file-name-directory (buffer-file-name))
@@ -644,9 +646,9 @@
 
        (setf unwatch nil)
 
-       ;; => (#<function (lambda () :in watch) {100F60096B}>
-       ;;     #<function (lambda () :in watch) {100F60098B}>)
+       (set-val e1 17) ;; => 17
 
+       ;; No further output in the REPL.
 
      #+END_SRC
 ** cl-sfz

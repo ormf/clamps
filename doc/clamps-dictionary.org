@@ -14,10 +14,12 @@
 #+OPTIONS: html-toc-title:"Index"
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/clamps-dictionary.css" />
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/htmlize.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps-dictionary.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/themes.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
+#+HTML_HEAD: <script src="../js/clamps-doc.js"></script>
 # #+SETUPFILE: clamps-dict.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
   (load (format "%s%s" (file-name-directory (buffer-file-name))
@@ -471,12 +473,12 @@
    #+END_SRC
    Makes and returns a shallow copy of OBJECT.
    
-   An uninitialized object of the same class as OBJECT is allocated by
-   calling ALLOCATE-INSTANCE.  For all slots returned by
-   CLASS-SLOTS, the returned object has the
-   same slot values and slot-unbound status as OBJECT.
+     An uninitialized object of the same class as OBJECT is allocated by
+     calling ALLOCATE-INSTANCE.  For all slots returned by
+     CLASS-SLOTS, the returned object has the
+     same slot values and slot-unbound status as OBJECT.
    
-   REINITIALIZE-INSTANCE is called to update the copy with INITARGS.
+     REINITIALIZE-INSTANCE is called to update the copy with INITARGS.
 ** copy-ref
    Function
    #+BEGIN_SRC lisp
@@ -488,7 +490,7 @@
      (count-elements seq &key (test #'eql) (key #'identity) (sort t))
    #+END_SRC
    count the number of occurences of all mutually different elems in
-   seq extracted from the list items according to the :key function.
+   seq extracted from the list items according to the :key function. 
    
    Return the results as list with sublists of the form (elem count) for
    each elem.
@@ -584,7 +586,7 @@
      (date-string)
    #+END_SRC
    return a string of the current time formatted
-   "yyyy-mm-dd-hr-min-sec"
+     "yyyy-mm-dd-hr-min-sec"
 ** db->amp
    Function
    #+BEGIN_SRC lisp
@@ -629,9 +631,9 @@
 *** Examples
     #+BEGIN_SRC lisp
       (defparameter* *a* (*b*) (*c* 1) (*d* 1 "parameter d"))
-
+      
       ;; The above form is the same as:
-
+      
       (progn
         (defparameter *a* nil)
         (defparameter *b* nil)
@@ -653,10 +655,10 @@
 
 *** Examples
     #+BEGIN_SRC lisp
-      (defvar* *a* (*b*) (*c* 1) (*d* 1 "variable d"))
-
+      (defvar​* *​a​* (*​b​*) (*​c​* 1) (*​d​* 1 "variable d"))
+      
       ;; The above form is the same as:
-
+      
       (progn
         (defvar *a* nil)
         (defvar *b* nil)
@@ -876,17 +878,17 @@
      (flatten-fn seq &key (test #'atom) (key #'identity))
    #+END_SRC
    remove all brackets except the outmost in seq. Use test and key to
-   determine where to stop removing brackets.
+      determine where to stop removing brackets.
    
-   Example:
+      Example:
    
-   (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)))
-   -> (a b c d e f g h i k)
+      (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)))
+      -> (a b c d e f g h i k)
    
-   keep one level of brackets:
+      keep one level of brackets:
    
-   (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)) :key #'car)
-   -> ((a b) (c d) (e f) (g h) (i k))
+      (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)) :key #'car)
+      -> ((a b) (c d) (e f) (g h) (i k))
 ** format-with-slots
    Macro
    #+BEGIN_SRC lisp
@@ -1494,7 +1496,7 @@
      (mappend fn list)
    #+END_SRC
    Append the results of calling fn on each element of list.
-   Like mapcon, but uses append instead of nconc.
+     Like mapcon, but uses append instead of nconc.
 ** mapply
    Macro
    #+BEGIN_SRC lisp
@@ -1786,6 +1788,16 @@
    #+BEGIN_SRC lisp
      (new-id svg-file id-type)
    #+END_SRC
+** node-free-unprotected
+   Function
+   #+BEGIN_SRC lisp
+     (node-free-unprotected)
+   #+END_SRC
+   Free all Incudine nodes of /group 200/. For details of the function of
+   this group refer to section
+   [[clamps:General Incudine Setup][General Incudine Setup]] in Clamps Packages.
+*** See also
+    - [[rts-hush][rts-hush]]
 ** node-group
    Generic Function
    #+BEGIN_SRC lisp
@@ -1829,23 +1841,23 @@
      (param-exp-func endpos startdiff enddiff)
    #+END_SRC
    with given endpos, startdiff and enddiff return an exponential
-   function fn with the following property:
-   (and
-   (= (- (fn 1) (fn 0)) startdiff)
-   (= (- (fn endpos) (fn (- endpos 1))) enddiff))
+     function fn with the following property:
+      (and
+       (= (- (fn 1) (fn 0)) startdiff)
+       (= (- (fn endpos) (fn (- endpos 1))) enddiff))
 ** partition-seq
    Function
    #+BEGIN_SRC lisp
      (partition-seq seq pred)
    #+END_SRC
    generic function to partition a seq into sublists based on a
-   predicate called on successive events. Pred is a function of two
-   args, an element of the seq and its successor. If pred returns
-   non-nil, a new subseq is started after the curren element. The
-   result contains all elements of the original seq in orginal order.
+      predicate called on successive events. Pred is a function of two
+      args, an element of the seq and its successor. If pred returns
+      non-nil, a new subseq is started after the curren element. The
+      result contains all elements of the original seq in orginal order.
    
-   Example: (partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) (> (- y x) 1)))
-   -> ((1 2) (4 5 6) (8 9))
+      Example: (partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) (> (- y x) 1))) 
+      -> ((1 2) (4 5 6) (8 9))
 ** path-find-file
    Function
    #+BEGIN_SRC lisp
@@ -2207,16 +2219,16 @@
    
    Arities:
    
-   (range end)
+   (range end) 
    
-   (range start end)
+   (range start end) 
    
-   (range start end step)
+   (range start end step) 
 *** Examples
     #+BEGIN_SRC lisp
-      (range 8) ; => (0 1 2 3 4 5 6 7)
+      (range 8) ; => (0 1 2 3 4 5 6 7) 
       
-      (range 3 9) ; => (3 4 5 6 7 8)
+      (range 3 9) ; => (3 4 5 6 7 8) 
       
       (range 1 10 2) ; => (1 3 5 7 9)
     #+END_SRC
@@ -2236,13 +2248,13 @@
 ** ref-object
    Class
    #+BEGIN_SRC lisp
-     nil
+     (ref-object)
    #+END_SRC
-   A /ref-object/ is a special class used in the /cl-refs/
-   package. Its slots shouldn't be accessed or manipulated directly,
-   but rather using the public functions of the cl-refs package listed
-   below. For information how to use ref-objects refer to
-   [[clamps:cl-refs][cl-refs]] in the Clamps Packages documentation.
+       A /ref-object/ is a special class used in the /cl-refs/
+      package. Its slots shouldn't be accessed or manipulated directly,
+      but rather using the public functions of the cl-refs package listed
+      below. For information how to use ref-objects refer to
+      [[clamps:cl-refs][cl-refs]] in the Clamps Packages documentation.
 *** See also
     - [[get-val][get-val]]
     - [[make-computed][make-computed]]
@@ -2383,6 +2395,14 @@
    rotate a list by n elems (to the right). n can be negative. If n is
    larger than the list size it will wrap around as if the rotation was
    called recursively n times.
+** rts-hush
+   Function
+   #+BEGIN_SRC lisp
+     (rts-hush)
+   #+END_SRC
+   Flush pending events from incudine's event queue, send out an all
+   notes off message to all 16 channels of *​​midi-out1​​* and call
+   [[node-free-unprotected][node-free-unprotected]].
 * S
 ** set-basedir
    Function
@@ -2392,7 +2412,7 @@
 ** set-bpm
    Function
    #+BEGIN_SRC lisp
-     (bpm)
+     (set-bpm bpm)
    #+END_SRC
    Set the tempo in beats per minute for both, CM and Incudine.
 *** Arguments
@@ -2403,7 +2423,7 @@
 ** set-bpm
    Function
    #+BEGIN_SRC lisp
-     (bpm)
+     (set-bpm bpm)
    #+END_SRC
    Set the tempo in beats per minute for both, CM and Incudine.
 *** Arguments
@@ -2461,56 +2481,56 @@
 ** sfz
    Class
    #+BEGIN_SRC lisp
-     (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
+     (sfz new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
    #+END_SRC
-   Generates sfz Events.
+       Generates sfz Events.
    
-   sfz accepts the following keywords:
+      sfz accepts the following keywords:
    
-   =:time= The output time in seconds, initially unbound.
+      =:time= The output time in seconds, initially unbound.
    
-   =:keynum= Keynum in Midicents
+      =:keynum= Keynum in Midicents
    
-   =:amplitude= Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
+      =:amplitude= Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
    
-   =:duration= Duration in seconds.
+      =:duration= Duration in seconds.
    
-   =:preset= Keyword or symbol of a registered preset name.
+      =:preset= Keyword or symbol of a registered preset name.
    
-   =:play-fn= The play function to be used for sample playback.
+      =:play-fn= The play function to be used for sample playback.
    
-   =:pan= Number in the range /[0..1]/ defining equal power
-   panning between the two outputs of the dsp on playback.
+      =:pan= Number in the range /[0..1]/ defining equal power
+      panning between the two outputs of the dsp on playback.
    
-   =:startpos= The startposition in the sample in seconds.
+      =:startpos= The startposition in the sample in seconds.
    
-   =:chan= The channel (layer) used in svg output.
+      =:chan= The channel (layer) used in svg output.
 *** Examples
     #+BEGIN_SRC lisp
-      (new sfz)
-      ;; => #i(sfz keynum 60 amplitude 1 duration 1 preset :flute-nv
-      ;;           play-fn nil pan 0.5 startpos 0 chan 100)
+        (new sfz)
+        ;; => #i(sfz keynum 60 amplitude 1 duration 1 preset :flute-nv
+        ;;           play-fn nil pan 0.5 startpos 0 chan 100)
       
-      ;; the following code should send 1 second of a flute middle C sound
-      ;; to the first two oulets of incudine:
+        ;; the following code should send 1 second of a flute middle C sound
+        ;; to the first two oulets of incudine:
       
-      (output (new sfz)) ; => ; No value
+        (output (new sfz)) ; => ; No value
       
-      ;; => loading :flute-nv from ~/quicklisp/local-projects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz
-      ;; ; No values
+        ;; => loading :flute-nv from ~/quicklisp/local-projects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz
+        ;; ; No values
       
-      (loop
-      for idx below 200
-      for x = (/ idx 199)
-      for time = 0 then (+ time (n-exp (interp x 0 0  0.3 1  1 0) 0.01 0.1))
-      do (sprout
-      (new sfz
-      :time time
-      :keynum (+ 65.5 (random (n-lin (interp x 0 0 1 1) 1 5)))
-      :duration (+ 0.5 (random 2.0))
-      :amplitude (n-lin (interp x 0 0 0.8 0 1 1) -12 -24))))
+        (loop
+           for idx below 200
+          for x = (/ idx 199)
+          for time = 0 then (+ time (n-exp (interp x 0 0  0.3 1  1 0) 0.01 0.1))
+          do (sprout
+              (new sfz
+                :time time
+                :keynum (+ 65.5 (random (n-lin (interp x 0 0 1 1) 1 5)))
+                :duration (+ 0.5 (random 2.0))
+                :amplitude (n-lin (interp x 0 0 0.8 0 1 1) -12 -24))))
       
-      ;; => nil
+        ;; => nil
     #+END_SRC
 ** sfz->lsample
    Function
@@ -2707,7 +2727,7 @@
    #+BEGIN_SRC lisp
      (svg-collect-lines layer parse-state &key (timescale 1) (x-offset 0) (xquantize nil) (yquantize nil) layer?)
    #+END_SRC
-   return a list of svg-cm-line instances of layer with a given parse-state.
+   return a property list of all lines in layer with a given parse-state.
 ** svg-file
    Class
    #+BEGIN_SRC lisp
@@ -2874,7 +2894,7 @@
    equivalent to printing into a file read by gnuplot as a dataset with
    its plot command.
    
-   args are arguments sent to #'launch-gnuplot.
+   args are arguments sent to #'launch-gnuplot. 
    
    Leaving the macro is equivalent to gnuplot reaching EOF when reading
    an external dataset.

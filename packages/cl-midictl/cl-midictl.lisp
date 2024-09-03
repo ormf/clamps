@@ -399,7 +399,7 @@ start-midi-receive
   (incudine.util:msg :warn "closing midi streams~%")
   (mapcar #'jackmidi:close jackmidi::*streams*)
   (sleep 0.1)
-  (when *midi-out1* (jackmidi:close *midi-out1*))
+  (when *midi-out1* (jackmidi:close (cm:incudine-output *midi-out1*)))
   (setf *midi-in1* (jackmidi:open :direction :input
                                      :port-name "midi_in_1"))
   (loop repeat 20 until *midi-in1* do (progn

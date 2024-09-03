@@ -6,7 +6,7 @@
 #+OPTIONS: toc:3 h:4 html-multipage-join-empty-bodies:t
 #+OPTIONS: html-multipage-split-level:toc
 #+OPTIONS: html-multipage-toc-to-top:t
-#+OPTIONS: html-multipage-export-directory:html/fomus
+#+OPTIONS: html-multipage-export-directory:html/clamps-doc/fomus
 #+OPTIONS: html-multipage-open:browser
 #+OPTIONS: html-preamble:"<a class=\"top-menu\" href=\"../overview/index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n<a class=\"top-menu top-menu-active\" href=\"../fomus/index.html\">Fomus</a>\n"
 #+OPTIONS: html-multipage-postamble-position:bottom
@@ -14,9 +14,18 @@
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/fomus.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/themes.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
+#+HTML_HEAD: <script src="../js/clamps-doc.js"></script>
 #+BEGIN_SRC emacs-lisp :exports results :results: none
+  (load (format "%s%s" (file-name-directory (buffer-file-name))
+                    "../extra/elisp/clamps-lookup.el"))
+  (load (format "%s%s" (file-name-directory (buffer-file-name))
+                    "../extra/elisp/clamps-overview-lookup.el"))
+  (load (format "%s%s" (file-name-directory (buffer-file-name))
+                    "../extra/elisp/clamps-dict.el"))
   (defun export-fomus-syms (s backend info)
     (with-temp-buffer
       (insert "(setq *clamps-fomus-symbols* (make-vector 63 0))\n")
@@ -44,7 +53,8 @@
     s)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-fomus-syms)
-
+#+BIND: org-html-htmlize-output-type 'css
+#+BIND: org-export-with-brokenlinks t
 
 * Disclaimer
   The original of this FOMUS documentation is part of the Common Lisp

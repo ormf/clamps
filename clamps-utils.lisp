@@ -73,12 +73,12 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
                             ((= (- x (- 4 (mod (+ 13 y) 15))) 1) #\/)
                             ((<= 1 y 5) #\-)
                             ((= (* (- x 6) (- y 3)) 15) #\/)
-                            (:else #\ ))))))
+                            (:else #\SPACE))))))
         (format t e)))
   (values))
 
 (defun clamps:idump (node)
-  "Dump all active dsps of /node/ to the /incudine:\ast{}logger-stream\ast{}/
+  "Dump all active dsps of /node/ to the /incudine:*​logger-stream​*/
 output.
 
 @Arguments

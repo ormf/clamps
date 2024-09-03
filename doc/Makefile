@@ -3,6 +3,9 @@ clean:
 	rm -rf html/clamps-doc/clamps
 	rm -rf html/clamps-doc/clamps-dict
 	rm -f html/clamps-doc/index.html
+	rm -rf html/clamps-doc/js
+	rm -rf html/clamps-doc/css
+	rm -rf html/clamps-doc/fonts
 
 clamps-dictionary.org:
 	sbcl --load generate-dictionary.lisp
@@ -14,13 +17,14 @@ html:
 	cp -r img/clamps-img html/clamps-doc/clamps/img
 	cp -r img/overview-img html/clamps-doc/overview/img
 	cp -r img/clamps-dict-img html/clamps-doc/clamps-dict/img
-	cp -r css/clamps-css html/clamps-doc/clamps/css
-	cp -r css/overview-css html/clamps-doc/overview/css
-	cp -r css/clamps-dict-css html/clamps-doc/clamps-dict/css
-	rm -f html/clamps-doc/index.html
-	cd html/clamps-doc && ln -s overview/01_00_introduction.html index.html && cd ../..
+	# ln -s ../../css html/clamps-doc/
+	# ln -s ../../js html/clamps-doc/
+	# ln -s ../../fonts html/clamps-doc/
+	cp -rf css html/clamps-doc/
+	cp -rf js html/clamps-doc/
+	cp -rf fonts html/clamps-doc/
 
 archive:
-	cd html && tar czvfh ../clamps-doc.tgz clamps-doc && cd ..
+	tar -C html -czvf clamps-doc.tgz clamps-doc
 
 .PHONY: clean html clamps-dictionary.org archive

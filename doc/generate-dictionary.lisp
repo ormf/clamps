@@ -154,15 +154,32 @@
    in =red= and emphasized words appear in /green/.
 ")
 
-(defparameter *clamps-extra-symbols*
-  '(cm:sfz cl-refs:ref-object
-    clamps:reset-logger-stream clamps:set-bpm))
+#|
+      (cm:rts-hush
+       (function '()
+            "Flush pending events from incudine's event queue, send out an all
+notes off message to all 16 channels of *​midi-out1​* and call
+<<node-free-unprotected>>."))
+|#
 
-(defparameter *clamps-extra-doc*
-  '((cm:sfz (standard-class
-             (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
+(progn
+  (defparameter *clamps-extra-doc*
+    '(
+      (clamps:reset-logger-stream
+       (function ()
+        "Resets /incudine:*logger-stream*/ to /*​error-output​*/ Call this
+function, if calls to /incudine.util:msg/ don't produce any output in
+the REPL.
 
-             "    Generates sfz Events.
+@Note
+This function needs to be called if /Clamps/ is started from a Lisp
+Image.
+"))
+
+      (cm:sfz (standard-class
+               (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
+
+               "    Generates sfz Events.
 
    sfz accepts the following keywords:
 
@@ -199,7 +216,7 @@
   ;; ; No values
 
   (loop
-    for idx below 200
+     for idx below 200
     for x = (/ idx 199)
     for time = 0 then (+ time (n-exp (interp x 0 0  0.3 1  1 0) 0.01 0.1))
     do (sprout
@@ -211,10 +228,10 @@
 
   ;; => nil
 "))
-    (cl-refs:ref-object
-     (standard-class
-      nil
-      "    A /ref-object/ is a special class used in the /cl-refs/
+      (cl-refs:ref-object
+       (standard-class
+        nil
+        "    A /ref-object/ is a special class used in the /cl-refs/
    package. Its slots shouldn't be accessed or manipulated directly,
    but rather using the public functions of the cl-refs package listed
    below. For information how to use ref-objects refer to
@@ -227,19 +244,22 @@ make-ref
 set-val
 watch
 "
-      ))
-    (clamps:set-bpm
-     (function
-      (bpm)
-  "Set the tempo in beats per minute for both, CM and Incudine.
+        ))
+      (clamps:set-bpm
+       (function
+        (bpm)
+        "Set the tempo in beats per minute for both, CM and Incudine.
 
 @Arguments
 bpm - Number of beats per minute.
 
 @See-also
 set-tempo
-"))
-    ))
+"))))
+
+  (defparameter *clamps-extra-symbols*
+    (append (mapcar #'first *clamps-extra-doc*)
+            '(cm:rts-hush incudine:node-free-unprotected))))
 
 (defun all-clamps-symbols ()
   (let ((acc nil))
@@ -489,11 +509,16 @@ result."
             (setf curr line))
           (setf curr (concatenate 'string curr " " line)) ))))
 
+(defun trim-white-spaces (strings)
+  (mapcar (lambda (string)
+            (string-trim '(#\SPACE #\TAB) string))
+          strings))
+
 (defun clampsdoc-transcode-arguments (arglist)
   "Reformat @Arguments section of docstring for org-mode file."
  (format nil "*** Arguments~%~{~a~^~%~}~%"
          (mapcar #'reformat-arg
-                 (get-arg-entries (trim-list arglist)))))
+                 (get-arg-entries (trim-white-spaces (trim-list arglist))))))
 
 (defun clampsdoc-transcode-examples (strings)
   "Reformat @Examples section of docstring for org-mode file."
@@ -502,24 +527,32 @@ result."
     #+END_SRC~%"
           (trim-list strings)))
 
+(defun clampsdoc-transcode-example (strings)
+  "Reformat @Example section of docstring for org-mode file."
+  (format nil "*** Example~%    #+BEGIN_SRC lisp
+~{      ~a~^~%~}
+    #+END_SRC~%"
+          (trim-list strings)))
+
 (defun clampsdoc-transcode-see-also (strings)
   "Reformat @See-also section of docstring for org-mode file."
   (format nil "*** See also~%~{~a~^~%~}~%"
-          (mapcar #'reformat-see-also (remove-empty-strings strings))))
+          (mapcar #'reformat-see-also (trim-white-spaces (remove-empty-strings strings)))))
 
 (defun clampsdoc-transcode-note (strings)
   "Reformat @Note section of docstring for org-mode file."
  (format nil "*** Note~%    ~{~a~^~%    ~}~%"
-         (mapcar #'reformat-links strings)))
+         (mapcar #'reformat-links (trim-white-spaces strings))))
 
 (defun clampsdoc-transcode-important-note (strings)
   "Reformat @Important-Note section of docstring for org-mode file."
  (format nil "*** Important Note~%    ~{~a~^~%    ~}~%"
-         (mapcar #'reformat-links strings)))
+         (mapcar #'reformat-links (trim-white-spaces strings))))
 
 (defparameter *docstring-fn-lookup*
   `(("@General" . ,#'clampsdoc-transcode-general)
     ("@Arguments" . ,#'clampsdoc-transcode-arguments)
+    ("@Example" . ,#'clampsdoc-transcode-example)
     ("@Examples" . ,#'clampsdoc-transcode-examples)
     ("@See-also" . ,#'clampsdoc-transcode-see-also)
     ("@Note" . ,#'clampsdoc-transcode-note)
@@ -563,8 +596,8 @@ result."
                  (if (and (string/= line "") (char= (aref line 0) #\@))
                      (progn
                        (push (reverse curr) result)
-                       (setf curr (list (string-trim '(#\SPACE #\TAB) line))))
-                     (push (string-trim '(#\SPACE #\TAB) line) curr))))))))
+                       (setf curr (list line)))
+                     (push line curr))))))))
 
 (defun format-function-entry (name args docstring stream type)
   "Format a function/macro, etc. entry for org-mode file."
@@ -610,7 +643,9 @@ result."
                (*print-pretty* nil))
           (destructuring-bind (type lambda-list docstring) extra-doc
             (funcall format-entry-function name
-                     lambda-list
+                     (format nil "~a"
+                                 (cons (string-downcase name)
+                                       (strip-package-names lambda-list)))
                      type
                      (transcode-docstring docstring)
                      stream)))
@@ -727,6 +762,5 @@ file."
 (format t "loaded config~%")
 
 (write-dict "/home/orm/work/programmieren/lisp/clamps/doc/clamps-dictionary.org")
-;; (sb-ext:quit)
 
-
+;;; (sb-ext:quit)

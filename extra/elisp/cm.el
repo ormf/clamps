@@ -297,8 +297,8 @@ selected; indent whole defun if prefixed."
 ;;; CM documentation hacks, mostly cribbed from hyperspec.
 ;;;
 
-(defvar *common-music-doc-root* (concat "file://" (expand-file-name "~/quicklisp/local-projects/clamps/doc/"))
-  "The root url for visiting CM documentation.")
+(defvar *common-music-doc-root* nil "The root url for visiting CM documentation.")
+(setq *common-music-doc-root* (concat "file://" (expand-file-name "~/quicklisp/local-projects/clamps/doc/html/clamps-doc/")))
 
 (defun cm-doc (url)
   (interactive "FCM document:")

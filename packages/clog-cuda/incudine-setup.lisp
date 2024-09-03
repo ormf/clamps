@@ -109,11 +109,14 @@
   )
 
 (defun node-free-unprotected ()
-  "Free all Incudine nodes of /group 200/.
+  "Free all Incudine nodes of /group 200/. For details of the function of
+this group refer to section
+<<clamps:General Incudine Setup>> in Clamps Packages.
 
 @See-also
 rts-hush
-" (dogroup (n (node 200))
+"
+  (dogroup (n (node 200))
     (free n)))
 
 ;;; (setup-io)

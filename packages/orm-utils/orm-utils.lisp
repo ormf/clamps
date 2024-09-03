@@ -1906,7 +1906,7 @@ elements with a Symbol as first and a String as third element.
 
 @Examples
 
-(defvar* *a* (*b*) (*c* 1) (*d* 1 \"variable d\"))
+(defvar​* *​a​* (*​b​*) (*​c​* 1) (*​d​* 1 \"variable d\"))
 
 ;; The above form is the same as:
 

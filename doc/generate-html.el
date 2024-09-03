@@ -79,3 +79,8 @@
 (generate-html
  (format "%s%s" *clamps-doc-dir*
          "/clamps-dictionary.org"))
+
+;; (setq org-export-with-broken-links t)
+;; (generate-html
+;;  (format "%s%s" *clamps-doc-dir*
+;;          "/fomus.org"))

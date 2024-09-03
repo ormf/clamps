@@ -13,10 +13,12 @@
 #+OPTIONS: html-preamble:"<a class=\"top-menu top-menu-active\" href=\"./index.html\">Overview</a>\n<a class=\"top-menu\" href=\"../clamps/index.html\">Clamps Packages</a>\n<a class=\"top-menu\" href=\"../cm-dict/index.html\">CM Dictionary</a>\n<a class=\"top-menu\" href=\"../clamps-dict/index.html\">Clamps Dictionary</a>\n<a class=\"top-menu\" href=\"../fomus/index.html\">Fomus</a>\n"
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/overview.css" />
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="./css/htmlize.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/overview.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/themes.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
+#+HTML_HEAD: <script src="../js/clamps-doc.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
       (load (format "%s%s" (file-name-directory (buffer-file-name))
@@ -70,14 +72,14 @@
 
   In this regard it is comparable to other realtime and non-realtime
   music programming environments like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]], [[https://en.wikipedia.org/wiki/Max_(software)][Max/MSP]], [[https://en.wikipedia.org/wiki/Csound][Csound]],
-  [[https://en.wikipedia.org/wiki/SuperCollider][SuperCollider]], [[https://ccrma.stanford.edu/software/clm/][CLM]], [[https://commonmusic.sourceforge.net/][Common Music]], [[https://chuck.stanford.edu/][Chuck]], [[https://faust.grame.fr/][Faust]], [[https://forum.ircam.fr/projects/detail/openmusic/][Open Music]],
+  [[https://en.wikipedia.org/wiki/SuperCollider][SuperCollider]], [[https://ccrma.stanford.edu/software/clm/][CLM]], [[https://commonmusic.sourceforge.net/][Common Music]], [[https://chuck.stanford.edu/][Chuck]], [[https://faust.grame.fr/][Faust]], [[https://www.composersdesktop.com/][CDP]], [[https://forum.ircam.fr/projects/detail/openmusic/][Open Music]],
   [[https://opusmodus.com/][OpusModus]], [[https://michael-edwards.org/sc/][Slippery Chicken]] and [[https://www.music21.org/music21docs/][Music21]].
 
   Clamps is a collection of tools, developed over the course of some
   decades primarily for the artistic work of its author, biased by his
   conceptual and aesthetic ideas. It is put together and made public
-  in the hope it might be useful for others, but --like one of the
-  integral characteristics of the beauty of Art in general-- without
+  in the hope it might be useful for others, but --- like one of the
+  integral characteristics of the beauty of Art in general --- without
   any explict or implicit warranty that it fits any purpose
   whatsoever.
   
@@ -141,7 +143,7 @@
   available to the public is my contribution intended to pay back to
   the community.
 
-  Orm Finnendahl, August 2025
+  Orm Finnendahl, August 2024
 ** Why Clamps?
   
    Clamps is written in [[https://en.wikipedia.org/wiki/Common_Lisp][Common Lisp]]. A main advantage of using Common
@@ -319,9 +321,8 @@
 
     - /cm-svg/
 
-      Infrastructure to import and export CM events to and from SVG
+      Infrastructure to import and export CM events from and to SVG
       files.
-
     - /cm-utils/
 
       Package defining a generalized process mechanism called
@@ -340,7 +341,7 @@
       the creation of sophisticated GUIs nowadays taken for granted in
       computer music environments, but allows for collaborative
       performances with multiple synced GUIs using standard hardware
-      like Mobile phones or Tablets without the need to install
+      like Mobile Phones or Tablets without the need to install
       specialized programs.
 
     - /ats-cuda-display/
@@ -438,11 +439,11 @@
     [[./img/function-help.png]]
 ** Finding Source Definitions
     To jump to the source definition of any compiled expression, use
-    the /<C-.>/ key. This will jump to definitions in other files,
+    the /<M-.>/ key. This will jump to definitions in other files,
     opening them if necessary. To get back to the place before the
-    jump, press the /<C-,>/ key. This is recursive: Repeated jumps to
-    source locations with /<C-.>/ can be reversed one by one with the
-    same number of /<C-,>/.
+    jump, press the /<M-,>/ key. This is recursive: Repeated jumps to
+    source locations with /<M-.>/ can be reversed one by one with the
+    same number of /<M-,>/.
 ** Code Inspection
    Sly comes with a powerful and versatile code inspector. It can be
    invoked by pressing the /<C-c I>/ key sequence after an expression
@@ -453,7 +454,7 @@
    
     #+attr_html: :width 80%
     #+CAPTION: The Sly Inspector invoked on (make-instance 'sfz)
-    [[file:../img/sly-inspector.png]]
+    [[file:./img/sly-inspector.png]]
    
    Depending on the type of expression it is possible to navigate to
    subsequences of inspected sequences, see and inspect the slots of

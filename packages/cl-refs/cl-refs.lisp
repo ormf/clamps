@@ -219,7 +219,7 @@ set-val
 watch
 "
 ;;; let* is sequential to avoid nesting of multiple let
-  (let* ((new-ref (make-ref nil :fun fn :setter setter))
+  (let* ((new-ref (make-ref nil :fn fn :setter setter))
          (update-callback (lambda (&optional old new) (declare (ignorable old new)) (funcall (ref-update new-ref)))))
     (with-updating-deps
       (setf (ref-update new-ref)
@@ -279,7 +279,7 @@ get-val
 make-computed
 make-ref
 set-val
-"  (let* ((new-ref (make-ref nil :fun fn))
+"  (let* ((new-ref (make-ref nil :fn fn))
           (update-callback (lambda (&optional old new)
                              (declare (ignorable old new))
                              (funcall (ref-update new-ref)))))
