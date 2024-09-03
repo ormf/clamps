@@ -15,8 +15,8 @@
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/clamps-dictionary.css" />
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/themes.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
 #+HTML_HEAD: <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
 #+HTML_HEAD: <script src="./pagefind/pagefind-ui.js"></script>
 #+HTML_HEAD: <script src="../js/clamps-doc.js"></script>
@@ -308,6 +308,13 @@
    #+BEGIN_SRC lisp
      (cd &optional (dirarg (user-homedir-pathname)))
    #+END_SRC
+   Change the current working directory to /dirarg/ or to $HOME if dirarg
+   is not supplied.
+*** Arguments
+    =dirarg= -- String or Pathname.
+
+*** See also
+    - [[pwd][pwd]]
 ** clamps
    Function
    #+BEGIN_SRC lisp
@@ -447,7 +454,7 @@
 ** clip
    Function
    #+BEGIN_SRC lisp
-     (clip val min max)
+     (clip val minvalue maxvalue)
    #+END_SRC
 ** collect-pool
    Function
@@ -517,12 +524,12 @@
 ** create-hide-button
    Function
    #+BEGIN_SRC lisp
-     (create-hide-button parent element-to-hide &key label (background (quote (transparent orange))) color flash-time values css (val 1) auto-place)
+     (create-hide-button parent element-to-hide &key label (background '(transparent orange)) color flash-time values css (val 1) auto-place)
    #+END_SRC
 ** create-o-bang
    Function
    #+BEGIN_SRC lisp
-     (create-o-bang parent bindings &key width height label (background (quote (transparent orange))) color flash-time css flash)
+     (create-o-bang parent bindings &key width height label (background '(transparent orange)) color flash-time css flash)
    #+END_SRC
 ** create-o-knob
    Function
@@ -542,7 +549,7 @@
 ** create-o-radio
    Function
    #+BEGIN_SRC lisp
-     (create-o-radio parent bindings &key labels label width height (background (quote ((transparent) (orange)))) color flash-time values (num 8) (direction right) css)
+     (create-o-radio parent bindings &key labels label width height (background '((transparent (orange)))) color flash-time values (num 8) (direction right) css)
    #+END_SRC
 ** create-o-scope
    Function
@@ -562,7 +569,7 @@
 ** create-o-toggle
    Function
    #+BEGIN_SRC lisp
-     (create-o-toggle parent bindings &key width height label (background (quote (transparent orange))) color flash-time values css)
+     (create-o-toggle parent bindings &key width height label (background '(transparent orange)) color flash-time values css)
    #+END_SRC
 ** create-o-vumeter
    Function
@@ -682,20 +689,90 @@
 ** do-proplist
    Macro
    #+BEGIN_SRC lisp
-     (do-proplist (key value) proplist &body body)
+     (do-proplist (keysym valuesym) proplist &body body)
    #+END_SRC
-   like dolist but traversing a property list. fn has to accept two
-   values, the key and the value of each property in the proplist.
+   Like dolist but traversing a property list. All keys and values of
+   /proplist/ are bound to the symbols /keysym/ and /valuesym/ in the
+   lexical scope of /body/.
+*** Arguments
+    =keysym= -- Symbol bound to all keys of the property list.
+
+    =valuesym= -- Symbol bound to all values of the property list.
+
+    =proplist= -- Property list to be traversed.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (do-proplist (key value) '(a 1 b 2 c 3 d 4)
+        (format t "key: ~a, value: ~a~%" key value)) ;  => nil
+      
+      ;; Output in REPL:
+      ;;
+      ;; key: a, value: 1
+      ;; key: b, value: 2
+      ;; key: c, value: 3
+      ;; key: d, value: 4
+      
+      (let ((proplist '(a 1 b 2 c 3 d 4)))
+        (do-proplist (key value) proplist
+          (setf (getf proplist key) (incf value 10)))
+        proplist)
+      ;; => (a 11 b 12 c 13 d 14)
+    #+END_SRC
+*** See also
+    - [[map-proplist][map-proplist]]
+    - [[with-proplist/collecting][with-proplist/collecting]]
+** do-proplist/collecting
+   Macro
+   #+BEGIN_SRC lisp
+     (do-proplist/collecting (keysym valuesym) proplist &body body)
+   #+END_SRC
+   Like do-proplist but collecting the result. All keys and values of
+   /proplist/ are bound to the symbols /keysym/ and /valuesym/ in the
+   lexical scope of /body/.
+*** Arguments
+    =keysym= -- Symbol bound to all keys of the property list.
+
+    =valuesym= -- Symbol bound to all values of the property list.
+
+    =proplist= -- Property list to be traversed.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (do-proplist/collecting (key val) '(:a 2 :b 5 :c 4)
+        (list key (1+ val)))
+      ;; => ((:a 3) (:b 6) (:c 5))
+    #+END_SRC
+*** See also
+    - [[do-proplist][do-proplist]]
+    - [[map-proplist][map-proplist]]
 ** do-repeated
    Function
    #+BEGIN_SRC lisp
-     (do-repeated n func &rest args)
+     (do-repeated n fn &rest args)
    #+END_SRC
+   Recursively apply /fn/ to /args/ /n/ times.
+*** Arguments
+    =n= -- Integer number of repetitions.
+
+    =fn= -- Function to apply.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (do-repeated 4 (lambda (x) (* x 2)) 1) ; => 16
+      
+      (do-repeated 4 (lambda (x) (* x x)) 2)  ; => 65536
+      
+      (do-repeated 6 (lambda (list) (cons 1 list)) '()) ; => (1 1 1 1 1 1)
+    #+END_SRC
+*** See also
+    - [[repeated][repeated]]
 ** dround
    Function
    #+BEGIN_SRC lisp
      (dround num &optional (prec 2))
    #+END_SRC
+   Return a number rounded to /prec/ decimal places.
 ** dsp-id
    Generic Function
    #+BEGIN_SRC lisp
@@ -914,7 +991,7 @@
 ** get-dtime-fn
    Function
    #+BEGIN_SRC lisp
-     (get-dtime-fn mina maxa minbfn maxbfn &key (distribution (quote ((0 weight 9) (1 weight 3) 2 3 4))) (thresh 0.5))
+     (get-dtime-fn mina maxa minbfn maxbfn &key (distribution '((0 weight 9 (1 weight 3) 2 3 4))) (thresh 0.5))
    #+END_SRC
    return a function calculating a delta-time on each call. The
    distribution specifies a random distribution (using cm's weighting) to
@@ -925,7 +1002,7 @@
 ** get-dtime-fn-no-x
    Function
    #+BEGIN_SRC lisp
-     (get-dtime-fn-no-x mina maxa minb maxb &key (distribution (quote (1 1 1 1 2 3 4))))
+     (get-dtime-fn-no-x mina maxa minb maxb &key (distribution '(1 1 1 1 2 3 4)))
    #+END_SRC
    return a function calculating a delta-time on each call. The
    distribution specifies a random distribution (using cm's weighting) to
@@ -948,7 +1025,16 @@
    #+BEGIN_SRC lisp
      (get-prop proplist key &optional default)
    #+END_SRC
-   like getf but using #'equal for testing.
+   Like getf but using #'equal for testing of the property key.
+*** Arguments
+    =proplist= -- Property list
+
+    =key= -- Lisp Object ervong as key in property list.
+
+*** Example
+    #+BEGIN_SRC lisp
+      (get-prop '("George" "Maciunas" "Simone" "de Beauvoir") "Simone") ; => "de Beauvoir"
+    #+END_SRC
 ** get-props-list
    Function
    #+BEGIN_SRC lisp
@@ -1083,7 +1169,7 @@
    #+BEGIN_SRC lisp
      (idump node)
    #+END_SRC
-   Dump all active dsps of /node/ to the /incudine:ast{}logger-streamast{}/
+   Dump all active dsps of /node/ to the /incudine:*​​logger-stream​​*/
    output.
 *** Arguments
     =node= -- The id of the node
@@ -1415,6 +1501,14 @@
    #+BEGIN_SRC lisp
      (make-keyword name)
    #+END_SRC
+   Return a keyword from /name/.
+*** Arguments
+    =name= -- String to intern
+
+*** Example
+    #+BEGIN_SRC lisp
+      (make-keyword "Hello") => :hello
+    #+END_SRC
 ** make-lsample
    Function
    #+BEGIN_SRC lisp
@@ -1434,8 +1528,22 @@
    #+BEGIN_SRC lisp
      (make-quantlist vals)
    #+END_SRC
-   given a list of divisions per beat, return the sorted list of
-   quantization points in fractions of a beat [0..1]
+   Return the sorted list of quantization points in fractions of a beat
+   [0..1] for a list of the beat division numbers to be considered,
+   supplied in /vals/.
+*** Arguments
+    =vals= -- List of integer beat-divisions to be collected.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (make-quantlist '(4)) ; => (0 1/4 1/2 3/4 1)
+      
+      (make-quantlist '(3 4)) ; => (0 1/4 1/3 1/2 2/3 3/4 1)
+      
+      (make-quantlist '(3 4 5)) ; => (0 1/5 1/4 1/3 2/5 1/2 3/5 2/3 3/4 4/5 1)
+    #+END_SRC
+*** See also
+    - [[quantize-time][quantize-time]]
 ** make-ref
    Function
    #+BEGIN_SRC lisp
@@ -1458,17 +1566,47 @@
 ** map-all-pairs
    Function
    #+BEGIN_SRC lisp
-     (map-all-pairs fn seq)
+     (map-all-pairs return-type fn list)
    #+END_SRC
-   Execute fn on all possible pairs of two different elements of
-   seq. The pairs are given to fn in the order of appearance in the seq.
+   Execute /fn/ on all possible pairs of two different elements of
+   /list/. The pairs are given to fn in the order of appearance in the
+   list. /return-type/ serves the same purpose as in #'map.
+*** Arguments
+    =return-type= -- A Sequence type or nil.
+
+    =fn= -- Function of two arguments called on all pairs.
+
+    =list= -- List containing all elements to which fn gets applied
+    pairwise.
+
+*** Example
+    #+BEGIN_SRC lisp
+      (map-all-pairs 'list #'list '(1 2 3 4 5))
+      ;; => ((1 2) (1 3) (1 4) (1 5) (2 3) (2 4) (2 5) (3 4) (3 5) (4 5))
+    #+END_SRC
 ** map-indexed
    Macro
    #+BEGIN_SRC lisp
      (map-indexed result-type fn &rest seqs)
    #+END_SRC
-   map fn over seqs with incrementing idx. The idx will get supplied
-   as first arg to fn and is reset for each seq.
+   Map /fn/ over /seqs/ with incrementing zero-based idx. The idx will
+   get supplied as first arg to /fn/. /result-type/ serves the same
+   purpose as in #'map.
+*** Arguments
+    =result-type= -- Result type to return. If nil, don't return a
+    result.
+
+    =fn= -- Function to map over sequences. Needs to accept /(+ 1
+    (length seqs))/ arguments.
+
+    =seqs= -- One or more sequences where mapping gets applied, similar
+    to map.
+
+*** Example
+    #+BEGIN_SRC lisp
+      (map-indexed 'list #'list '(a b c d e)  '(20 10 30 50 40))
+      ;; => ((0 a 20) (1 b 10) (2 c 30) (3 d 50) (4 e 40))
+    #+END_SRC
 ** map-params
    Macro
    #+BEGIN_SRC lisp
@@ -1479,8 +1617,20 @@
    #+BEGIN_SRC lisp
      (map-proplist fn proplist)
    #+END_SRC
-   like mapcar but traversing a property list. fn has to accept two
+   Like mapcar but traversing a property list. /fn/ has to accept two
    values, the key and the value of each property in the proplist.
+*** Arguments
+    =fn= -- Function to apply to all entries of the property list.
+
+    =proplist= -- Property list to traverse.
+
+*** Example
+    #+BEGIN_SRC lisp
+      (map-proplist #'list '(:a 2 :b 5 :c 4)) ; => ((:a 2) (:b 5) (:c 4))
+    #+END_SRC
+*** See also
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
 ** map-tree
    Function
    #+BEGIN_SRC lisp
@@ -1581,6 +1731,23 @@
    #+BEGIN_SRC lisp
      (mton m)
    #+END_SRC
+   Return normalized value mapped from MIDI value m in the range
+   [0..127] as a single float.
+*** Arguments
+    =m= -- Number in the range [0..127]
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (mton 0) ; => 0
+      
+      (mton 13) ; => 0.10236221
+      
+      (mton 63.5) ; => 0.5
+      
+      (mton 127) ; => 1.0
+    #+END_SRC
+*** See also
+    - [[ntom][ntom]]
 ** multf
    Macro
    #+BEGIN_SRC lisp
@@ -1808,6 +1975,23 @@
    #+BEGIN_SRC lisp
      (ntom n)
    #+END_SRC
+   Return rounded MIDI value mapped from normalized n in the range
+   [0..1].
+*** Arguments
+    =n= -- Number in the range [0..1]
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (ntom 0) ; => 0
+      
+      (ntom 0.1) ; => 13
+      
+      (ntom 0.5) ; => 64
+      
+      (ntom 1) ; => 127
+    #+END_SRC
+*** See also
+    - [[mton][mton]]
 * O
 ** of-buffer-load
    Function
@@ -1868,6 +2052,23 @@
    #+BEGIN_SRC lisp
      (permute list permutation)
    #+END_SRC
+   Return a permutation of /list/ according to the indexes in
+   /permutation/.
+*** Arguments
+    =list= -- List of elements to be permuted.
+
+    =permutation= -- List of permutation indexes.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (permute '(1 2 3 4 5) '(3 1 4 2 0)) ; => (4 2 5 3 1)
+    #+END_SRC
+*** Note
+    For a valid permutation the /permutation/ index list should contain
+    all integer indexes of list starting from zero. In that case, length
+    of /list/ is equal to the length of /permutation/. If it is shorter,
+    an error occurs, if it is longer, not all elements of /list/ are
+    returned.
 ** phasor*
    Function
    #+BEGIN_SRC lisp
@@ -1881,37 +2082,37 @@
 ** play-buffer*
    Function
    #+BEGIN_SRC lisp
-     (play-buffer* &rest optional-keywords &aux (lambda-list (quote ((buffer (incudine-missing-arg buffer)) (env (incudine-missing-arg env)) (ampdb 0) (rate 1) (start 0) (end 0) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer* &rest optional-keywords &aux (lambda-list '((buffer (incudine-missing-arg buffer) (env (incudine-missing-arg env)) (ampdb 0) (rate 1) (start 0) (end 0) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch*
    Function
    #+BEGIN_SRC lisp
-     (play-buffer-stretch* &rest optional-keywords &aux (lambda-list (quote ((buffer (incudine-missing-arg buffer)) (env (incudine-missing-arg env)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer-stretch* &rest optional-keywords &aux (lambda-list '((buffer (incudine-missing-arg buffer) (env (incudine-missing-arg env)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch
    Function
    #+BEGIN_SRC lisp
-     (play-buffer-stretch &rest optional-keywords &aux (lambda-list (quote ((buffer (incudine-missing-arg buffer)) (env (incudine-missing-arg env)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer-stretch &rest optional-keywords &aux (lambda-list '((buffer (incudine-missing-arg buffer) (env (incudine-missing-arg env)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch-env-out
    Function
    #+BEGIN_SRC lisp
-     (play-buffer-stretch-env-out &rest optional-keywords &aux (lambda-list (quote ((buffer (incudine-missing-arg buffer)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer-stretch-env-out &rest optional-keywords &aux (lambda-list '((buffer (incudine-missing-arg buffer) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch-env-pan-out
    Function
    #+BEGIN_SRC lisp
-     (play-buffer-stretch-env-pan-out &rest optional-keywords &aux (lambda-list (quote ((buffer (incudine-missing-arg buffer)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer-stretch-env-pan-out &rest optional-keywords &aux (lambda-list '((buffer (incudine-missing-arg buffer) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch-env-pan-out*
    Function
    #+BEGIN_SRC lisp
-     (play-buffer-stretch-env-pan-out* &rest optional-keywords &aux (lambda-list (quote ((buffer (incudine-missing-arg buffer)) (env (incudine-missing-arg env)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer-stretch-env-pan-out* &rest optional-keywords &aux (lambda-list '((buffer (incudine-missing-arg buffer) (env (incudine-missing-arg env)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch-out
    Function
    #+BEGIN_SRC lisp
-     (play-buffer-stretch-out &rest optional-keywords &aux (lambda-list (quote ((buffer (incudine-missing-arg buffer)) (env (incudine-missing-arg env)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer-stretch-out &rest optional-keywords &aux (lambda-list '((buffer (incudine-missing-arg buffer) (env (incudine-missing-arg env)) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-lsample
    Function
@@ -1922,12 +2123,12 @@
 ** play-lsample*
    Function
    #+BEGIN_SRC lisp
-     (play-lsample* &rest optional-keywords &aux (lambda-list (quote ((buffer (incudine-missing-arg buffer)) (env (incudine-missing-arg env)) (dur 1) (amp 0) (rate 1) (pan 0.5) (loopstart 0) (loopend 0) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-lsample* &rest optional-keywords &aux (lambda-list '((buffer (incudine-missing-arg buffer) (env (incudine-missing-arg env)) (dur 1) (amp 0) (rate 1) (pan 0.5) (loopstart 0) (loopend 0) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-sample*
    Function
    #+BEGIN_SRC lisp
-     (play-sample* &rest optional-keywords &aux (lambda-list (quote ((buffer (incudine-missing-arg buffer)) (env (incudine-missing-arg env)) (dur 1) (amp 1) (rate 1) (pan 0.5) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-sample* &rest optional-keywords &aux (lambda-list '((buffer (incudine-missing-arg buffer) (env (incudine-missing-arg env)) (dur 1) (amp 1) (rate 1) (pan 0.5) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-sample
    Function
@@ -2150,14 +2351,35 @@
    #+BEGIN_SRC lisp
      (pwd)
    #+END_SRC
+   Return the current working directory as a pathname.
+*** See also
+    - [[cd][cd]]
 * Q
 ** quantize-time
    Function
    #+BEGIN_SRC lisp
-     (quantize-time val &key (quantlist (make-quantlist (quote (3 4 5)))))
+     (quantize-time val &optional (quantlist (make-quantlist '(3 4 5))))
    #+END_SRC
-   quantize the fractional part of val to a quantization list of
-   possible quantization points in the range [0..1].
+   Quantize the fractional part of /val/ to a quantization list
+   /quantlist/ of possible quantization points in the range [0..1].
+*** Arguments
+    =val= -- The value to be quantized.
+
+    =quantlist= -- Sorted list of possible quantization points in the
+    range [0..1].
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (quantize-time 1/7 (make-quantlist '(3 4 5))) ; => 1/5
+      
+      (quantize-time 37/7 (make-quantlist '(3 4 5))) ; => 21/4
+      
+      (quantize-time 17/7 (make-quantlist '(3 4 5))) ; => 12/5
+      
+      (quantize-time 17/7 (make-quantlist '(3 4))) ; => 5/2 
+    #+END_SRC
+*** See also
+    - [[make-quantlist][make-quantlist]]
 * R
 ** r-elt
    Function
@@ -2180,7 +2402,14 @@
    #+BEGIN_SRC lisp
      (r-exp min max)
    #+END_SRC
-   random value between [min..max] with exponential distribution.
+   Random value between [min..max] with exponential distribution.
+*** Arguments
+    =min= -- Number indicationg the minimum value.
+
+    =max= -- Number indicationg the maximum value.
+
+*** See also
+    - [[r-lin][r-lin]]
 ** r-exp-dev
    Function
    #+BEGIN_SRC lisp
@@ -2201,7 +2430,14 @@
    #+BEGIN_SRC lisp
      (r-lin min max)
    #+END_SRC
-   random value between [min..max] with linear distribution.
+   Random value between [min..max] with linear distribution.
+*** Arguments
+    =min= -- Number indicationg the minimum value.
+
+    =max= -- Number indicationg the maximum value.
+
+*** See also
+    - [[r-exp][r-exp]]
 ** random-elem
    Function
    #+BEGIN_SRC lisp
@@ -2353,8 +2589,26 @@
 ** repeated
    Function
    #+BEGIN_SRC lisp
-     (repeated n f)
+     (repeated n fn)
    #+END_SRC
+   Return a function which applies a given function /fn/ /n/ times onto
+   itself. /fn/ must be a function of at least one argument which returns
+   one argument. The return value of the function replaces the first
+   argument in the next recursive call, leaving all other arguments as
+   they were.
+*** Arguments
+    =n= -- Integer number of repetitions.
+
+    =fn= -- Function to be applied to itself.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (funcall (repeated 4 (lambda (x) (* x 2))) 1)  ; => 16
+      
+      (funcall (repeated 4 (lambda (x) (* x 2))) 3) ; => 48
+    #+END_SRC
+*** See also
+    - [[do-repeated][do-repeated]]
 ** reset-logger-stream
    Function
    #+BEGIN_SRC lisp
@@ -2605,14 +2859,14 @@
    #+BEGIN_SRC lisp
      (slurp file)
    #+END_SRC
-   return contents of file as a list of all lines read individually by
+   Return contents of file as a list of all lines read individually by
    the lisp reader.
 ** slurp-string
    Function
    #+BEGIN_SRC lisp
      (slurp-string file)
    #+END_SRC
-   return contents of file as a string.
+   Return contents of file as a string.
 ** sort-by
    Function
    #+BEGIN_SRC lisp
@@ -2727,7 +2981,7 @@
    #+BEGIN_SRC lisp
      (svg-collect-lines layer parse-state &key (timescale 1) (x-offset 0) (xquantize nil) (yquantize nil) layer?)
    #+END_SRC
-   return a property list of all lines in layer with a given parse-state.
+   return a list of svg-cm-line instances of layer with a given parse-state.
 ** svg-file
    Class
    #+BEGIN_SRC lisp
@@ -2913,9 +3167,24 @@
 ** with-proplist/collecting
    Macro
    #+BEGIN_SRC lisp
-     (with-proplist/collecting (key value) proplist &body body)
+     (with-proplist/collecting (keysym valuesym) proplist &body body)
    #+END_SRC
-   like do-props but collecting the result.
+   Like do-proplist but collecting the result.
+*** Arguments
+    =keysym= -- Symbol bound to all keys of the property list.
+
+    =valuesym= -- Symbol bound to all values of the property list.
+
+    =proplist= -- Property list to be traversed.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (with-proplist/collecting (key val) '(:a 2 :b 5 :c 4)
+        (list key (1+ val)))
+      ;; => ((:a 3) (:b 6) (:c 5))
+    #+END_SRC
+*** See also
+    - [[do-proplist][do-proplist]]
 ** with-props
    Macro
    #+BEGIN_SRC lisp

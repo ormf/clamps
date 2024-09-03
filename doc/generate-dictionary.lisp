@@ -33,7 +33,7 @@
 (require :slynk)
 (require :cffi)
 (require :sb-introspect)
-(ql:quickload :clamps)
+;;;(ql:quickload :clamps)
 
 (defpackage :clamps.doc
   (:use :cl)
@@ -86,10 +86,12 @@
 #+OPTIONS: html-toc-title:\"Index\"
 #+OPTIONS: html-multipage-include-default-style:nil
 #+HTML_DOCTYPE: xhtml5
-#+HTML_HEAD: <link rel=\"stylesheet\" type=\"text/css\" href=\"./css/clamps-dictionary.css\" />
-#+HTML_HEAD: <link rel=\"stylesheet\" type=\"text/css\" href=\"./css/htmlize.css\" />
+#+HTML_HEAD: <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/clamps-dictionary.css\" />
+#+HTML_HEAD: <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/themes.css\" />
+#+HTML_HEAD: <link rel=\"stylesheet\" type=\"text/css\" href=\"../css/htmlize.css\" />
 #+HTML_HEAD: <link href=\"./pagefind/pagefind-ui.css\" rel=\"stylesheet\">
 #+HTML_HEAD: <script src=\"./pagefind/pagefind-ui.js\"></script>
+#+HTML_HEAD: <script src=\"../js/clamps-doc.js\"></script>
 # #+SETUPFILE: clamps-dict.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
   (load (format \"%s%s\" (file-name-directory (buffer-file-name))
@@ -288,7 +290,8 @@ set-tempo
     (mapcar #'cons (strip-package-names syms) syms)))
 
 (defparameter *clamps-symbols-to-ignore*
-  '(svg-import-export:add-svg-attr-props-to-quote
+  '(cm:pwd
+    svg-import-export:add-svg-attr-props-to-quote
     clog-dsp-widgets:amp-node
     cl-poolplayer:args ats-cuda-display:ats-amod ats-cuda-display:ats-bw
     ats-cuda-display:ats-crosshairs ats-cuda-display:ats-data
@@ -678,21 +681,20 @@ result."
                        (cl-ppcre:regex-replace-all
                         "\\(function ([^)]+)\\)"
                         (cl-ppcre:regex-replace-all
-                         "\\(quote nil\\)"
-                         (format nil "~a"
-                                 (cons (string-downcase name)
-                                       (strip-package-names lambda-list)))
-                         "'()")
+                         "\\(quote ([^)]+)\\)"
+                         (cl-ppcre:regex-replace-all
+                          "\\(quote nil\\)"
+                          (format nil "~a"
+                                  (cons (string-downcase name)
+                                        (strip-package-names lambda-list)))
+                          "'()")
+                         "'\\1")
                         "#'\\1")
                        (cond
                          ((macro-function symbol) 'macro)
                          (t (type-of (symbol-function symbol))))
                        (and doc (transcode-docstring doc))
                        stream)))))))
-
-(cl-ppcre:regex-replace "\\(function ([^)]+)\\)"
-                        "(function +)"
-                        "#'\\1")
 
 (defun split-letters (sym-list)
   "split the list into sublists with unique first letter."
@@ -763,4 +765,5 @@ file."
 
 (write-dict "/home/orm/work/programmieren/lisp/clamps/doc/clamps-dictionary.org")
 
-;;; (sb-ext:quit)
+;;(sb-ext:quit)
+

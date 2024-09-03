@@ -127,6 +127,7 @@ list when applied."
 
 
 (defun dround (num &optional (prec 2))
+  "Return a number rounded to /prec/ decimal places."
   (let ((ept (expt 10 prec)))
     (/ (round (* num ept)) ept 1.0)))
 
@@ -502,22 +503,54 @@ to be sorted according to test!"
 
 ;;; Exercise of sicp:
 
-(defun repeated (n f)
-  ;; repeated returns a function which applies a given function f n
-  ;; times onto itself. f must be a function of at least one argument
-  ;; which returns one argument. The return value of the function
-  ;; replaces the first argument in the next recursive call, leaving
-  ;; all other arguments as they were.
+(defun repeated (n fn)
+  "Return a function which applies a given function /fn/ /n/ times onto
+itself. /fn/ must be a function of at least one argument which returns
+one argument. The return value of the function replaces the first
+argument in the next recursive call, leaving all other arguments as
+they were.
+
+@Arguments
+n - Integer number of repetitions.
+fn - Function to be applied to itself.
+
+@Examples
+(funcall (repeated 4 (lambda (x) (* x 2))) 1)  ; => 16
+
+(funcall (repeated 4 (lambda (x) (* x 2))) 3) ; => 48
+
+@See-also
+do-repeated
+"
   (cond ((= n 1)
-         (lambda (&rest args) (apply f args)))
+         (lambda (&rest args) (apply fn args)))
         (t (lambda (&rest args)
-             (apply f (cons (apply (repeated (- n 1) f) args) (rest args)))))))
+             (apply fn (cons (apply (repeated (- n 1) fn) args) (rest args)))))))
 
 ;;; Example:
 
 ;;; (funcall (repeated 4 (lambda (x y) (* x y))) 1 2) ; -> 16
 
 (defun permute (list permutation)
+  "Return a permutation of /list/ according to the indexes in
+/permutation/.
+
+
+@Arguments
+list - List of elements to be permuted.
+permutation - List of permutation indexes.
+
+@Examples
+
+(permute '(1 2 3 4 5) '(3 1 4 2 0)) ; => (4 2 5 3 1)
+
+@Note
+For a valid permutation the /permutation/ index list should contain
+all integer indexes of list starting from zero. In that case, length
+of /list/ is equal to the length of /permutation/. If it is shorter,
+an error occurs, if it is longer, not all elements of /list/ are
+returned.
+"
   (loop 
      for x in permutation
      collect (nth x list)))
@@ -535,8 +568,24 @@ to be sorted according to test!"
 
 ;;; getting rid of the funcall:
 
-(defun do-repeated (n func &rest args)
-  (apply (repeated n func)
+(defun do-repeated (n fn &rest args)
+  "Recursively apply /fn/ to /args/ /n/ times.
+
+@Arguments
+n - Integer number of repetitions.
+fn - Function to apply.
+
+@Examples
+(do-repeated 4 (lambda (x) (* x 2)) 1) ; => 16
+
+(do-repeated 4 (lambda (x) (* x x)) 2)  ; => 65536
+
+(do-repeated 6 (lambda (list) (cons 1 list)) '()) ; => (1 1 1 1 1 1)
+
+@See-also
+repeated
+"
+  (apply (repeated n fn)
          args))
 
 ;; (do-repeated 2 #'permute '(A B C D E) '(2 0 4 1 3))
@@ -732,8 +781,23 @@ calls. If collect is t return all results in a list."
      ,@body))
 
 (defun make-quantlist (vals)
-  "given a list of divisions per beat, return the sorted list of
-quantization points in fractions of a beat [0..1]"
+  "Return the sorted list of quantization points in fractions of a beat
+[0..1] for a list of the beat division numbers to be considered,
+supplied in /vals/.
+
+@Arguments
+vals - List of integer beat-divisions to be collected.
+
+@Examples
+(make-quantlist '(4)) ; => (0 1/4 1/2 3/4 1)
+
+(make-quantlist '(3 4)) ; => (0 1/4 1/3 1/2 2/3 3/4 1)
+
+(make-quantlist '(3 4 5)) ; => (0 1/5 1/4 1/3 2/5 1/2 3/5 2/3 3/4 4/5 1)
+
+@See-also
+quantize-time
+"
   (sort
    (remove-duplicates
     (reduce
@@ -741,9 +805,26 @@ quantization points in fractions of a beat [0..1]"
      vals :initial-value '(0 1)))
    #'<))
 
-(defun quantize-time (val &key (quantlist (make-quantlist '(3 4 5))))
-  "quantize the fractional part of val to a quantization list of
-possible quantization points in the range [0..1]."
+(defun quantize-time (val &optional (quantlist (make-quantlist '(3 4 5))))
+  "Quantize the fractional part of /val/ to a quantization list
+/quantlist/ of possible quantization points in the range [0..1].
+
+@Arguments
+val - The value to be quantized.
+quantlist - Sorted list of possible quantization points in the range [0..1].
+
+@Examples
+(quantize-time 1/7 (make-quantlist '(3 4 5))) ; => 1/5
+
+(quantize-time 37/7 (make-quantlist '(3 4 5))) ; => 21/4
+
+(quantize-time 17/7 (make-quantlist '(3 4 5))) ; => 12/5
+
+(quantize-time 17/7 (make-quantlist '(3 4))) ; => 5/2 
+
+@See-also
+make-quantlist
+"
   (multiple-value-bind (int frac) (floor val)
     (loop for (last curr) on quantlist until (<= last frac curr)
           finally (return (+ int (if (<= (- frac last) (- curr frac)) last curr))))))
@@ -1100,8 +1181,21 @@ as first arg to fn and is reset for each seq."
 |#
 
 (defmacro map-indexed (result-type fn &rest seqs)
-  "map fn over seqs with incrementing idx. The idx will get supplied
-as first arg to fn and is reset for each seq."
+  "Map /fn/ over /seqs/ with incrementing zero-based idx. The idx will
+get supplied as first arg to /fn/. /result-type/ serves the same
+purpose as in #'map.
+
+@Arguments
+result-type - Result type to return. If nil, don't return a result.
+fn - Function to map over sequences. Needs to accept /(+ 1 (length
+seqs))/ arguments.
+seqs - One or more sequences where mapping gets applied, similar to map.
+
+@Example
+
+(map-indexed 'list #'list '(a b c d e)  '(20 10 30 50 40))
+;; => ((0 a 20) (1 b 10) (2 c 30) (3 d 50) (4 e 40))
+"
   (let ((i (gensym)))
     `(let ((,i -1))
        (map ,result-type
@@ -1143,7 +1237,7 @@ as first arg to fn and is reset for each seq."
 
 
 (defun slurp (file)
-  "return contents of file as a list of all lines read individually by
+  "Return contents of file as a list of all lines read individually by
 the lisp reader."
   (with-open-file (stream file)
     (loop for line = (read-line stream nil)
@@ -1151,21 +1245,45 @@ the lisp reader."
        collect (read-from-string line))))
 
 (defun slurp-string (file)
-  "return contents of file as a string."
+  "Return contents of file as a string."
   (with-open-file (stream file)
     (with-output-to-string (str)
-      (loop for line = (read-line stream nil)
-         while line
-         do (format str "~a~%" line)))))
+      (do ((line (read-line stream nil) (read-line stream nil)))
+          ((null line) nil)
+        (format str "~a~%" line)))))
 
-(defun make-keyword (name) (values (intern (string-upcase name) "KEYWORD")))
+(defun make-keyword (name)
+  "Return a keyword from /name/.
 
-(defun map-all-pairs (fn seq)
-  "Execute fn on all possible pairs of two different elements of
-seq. The pairs are given to fn in the order of appearance in the seq."
+@Arguments
+name - String to intern
+
+@Example
+(make-keyword \"Hello\") => :hello
+"
+  (values (intern (string-upcase name) "KEYWORD")))
+
+(defun map-all-pairs (return-type fn list)
+  "Execute /fn/ on all possible pairs of two different elements of
+/list/. The pairs are given to fn in the order of appearance in the
+list. /return-type/ serves the same purpose as in #'map.
+
+@Arguments
+return-type - A Sequence type or nil.
+fn - Function of two arguments called on all pairs.
+list - List containing all elements to which fn gets applied pairwise.
+
+@Example
+(map-all-pairs 'list #'list '(1 2 3 4 5))
+;; => ((1 2) (1 3) (1 4) (1 5) (2 3) (2 4) (2 5) (3 4) (3 5) (4 5))
+"
   (loop
-     for (b1 . rest) on seq
-     do (loop for b2 in rest do (funcall fn b1 b2))))
+    with acc = '()
+    for (b1 . rest) on list
+    do (loop for b2 in rest do (if return-type
+                                   (push (funcall fn b1 b2) acc)
+                                   (funcall fn b1 b2)))
+    finally (return (if return-type (coerce (reverse acc) return-type)))))
 
 (defmacro with-curr-dir ((dir) &body body)
   "set the cwd to dir in the body, return the result of body after
@@ -1335,30 +1453,94 @@ proplist. Props not present in proplist are ignored."
 ;;; (ou:with-props (amp keynum) '(:amp 1 :keynum 60) (list amp keynum)) => (1 60)
 
 (defmacro map-proplist (fn proplist)
-  "like mapcar but traversing a property list. fn has to accept two
-values, the key and the value of each property in the proplist."
+  "Like mapcar but traversing a property list. /fn/ has to accept two
+values, the key and the value of each property in the proplist.
+
+@Arguments
+fn - Function to apply to all entries of the property list.
+proplist - Property list to traverse.
+
+@Example
+(map-proplist #'list '(:a 2 :b 5 :c 4)) ; => ((:a 2) (:b 5) (:c 4))
+
+@See-also
+do-proplist
+do-proplist/collecting
+"
   `(loop for (key value) on ,proplist by #'cddr
          collect (funcall ,fn key value)))
 
 ;;; (map-proplist #'list '(:a 2 :b 5 :c 4)) => ((:a 2) (:b 5) (:c 4))
 
-(defmacro do-proplist ((key value) proplist &body body)
-  "like dolist but traversing a property list. fn has to accept two
-values, the key and the value of each property in the proplist."
-  `(loop for (,key ,value) on ,proplist by #'cddr
+(defmacro do-proplist ((keysym valuesym) proplist &body body)
+  "Like dolist but traversing a property list. All keys and values of
+/proplist/ are bound to the symbols /keysym/ and /valuesym/ in the
+lexical scope of /body/.
+
+@Arguments
+keysym - Symbol bound to all keys of the property list.
+valuesym - Symbol bound to all values of the property list.
+proplist - Property list to be traversed.
+
+@Examples
+(do-proplist (key value) '(a 1 b 2 c 3 d 4)
+  (format t \"key: ~a, value: ~a~%\" key value)) ;  => nil
+
+;; Output in REPL:
+;;
+;; key: a, value: 1
+;; key: b, value: 2
+;; key: c, value: 3
+;; key: d, value: 4
+
+(let ((proplist '(a 1 b 2 c 3 d 4)))
+  (do-proplist (key value) proplist
+    (setf (getf proplist key) (incf value 10)))
+  proplist)
+;; => (a 11 b 12 c 13 d 14)
+
+@See-also
+map-proplist
+with-proplist/collecting
+"
+  `(loop for (,keysym ,valuesym) on ,proplist by #'cddr
          do ,@body))
 
-;;; (do-proplist (key val) '("a" 2 "b" 5 "c" 4) (format t "key: ~a, val: ~a~%" key val))
+(defmacro do-proplist/collecting ((keysym valuesym) proplist &body body)
+  "Like do-proplist but collecting the result. All keys and values of
+/proplist/ are bound to the symbols /keysym/ and /valuesym/ in the
+lexical scope of /body/.
 
-(defmacro with-proplist/collecting ((key value) proplist &body body)
-  "like do-props but collecting the result."
-  `(loop for (,key ,value) on ,proplist by #'cddr
+@Arguments
+keysym - Symbol bound to all keys of the property list.
+valuesym - Symbol bound to all values of the property list.
+proplist - Property list to be traversed.
+
+@Examples
+(do-proplist/collecting (key val) '(:a 2 :b 5 :c 4)
+  (list key (1+ val)))
+;; => ((:a 3) (:b 6) (:c 5))
+
+@See-also
+do-proplist
+map-proplist
+"
+  `(loop for (,keysym ,valuesym) on ,proplist by #'cddr
          collect ,@body))
 
 ;;; (with-proplist/collecting (key val) '(:a 2 :b 5 :c 4) (list key (1+ val))) => ((:a 3) (:b 6) (:c 5))
 
 (defun get-prop (proplist key &optional default)
-  "like getf but using #'equal for testing."
+  "Like getf but using #'equal for testing of the property key.
+
+@Arguments
+proplist - Property list
+key - Lisp Object ervong as key in property list.
+
+@Example
+(get-prop '(\"George\" \"Maciunas\" \"Simone\" \"de Beauvoir\") \"Simone\") ; => \"de Beauvoir\"
+"
+
   (or (second (member key proplist :test #'equal)) default))
 
 
@@ -1555,33 +1737,85 @@ n-lin-dev
   (float (+ min (* (- max min) (/ x 127))) 1.0))
 
 (defun ntom (n)
+  "Return rounded MIDI value mapped from normalized n in the range
+[0..1].
+
+@Arguments
+n - Number in the range [0..1]
+
+@Examples
+(ntom 0) ; => 0
+
+(ntom 0.1) ; => 13
+
+(ntom 0.5) ; => 64
+
+(ntom 1) ; => 127
+
+@See-also
+mton
+"
   (round (* n 127)))
 
 (defun mton (m)
-  (float (/ m 127)))
+  "Return normalized value mapped from MIDI value m in the range
+[0..127] as a single float.
+
+@Arguments
+m - Number in the range [0..127]
+
+@Examples
+(mton 0) ; => 0
+
+(mton 13) ; => 0.10236221
+
+(mton 63.5) ; => 0.5
+
+(mton 127) ; => 1.0
+
+@See-also
+ntom
+"
+  (float (/ m 127) 1.0))
 
 ;;; (n-lin 0 10 1000) -> 10
 ;;; (n-lin 0.5 10 1000) -> 505.0
 ;;; (n-lin 1 10 1000) -> 1000
 
 (defun mcn-lin (x min max)
-  "linear interpolation for midivalues (x = [0..127])"
+  "Linear interpolation for midivalues (x = [0..127])"
   (n-lin (/ x 127) min max))
 
 (defun mcn-exp (x min max)
-  "exponential interpolation for midivalues (x = [0..127])"
+  "Exponential interpolation for midivalues (x = [0..127])"
   (n-exp (/ x 127) min max))
 
 (defun r-exp (min max)
-  "random value between [min..max] with exponential distribution."
+  "Random value between [min..max] with exponential distribution.
+
+@Arguments
+min - Number indicationg the minimum value.
+max - Number indicationg the maximum value.
+
+@See-also
+r-lin
+"
   (* min (expt (/ max min) (random 1.0))))
 
 (defun r-lin (min max)
-  "random value between [min..max] with linear distribution."
+  "Random value between [min..max] with linear distribution.
+
+@Arguments
+min - Number indicationg the minimum value.
+max - Number indicationg the maximum value.
+
+@See-also
+r-exp
+"
   (+ min (* (- max min) (random 1.0))))
 
 (defun rand (max)
-  "random value between [0..max-1] with linear distribution."
+  "Random value between [0..max-1] with linear distribution."
   (r-lin 0 max))
 
 (defun n-exp-dev (x max)
@@ -1784,11 +2018,20 @@ modified in the body to enable returning a value."
 
 ;;; from cm:
 
-(defun cd (&optional (dirarg (user-homedir-pathname )))
+(defun cd (&optional (dirarg (user-homedir-pathname)))
+  "Change the current working directory to /dirarg/ or to $HOME if dirarg
+is not supplied.
+
+@Arguments
+dirarg - String or Pathname.
+
+@See-also
+pwd
+"
   (let ((dir (if (stringp dirarg)
                  (string-right-trim '(#\/) dirarg)
                  dirarg)))
-    (sb-posix:chdir dir)
+    (uiop:chdir dir)
     (let ((host (pathname-host dir))
           (name (pathname-name dir))
           (path (pathname-directory dir)))
@@ -1800,10 +2043,12 @@ modified in the body to enable returning a value."
       (namestring *default-pathname-defaults*))))
 
 (defun pwd ()
-  (namestring
-   (make-pathname :host (pathname-host *default-pathname-defaults*)
-                  :directory (pathname-directory
-                              *default-pathname-defaults*))))
+  "Return the current working directory as a pathname.
+
+@See-also
+cd
+"
+  (uiop:getcwd))
 
 (defmacro defconst (symbol value)
  `(defconstant ,symbol 
