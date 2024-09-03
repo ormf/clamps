@@ -152,11 +152,33 @@
 ** all-permutations
    Function
    #+BEGIN_SRC lisp
-     (all-permutations seq &key (test #'eql))
+     (all-permutations list &key (test #'eql) (max-length 10))
    #+END_SRC
-   get all permutations of a sequence. Make sure to supply a :test
+   Get all permutations of /list/. Make sure to supply a /test/
    function in case the elements can't be compared with #'eql, otherwise
-   the function will blow the stack!
+   the function will blow the stack. /max-length/ is the maximum length
+   of /list/ accepted. This serves as a safety measure to avoid making
+   the lisp process unresponsive due to an excessive number of
+   permutations.
+*** Arguments
+    =list= -- List of elements to be permuted.
+
+    =:test= -- Function to test for equality of elements in list.
+
+    =:max-length= -- maximum length of list accepted.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (all-permutations (range 4))
+      ;; => ((0 1 2 3) (0 1 3 2) (0 2 1 3) (0 2 3 1) (0 3 1 2) (0 3 2 1) (1 0 2 3)
+      ;; (1 0 3 2) (1 2 0 3) (1 2 3 0) (1 3 0 2) (1 3 2 0) (2 0 1 3) (2 0 3 1)
+      ;; (2 1 0 3) (2 1 3 0) (2 3 0 1) (2 3 1 0) (3 0 1 2) (3 0 2 1) (3 1 0 2)
+      ;; (3 1 2 0) (3 2 0 1) (3 2 1 0))
+      
+      (all-permutations (range 20))
+      ;;
+      ;; => Error: list to be permuted exceeds maximum length.
+    #+END_SRC
 ** amp->db
    Function
    #+BEGIN_SRC lisp
@@ -370,7 +392,7 @@
    /<clamps-base-url>/<file>/ will load the file located at
    /<clamps-gui-root>/<file>/ as HTML into the browser window.
    
-   The location for the <<svg->browser><SVG Player Gui>> is at
+   The location for the [[svg->browser][SVG Player Gui]] is at
    /<clamps-base-url>/svg-display/ which translates to the URL
    
    http://localhost:54619/svg-display
@@ -511,6 +533,26 @@
    elems are numbers or by the number of occurences otherwise.
    
    Works on all sequence types.
+** count-unique-elements
+   Function
+   #+BEGIN_SRC lisp
+     (count-unique-elements seq &key (test #'eql) (key #'identity) (sort t))
+   #+END_SRC
+   Count the number of occurences of all mutually different elems in
+   seq extracted from the list items according to the :key function. 
+   
+   Return the results as list with sublists of the form (elem count) for
+   each elem.
+   
+   :test has to be a test function accepted by #'make-hash-table
+   :key defaults to #'identity
+   
+   If :sort is nil the items in the result are in the order of their
+   first occurence, if :sort is :from-end they are in reverse order of
+   occurence, if :sort is t they are either sorted by their value if all
+   elems are numbers or by the number of occurences otherwise.
+   
+   Works on all sequence types.
 ** create-collection
    Function
    #+BEGIN_SRC lisp
@@ -576,11 +618,31 @@
    #+BEGIN_SRC lisp
      (create-o-vumeter parent bindings &key (direction up) (type led) (mapping db-lin) (width 1em) (height 8em) padding css)
    #+END_SRC
-** ct->fv
+** ct->fr
    Function
    #+BEGIN_SRC lisp
-     (ct->fv ct)
+     (ct->fr ct)
    #+END_SRC
+   Return the frequency ratio of the Midicents interval /ct/.
+*** Arguments
+    =ct= -- The interval in Midicents.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (ct->fr 12) ;; => 2
+      
+      (ct->fr 1) ;; => 1.0594631
+      
+      (ct->fr 7) ;; => 1.4983071
+      
+      (ct->fr -12) ;; => 1/2
+      
+      (mapcar #'ct->fr (range 13))
+      ;;  => (1 1.0594631 1.122462 1.1892071 1.2599211 1.3348398 1.4142135 1.4983071
+      ;;      1.587401 1.6817929 1.7817974 1.8877486 2)
+    #+END_SRC
+*** See also
+    - [[fr->ct][fr->ct]]
 ** cuda-dsp
    Class
    #+BEGIN_SRC lisp
@@ -592,7 +654,7 @@
    #+BEGIN_SRC lisp
      (date-string)
    #+END_SRC
-   return a string of the current time formatted
+   Return a string of the current time in the format
      "yyyy-mm-dd-hr-min-sec"
 ** db->amp
    Function
@@ -679,7 +741,20 @@
    #+BEGIN_SRC lisp
      (delete-props proplist &rest props)
    #+END_SRC
-   destructively remove props from proplist and return it.
+   Destructively remove props from property list /proplist/ and return
+   it.
+*** Arguments
+    =proplist= -- Property list.
+
+    =props= -- One or more properties to delete.
+
+*** See also
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
+    - [[map-proplist][map-proplist]]
+    - [[with-props][with-props]]
 ** differentiate
    Function
    #+BEGIN_SRC lisp
@@ -720,8 +795,12 @@
       ;; => (a 11 b 12 c 13 d 14)
     #+END_SRC
 *** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
     - [[map-proplist][map-proplist]]
-    - [[with-proplist/collecting][with-proplist/collecting]]
+    - [[with-props][with-props]]
 ** do-proplist/collecting
    Macro
    #+BEGIN_SRC lisp
@@ -744,8 +823,12 @@
       ;; => ((:a 3) (:b 6) (:c 5))
     #+END_SRC
 *** See also
+    - [[delete-props][delete-props]]
     - [[do-proplist][do-proplist]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
     - [[map-proplist][map-proplist]]
+    - [[with-props][with-props]]
 ** do-repeated
    Function
    #+BEGIN_SRC lisp
@@ -894,6 +977,16 @@
    #+BEGIN_SRC lisp
      (fibonacci n)
    #+END_SRC
+   Calculate the /n/th element of the Fibonacci series. The function is
+   not recursive, but calculates the value directly running in constant
+   time.
+*** Arguments
+    =n= -- Integer >= 0 indicating the index of the Fibonacci series.
+
+*** Example
+    #+BEGIN_SRC lisp
+      (mapcar #'fibonacci (range 12)) ; => (1 1 2 3 5 8 13 21 34 55 89 144)
+    #+END_SRC
 ** file-string
    Function
    #+BEGIN_SRC lisp
@@ -946,40 +1039,73 @@
 ** flatten
    Function
    #+BEGIN_SRC lisp
-     (flatten obj)
+     (flatten form)
    #+END_SRC
-   non-recursive, non-stack version from Rosetta Code.
+   Remove all brackets except the outmost from /form/. Non-recursive,
+   non-stack version from Rosetta Code.
+*** Arguments
+    =form= -- A Common Lisp form.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (flatten '((a b) (((c d) (e f)) (g h)) (i k)))
+      ;; -> (a b c d e f g h i k)
+    #+END_SRC
+*** See also
+    - [[flatten-fn][flatten-fn]]
 ** flatten-fn
    Function
    #+BEGIN_SRC lisp
      (flatten-fn seq &key (test #'atom) (key #'identity))
    #+END_SRC
-   remove all brackets except the outmost in seq. Use test and key to
+   Remove all brackets except the outmost in seq. Use test and key to
       determine where to stop removing brackets.
-   
-      Example:
-   
+*** Examples
+    #+BEGIN_SRC lisp
       (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)))
-      -> (a b c d e f g h i k)
-   
-      keep one level of brackets:
-   
+      ;; -> (a b c d e f g h i k)
+      
+      ;; keep one level of brackets:
+      
       (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)) :key #'car)
-      -> ((a b) (c d) (e f) (g h) (i k))
+      ;; -> ((a b) (c d) (e f) (g h) (i k))
+    #+END_SRC
+*** See also
+    - [[flatten][flatten]]
 ** format-with-slots
    Macro
    #+BEGIN_SRC lisp
      (format-with-slots stream obj string &rest slots)
    #+END_SRC
+** fr->ct
+   Function
+   #+BEGIN_SRC lisp
+     (fr->ct fr)
+   #+END_SRC
+   Return the Midicents interval of the frequency ratio /fr/.
+*** Arguments
+    =fr= -- The frequency ratio of the interval.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (fr->ct 2) ;; => 12.0
+      
+      (fr->ct 4/5) ;; => -3.863137
+      
+      (fr->ct 3/2) ;; => 7.01955
+      
+      (fr->ct 1/2) ;; => -12.0
+      
+      (mapcar #'fr->ct (range 1 17))
+      ;; => (0.0 12.0 19.01955 24.0 27.863136 31.01955 33.68826 36.0 38.0391 39.863136
+      ;;     41.51318 43.01955 44.405277 45.68826 46.882687 48.0)
+    #+END_SRC
+*** See also
+    - [[ct->fr][ct->fr]]
 ** ftom
    Function
    #+BEGIN_SRC lisp
      (ftom f &key (tuning-base 440))
-   #+END_SRC
-** fv->ct
-   Function
-   #+BEGIN_SRC lisp
-     (fv->ct fv)
    #+END_SRC
 * G
 ** get-buffer
@@ -1013,8 +1139,23 @@
    #+BEGIN_SRC lisp
      (get-duplicates list &key (test #'eql) (once nil))
    #+END_SRC
-   return all duplicate elems of list satisfying the test predicate.
-   If once is set, return each duplicate element only once (default ist nil).
+   Return all Elements of /list/ which occur more than once with respect
+   to the /test/ predicate. If /once/ is non-nil, return each duplicate
+   element only once.
+*** Arguments
+    =list= -- List being examined.
+
+    =test= -- Function to determine equality of elements.
+
+    =once= -- Boolean to determine if only one of the duplicate elements
+    is returned.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (get-duplicates '(0 1 3 2 4 3 9 3 1 3 4 2 3)) ; => (1 3 2 4 3 3 3)
+      
+      (get-duplicates '(0 1 3 2 4 3 9 3 1 3 4 2 3) :once t)  ; => (1 2 4 3)
+    #+END_SRC
 ** get-keynum
    Function
    #+BEGIN_SRC lisp
@@ -1035,13 +1176,45 @@
     #+BEGIN_SRC lisp
       (get-prop '("George" "Maciunas" "Simone" "de Beauvoir") "Simone") ; => "de Beauvoir"
     #+END_SRC
+*** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-props-list][get-props-list]]
+    - [[map-proplist][map-proplist]]
+    - [[with-props][with-props]]
 ** get-props-list
    Function
    #+BEGIN_SRC lisp
      (get-props-list proplist props &key (force-all nil))
    #+END_SRC
-   create a new proplist by extracting props and their values from
-   proplist. Props not present in proplist are ignored.
+   Return a new property list containing /props/ and their values
+   extracted from /proplist/. Properties not present in proplist are
+   ignored. If /force-all/ is non-nil, also return properties not present
+   in proplist with nil as value.
+*** Arguments
+    =proplist= -- Property list.
+
+    =props= -- Properties to extract from proplist.
+
+    =:force-all= -- Boolean to indicate if non-present props should get
+    included in result.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (get-props-list '(:a 1 :b 2 :c 3 :d "Foo") '(:d :a)) ; => (:d "Foo" :a 1)
+      
+      (get-props-list '(:a 1 :b 2 :c 3 :d "Foo") '(:a :e)) ; => (:a 1)
+      
+      (get-props-list '(:a 1 :b 2 :c 3 :d "Foo" :a 4) '(:a :e) :force-all t)  ; => (:a 1 :e nil)
+    #+END_SRC
+*** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[map-proplist][map-proplist]]
+    - [[with-props][with-props]]
 ** get-ref
    Function
    #+BEGIN_SRC lisp
@@ -1629,8 +1802,12 @@
       (map-proplist #'list '(:a 2 :b 5 :c 4)) ; => ((:a 2) (:b 5) (:c 4))
     #+END_SRC
 *** See also
+    - [[delete-props][delete-props]]
     - [[do-proplist][do-proplist]]
     - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
+    - [[with-props][with-props]]
 ** map-tree
    Function
    #+BEGIN_SRC lisp
@@ -1726,6 +1903,22 @@
    #+BEGIN_SRC lisp
      (mtof m &key (tuning-base 440))
    #+END_SRC
+   Convert pitch in Midicts to frequency in Hz.
+*** Arguments
+    =midi-value= -- Pitch in Midicents.
+
+    =:tuning-base= -- Frequency of A4 in Hz.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (mtof 69) ; => 440
+      
+      (mtof 60.5) ; => 269.29178
+      
+      (mtof 69 :tuning-base 415) ; => 415
+    #+END_SRC
+*** See also
+    - [[ftom][ftom]]
 ** mton
    Function
    #+BEGIN_SRC lisp
@@ -1753,7 +1946,20 @@
    #+BEGIN_SRC lisp
      (multf place &optional (number 1))
    #+END_SRC
-   like incf but multiplying instead of adding.
+   Like incf but multiplying instead of adding.
+*** Arguments
+    =place= -- A setfable place.
+
+    =number= -- Number indicating the multiplication factor.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defvar *test* 2) ; => *test*
+      
+      (multf *test* 3) ; => 6
+      
+      *test*  ; => 6
+    #+END_SRC
 ** mysubseq
    Function
    #+BEGIN_SRC lisp
@@ -2345,7 +2551,23 @@
    #+BEGIN_SRC lisp
      (push-if form list)
    #+END_SRC
-   push form to list if form evaluates to non-nil.
+   Push form to list if form evaluates to non-nil. Return the modified
+   list or nil if form evaluates to nil.
+*** Arguments
+    =form= -- Form to be pushed to list.
+
+    =list= -- List pushed into.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defvar *test* '()) ; => *test*
+      
+      (push-if 4 *test*) ; => (4)
+      
+      (push-if (eq 2 3) *test*) ; => nil
+      
+      *test* ; => (4)
+    #+END_SRC
 ** pwd
    Function
    #+BEGIN_SRC lisp
@@ -2883,8 +3105,23 @@
    #+BEGIN_SRC lisp
      (splice list &key (key #'first) (test #'eq))
    #+END_SRC
-   put the elements of list which contain the same key element into
-   sublists and return a list of all sublists.
+   Return a list of all sublists containing elements mutually satisfying
+   the /test/ predicate.
+*** Arguments
+    =list= -- List to splice
+
+    =key= -- Function applied to each element of list before testing.
+
+    =test= -- Function to determine equality between two elements.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (splice '((0 1) (4 7) (7 2) (0 3) (4 5) (1 3)))
+       ; => (((0 1) (0 3)) ((4 7) (4 5)) ((7 2)) ((1 3)))
+      
+      (splice '((0 1) (4 7) (7 2) (0 3) (4 5) (1 7)) :key #'second)
+       ; => (((0 1)) ((4 7) (1 7)) ((7 2)) ((0 3)) ((4 5)))
+    #+END_SRC
 ** start-doc-acceptor
    Function
    #+BEGIN_SRC lisp
@@ -2944,6 +3181,18 @@
    #+BEGIN_SRC lisp
      (str-concat &rest args)
    #+END_SRC
+** svg->browser
+   Function
+   #+BEGIN_SRC lisp
+     (svg->browser svg-file &key (bar-lines 1) (staff-systems 1) (piano-roll 0) (scale 1) (timescale 1/32) (inverse 0))
+   #+END_SRC
+   Display =svg-file= in the SVG Player Gui, located at
+   /<clamps-base-url>/svg-display/.
+*** Arguments
+    =svg-file= -- String naming the svg-file to display/play. The
+    filename is interpreted relative to the /<clamps-gui-root>/svg/
+    directory.
+
 ** svg->lines
    Function
    #+BEGIN_SRC lisp
@@ -3164,33 +3413,39 @@
    #+END_SRC
    return closure with ipfn bound to a linear interpolation of the
    input range 0..127 between min and max.
-** with-proplist/collecting
-   Macro
-   #+BEGIN_SRC lisp
-     (with-proplist/collecting (keysym valuesym) proplist &body body)
-   #+END_SRC
-   Like do-proplist but collecting the result.
-*** Arguments
-    =keysym= -- Symbol bound to all keys of the property list.
-
-    =valuesym= -- Symbol bound to all values of the property list.
-
-    =proplist= -- Property list to be traversed.
-
-*** Examples
-    #+BEGIN_SRC lisp
-      (with-proplist/collecting (key val) '(:a 2 :b 5 :c 4)
-        (list key (1+ val)))
-      ;; => ((:a 3) (:b 6) (:c 5))
-    #+END_SRC
-*** See also
-    - [[do-proplist][do-proplist]]
 ** with-props
    Macro
    #+BEGIN_SRC lisp
      (with-props vars proplist &body body)
    #+END_SRC
-   like with-slots but using a proplist instead of a class instance.
+   Like with-slots but using a property list instead of a class
+   instance. The properties in the /proplist/ to be used need to have a
+   symbol or a keyword as a key. /vars/ is a list of symbols bound to the
+   corresponding property values in the lexical scope of /body/. Each
+   element of vars corresponds to a key in proplist either being the
+   binding symbol itself or a keyword, derived by prepending a colon to
+   the binding symbol.
+*** Arguments
+    =vars= -- List of symbols of the Properties to use in the lexical
+    scope of body.
+
+    =proplist= -- Property list containing bound properties.
+
+    =body= -- The body in which the vars are bound.
+
+*** Example
+    #+BEGIN_SRC lisp
+      (with-props (a b c) '(:a 1 :b 2 c 3)
+        (list a b c))
+      ;; => (1 2 3)
+    #+END_SRC
+*** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
+    - [[map-proplist][map-proplist]]
 ** with-svg-file
    Macro
    #+BEGIN_SRC lisp

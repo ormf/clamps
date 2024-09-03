@@ -47,13 +47,13 @@ contains a slot for the sample buffer data."
 (defun play-lsample (lsample pitch db dur &key (pan 0.5) (startpos 0))
   "play lsample with given pitch, amp and duration with loop."
   (with-slots (buffer amp keynum loopstart loopend play-fn) lsample
-    (let ((rate (if pitch (incudine::sample (ou:ct->fv (- pitch keynum))) 1)))
+    (let ((rate (if pitch (incudine::sample (ou:ct->fr (- pitch keynum))) 1)))
       (funcall (or play-fn #'play-lsample-oneshot*) buffer dur (+ amp db) rate pan loopstart loopend startpos))))
 
 (defun play-sample (lsample pitch db dur &key (pan 0.5) (startpos 0))
   "play lsample once with given pitch, amp and duration."
   (with-slots (buffer amp keynum) lsample
-    (let ((rate (incudine::sample (ou:ct->fv (- pitch keynum)))))
+    (let ((rate (incudine::sample (ou:ct->fr (- pitch keynum)))))
       (play-sample* buffer dur (ou:db->amp (+ amp db)) rate pan startpos))))
 
 (define-vug phasor-loop (rate start-pos loopstart loopend)

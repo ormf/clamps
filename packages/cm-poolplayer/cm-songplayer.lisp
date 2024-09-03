@@ -52,7 +52,7 @@
         (let* ((buffer-dur (/ buffer-frames buffer-sample-rate))
                (start (min 0 start))
                (end (if (zerop end) buffer-dur (min end buffer-dur)))
-               (stretch (ou:ct->fv (* 100 (- keynum (incudine::lsample-keynum lsample))))))
+               (stretch (ou:ct->fr (* 100 (- keynum (incudine::lsample-keynum lsample))))))
           (* stretch (- end start)))))))
 
 

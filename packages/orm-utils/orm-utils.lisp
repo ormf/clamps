@@ -280,19 +280,22 @@ with nil if list-length is not a multiple of count."
 
 (defun flatten-fn (seq &key (test #'atom) (key #'identity))
 ;;;  (break "~a" seq)
-  "remove all brackets except the outmost in seq. Use test and key to
+  "Remove all brackets except the outmost in seq. Use test and key to
    determine where to stop removing brackets.
 
-   Example:
+@Examples
 
-   (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)))
-   -> (a b c d e f g h i k)
+(flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)))
+;; -> (a b c d e f g h i k)
 
-   keep one level of brackets:
+;; keep one level of brackets:
 
-   (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)) :key #'car)
-   -> ((a b) (c d) (e f) (g h) (i k))
-   "
+(flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)) :key #'car)
+;; -> ((a b) (c d) (e f) (g h) (i k))
+
+@See-also
+flatten
+"
   (cond ((null seq) nil)
         ((funcall test (funcall key seq)) seq)
         ((funcall test (funcall key (first seq)))
@@ -315,9 +318,22 @@ with nil if list-length is not a multiple of count."
 
 |#
 
-(defun flatten (obj)
-  "non-recursive, non-stack version from Rosetta Code."
-  (do* ((result (list obj))
+(defun flatten (form)
+  "Remove all brackets except the outmost from /form/. Non-recursive,
+non-stack version from Rosetta Code.
+
+@Arguments
+form - A Common Lisp form.
+
+@Examples
+
+(flatten '((a b) (((c d) (e f)) (g h)) (i k)))
+;; -> (a b c d e f g h i k)
+
+@See-also
+flatten-fn
+"
+  (do* ((result (list form))
         (node result))
        ((null node) (delete nil result))
     (cond ((consp (car node))
@@ -328,11 +344,23 @@ with nil if list-length is not a multiple of count."
 ;;; calc fibonacci number directly:
 
 (defun fibonacci (n)
+  "Calculate the /n/th element of the Fibonacci series. The function is
+not recursive, but calculates the value directly running in constant
+time.
+
+@Arguments
+n - Integer >= 0 indicating the index of the Fibonacci series.
+
+@Example
+(mapcar #'fibonacci (range 12)) ; => (1 1 2 3 5 8 13 21 34 55 89 144)
+"
+
+
   (declare (integer n))
   (let ((sr5 (sqrt 5)))
     (round (* (/ 1 sr5) 
-              (- (expt (/ (+ sr5 1) 2) n) 
-                 (expt (/ (- 1 sr5) 2) n))))))
+              (- (expt (/ (+ sr5 1) 2) (1+ n)) 
+                 (expt (/ (- 1 sr5) 2) (1+ n)))))))
 
 ;; (loop for n from 0 to 16 collect (calcfibo n))
 
@@ -355,11 +383,13 @@ with nil if list-length is not a multiple of count."
 ;; returns a function of n which exponentially interpolates between
 ;; min and max in n steps satisfying f(0) = min and f(n-1) = max
 
+#|
 (defun ip-exp (min max &optional (steps 2))
   (let ((st (- steps 1))
         (base (/ max min)))
     (lambda (n)
       (* min (expt base (/ n st))))))
+|#
 
 ;; usage: (defparameter cl1 nil)
 ;; (setf cl1 (ip-exp 0.01 1000 10))
@@ -395,13 +425,70 @@ with nil if list-length is not a multiple of count."
 ;; (defun cl1 (n) (funcall (ip-lin 0.01 1000 10) n))
 ;; (loop for x from 0 below 10 collect (funcall cl1 x))
 
-(defun fv->ct (fv)
-  (* 1200 (log fv 2)))
+(defun fr->ct (fr)
+  "Return the Midicents interval of the frequency ratio /fr/.
 
-(defun ct->fv (ct)
-  (expt 2 (/ ct 1200)))
+@Arguments
+fr - The frequency ratio of the interval.
+
+@Examples
+(fr->ct 2) ;; => 12.0
+
+(fr->ct 4/5) ;; => -3.863137
+
+(fr->ct 3/2) ;; => 7.01955
+
+(fr->ct 1/2) ;; => -12.0
+
+(mapcar #'fr->ct (range 1 17))
+;; => (0.0 12.0 19.01955 24.0 27.863136 31.01955 33.68826 36.0 38.0391 39.863136
+;;     41.51318 43.01955 44.405277 45.68826 46.882687 48.0)
+
+@See-also
+ct->fr
+"  (* 12 (log fr 2)))
+
+(defun ct->fr (ct)
+  "Return the frequency ratio of the Midicents interval /ct/.
+
+@Arguments
+ct - The interval in Midicents.
+
+@Examples
+(ct->fr 12) ;; => 2
+
+(ct->fr 1) ;; => 1.0594631
+
+(ct->fr 7) ;; => 1.4983071
+
+(ct->fr -12) ;; => 1/2
+
+(mapcar #'ct->fr (range 13))
+;;  => (1 1.0594631 1.122462 1.1892071 1.2599211 1.3348398 1.4142135 1.4983071
+;;      1.587401 1.6817929 1.7817974 1.8877486 2)
+
+@See-also
+fr->ct
+"
+  (expt 2 (/ ct 12)))
 
 (defun mtof (m &key (tuning-base 440))
+    "Convert pitch in Midicts to frequency in Hz.
+
+@Arguments
+midi-value - Pitch in Midicents.
+:tuning-base - Frequency of A4 in Hz.
+
+@Examples
+(mtof 69) ; => 440
+
+(mtof 60.5) ; => 269.29178
+
+(mtof 69 :tuning-base 415) ; => 415
+
+@See-also
+ftom
+"
   (* tuning-base (expt 2 (/ (- m 69) 12))))
 
 ;;; (mtof 81) -> 880
@@ -833,7 +920,7 @@ make-quantlist
 
 
 (defun insert (elem result &key (key #'first) (test #'eq))
-  "helper function for splice: Inserts an element into a sublist of
+  "Helper function for splice: Inserts an element into a sublist of
 result, if one exists with key elements equal to the key of elem,
 otherwise it appends a new sublist containing elem at the end of
 result.  The function returns the updated result."
@@ -844,8 +931,21 @@ result.  The function returns the updated result."
                  (insert elem (rest result) :key key :test test)))))
 
 (defun splice (list &key (key #'first) (test #'eq))
-  "put the elements of list which contain the same key element into
-sublists and return a list of all sublists."
+    "Return a list of all sublists containing elements mutually satisfying
+the /test/ predicate.
+
+@Arguments
+list - List to splice
+key - Function applied to each element of list before testing.
+test - Function to determine equality between two elements.
+
+@Examples
+(splice '((0 1) (4 7) (7 2) (0 3) (4 5) (1 3)))
+ ; => (((0 1) (0 3)) ((4 7) (4 5)) ((7 2)) ((1 3)))
+
+(splice '((0 1) (4 7) (7 2) (0 3) (4 5) (1 7)) :key #'second)
+ ; => (((0 1)) ((4 7) (1 7)) ((7 2)) ((0 3)) ((4 5)))
+"
   (let ((result '()))
       (dolist (elem list)
          (setf result (insert elem result :key key :test test)))
@@ -871,8 +971,20 @@ sublists and return a list of all sublists."
 |#
 
 (defun get-duplicates (list &key (test #'eql) (once nil))
-  "return all duplicate elems of list satisfying the test predicate.
-If once is set, return each duplicate element only once (default ist nil)."
+  "Return all Elements of /list/ which occur more than once with respect
+to the /test/ predicate. If /once/ is non-nil, return each duplicate
+element only once.
+
+@Arguments
+list - List being examined.
+test - Function to determine equality of elements.
+once - Boolean to determine if only one of the duplicate elements is returned.
+
+@Examples
+(get-duplicates '(0 1 3 2 4 3 9 3 1 3 4 2 3)) ; => (1 3 2 4 3 3 3)
+
+(get-duplicates '(0 1 3 2 4 3 9 3 1 3 4 2 3) :once t)  ; => (1 2 4 3)
+"
   (let ((all-duplicates
           (loop for x on list
              append (if (member (first x) (rest x) :test test) (list (first x))))))
@@ -882,16 +994,38 @@ If once is set, return each duplicate element only once (default ist nil)."
 
 ;; (get-duplicates '(1 3 2 4 1 2 5 1) :once t)
 
-(defun all-permutations (seq &key (test #'eql))
-  "get all permutations of a sequence. Make sure to supply a :test
+(defun all-permutations (list &key (test #'eql) (max-length 10))
+  "Get all permutations of /list/. Make sure to supply a /test/
 function in case the elements can't be compared with #'eql, otherwise
-the function will blow the stack!"
-  (if (null seq) (list nil)
-      (mapcan (lambda (elem)
-                (mapcar (lambda (p)
-                          (cons elem p))
-                        (all-permutations (remove elem seq :test test))))
-              seq)))
+the function will blow the stack. /max-length/ is the maximum length
+of /list/ accepted. This serves as a safety measure to avoid making
+the lisp process unresponsive due to an excessive number of
+permutations.
+
+@Arguments
+list - List of elements to be permuted.
+:test - Function to test for equality of elements in list.
+:max-length - maximum length of list accepted.
+
+@Examples
+(all-permutations (range 4))
+;; => ((0 1 2 3) (0 1 3 2) (0 2 1 3) (0 2 3 1) (0 3 1 2) (0 3 2 1) (1 0 2 3)
+;; (1 0 3 2) (1 2 0 3) (1 2 3 0) (1 3 0 2) (1 3 2 0) (2 0 1 3) (2 0 3 1)
+;; (2 1 0 3) (2 1 3 0) (2 3 0 1) (2 3 1 0) (3 0 1 2) (3 0 2 1) (3 1 0 2)
+;; (3 1 2 0) (3 2 0 1) (3 2 1 0))
+
+(all-permutations (range 20))
+;;
+;; => Error: list to be permuted exceeds maximum length.
+"
+  (if (> (length list) max-length)
+      (error "list to be permuted exceeds maximum length.")
+      (if (null list) (list nil)
+          (mapcan (lambda (elem)
+                    (mapcar (lambda (p)
+                              (cons elem p))
+                            (all-permutations (remove elem list :test test))))
+                  list))))
 
 ;;; (all-permutations '("a" "b" "c"))
 
@@ -1298,7 +1432,7 @@ resetting the cwd."
        ,res)))
 
 (defun date-string ()
-  "return a string of the current time formatted
+  "Return a string of the current time in the format
   \"yyyy-mm-dd-hr-min-sec\""
   (multiple-value-bind
 	(second minute hour date month year day-of-week dst-p tz)
@@ -1313,7 +1447,22 @@ resetting the cwd."
 	    second)))
 
 (defmacro push-if (form list)
-  "push form to list if form evaluates to non-nil."
+  "Push form to list if form evaluates to non-nil. Return the modified
+list or nil if form evaluates to nil.
+
+@Arguments
+form - Form to be pushed to list.
+list - List pushed into.
+
+@Examples
+(defvar *test* '()) ; => *test*
+
+(push-if 4 *test*) ; => (4)
+
+(push-if (eq 2 3) *test*) ; => nil
+
+*test* ; => (4)
+"
   (let ((result (gensym "result")))
     `(let ((,result ,form))
        (if ,result (push ,result ,list)))))
@@ -1327,7 +1476,7 @@ resetting the cwd."
   (setf *random-state* *last-random-state*))
 
 (defun count-elements-generic-test (list &key (test #'eql))
-  "count the number of occurences of all different elems in
+  "Count the number of occurences of all different elems in
 list. Return the results as list with sublists of the form (elem
 count) for each elem. :test can be any test function of 2 args."
   (loop with all-numbers = t
@@ -1369,8 +1518,8 @@ elem. :test has to be a test function accepted by #'make-hash-table,
         (sort result #'> :key #'second))))
 |#
 
-(defun count-elements (seq &key (test #'eql) (key #'identity) (sort t))
-  "count the number of occurences of all mutually different elems in
+(defun count-unique-elements (seq &key (test #'eql) (key #'identity) (sort t))
+  "Count the number of occurences of all mutually different elems in
 seq extracted from the list items according to the :key function. 
 
 Return the results as list with sublists of the form (elem count) for
@@ -1407,7 +1556,7 @@ Works on all sequence types."
 #|
 
 
-(count-elements '(1 3 2 4 3 2 1 5 4 3 6 5 7 "hallo" 5 "hallo" 6 "peng" 7 4 6 5 7 2 3) :test #'equal)
+(count-unique-elements '(1 3 2 4 3 2 1 5 4 3 6 5 7 "hallo" 5 "hallo" 6 "peng" 7 4 6 5 7 2 3) :test #'equal)
 
 (count-elements #(1 3 2 4 3 2 1 5 4 3 6 5 7 "hallo" 5 "hallo" 6 "peng" 7 4 6 5 7 2 3) :test #'equal)
 
@@ -1427,13 +1576,50 @@ Works on all sequence types."
 |#
 
 (defun delete-props (proplist &rest props)
-  "destructively remove props from proplist and return it."
+  "Destructively remove props from property list /proplist/ and return
+it.
+
+@Arguments
+proplist - Property list.
+props - One or more properties to delete.
+
+@See-also
+do-proplist
+do-proplist/collecting
+get-prop
+get-props-list
+map-proplist
+with-props
+"
   (mapc (lambda (prop) (remf proplist prop)) props)
   proplist)
 
 (defun get-props-list (proplist props &key (force-all nil))
-  "create a new proplist by extracting props and their values from
-proplist. Props not present in proplist are ignored."
+  "Return a new property list containing /props/ and their values
+extracted from /proplist/. Properties not present in proplist are
+ignored. If /force-all/ is non-nil, also return properties not present
+in proplist with nil as value.
+
+@Arguments
+proplist - Property list.
+props - Properties to extract from proplist.
+:force-all - Boolean to indicate if non-present props should get included in result.
+
+@Examples
+(get-props-list '(:a 1 :b 2 :c 3 :d \"Foo\") '(:d :a)) ; => (:d \"Foo\" :a 1)
+
+(get-props-list '(:a 1 :b 2 :c 3 :d \"Foo\") '(:a :e)) ; => (:a 1)
+
+(get-props-list '(:a 1 :b 2 :c 3 :d \"Foo\" :a 4) '(:a :e) :force-all t)  ; => (:a 1 :e nil)
+
+@See-also
+delete-props
+do-proplist
+do-proplist/collecting
+get-prop
+map-proplist
+with-props
+"
   (reduce (lambda (seq prop) (let ((val (getf proplist prop :not-supplied)))
                           (if (eql val :not-supplied)
                               (if force-all
@@ -1444,9 +1630,34 @@ proplist. Props not present in proplist are ignored."
           :initial-value nil))
 
 (defmacro with-props (vars proplist &body body)
-  "like with-slots but using a proplist instead of a class instance."
+  "Like with-slots but using a property list instead of a class
+instance. The properties in the /proplist/ to be used need to have a
+symbol or a keyword as a key. /vars/ is a list of symbols bound to the
+corresponding property values in the lexical scope of /body/. Each
+element of vars corresponds to a key in proplist either being the
+binding symbol itself or a keyword, derived by prepending a colon to
+the binding symbol.
+
+@Arguments
+vars - List of symbols of the Properties to use in the lexical scope of body.
+proplist - Property list containing bound properties.
+body - The body in which the vars are bound.
+
+@Example
+(with-props (a b c) '(:a 1 :b 2 c 3)
+  (list a b c))
+;; => (1 2 3)
+@See-also
+delete-props
+do-proplist
+do-proplist/collecting
+get-prop
+get-props-list
+map-proplist
+"
   `(let ,(mapcar
-          (lambda (sym) (list sym `(getf ,proplist ,(intern (symbol-name sym) :keyword))))
+          (lambda (sym) (list sym `(or (getf ,proplist ,(intern (symbol-name sym) :keyword))
+                                  (getf ,proplist ',sym))))
           vars)
      ,@body))
 
@@ -1464,8 +1675,12 @@ proplist - Property list to traverse.
 (map-proplist #'list '(:a 2 :b 5 :c 4)) ; => ((:a 2) (:b 5) (:c 4))
 
 @See-also
+delete-props
 do-proplist
 do-proplist/collecting
+get-prop
+get-props-list
+with-props
 "
   `(loop for (key value) on ,proplist by #'cddr
          collect (funcall ,fn key value)))
@@ -1500,8 +1715,12 @@ proplist - Property list to be traversed.
 ;; => (a 11 b 12 c 13 d 14)
 
 @See-also
+delete-props
+do-proplist/collecting
+get-prop
+get-props-list
 map-proplist
-with-proplist/collecting
+with-props
 "
   `(loop for (,keysym ,valuesym) on ,proplist by #'cddr
          do ,@body))
@@ -1522,8 +1741,12 @@ proplist - Property list to be traversed.
 ;; => ((:a 3) (:b 6) (:c 5))
 
 @See-also
+delete-props
 do-proplist
+get-prop
+get-props-list
 map-proplist
+with-props
 "
   `(loop for (,keysym ,valuesym) on ,proplist by #'cddr
          collect ,@body))
@@ -1539,6 +1762,14 @@ key - Lisp Object ervong as key in property list.
 
 @Example
 (get-prop '(\"George\" \"Maciunas\" \"Simone\" \"de Beauvoir\") \"Simone\") ; => \"de Beauvoir\"
+
+@See-also
+delete-props
+do-proplist
+do-proplist/collecting
+get-props-list
+map-proplist
+with-props
 "
 
   (or (second (member key proplist :test #'equal)) default))
@@ -2001,7 +2232,21 @@ modified in the body to enable returning a value."
 |#
 
 (define-modify-macro multf (&optional (number 1)) *
-  "like incf but multiplying instead of adding.")
+  "Like incf but multiplying instead of adding.
+
+@Arguments
+place - A setfable place.
+number - Number indicating the multiplication factor.
+
+@Examples
+(defvar *test* 2) ; => *test*
+
+(multf *test* 3) ; => 6
+
+*test*  ; => 6
+"
+
+  )
 
 #|
 (defmacro rmprop (plist key &optional default)

@@ -166,6 +166,8 @@ function which changes the standard pitch reference for the entire
   (setf *standard-pitch* (float freq 1.0))
   (setf oid::*standard-pitch* (float freq 1.0)))
 
+#|
+
 (defun ftom (f &key (tuning-base *standard-pitch*))
   "Convert frequency in Hz to pitch in Midicents.
 
@@ -203,7 +205,8 @@ midi-value - Pitch in Midicents.
 @See-also
 ftom
 "
-  (* tuning-base (expt 2 (/ (- midi-value 69) 12))))
+(* tuning-base (expt 2 (/ (- midi-value 69) 12))))
+|#
 
 (defun fr2ct (ratio)
        "Return the Midicents interval of /ratio/.

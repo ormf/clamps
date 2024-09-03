@@ -261,7 +261,7 @@ set-tempo
 
   (defparameter *clamps-extra-symbols*
     (append (mapcar #'first *clamps-extra-doc*)
-            '(cm:rts-hush incudine:node-free-unprotected))))
+            '(cm:svg->browser cm:rts-hush incudine:node-free-unprotected))))
 
 (defun all-clamps-symbols ()
   (let ((acc nil))
@@ -409,15 +409,15 @@ set-tempo
    (mapcar #'cdr *all-clamps-syms*)))
 
 (defparameter *link-regexps*
-  '(("<<\\*([^>]+)\\*>>" "[[#\\1][*​\\1​*]]")
+  '(("<<\\*(.+?)\\*>>" "[[#\\1][*​\\1​*]]")
     ("\\*([^* ]+)\\*" "*​\\1​*")
-    ("#'<<([^>]+)>>" "[[\\1][#'\\1]]")
-    ("<<#'([^>]+)>>" "[[\\1][#'\\1]]")
-    ("<<dict:([^>]+)>>" "[[dict:\\1][\\1]]")
-    ("<<clamps:([^>]+)>>" "[[clamps:\\1][\\1]]")
-    ("<<overview:([^>]+)>>" "[[overview:\\1][\\1]]")
-    ("<<([^>]+)><([^>]+)>>" "[[\\1][\\2]]")
-    ("<<([^>]+)>>" "[[\\1][\\1]]")))
+    ("#'<<(.+?)>>" "[[\\1][#'\\1]]")
+    ("<<#'(.+?)>>" "[[\\1][#'\\1]]")
+    ("<<dict:(.+?)>>" "[[dict:\\1][\\1]]")
+    ("<<clamps:(.+?)>>" "[[clamps:\\1][\\1]]")
+    ("<<overview:(.+?)>>" "[[overview:\\1][\\1]]")
+    ("<<(.+?)><([^>]+)>>" "[[\\1][\\2]]")
+    ("<<(.+?)>>" "[[\\1][\\1]]")))
 
 (defun recurse-apply (fn seq init)
   "similar to reduce but accepting strings as initial values."

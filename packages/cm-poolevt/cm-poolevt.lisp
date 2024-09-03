@@ -84,7 +84,7 @@ an external package, a leading <package-name>: has to be provided."
 (defun lsample->poolevt (lsample &key keynum (time 0) (startpos 0) dur (ampdb 0))
   (let* ((transp (if keynum (- keynum (of-incudine-dsps:lsample-keynum lsample))
                      0))
-         (rate (ou:ct->fv transp))
+         (rate (ou:ct->fr transp))
          (bsr (incudine:buffer-sample-rate (of-incudine-dsps:lsample-buffer lsample)))
          (start (/ (* bsr startpos) incudine::*sample-rate*))
          (end (* (+ start (or dur
