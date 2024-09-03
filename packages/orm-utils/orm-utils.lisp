@@ -46,18 +46,43 @@
 (defmacro ensure-prop (args prop val)
   `(unless (getf ,args ,prop) (setf (getf ,args ,prop) ,val)))
 
-(defun every-nth (l n)
+(defun every-nth (list n)
+  "Return a sublist of /list/ containing every /n/th element.
+
+@Arguments
+list - Input list
+n - Integer to indicate the index distance between elements
+
+@Example
+(every-nth '(0 1 2 3 4 5 6 7 8 9 10) 3) ; => (0 3 6 9)
+"
   (loop
-     for x in l
+     for x in list
      for idx from 0
      if (zerop (mod idx n)) collect x))
 
-;;; (every-nth '(1 2 3 4 5 6 7 8 9 10 11) 3)
-
 (defun str-concat (&rest args)
+  "concatenate strings.
+
+@Arguments
+args - one or more strings to concatenate
+
+@Example
+(str-concat \"Hello\" \" World\") ; => \"Hello World\"
+"
   (apply #'concatenate 'string args))
 
 (defmacro repeat-format (stream expr num)
+  "format /expr/ /num/ times to /stream/
+
+@Arguments
+stream - Output stream as in format.
+expr - Expression to format repeatedly.
+num - Integer number of repetitions.
+
+@Examples
+(repeat-format nil \"la\" 10) ; => \"lalalalalalalalalala\"
+"
   `(format ,stream "~v@{~A~:*~}" ,num ,expr))
 
 #|

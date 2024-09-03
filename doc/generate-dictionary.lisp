@@ -609,7 +609,7 @@ result."
 
 (defun format-variable-entry (name docstring stream type)
   "Format a Variable entry for org-mode file."
-  (format stream "** ~(~a~)~%   ~a~%~a"
+  (format stream "** ~(~a~)~%   ~a~%~%~a"
           (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "*​\\1​*") type docstring))
 
 (defun format-class-entry (name args docstring stream type)
@@ -657,6 +657,7 @@ result."
                (*print-pretty* nil))
           (when (boundp symbol)
             (let ((doc (documentation symbol 'variable)))
+;;;              (break "symbol: ~a, doc: ~a" symbol doc)
               (funcall format-entry-function name nil
                        (if (constantp symbol) 'constant 'variable)
                        (and doc (transcode-docstring doc))
@@ -766,4 +767,6 @@ file."
 (write-dict "/home/orm/work/programmieren/lisp/clamps/doc/clamps-dictionary.org")
 
 ;;(sb-ext:quit)
+
+
 

@@ -236,6 +236,7 @@
    #+END_SRC
 ** *​bindings​*
    Variable
+
 ** buchla-scale
    Function
    #+BEGIN_SRC lisp
@@ -910,16 +911,46 @@
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** *​env1​*
    Variable
+
+   Incudine three point ASR envelope with attack time 0 and release time
+   0.1 of the total duration.
 ** envelope*
    Function
    #+BEGIN_SRC lisp
      (envelope* env gate time-scale done-action &optional ugen-node)
    #+END_SRC
+   Envelope ugen working with any blocksize. The product of /time-scale/
+   and the total duration of /env/ is the total duration of the envelope
+   in seconds. /done-action/ is called when the total-duration has been
+   reached or when /gate/ is zero and the release phase of the envelope
+   has ended.
+   
+   envelope* returns an array of block-size samples.
+*** Arguments
+    =env= -- incudine.vug:envelope
+
+    =gate= -- Number functioning as a gate: If zero, start the release
+    phase.
+
+    =time-scale= -- Number scaling the envelope x-values.
+
+    =done-action= -- Function to issue at end of release.
+
 ** every-nth
    Function
    #+BEGIN_SRC lisp
-     (every-nth l n)
+     (every-nth list n)
    #+END_SRC
+   Return a sublist of /list/ containing every /n/th element.
+*** Arguments
+    =list= -- Input list
+
+    =n= -- Integer to indicate the index distance between elements
+
+*** Example
+    #+BEGIN_SRC lisp
+      (every-nth '(0 1 2 3 4 5 6 7 8 9 10) 3) ; => (0 3 6 9)
+    #+END_SRC
 ** exp-n
    Macro
    #+BEGIN_SRC lisp
@@ -1277,10 +1308,13 @@
     - [[watch][watch]]
 ** *​gnuplot-header​*
    Variable
+
 ** *​gnuplot-options​*
    Variable
+
 ** *​gnuplot-program​*
    Variable
+
 ** group
    Function
    #+BEGIN_SRC lisp
@@ -1320,6 +1354,8 @@
    controller actions.
 ** *​hanning1024​*
    Variable
+
+   Incudine buffer of length 1024 containing a hanning window.
 ** highlight
    Generic Function
    #+BEGIN_SRC lisp
@@ -1352,6 +1388,7 @@
     reset the logger-stream using [[reset-logger-stream][reset-logger-stream]].
 ** *​in-refs​*
    Variable
+
 ** index-seq
    Function
    #+BEGIN_SRC lisp
@@ -1869,8 +1906,10 @@
     - [[gui][gui]]
 ** *​midi-cc-fns​*
    Variable
+
 ** *​midi-cc-state​*
    Variable
+
 ** midi-controller
    Class
    #+BEGIN_SRC lisp
@@ -1888,6 +1927,7 @@
    #+END_SRC
 ** *​midi-debug​*
    Variable
+
 ** midi-input
    Generic Function
    #+BEGIN_SRC lisp
@@ -2219,6 +2259,7 @@
    #+END_SRC
 ** *​out-refs​*
    Variable
+
 ** out-stream-open?
    Function
    #+BEGIN_SRC lisp
@@ -2808,6 +2849,18 @@
    #+BEGIN_SRC lisp
      (repeat-format stream expr num)
    #+END_SRC
+   format /expr/ /num/ times to /stream/
+*** Arguments
+    =stream= -- Output stream as in format.
+
+    =expr= -- Expression to format repeatedly.
+
+    =num= -- Integer number of repetitions.
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (repeat-format nil "la" 10) ; => "lalalalalalalalalala"
+    #+END_SRC
 ** repeated
    Function
    #+BEGIN_SRC lisp
@@ -3076,6 +3129,8 @@
     - [[get-sfz-preset][get-sfz-preset]]
 ** *​sine1024​*
    Variable
+
+   Incudine buffer of length 1024 containing one period of a sine wave.
 ** slurp
    Function
    #+BEGIN_SRC lisp
@@ -3181,6 +3236,14 @@
    #+BEGIN_SRC lisp
      (str-concat &rest args)
    #+END_SRC
+   concatenate strings.
+*** Arguments
+    =args= -- one or more strings to concatenate
+
+*** Example
+    #+BEGIN_SRC lisp
+      (str-concat "Hello" " World") ; => "Hello World"
+    #+END_SRC
 ** svg->browser
    Function
    #+BEGIN_SRC lisp
