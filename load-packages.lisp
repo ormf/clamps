@@ -41,11 +41,11 @@
                   :cm-poolevt
                   :cm-poolplayer
                   :cm-fomus
+                  :cl-midictl
                   :cm-incudine
                   :cm-utils
                   :clog-dsp-widgets
                   :clog-cuda
-                  :cl-midictl
                   :clog-midi-controller
                   :cm-all
                   ))
