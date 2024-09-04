@@ -20,12 +20,39 @@
 
 (in-package :of-incudine-dsps)
 
-(defvar *standard-pitch* 440.0)
-;;; (defparameter *hanning1024* (make-buffer 1024 :fill-function (gen:hanning)))
+(defvar *standard-pitch* 440.0
+  "Reference tuning frequency for middle A, setfable.")
 
 (defstruct lsample
-  "structure for a sample with two loop-points. The structure also
-contains a slot for the sample buffer data."
+  "Structure for a sample with two loop-points.
+
+@Note
+Normally the user shouldn't be dealing with a lsample struct
+directly. It is used by the /sfz/ and /poolevent/ classes and
+documented here for completeness and insight.
+
+A lsample contains the following slots, accessible using the functions
+/lsample-<slot-name>/:
+
+=filename= -- Filename of the sample source.
+
+=buffer= -- Buffer of the sample data.
+
+=play-fn= -- Function for playing the lsample, defaults to /#'play-lsample-oneshot/.
+
+=keynum= -- Double Float denoting original keynum of the recorded sample.
+
+=loopstart= -- Double Float denoting the loop start for loop playback, dafaulting to /+​sample-zero​+/.
+
+=loopend= -- Double Float denoting the loop start for loop playback, dafaulting to /+​sample-zero​+/.
+
+=amp= -- Amplitude of recorded sample in dB, defaulting to /+​sample-Zero​+/.
+
+=id= -- Buffer ID of sample-buffer, defaulting to /nil/.
+
+@See-also
+sfz
+"
   filename
   buffer
   (play-fn #'play-lsample-oneshot*)

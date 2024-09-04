@@ -618,21 +618,42 @@ array of bindings, depending on the class."))
 (defgeneric flash (clog-obj)
   (:method ((obj clog-obj))
     (execute obj "bang()"))
-  (:documentation "call the bang() function of clog-obj without triggering the bang
-event."))
+  (:documentation "Call the bang() function of /clog-obj/ without triggering its bang
+event.
+
+@Arguments
+clog-obj - A Clog object which accepts a bang() function, like a Button.
+"))
 
 (defgeneric pulse-on (clog-obj &optional freq)
   (:method ((obj clog-obj) &optional (freq 2))
     (execute obj (format nil "pulseOn(~A)" (round (/ 1000 freq 2.0)))))
-  (:documentation "call the pulseOn() function of clog-obj."))
+  (:documentation "Call the pulseOn() function of clog-obj. This results in a flashing of
+/clog-obj/ alternating between foreground and background color with
+frequency /freq/.
+
+@Arguments
+clog-obj - A Clog object which accepts a pulseOn() function, like a Button or a Toggle.
+freq - Number denoting the flash frequency.
+"))
 
 (defgeneric pulse-off (clog-obj)
   (:method ((obj clog-obj))
     (execute obj "pulseOff()"))
-  (:documentation "call the pulseOff() function of clog-obj."))
+  (:documentation "Call the pulseOff() function of /clog-obj/, restoring its background
+color.
+
+@Arguments
+clog-obj - A Clog object which accepts a pulseOff() function, like a Button or a Toggle.
+"))
 
 (defgeneric highlight (clog-element value)
-  (:documentation "Highlight element (0 unhighlights, all other values highlight)."))
+  (:documentation "Highlight /clog-element/ depending on /value/ (0 unhighlights, all
+other values highlight).
+
+@Arguments
+clog-obj - A Clog object which accepts a highlight() function, like a Button or a Toggle.
+"))
 
 (defmethod highlight ((obj clog-element) value)
   (execute obj (format nil "highlight(~A)" value))  
@@ -653,8 +674,7 @@ event."))
   (setf (title (html-document body)) "Clog Gui")
   (add-class body "w3-blue-grey"))
 
-(defun start-gui (&key (port 54619) (gui-root (asdf:system-source-directory :clog-dsp-widgets))
-                    (open t))
+(defun start-gui (&key (port 54619) (gui-root (asdf:system-source-directory :clog-dsp-widgets)) (open t))
   (clear-bindings) ;;; start from scratch
   (format t "starting webserver at ~A" (merge-pathnames gui-root "/www"))
   (initialize #'on-new-window

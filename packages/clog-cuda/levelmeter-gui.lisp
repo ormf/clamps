@@ -162,7 +162,7 @@
   (check-type type (member :bus :in :out))
   (let ((dsp
           (or (find-dsp id)
-              (add-dsp 'levelmeter :id id :type type :node-group group
+              (add-dsp 'levelmeter id :type type :node-group group
                                    :audio-bus audio-bus :refs refs :num num))))
     (with-slots (refs) dsp
       (let* ((gui-container (create-div gui-parent
@@ -186,11 +186,11 @@ nil just create the levelmeter."
   (let* ((dsp
            (or (find-dsp id)
                (let ((new (if create-bus
-                              (add-dsp 'master-bus-levelmeter :id id :node-group group :type :bus
+                              (add-dsp 'master-bus-levelmeter id :node-group group :type :bus
                                                               :audio-bus audio-bus :refs refs :num num
                                                               :channel-offset channel-offset
                                                               :bus-name bus-name)
-                              (add-dsp 'levelmeter :id id :node-group group :type :bus
+                              (add-dsp 'levelmeter id :node-group group :type :bus
                                                    :audio-bus audio-bus :refs refs :num num
                                                    :channel-offset channel-offset))))
                  new))))
@@ -223,7 +223,7 @@ nil just create the levelmeter."
   (declare (ignorable nb-ampdb))
   (let* ((dsp (or (find-dsp id)
                   (add-dsp 'master-amp-meter-bus
-                           :id id :node-group group
+                           id :node-group group
                            :audio-bus audio-bus
                            :out-chan out-chan
                            :num-channels num-channels
@@ -274,7 +274,7 @@ nil just create the levelmeter."
   (let* ((dsp
            (or (find-dsp id)
                (add-dsp 'master-amp-meter-out
-                        :id id :node-group group
+                        id :node-group group
                         :out-chan out-chan
                         :num-channels num-channels
                         :amp amp
@@ -309,7 +309,7 @@ nil just create the levelmeter."
   (check-type type (member :bus :in :out))
   (let ((dsp
           (or (find-dsp id)
-              (add-dsp 'levelmeter :id id :type type :node-group group
+              (add-dsp 'levelmeter id :type type :node-group group
                                    :audio-bus audio-bus :refs refs :num num))))
     (with-slots (refs) dsp
       (let* ((gui-container (create-div gui-parent
@@ -330,9 +330,9 @@ nil just create the levelmeter."
   (dolist (id '(:lm-in :lm-out))
     (remove-dsp id))
   (setup-io)
-  (add-dsp 'levelmeter :id :lm-in :type :in :num 8 :node-group 100 :refs *in-refs*)
-  (add-dsp 'levelmeter :id :lm-out :type :out :num 8 :node-group 300 :refs *out-refs*)
-;;;  (add-dsp 'levelmeter :id :lm-out :type :bus :num 8 :audio-bus 8 :node-group 300 :refs *out-refs*)
+  (add-dsp 'levelmeter :lm-in :type :in :num 8 :node-group 100 :refs *in-refs*)
+  (add-dsp 'levelmeter :lm-out :type :out :num 8 :node-group 300 :refs *out-refs*)
+;;;  (add-dsp 'levelmeter :lm-out :type :bus :num 8 :audio-bus 8 :node-group 300 :refs *out-refs*)
   )
 
 (defun meters-window (body)

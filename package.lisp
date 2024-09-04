@@ -19,7 +19,7 @@
 ;;; **********************************************************************
 
 (defpackage :clamps
-  (:export #:reset-logger-stream #:idump #:clamps #:clamps-restart-gui #:clamps-gui-root #:clamps-base-url
+  (:export #:reset-logger-stream #:idump #:clamps #:clamps-restart-gui #:clamps-gui-root #:clamps-base-url #:set-standard-pitch #:*standard-pitch*
            #:svg-gui-path #:set-tempo #:set-bpm #:start-doc-acceptor #:clamps-start
            #:gui #:meters)
   (:shadowing-import-from #:incudine

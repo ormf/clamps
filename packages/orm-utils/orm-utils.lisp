@@ -3,7 +3,15 @@
 (in-package :orm-utils)
 
 (defun system-version (system-designator)
-  "Retrieve the version of an asdf system or nil if not bound/existent."
+  "Return the version of an installed /asdf/ system or nil if not
+bound/existent.
+
+@Arguments
+system-designator - A designator acceptable to /asdf:find-system/
+
+@Examples
+(system-version :cm) ; => \"2.12.0\"
+"
   (let ((system (asdf:find-system system-designator nil)))
     (when (and system (slot-boundp system 'asdf:version))
       (asdf:component-version system))))
@@ -29,6 +37,29 @@
                        (list (first seq))))))
 
 (defmacro while (test &body body)
+  "Repeatedly execute /body/ until /test/ is non-nil. Returns nil on
+exit.
+
+@Arguments
+test - Function to test for exiting the while loop.
+body - body to be evaluated repeatedly while /test/ evaluates to non-nil.
+
+@Example
+(let ((i 0))
+  (ou::while (< (incf i) 10) (print i)))
+
+;; output in the REPL:
+1 
+2 
+3 
+4 
+5 
+6 
+7 
+8 
+9 
+nil
+"
   (let ((gtop (gensym))
         (gend (gensym)))
     `(tagbody
@@ -40,26 +71,63 @@
        ,gend)))
 
 (defun filter (pred seq)
-  "return a list of all elements of seq satisfying pred."
-  (remove-if-not pred seq))
-
-(defmacro ensure-prop (args prop val)
-  `(unless (getf ,args ,prop) (setf (getf ,args ,prop) ,val)))
-
-(defun every-nth (list n)
-  "Return a sublist of /list/ containing every /n/th element.
+  "Return a list of all elements of /seq/ satisfying /pred/.
 
 @Arguments
-list - Input list
-n - Integer to indicate the index distance between elements
+seq - A Common Lisp sequence
+pred - Function of one element for filtering elements.
 
 @Example
-(every-nth '(0 1 2 3 4 5 6 7 8 9 10) 3) ; => (0 3 6 9)
+(filter (lambda (e) (< e 9)) '(3 1 12 17 5 4)) ; => (3 1 5 4)
+"
+  (remove-if-not pred seq))
+
+(defmacro ensure-prop (proplist prop default)
+  "Ensure that the property /prop/ exists in /proplist/, otherwise set it
+to /default/. Return the value of prop.
+
+@Arguments
+proplist - Property list.
+prop - Property key to ensure.
+default - The value property should get assigned to if not set.
+
+@Examples
+(defvar *proplist* '(:a 10 :b hello :c \"world\"))
+
+(ensure-prop *proplist* :d 5)
+;; => 5
+
+*proplist* ; => (:d 5 :a 10 :b hello :c \"world\")
+
+;; As property :a already exists, don't change it and return its
+;; current value:
+
+(ensure-prop *proplist* :a 3)
+;; => 10
+
+*proplist* ; => (:d 5 :a 10 :b hello :c \"world\")
+"
+  `(let ((val (getf ,proplist ,prop)))
+     (unless val (setf (getf ,proplist ,prop) ,default))
+     (or val ,default)))
+
+(defun every-nth (list n &key (offset 0))
+  "Return a sublist of /list/ containing every element with an index
+being a multiple of /n/.
+
+@Arguments
+list - Input list.
+n - Positive integer indicating the index distance between elements.
+:offset - Positive integer indicating offset into the input list.
+
+@Example
+(every-nth '(9 10 11 12 13 14 15 16 17 18 19 20) 3 :offset 1)
+;; => (10 13 16 19)
 "
   (loop
-     for x in list
-     for idx from 0
-     if (zerop (mod idx n)) collect x))
+    for x in (nthcdr offset list)
+    for idx from 0
+    if (zerop (mod idx n)) collect x))
 
 (defun str-concat (&rest args)
   "concatenate strings.
@@ -103,56 +171,81 @@ num - Integer number of repetitions.
 
 
 (defun firstn (seq n)
-  "return first n elems of seq"
+  "Return the first /n/ elems of /seq/."
   (subseq seq 0 n))
 
-(defun sort-by (list &key (test #'<) (key #'identity))
-  (sort list #'(lambda (x y) (funcall test (funcall key x) (funcall key y)))))
-
 (defun rfind (item tree &key (test #'eql))
+  "Find /item/ by traversing /tree/ recursively until /test/ called on
+/item/ and a tree element returns non-nil. Return item or nil if item
+is not found.
+
+@Arguments
+item - Any Common Lisp Object.
+tree - A list possibly nested.
+:test - Function to test for equality between item and a tree element.
+
+@Example
+(rfind 'd '(a (b c (a d c) ((g d (e)) h f)))) ; => d 
+
+"
   (if (atom tree)
       (if (funcall test item tree) tree)
       (or (rfind item (first tree) :test test)
           (rfind item (rest tree) :test test))))
 
 (defmacro default (expr default)
-  "(if expr expr default) without calculating expr twice."
+  "(if /expr/ /expr/ /default/) without calculating /expr/ twice."
   (let ((myvar (gensym)))
     `(let ((,myvar ,expr))
        (if ,myvar ,myvar ,default))))
 
 (defmacro with-output-to-file ((stream fname &key (if-exists :supersede)) &rest body)
+  "Wrapper around /with-open-file/ for output to avoid having to provide
+:direction and :if-exists.
+
+@Arguments
+stream - Symbol bound to the stream outputting to file.
+fname - String or Pathname of output file.
+:if-exists - Keyword mapping the /:if-exists/ keyword of /with-open-file/
+"
   `(with-open-file (,stream ,fname :direction :output :if-exists ,if-exists)
      ,@body))
-
-(defmacro with-file-stream ((stream fname &key (direction :output) (if-exists :supersede)) &rest body)
-  `(with-open-file (,stream ,fname :direction ,direction :if-exists ,if-exists)
-     ,@body))
-
-(defmacro with-stream-to-string ((stream string) &rest body)
-  `(let ((,string (make-array '(0) :adjustable t :fill-pointer 0 :element-type 'character)))
-    (with-output-to-string (,stream ,string)
-      ,@body)))
 
 (defun make-adjustable-string ()
   (make-array '(0) :element-type 'character
               :fill-pointer 0 :adjustable t))
 
 (defun last-n (n)
-  "returns a function which will retrieve last n elements of a given
-list when applied."
+  "Returns a function which will retrieve last n elements of a given
+list when applied.
+
+@Arguments
+n - length of sublist to retrieve
+
+@Example
+(funcall (last-n 5) '(1 2 3 4 5 6 7 8)) -> (4 5 6 7 8)
+"
         (lambda (list)
           (let ((len (length list)))
             (if (< len n)
                 (error (format nil "(last-n ~d) called with too short list: ~a" n list))
                 (nthcdr (- (length list) n) list)))))
 
-;;; (funcall (last-n 5) '(1 2 3 4 5 6 7 8)) -> (4 5 6 7 8)
-
-
 
 (defun dround (num &optional (prec 2))
-  "Return a number rounded to /prec/ decimal places."
+  "Return a float of /num/ rounded to /prec/ decimal places.
+
+@Arguments
+num - The number to round.
+prec - Non Negative Integer denoting the number of decimal places.
+
+@Examples
+(dround 1/3) ; => 0.33
+
+(dround 1/3 5) ; => 0.33333
+
+(dround 1) ; => 1.0
+"
   (let ((ept (expt 10 prec)))
     (/ (round (* num ept)) ept 1.0)))
 
@@ -168,10 +261,34 @@ list when applied."
 |#
 
 (defun map-tree (fn tree &key (test (lambda (elem) (not (consp elem)))))
-  "map function recursively on all leaf nodes of given
-tree (represented as a nested list). leaf nodes are determind by
-applying #'test on the list containing them. If the call doesn't
-return a cons cell, it is a leaf node. Return the modified tree."
+  "Map function recursively and non-destructively on all leaf nodes of
+given tree (represented as a nested list). Leaf nodes are determind by
+applying #'test on the list containing them. If /test/ returns /t/,
+the node is considered to be a leaf node. Return the modified tree as
+a new structure.
+
+@Arguments
+fn - Function to call on the leaf nodes.
+tree - List to traverse, possibly nested
+
+@Examples
+(map-tree #'print '(1 (2 7 (8 9 ((17 15 (14)) 5 (3))))))
+;; => (1 (2 7 (8 9 ((17 15 (14)) 5 (3)))))
+;; output in the REPL:
+1 
+2 
+7 
+8 
+9 
+17 
+15 
+14 
+5 
+3 
+
+(map-tree (lambda (x) (+ x 100)) '(1 (2 7 (8 9 ((17 15 (14)) 5 (3))))))
+;; => (101 (102 107 (108 109 ((117 115 (114)) 105 (103)))))
+"
   (cond
     ((null tree) nil)
     ((funcall test (first tree))
@@ -192,46 +309,77 @@ return a cons cell, it is a leaf node. Return the modified tree."
 
 (defun mappend (fn list)
   "Append the results of calling fn on each element of list.
-  Like mapcon, but uses append instead of nconc."
+  Like mapcon, but uses append instead of nconc. Copied from Peter
+  Norvig's AIP book."
   (apply #'append (mapcar fn list)))
 
+(defun get-time (secs &key (prec 2))
+  "Convert a /secs/ representing seconds into a list of the form /(hr min
+secs)/.
 
-(defun replace-stars-in-string (formstring string)
-  (let ((result ""))
-    (loop
-       for i from 0 below (length formstring)
-       do
-       (setf result 
-             (concatenate 'string result 
-                          (if (eq (char formstring i) #\*) 
-                              string 
-                              (string (char formstring i))))))
-    result))
+@Arguments
+secs - Number representing time in seconds.
+prec - Number of digits after the comma of seconds
 
-
-(defun get-time (secs)
+@Example
+(get-time 2753.3) ; => (0 45 53.30005)
+"
   (multiple-value-bind (hr mins)
       (floor secs 3600)
       (multiple-value-bind (min secs)
           (floor mins 60)
-        (list hr min secs))))
+        (list hr min (dround secs prec)))))
 
-(defun calcsndbytes (hr min sec &optional (samplerate 44100))
-  "calc num of bytes (not samples!) from hr min and sec."
+(defun calcsndbytes (hr min sec &key (samplerate 44100) (bytes-per-sample 4))
+  "Return the number of bytes (not samples!) from /hr/, /min/ and
+/sec/. Samplerate and the number of bytes per sample can be supplied
+using the /samplerate/ and /bytes-per-sample/ keywords..
+
+@Arguments
+hr - Number of hours.
+min - Number of minutes.
+hr - Number of seconds.
+samplerate - Number of samples per second.
+bytes-per-sample - Number of bytes per sample.
+
+@Example
+(calcsndbytes 0 1 10) ; => 12348000
+"
   (let ((ttime (+ (* 3600 hr) (* 60 min) sec)))
-    (floor (* ttime samplerate 2))))
+    (floor (* ttime samplerate bytes-per-sample))))
 
 ;;; (apply #'calcsndbytes (get-time 120.3))
 ;;; (calcsndbytes 0 0 120.3)
 
 (defun format-time (hr min sec)
+  "Return a time string of the format \"hh:mm:ss.sss\"
+
+@Arguments
+hr - Number of hours to output.
+min - Number of minutes to output.
+sec - Number of seconds to output.
+
+@Examples
+(format-time 0 1 1.312) \"00:01:01.312\"
+
+(apply #'format-time (get-time 728.3)) \"00:12:08.300\"
+"
   (format nil "~2,'0d:~2,'0d:~:[0~,3f~;~,3f~]" hr min (>= sec 10) sec))
 
 ;;; (apply #'format-time (get-time 728.3))
 
 (defun mlist (list count)
-  "divide list into sublists of length count. Last element is padded
-with nil if list-length is not a multiple of count."
+  "Similar to group: Divide list into sublists of length count
+non-destructively. Last element is padded with nil if list-length is
+not a multiple of count. Return the partitioned list.
+
+@Arguments
+list - List to be partitioned
+count - positive Integer denoting the ength of partitions.
+
+@Example
+(mlist '(1 2 3 4 5) 2) => ((1 2) (3 4) (5 nil))
+"
   (loop for i from 0 below (length list) by count
      collect (loop for n from 0 below count collect (elt list (+ n i)))))
 
@@ -246,10 +394,20 @@ with nil if list-length is not a multiple of count."
 (integrate '(0 1 2 3 4))
 |#
 
-(defun integrate (seq &key (modifier #'+) (start (first seq)))
-  "return a running sum (or any other modifier fn) of a seq."
+(defun integrate (list &key (modifier #'+) (start (first list)))
+  "Return a running sum (or any other /modifier/ function) of /list/.
+
+@Arguments
+list - List to integrate
+modifier - Function to apply to all elements accumulationg the results.
+
+@Examples
+(integrate '(0 2 1 4 5)) ; => (0 2 3 7 12)
+
+(integrate '(1 2 3 2 4) :modifier #'*) ; => (1 2 6 12 48)
+"
   (loop
-     for i in seq
+     for i in list
      for j = start then (funcall modifier j i)
      collect j))
 
@@ -261,10 +419,23 @@ with nil if list-length is not a multiple of count."
 ;;            for j in (cdr liste)
 ;;            collect (- j i))))
 
-(defun differentiate (seq &key (modifier #'-) (start (first seq)))
-  "return differences between subsequent elements of seq."
+(defun differentiate (list &key (modifier #'-) (start (first list)))
+  "Return differences between subsequent elements of list.
+
+@Arguments
+list - List to integrate
+:modifier - Function to apply to all elements accumulationg the results.
+:start - Number denoting the start value.
+
+@Examples
+(differentiate '(0 2 3 7 12)) ; => (0 2 1 4 5)
+
+(differentiate '(1 2 6 12 48) :modifier #'/) ; => (1 2 3 2 4)
+
+(differentiate (integrate '(17 2 4))) ; => (17 2 4)
+"
   (cons start
-	(mapcar (lambda (x y) (funcall modifier x y)) (cdr seq) seq)))
+	(mapcar (lambda (x y) (funcall modifier x y)) (cdr list) list)))
 
 #|
  (differentiate '(1 3 2 5 6 4))
@@ -304,7 +475,6 @@ with nil if list-length is not a multiple of count."
   (not (consp elem)))
 
 (defun flatten-fn (seq &key (test #'atom) (key #'identity))
-;;;  (break "~a" seq)
   "Remove all brackets except the outmost in seq. Use test and key to
    determine where to stop removing brackets.
 
@@ -369,12 +539,12 @@ flatten-fn
 ;;; calc fibonacci number directly:
 
 (defun fibonacci (n)
-  "Calculate the /n/th element of the Fibonacci series. The function is
-not recursive, but calculates the value directly running in constant
+  "Calculate the /n/-th element of the Fibonacci series. The function is
+not recursive, but calculates the value directly, running in constant
 time.
 
 @Arguments
-n - Integer >= 0 indicating the index of the Fibonacci series.
+n - Non Negative Integer denoting the index of the Fibonacci series.
 
 @Example
 (mapcar #'fibonacci (range 12)) ; => (1 1 2 3 5 8 13 21 34 55 89 144)
@@ -545,9 +715,20 @@ ftom
 ;; uses a local copy of list instead of the original.
 
 (defun rotate (list &optional (num 1))
-  "rotate a list by n elems (to the right). n can be negative. If n is
-larger than the list size it will wrap around as if the rotation was
-called recursively n times."
+  "Rotate /list/ by /num/ elems (to the right). /num/ can be negative. If
+/num/ is larger than the list size it will wrap around as if the
+rotation was called recursively num times.
+
+@Arguments
+list - List to rotate
+num - Integer number of rotations.
+
+@Examples
+(rotate '(dog bird lion cat horse) 1) ; => (horse dog bird lion cat)
+(rotate '(dog bird lion cat horse) -1)  ; => (bird lion cat horse dog)
+
+(rotate '(dog bird lion cat horse) 4733) ; => (lion cat horse dog bird)
+"
   (let* ((new-list (copy-tree list))
          (num-normalized (mod (* -1 num) (nconc-get-size new-list)))) ;; innermost function nconcs new-list to an endless list and gets size in one step
     (if (zerop num-normalized) list
@@ -577,28 +758,37 @@ called recursively n times."
                    (nreverse (cons source acc))))))
     (if source (rec source nil) nil)))
 
-(defun group-by (source g-seq)
-  "group elems of list into sublists of lengths given by g-seq cyclically"
-  (let* ((tmp (copy-list g-seq ))
-         (gseq (nconc tmp tmp)))
+(defun group-by (list group-lengths)
+  "Partition /list/ into sublists of lengths given by /group-lenghts/
+cyclically.
 
-    (labels ((rec (source acc)
+@Arguments
+list - The list to partition.
+group-lenghts - A list of Positive Integers denoting the sequence of lengths of the partitions.
+
+@Example
+(group-by '(1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 2 3 4 5 6) '(2 3 5))
+;; => ((1 2) (3 4 5) (6 7 8 9 1) (2 3) (4 5 6) (7 8 9 1 2) (3 4) (5 6))
+"
+  (let* ((tmp (copy-list group-lengths))
+         (gseq (nconc tmp tmp)))
+    (labels ((rec (list acc)
                (let* ((n (first gseq))
-                      (rest (nthcdr n source)))
+                      (rest (nthcdr n list)))
                  (if (zerop n) (error "zero length"))
                  (setf gseq (rest gseq))
                  (if (consp rest)
                      (progn
-                       (rec rest (cons (subseq source 0 n) acc)))
-                     (nreverse (cons source acc))))))
-      (if source (rec source nil) nil))))
+                       (rec rest (cons (subseq list 0 n) acc)))
+                     (nreverse (cons list acc))))))
+      (if list (rec list nil) nil))))
 
 ;;; (group-by '(1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 2 3 4 5 6) '(2 3 5))
 ;;; => ((1 2) (3 4 5) (6 7 8 9 1) (2 3) (4 5 6) (7 8 9 1 2) (3 4) (5 6))
 
 (defun group-by-key (source &key (test #'=) (key #'car))
-  "group elems of source into sublists depending on test and key. Source has
-to be sorted according to test!"
+  "Group elems of /source/ into sublists depending on /test/ and
+/key/. Source has to be sorted according to test!"
   (let ((res nil))
     (labels ((rec (source last acc)
                (let ((k (funcall key (car source))))
@@ -637,7 +827,9 @@ do-repeated
   (cond ((= n 1)
          (lambda (&rest args) (apply fn args)))
         (t (lambda (&rest args)
-             (apply fn (cons (apply (repeated (- n 1) fn) args) (rest args)))))))
+             (apply fn (cons
+                        (apply (repeated (- n 1) fn) args)
+                        (rest args)))))))
 
 ;;; Example:
 
@@ -763,7 +955,8 @@ calls. If collect is t return all results in a list."
 ;;; (secs->timestr 3672.5 :format 2) -> "01:01:12"
 
 (defun secs->beats (secs &key (tempo '(1/4 60)) (unit 1/4))
-  "return number of beats for a given time in seconds. keys are :tempo (default '(1/4 60)) and a unit to count (default 1/4)"
+  "Return number of beats for a given time /secs/ in seconds. Keys are
+/:tempo/ (default '(1/4 60)) and a /unit/ to count (default 1/4)."
   (let ((time-per-unit (* unit (/ 60 (apply #'* tempo)))))
     (/ secs time-per-unit)))
 
@@ -828,23 +1021,61 @@ calls. If collect is t return all results in a list."
 (setf *tempo* '(1/4 60))
 
 (defun amp->db (amp)
+  "Return dB value of linear amplitude /amp/. An amplitude of 0 returns a
+dB value of -100.
+
+@Arguments
+amp - Positive Integer denoting amplitude.
+
+@Example
+
+(amp->db 1) ; => 0.0
+(amp->db 0) ;= -100
+"
   (if (zerop amp) -100
-      (* 20 (log amp 10))))
+      (* 20 (log (abs amp) 10))))
 
 ;;; (amp->db 1) -> 0
 ;;; (amp->db 0.5) -> -6
 ;;; (amp->db 2) -> 6
 
 (defun db->amp (db)
-  (expt 10 (/ db 20)))
+  "Return amp value of dB value /db/. The dB value is clipped below -100
+and returns the amplitude 0.
+
+@Arguments
+amp - Positive Integer denoting amplitude.
+
+@Example
+
+(db->amp 0) ; => 1
+(db->amp -6) ; => 0.5011872
+(db->amp -100) ; => 0
+"
+  (if (<= db -100) 0
+      (expt 10 (/ db 20))))
 
 ;;; (db->amp 0) -> 1
 ;;; (db->amp -6) -> 0.5
 ;;; (db->amp 6) -> 1.9952623
 ;;; (db->amp -60) -> 1/100
 
-(defun clip (val minvalue maxvalue)
-  (min maxvalue (max minvalue val)))
+(defun clip (val min max)
+  "Clip val into the range [min..max].
+
+@Arguments
+val - Number to be clipped.
+min - Number denoting minimum bound.
+min - Number denoting maximum bound.
+
+@Example
+(clip -10 0 3) ; => 0
+
+(clip 10 0 3) ; => 3
+
+(clip 1.73 0 3) ; => 1.73
+"
+  (min max (max min val)))
 
 ;;; (dolis   q(x (sv evt elems))
 ;;;   (print x))
@@ -863,32 +1094,55 @@ calls. If collect is t return all results in a list."
       data)))
 
 (defun partition-seq (seq pred)
-  "generic function to partition a seq into sublists based on a
-   predicate called on successive events. Pred is a function of two
-   args, an element of the seq and its successor. If pred returns
-   non-nil, a new subseq is started after the curren element. The
-   result contains all elements of the original seq in orginal order.
+  "Partition /seq/ into sublists based on a predicate called on successive
+elements. /pred/ is a function of two args, an element of the seq and
+its successor. If pred returns non-nil, a new subseq is started after
+the current element. The result contains all elements of the original
+seq in orginal order.
 
-   Example: (partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) (> (- y x) 1))) 
-   -> ((1 2) (4 5 6) (8 9))"
-(loop 
-   with res = () 
-   with curr = () 
-   for restseq on seq
-   do (progn
-        (if (and
-             (second restseq)
-             (funcall pred (first restseq) (second restseq))) 
-            (progn
-              (push (reverse (push (first restseq) curr)) res)
-              (setf curr nil))
-            (progn
-              (push (first restseq) curr))))
-   finally (return (reverse (push (reverse curr) res)))))
+@Example
 
-;;; (partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) (> (- y x) 1))) -> ((1 2) (4 5 6) (8 9))
+(partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) (> (- y x) 1))) 
+;; => ((1 2) (4 5 6) (8 9))
+
+(partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) t)) 
+;; => ((1) (2) (4) (5) (6) (8) (9))
+
+"
+  (loop 
+    with res = () 
+    with currlist = () 
+    for (curr next) on seq
+    do (progn
+         (if (and next (funcall pred curr next)) 
+             (progn
+               (push (reverse (push curr currlist)) res)
+               (setf currlist nil))
+             (push curr currlist)))
+    finally (return (reverse (push (reverse currlist) res)))))
 
 (defmacro with-shadowed-variable ((var) &rest body)
+  "Shadow /var/ in the local scope of /body/. /var/ should be bound
+before entering /with-shadowed-variable/.
+
+@Arguments
+var - Symbol of variable to shadow
+body - Body for the scope of the shadowing.
+
+@Example
+(defvar *myvar* 2) ; => *myvar*
+
+(defun return-myvar ()
+ *myvar*)
+
+(with-shadowed-variable (*myvar*)
+  (setf *myvar* 10)
+  (return-myvar))
+
+;; => 10
+
+*myvar* ; => 2
+"
   `(let ((,var ,var))
      ,@body))
 
@@ -1084,7 +1338,7 @@ the function will blow the stack!"
 |#
 
 (defun combinations (seq &optional (n 2))
-  "get all n combinations of seq."
+  "Get all n combinations of seq."
   (cond
     ((zerop n) '(()))              ; one combination of zero elements.
     ((null seq) '())               ; no combination from no element.
@@ -1095,7 +1349,13 @@ the function will blow the stack!"
 ;;; (combinations '(1 2 3 4 5) 2)
 
 (defun reverse-all (list)
-  "recursively reverse list."
+  "Recursively reverse list and all its sublists.
+@Arguments
+list - The list to recursively reverse.
+
+@Example
+(reverse-all '(1 (2 3) (4 (5 (6 7) 8) 9))) ; => ((9 (8 (7 6) 5) 4) (3 2) 1)
+"
   (let ((result nil))
     (dolist (element list result)
       (push
@@ -1387,12 +1647,11 @@ seqs - One or more sequences where mapping gets applied, similar to map.
        (setf ,sym (if ,h ,h ,default)))))
 
 (defun spit (seq &key (outfile "/tmp/test.lisp"))
-  "print seq to outfile, each element on a new line."
+  "Print /seq/ to /outfile/, each element on a new line."
   (with-open-file (out outfile
                        :direction :output
                        :if-exists :supersede)
-    (dolist (line seq)
-      (format out "~A~%" line))))
+    (format out "~{~A~%~}" seq)))
 
 
 (defun slurp (file)
@@ -1458,7 +1717,7 @@ resetting the cwd."
 
 (defun date-string ()
   "Return a string of the current time in the format
-  \"yyyy-mm-dd-hr-min-sec\""
+  /\"yyyy-mm-dd-hr-min-sec\"/"
   (multiple-value-bind
 	(second minute hour date month year day-of-week dst-p tz)
       (get-decoded-time)
@@ -1543,22 +1802,46 @@ elem. :test has to be a test function accepted by #'make-hash-table,
         (sort result #'> :key #'second))))
 |#
 
-(defun count-unique-elements (seq &key (test #'eql) (key #'identity) (sort t))
-  "Count the number of occurences of all mutually different elems in
-seq extracted from the list items according to the :key function. 
+(defun count-elements (seq &key (test #'eql) (key #'identity) (sort t))
+  "Count the number of occurences of all mutually equal elems in
+/seq/ extracted from its items according to the /key/ function and
+satisfying the /test/ function as predicate. Return the results as
+list with sublists of the form (elem count) for each elem, optionally
+sorted according to the setting of /sort/.
 
-Return the results as list with sublists of the form (elem count) for
-each elem.
+@Arguments
+seq - A Common Lisp Sequence.
+:test - Function accepted as test function by #'make-hash-table.
+:key - Function to extract the key to compare from each element.
+:sort - Boolean indicationg whether and how to sort the
+results. Possible Values are:
+- /:from-end/
+- /t/
+- /nil/
 
-:test has to be a test function accepted by #'make-hash-table
-:key defaults to #'identity
+@General
+If /:sort/ is /nil/, result returns the items in the order of their
+first occurence, if /:sort/ is /:from-end/, they are returned in
+reverse order of occurence, if /:sort/ is /t/, they are either sorted
+by their value, if all elems are numbers or by the number of occurences
+otherwise.
 
-If :sort is nil the items in the result are in the order of their
-first occurence, if :sort is :from-end they are in reverse order of
-occurence, if :sort is t they are either sorted by their value if all
-elems are numbers or by the number of occurences otherwise.
+@Examples
+(count-elements '(1 3 2 6 5 4 3 8 1 3 5 2 4 3 6 5 3 3 4 1))
+;; => ((1 3) (2 2) (3 6) (4 3) (5 3) (6 2) (8 1))
 
-Works on all sequence types."
+(count-elements '(1 3 2 6 5 4 3 8 1 3 5 2 4 3 6 5 3 3 4 1) :sort :from-end)
+;; => ((8 1) (4 3) (5 3) (6 2) (2 2) (3 6) (1 3))
+
+(count-elements '(1 3 2 6 5 4 3 8 1 3 5 2 4 3 6 5 3 3 4 1) :sort t)
+;; => ((1 3) (2 2) (3 6) (4 3) (5 3) (6 2) (8 1))
+
+(count-elements '(a b a d e c d a e d e b d f d e) :sort t)
+;; => ((d 5) (e 4) (a 3) (b 2) (f 1) (c 1))
+
+(count-elements '((a 10) (b 11) (a 12) (d 13)) :key #'first :sort t)
+;; => ((a 2) (d 1) (b 1))
+"
   (let* ((hash (make-hash-table :test test))
          (all-numbers t)
          (result '()))
@@ -2203,9 +2486,9 @@ interpolated between 0 for x=0 and [-max..max] for x=127."
 
 
 (defmacro with-lin-midi-fn ((min max) &body body)
-  "return closure with ipfn bound to a linear interpolation of the
+  "Return closure with ipfn bound to a linear interpolation of the
 input range 0..127 between min and max."
-  `(let ((ipfn (ou:ip-lin ,min ,max 128)))
+  `(let ((ipfn (lambda (x) (m-lin ,min ,max))))
      (lambda (d2)
        (when (numberp d2)
          ,@body))))
@@ -2213,7 +2496,7 @@ input range 0..127 between min and max."
 (defmacro with-exp-midi-fn ((min max) &body body)
   "return closure with ipfn bound to an exponential interpolation of
 the input range 0..127 between min and max."
-  `(let ((ipfn (ou:ip-exp ,min ,max 128)))
+  `(let ((ipfn (lambda (x) (m-exp ,min ,max))))
      (lambda (d2)
        (when (numberp d2)
          ,@body))))
@@ -2281,10 +2564,13 @@ number - Number indicating the multiplication factor.
      (remf ,plist ,key)))
 |#
 
-(defun array-slice (arr row)
+(defun array-slice (arr row-idx)
+  "Return the row with index /row-idx/ of a 2-dimensional array as
+1-dimensional array, sharing the same data structure by utilizing
+Common Lisp's displaced array functionality."
     (make-array (array-dimension arr 1) 
       :displaced-to arr 
-      :displaced-index-offset (* row (array-dimension arr 1))))
+      :displaced-index-offset (* row-idx (array-dimension arr 1))))
 
 ;;; from cm:
 
@@ -2353,23 +2639,46 @@ props can be either numbers using #'elt or keywords/symbols (using
 getf)."
   (reduce #'getf-or-elt props :initial-value seq))
 
-(defun index-seq (seq &optional (n 0))
-  (cond ((null seq) nil)
-        (t (cons (cons n (first seq)) (index-seq (rest seq) (1+ n))))))
+(defun index-list (list &key (n 0))
+  "Return /list/ with increasing indexes consed to the front of each
+element of list starting from /n/.
+
+@Arguments
+list - List containing elements which get prepended indices.
+n - Integer denoting starting index
+
+@Example
+(index-list '(a b c d e)) ; => ((0 . a) (1 . b) (2 . c) (3 . d) (4 . e))
+"
+  (if (null list)
+      nil
+      (cons (cons n (first list)) (index-seq (rest list) (1+ n)))))
 
 (defun mysubseq (seq start &optional end)
-  "like subseq, but allow negative values for end, indicating the
-number of elems before the end."
+  "Like subseq, but allowing negative values for end, indicating the
+number of elems before the end.
+
+@Arguments
+seq - A Common Lisp Sequence.
+start - Non Negative Integer denoting starting index of seq.
+end - Integer denoting last index of seq. If negative, count from end.
+
+@Example
+(mysubseq '(a b c d e f g) 0 3) ; => (a b c)
+
+(mysubseq '(a b c d e f g) 0 -2) ; => (a b c d e)
+"
   (let ((end (and end (if (< end 0) (+ end (length seq)) end))))
     (subseq seq start end)))
 
-(defun random-elem (seq)
-  "return a random element of seq."
-  (elt seq (random (length seq))))
 
 (defun port-available-p (portno)
-  "check if port is available by issuing shell command. Only works on
-Unix with lsof installed."
+  "Check if IP port is available on /localhost/ by issuing shell
+command. Only works on Unix with the /lsof/ program installed.
+
+@Arguments
+portno - Integer in the range [0..65535]
+"
   (string= ""
            (string-trim '(#\NEWLINE)
                         (with-output-to-string (out)

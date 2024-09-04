@@ -144,21 +144,21 @@ interpreted as 2-d coordinate pairs.
 
 @Important-Note
 
-Don't set this value directly! Rather use the <set-standard-pitch>
+Don't set this value directly! Rather use the <<set-standard-pitch>>
 function which changes the standard pitch reference for the entire
 /Clamps/ system.
 
 @See-also
-<ftom>
-<mtof>
-<set-standard-pitch>")
+ftom
+mtof
+set-standard-pitch
+")
 
 (defun set-standard-pitch (freq)
   "Set the ∗​standard-pitch​∗ reference of Clamps to freq in Hz.
 
 @Arguments
-
-=freq= Frequency of A4 in Hz.
+freq - Frequency of A4 in Hz.
 
 @See-also
 *standard-pitch*

@@ -38,7 +38,8 @@ Common Lisp's #'map."
        (map ,result-type (lambda (elem) (funcall ,fn (incf ,idx) elem)) ,data))))
 
 (defun construct-plot-command (&key region (grid t) (header *gnuplot-header*) (options *gnuplot-options*) &allow-other-keys)
-  "construct the gnuplot command with a given header, options and a grid flag."
+  "Helper function to construct the gnuplot command with a given
+header, options and a grid flag."
   (concatenate 'string
                (if grid (format nil "set grid xtics lt 1 lc rgb \"#bbbbbb\";set grid ytics lt 1 lc rgb \"#bbbbbb\";~%") "")
                (if header (format nil "~a~%" header) "")
@@ -54,8 +55,7 @@ Common Lisp's #'map."
    :input :stream))
 
 (defgeneric plot (data &rest args &key region header options grid &allow-other-keys)
-  (:documentation "Method
-Plot /obj/ using <<http://www.gnuplot.info/><GnuPlot>>.
+  (:documentation "Plot /obj/ using <<http://www.gnuplot.info/><GnuPlot>>.
 
 @Arguments
 
@@ -84,9 +84,10 @@ the plot command.
 
 :options - A string with options for GnuPlot.
 :grid - Boolean indicating whether to use a grid.
-@Examples
+
+@Examples-nosrc
 #+BEGIN_SRC lisp
-(plot '(5 4 6 1 9)) ; => (5 4 6 1 9)
+(iplot '(5 4 6 1 9)) ; => (5 4 6 1 9)
 #+END_SRC
 #+attr_html: :width 50%
 #+CAPTION: output of (plot '(5 4 6 1 9))

@@ -166,8 +166,7 @@ notes off message to all 16 channels of *​midi-out1​* and call
 
 (progn
   (defparameter *clamps-extra-doc*
-    '(
-      (clamps:reset-logger-stream
+    '((clamps:reset-logger-stream
        (function ()
         "Resets /incudine:*logger-stream*/ to /*​error-output​*/ Call this
 function, if calls to /incudine.util:msg/ don't produce any output in
@@ -178,31 +177,31 @@ This function needs to be called if /Clamps/ is started from a Lisp
 Image.
 "))
 
-      (cm:sfz (standard-class
-               (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
+      (cm:sfz (cm-class
+               (&key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
 
-               "    Generates sfz Events.
+               "Create a sfz Event.
 
-   sfz accepts the following keywords:
+sfz accepts the following slot initializations:
 
-   =:time= The output time in seconds, initially unbound.
+=:time= The output time in seconds, initially unbound.
 
-   =:keynum= Keynum in Midicents
+=:keynum= Keynum in Midicents.
 
-   =:amplitude= Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
+=:amplitude= Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
 
-   =:duration= Duration in seconds.
+=:duration= Duration in seconds.
 
-   =:preset= Keyword or symbol of a registered preset name.
+=:preset= Keyword or symbol of a registered preset name.
 
-   =:play-fn= The play function to be used for sample playback.
+=:play-fn= The play function to be used for sample playback.
 
-   =:pan= Number in the range /[0..1]/ defining equal power
-   panning between the two outputs of the dsp on playback.
+=:pan= Number in the range /[0..1]/ defining equal power panning
+between the two outputs of the dsp on playback.
 
-   =:startpos= The startposition in the sample in seconds.
+=:startpos= The startposition in the sample in seconds.
 
-   =:chan= The channel (layer) used in svg output.
+=:chan= The channel (layer) used in svg output.
    
 @Examples
   (new sfz)
@@ -229,6 +228,8 @@ Image.
           :amplitude (n-lin (interp x 0 0 0.8 0 1 1) -12 -24))))
 
   ;; => nil
+@See-also
+dict:midi
 "))
       (cl-refs:ref-object
        (standard-class
@@ -271,6 +272,9 @@ set-tempo
           (when (member pkg-name *clamps-packages* :test #'string=)
             (pushnew sym acc)))))))
 
+(defparameter *included-package-names*
+ '("ASDF/SYSTEM" "KEYWORD"))
+
 (defun strip-package-names (list)
   "Return a copy of list with package names removed."
   (cond
@@ -278,7 +282,12 @@ set-tempo
     ((consp (first list))
      (cons (strip-package-names (first list))
            (strip-package-names (rest list))))
-    ((and (symbolp (first list)) (symbol-package (first list)))
+    ((and (symbolp (first list))
+          (symbol-package (first list))
+          (not (member
+                (package-name (symbol-package (first list)))
+                *included-package-names*
+                :test #'string-equal)))
      (cons (intern (symbol-name (first list)))
            (strip-package-names (rest list))))
     (t
@@ -290,7 +299,10 @@ set-tempo
     (mapcar #'cons (strip-package-names syms) syms)))
 
 (defparameter *clamps-symbols-to-ignore*
-  '(cm:pwd
+  '(orm-utils:param-exp-func
+    orm-utils:defconst
+    orm-utils::while
+    cm:pwd
     svg-import-export:add-svg-attr-props-to-quote
     clog-dsp-widgets:amp-node
     cl-poolplayer:args ats-cuda-display:ats-amod ats-cuda-display:ats-bw
@@ -393,7 +405,7 @@ set-tempo
     cl-midictl:tr-stop cl-midictl:track-left cl-midictl:track-right
     cl-refs:%trigger svg-import-export:visible svg-import-export:w-height
     svg-import-export:w-width svg-import-export:w-x svg-import-export:w-y
-    orm-utils:with-output-to-file orm-utils:with-shadowed-variable
+    orm-utils:with-output-to-file
     orm-utils:with-stream-to-string cl-refs:with-updating-deps cl-poolplayer:x
     svg-import-export:width
     svg-import-export:x svg-import-export:x1 svg-import-export:x2
@@ -467,7 +479,7 @@ set-tempo
 
 (defun clampsdoc-transcode-general (strings)
   "Reformat a line of the first section of docstring for org-mode file."
-  (format nil "~{   ~a~%~}" (mapcar #'reformat-links (trim-list strings))))
+  (format nil "~&~{   ~a~%~}" (mapcar #'reformat-links (trim-list strings))))
 
 (defun fill-string (string &key (margin 72) (left 0))
   "Wrap a long line at margin characters with optional left-margin of
@@ -519,7 +531,7 @@ result."
 
 (defun clampsdoc-transcode-arguments (arglist)
   "Reformat @Arguments section of docstring for org-mode file."
- (format nil "*** Arguments~%~{~a~^~%~}~%"
+ (format nil "*** Arguments~%~{~a~^~%~}~%~%"
          (mapcar #'reformat-arg
                  (get-arg-entries (trim-white-spaces (trim-list arglist))))))
 
@@ -528,6 +540,18 @@ result."
   (format nil "*** Examples~%    #+BEGIN_SRC lisp
 ~{      ~a~^~%~}
     #+END_SRC~%"
+          (trim-list strings)))
+
+(defun clampsdoc-transcode-examples-nosrc (strings)
+  "Reformat @Examples section of docstring for org-mode file."
+  (format nil "*** Example~%~{      ~a~^~%~}
+"
+          (trim-list strings)))
+
+(defun clampsdoc-transcode-example-nosrc (strings)
+  "Reformat @Examples section of docstring for org-mode file."
+  (format nil "*** Example~%~{      ~a~^~%~}
+"
           (trim-list strings)))
 
 (defun clampsdoc-transcode-example (strings)
@@ -557,6 +581,8 @@ result."
     ("@Arguments" . ,#'clampsdoc-transcode-arguments)
     ("@Example" . ,#'clampsdoc-transcode-example)
     ("@Examples" . ,#'clampsdoc-transcode-examples)
+    ("@Example-nosrc" . ,#'clampsdoc-transcode-example-nosrc)
+    ("@Examples-nosrc" . ,#'clampsdoc-transcode-examples-nosrc)
     ("@See-also" . ,#'clampsdoc-transcode-see-also)
     ("@Note" . ,#'clampsdoc-transcode-note)
     ("@Important-Note" . ,#'clampsdoc-transcode-important-note)))
@@ -593,7 +619,8 @@ result."
               (cdr (assoc (first docpart) *docstring-fn-lookup* :test #'equal))
               (cdr docpart)))
            (with-input-from-string (in docstring)
-             (let (result (curr '("@General")))
+             (let ((curr '("@General"))
+                   result)
                (do ((line (read-line in nil nil) (read-line in nil nil)))
                    ((not line) (reverse (push (reverse curr) result)))
                  (if (and (string/= line "") (char= (aref line 0) #\@))
@@ -605,17 +632,27 @@ result."
 (defun format-function-entry (name args docstring stream type)
   "Format a function/macro, etc. entry for org-mode file."
   (format stream "** ~(~a~)~%   ~a~%   #+BEGIN_SRC lisp~%     ~(~a~)~%   #+END_SRC~%~a"
-          (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "*​\\1​*") type args docstring))
+          (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "*​\\1​*")
+          type args docstring))
 
 (defun format-variable-entry (name docstring stream type)
   "Format a Variable entry for org-mode file."
-  (format stream "** ~(~a~)~%   ~a~%~%~a"
-          (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "*​\\1​*") type docstring))
+  (format stream "** ~(~a~)~%~a   ~a~%~%~a"
+          (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "*​\\1​*")
+          (if (char= (aref name 0) #\*)
+              (format nil "   :PROPERTIES:~%   :CUSTOM_ID: ~(~a~)~%   :END:~%"
+                      (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "\\1"))
+              "")
+          type docstring))
 
 (defun format-class-entry (name args docstring stream type)
   "Format a Class/Struct entry for org-mode file."
-  (format stream "** ~(~a~)~%   ~a~%   #+BEGIN_SRC lisp~%     ~(~a~)~%   #+END_SRC~%~a"
-          (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "*​\\1​*") type args docstring))
+  (format stream "** ~(~a~)~%   ~a~%~a~%~a"
+          (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "*​\\1​*") type
+          (if args
+              (format nil "   #+BEGIN_SRC lisp~%     ~(~a~)~%   #+END_SRC" args)
+              "")
+          docstring))
 
 (defun format-entry (name args type docstring stream)
   "Format a complete entry for org-mode file to stream."
@@ -629,14 +666,27 @@ result."
         (cdr (assoc type
                     '((macro . "Macro")
                       (standard-generic-function . "Generic Function"))))))
-      ((structure-class standard-class)
+      ((structure-class standard-class cm-class)
        (format-class-entry name args docstring stream
-                           (if (eq type 'standard-class)
-                               "Class"
-                               "Structure")))
+                           (case type
+                             (standard-class "Class")
+                             (cm-class "Common Music Class")
+                             (otherwise "Structure"))))
       ((condition type variable constant)
        (format-variable-entry name docstring stream
                               (format nil "~@(~A~)" type))))))
+
+(defun get-fn-documentation (symbol)
+  "get documentation of standard-function or generic-function"
+  (let* ((type (type-of (fboundp symbol)))
+         (fdefinition (fdefinition symbol)))
+    (case type
+      (standard-generic-function
+       (loop for method in (sb-mop:generic-function-methods fdefinition)
+             for doc = (documentation method t)
+             until doc
+             finally (return doc)))
+      (otherwise (documentation symbol 'function)))))
 
 (defun write-clamps-entry (symbol format-entry-function stream)
   "write transcoded doc entry for symbol to stream."
@@ -646,9 +696,14 @@ result."
                (*print-pretty* nil))
           (destructuring-bind (type lambda-list docstring) extra-doc
             (funcall format-entry-function name
-                     (format nil "~a"
-                                 (cons (string-downcase name)
-                                       (strip-package-names lambda-list)))
+                     (case type
+                       ('cm-class
+                        (format nil "~a"
+                                (list* "new" (string-downcase name)
+                                       (strip-package-names lambda-list))))
+                       (otherwise (format nil "~a"
+                                          (cons (string-downcase name)
+                                                (strip-package-names lambda-list)))))
                      type
                      (transcode-docstring docstring)
                      stream)))
@@ -676,21 +731,27 @@ result."
                        stream)))
           (when (and (fboundp symbol)
                      (check-symbol-package symbol package 'function))
-            (let ((doc (documentation symbol 'function))
+            (let ((doc (get-fn-documentation symbol))
                   (lambda-list (function-lambda-list symbol)))
               (funcall format-entry-function name
                        (cl-ppcre:regex-replace-all
-                        "\\(function ([^)]+)\\)"
+                        "asdf/system:"
                         (cl-ppcre:regex-replace-all
-                         "\\(quote ([^)]+)\\)"
+                         "\\(function ([^)]+)\\)"
                          (cl-ppcre:regex-replace-all
-                          "\\(quote nil\\)"
-                          (format nil "~a"
-                                  (cons (string-downcase name)
-                                        (strip-package-names lambda-list)))
-                          "'()")
-                         "'\\1")
-                        "#'\\1")
+                          "\\(quote ([^)]+)\\)"
+                          (cl-ppcre:regex-replace-all
+                           "\\(quote nil\\)"
+                           (cl-ppcre:regex-replace-all
+                            "asdf/system:"
+                            (format nil "~s"
+                                    (cons (intern (string-upcase name))
+                                          (strip-package-names lambda-list)))
+                            "asdf:")
+                           "'()")
+                          "'\\1")
+                         "#'\\1")
+                        "asdf:")
                        (cond
                          ((macro-function symbol) 'macro)
                          (t (type-of (symbol-function symbol))))
@@ -698,18 +759,16 @@ result."
                        stream)))))))
 
 (defun split-letters (sym-list)
-  "split the list into sublists with unique first letter."
+  "split the list into sublists with unique first letter for generating
+the dict index header entries."
   (let*
       (acc
        curr-list
        (curr #\a))
     (dolist (entry sym-list (reverse (if curr-list (push (list curr curr-list) acc) acc)))
       (if (char= curr (aref (second entry) 0))
-          (progn
-            (push entry curr-list)
-            (format t "~a~%" curr-list))          
+          (push entry curr-list)          
           (let ((tmp (list curr (reverse curr-list))))
-            (format t "tmp: ~a~%" tmp)
             (push tmp acc)
             (setf curr-list (list entry))
             (setf curr (aref (second entry) 0)))))))
@@ -752,21 +811,22 @@ file."
       (with-open-file (out outfile :direction :output :if-exists if-exists
                                    :if-does-not-exist :create)
         (format out *org-mode-dict-file-header*)
-        (dolist (letter-entry (get-clamps-dict-parts
-                               (append
-                                *clamps-extra-symbols*
-                                (remove-if
-                                 #'ignore-clamps-symbol-p
-                                 (all-clamps-symbols)))))
+        (dolist (letter-entry
+                 (get-clamps-dict-parts
+                  (append
+                   *clamps-extra-symbols*
+                   (remove-if
+                    #'ignore-clamps-symbol-p
+                    (all-clamps-symbols)))))
           (format out "~a~%" (first letter-entry))
           (dolist (symbol (second letter-entry))
             (write-clamps-entry symbol #'format-entry out)))
         outfile))
+
 (format t "loaded config~%")
 
 (write-dict "/home/orm/work/programmieren/lisp/clamps/doc/clamps-dictionary.org")
 
 ;;(sb-ext:quit)
-
 
 

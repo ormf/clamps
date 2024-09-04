@@ -6,8 +6,16 @@
 
 (declaim (inline keynum->hz))
 (defun keynum->hz (keynum)
-  "Convert VALUE dB to linear value."
-  (* (sample 440.0d0) (expt 2 (/ (- keynum 69.0d0) 12.0d0))))
+  "Convert Midicent /keynum/ to Hz, taking *​standard-pitch​* into
+account. Returns Hz value as double float.
+
+@Arguments
+keynum - Number in Micents.
+
+@See-also
+*standard-pitch*
+"
+  (* (sample *standard-pitch*) (expt 2 (/ (- keynum 69.0d0) 12.0d0))))
 
 (define-vug stereo (in) (out in in))
 

@@ -21,10 +21,47 @@
 (in-package :clog-dsp-widgets)
 
 (defclass cuda-dsp ()
-  ((id :initarg :id :accessor dsp-id)
-   (nodes :initform '() :accessor dsp-nodes)
-   (node-group :initform 300 :initarg :node-group :accessor node-group)
-   (unwatch :initform nil :accessor unwatch)))
+  ((id :initarg :id :reader dsp-id :documentation "Return the id of dsp /object/. Read-only.
+@See-also
+cuda-dsp")
+   (nodes :initform '() :accessor dsp-nodes
+          :documentation "Accessor for the Incudine nodes slot of dsp /object/.
+@See-also
+cuda-dsp")
+   (node-group :initform 300 :initarg :node-group :accessor node-group
+               :documentation "Accessor for the Incudine node-group slot of dsp /object/.
+@See-also
+cuda-dsp")
+   (unwatch :initform nil :accessor unwatch
+                           :documentation "Accessor for the unwatch slot of dsp /object/.
+@See-also
+cuda-dsp
+clamps:cl-refs"))
+  ( :documentation "Superclass for dsp objects of the dsp infrastructure
+of /clog-dsp-widgets/ in Clamps. An object derived from this type will
+be created using the <<add-dsp>> function and its slots automatically
+filled on initialization.
+
+cuda-dsp accepts the following slot initializations:
+
+=id= -- The id used in the clamps dsp infrastructure.
+
+=nodes= -- The active Incudine nodes of a running instance.
+
+=node-group= -- The Incudine group of a running instance.
+
+=unwatch= -- List of unwatch functions used by the instance.
+
+@Note
+Except for the /unwatch/ slot, the user normally will not be dealing
+with the slots of a cuda-dsp instance directly except for inspection
+purposes. The slots are documented here mainly for clarity and
+insight.
+
+@See-also
+clamps:clog-dsp-widgets
+add-dsp
+"))
 
 (defmethod initialize-instance :after ((instance cuda-dsp) &rest initargs)
   (declare (ignorable initargs))

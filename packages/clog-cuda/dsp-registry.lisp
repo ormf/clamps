@@ -26,11 +26,34 @@
 
 (defparameter *dsps* (make-hash-table :test #'equal))
 
-(defun add-dsp (dsp &rest args &key id &allow-other-keys)
+(defun add-dsp (dsp id &rest args)
+  "Add a new instance of /dsp/ with id /id/ to the registry, optionally
+supplying the dsp creation with initialization arguments /args/.
+
+@Arguments
+dsp - The dsp type to add
+id - Keyword or Symbol to identify the registered dsp.
+args - Optional initialization arguments accepted by the used dsp class.
+
+@See-also
+find-dsp
+list-dsps
+remove-dsp
+"
   (setf (gethash id *dsps*)
         (apply #'make-instance dsp args)))
 
 (defun remove-dsp (id)
+  "Remove a running Incudine dsp registered with <<add-dsp>>.
+
+@Arguments
+id - Keyword or Symbol identifying the dsp.
+
+@See-also
+add-dsp
+find-dsp
+list-dsps
+"
   (let ((dsp (find-dsp id)))
     (when dsp
       (cuda-dsp-cleanup dsp)
@@ -40,9 +63,27 @@
   (map nil #'remove-dsp (list-dsps)))
 
 (defun find-dsp (id)
+  "Find a running Incudine dsp registered with <<add-dsp>>.
+
+@Arguments
+id - Keyword or Symbol identifying the dsp.
+
+@See-also
+add-dsp
+list-dsps
+remove-dsp
+"
   (gethash id *dsps*))
 
 (defun list-dsps ()
+  "Return all running Incudine dsps registered with <<add-dsp>> in a
+list.
+
+@See-also
+add-dsp
+find-dsp
+remove-dsp
+"
   (loop
     for key being the hash-keys of *dsps*
     collect key))

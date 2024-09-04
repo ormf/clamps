@@ -39,6 +39,7 @@
            #:PLAY-LSAMPLE
            #:PLAY-SAMPLE
            #:RESTORE-ENVS
+           #:KEYNUM->HZ
            ;; #:METERS
            ;; #:INPUT-BUS
            ;; #:NODE-FREE-UNPROTECTED
