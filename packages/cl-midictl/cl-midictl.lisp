@@ -240,8 +240,14 @@ show-midi-cc-fns
    (chan :initform 0 :initarg :chan :accessor chan)
    (cc-map :initform (make-array 128 :initial-contents (loop for i below 128 collect i))
            :initarg :cc-map :accessor cc-map)
-   (midi-input :initform nil :initarg :midi-input :accessor midi-input)
-   (midi-output :initform nil :initarg :midi-output :accessor midi-output)
+   (midi-input :initform nil :initarg :midi-input :accessor midi-input
+               :documentation
+               "Accessor method for the midi-input slot of an instance of type
+<<midi-controller>>.")
+   (midi-output :initform nil :initarg :midi-output :accessor midi-output
+                :documentation
+                "Accessor method for the midi-output slot of an instance of type
+<<midi-controller>>.")
    (echo :initarg :echo :initform t :accessor echo
          :documentation "en/disable direct updates in hw-controller when midi-input is received. (default: t)")
    (last-note-on :initform 0 :initarg :last-note-on :accessor last-note-on)
@@ -259,11 +265,11 @@ show-midi-cc-fns
    ;;; and velo.
    (note-fns :initform nil :initarg :note-fns :accessor note-fns)
    (unwatch :initform nil :initarg :unwatch :accessor unwatch))
-  (:documentation "Generic class for midi controllers. An instance should get
-initialized with <<add-midi-controller>> and removed with
-<<remove-midi-controller>>, using its id as argument in order to close
-the gui and remove its handler functions from the midi controller
-registry.
+  (:documentation "Generic base class for midi controllers in the /cl-midictl/
+package. An instance of a class derived from /midi-controller/ should
+get initialized with <<add-midi-controller>> and removed with
+<<remove-midi-controller>> in order to add/remove it to/from the midi
+controller registry.
 "))
 
 (defgeneric (setf midi-input) (new-midi-in instance)
@@ -275,7 +281,8 @@ registry.
     (setf (slot-value instance 'midi-in) new-midi-in)
     (push instance (gethash new-midi-in *midi-controllers*)))
   (:documentation
-   "set the midi-input slot of instance to new-midi-in and update *midi-controllers*"))
+   "Set the midi-input slot of /instance/ to /new-midi-in/ and update
+*midi-controllers*."))
 
 (defgeneric handle-midi-in (instance opcode d1 d2)
   (:documentation
@@ -317,7 +324,7 @@ controller actions."))
     (if (gethash id *midi-controllers*)
         (warn "id already used: ~a" id)
         (progn
-          (format t "adding controller ~S~%" id)
+          (format t "midi-controller: adding controller ~S~%" id)
           (unless midi-input (error "no midi-input specified for ~a" instance))
           (unless midi-output (error "no midi-output specified for ~a" instance))
 ;;;          (setf midi-output (cm:ensure-jackmidi midi-output))
@@ -389,7 +396,8 @@ remove-midi-controller
                   (warn "couldn't remove midi-controller ~a" v))))))
 
 (defun find-controller (id)
-  "Return MIDI controller instance with ID /id/.
+  "Return MIDI controller instance with ID /id/ or /nil/ if not
+registered.
 
 @Arguments
 id - Keyword or Symbol used as ID of a midicontroller instance .
@@ -401,8 +409,7 @@ remove-all-midi-controllers
 
 "  (let ((controller (gethash id *midi-controllers*)))
      (if controller
-         controller
-         (error "controller ~S not found!" id))))
+         controller)))
 
 ;;; (ensure-controller :nk2)
 ;;; (setf *midi-debug* nil)

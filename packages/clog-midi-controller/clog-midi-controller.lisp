@@ -6,7 +6,7 @@
 (in-package #:clog-midi-controller)
 
 (defclass clog-midi-controller ()
-  ((midi-controller :initarg :midi-controller :accessor midi-controller
+  ((midi-controller :initarg :midi-controller :accessor m-controller
                     :documentation "Accessor method for the /midi-controller/ slot of a <<clog-midi-controller>> instance.")
    (connection-hash-key :initarg :connection-hash-key :reader connection-hash-key
                         :documentation "Reader for the /connection-hash-key/ of a

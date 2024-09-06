@@ -43,9 +43,7 @@
   "//  ***** ~a.sfz *****
 //
 //  Created ~a
-//  By Orm Finnendahl
-//  Flute played by Jaume Darbra Fa
-
+//
 ")
 
 ;;; (import '(lsample-play sample-play) 'incudine)
@@ -56,7 +54,7 @@
   (expt 2 (/ steps 12)))
 
 (defun line->plist (line)
-  "convert all key=val pairs in line into a plist with alternating :key val entries.
+  "Convert all key=val pairs in line into a plist with alternating :key val entries.
 sample paths and key names are converted to linux/cl
 conventions. Returns the plist."
   (let ((pairs (split "\\s+" line)))
@@ -115,7 +113,7 @@ conventions. Returns the plist."
   (apply #'sfz-region (get-sfz-attributes entry :sample :pitch-keycenter :lokey :hikey :tune :volume)))
 
 (defun parse-sfz (file)
-  "parse all regions in file to plists and return them in a list."
+  "Parse all regions in file to plists and return them in a list."
   (with-open-file (in file)
     (loop
       while (skip-to-next-region in)
@@ -125,7 +123,7 @@ conventions. Returns the plist."
 ;;; (parse-sfz "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz")
 
 (defun random-elem (seq)
-  "return a random element of seq."
+  "Return a random element of seq."
   (elt seq (random (length seq))))
 
 (defun push-keynums (sample-def keynum-array)
@@ -135,10 +133,22 @@ from lokey to hikey of the sample def."
         do (push (getf sample-def :lsample) (aref keynum-array keynum))))
 
 (defun get-keynum-array (file &key play-fn)
-  "push all sample-defs in file to a new array. Its 128
+  "Push all sample-defs in sfz /file/ to a new array. Its 128
 elems (representing keynums) contain the sample-defs for the
 respective keynum. Overlapping key-ranges are represented by a list of
-all applicable sample-defs at the keynum's array-index."
+all applicable sample-defs at the keynum's array-index. Optionally set
+the /:play-fn/ for all samples Returns the array.
+
+@Arguments
+file - String or Pathname of the sfz file.
+
+:play-fn - Function denoting the play function to use for all
+samples. Possible choices are:
+
+- <<#'play-sfz-loop>>
+
+- <<#'play-sfz-one-shot>>
+"
   (let ((keynum-array (make-array 128 :adjustable nil :element-type 'list :initial-element nil))
         (sfz-file-path (pathname file)))
     (dolist (entry (reverse (remove nil (parse-sfz file))))
@@ -147,7 +157,23 @@ all applicable sample-defs at the keynum's array-index."
     keynum-array))
 
 (defun sfz-get-range (ref)
-  "get the range of a sfz preset or a sfz file."
+  "Get the keynum range of a sfz preset or a sfz file denoted by /ref/.
+
+@Arguments
+ref - String, Keynum or Symbol reference the sfz preset.
+
+@See-also
+add-sfz-preset
+ensure-sfz-preset
+get-sfz-preset
+load-sfz-preset
+remove-sfz-preset
+sfz
+sfz-preset-file
+sfz-preset-loaded?
+"
+
+
   (typecase ref
     (symbol
      (if (gethash ref *sfz-tables*)
@@ -210,7 +236,12 @@ are:
 @See-also
 add-sfz-preset
 ensure-sfz-preset
+get-sfz-preset
 remove-sfz-preset
+sfz
+sfz-get-range
+sfz-preset-file
+sfz-preset-loaded?
 "
   (when (or force (not (gethash name *sfz-tables*)))
     (format t "loading ~S from ~a~%" name file)
@@ -254,8 +285,15 @@ preset - Keyword or symbol of registered preset.
 
 @See-also
 add-sfz-preset
+ensure-sfz-preset
 get-sfz-preset
-"  (if (gethash preset *sfz-tables*) t))
+load-sfz-preset
+remove-sfz-preset
+sfz
+sfz-get-range
+sfz-preset-file
+"
+  (if (gethash preset *sfz-tables*) t))
 
 (defun remove-sfz-preset (name)
   "Remove the soundfile map associated with name. This is the opposite of <<load-sfz-preset>>.
@@ -269,8 +307,15 @@ and the association between the preset name and the sfz file are
 keynums and the buffers are removed.
 
 @See-also
-load-sfz-preset
+add-sfz-preset
+ensure-sfz-preset
 get-sfz-preset
+load-sfz-preset
+remove-sfz-preset
+sfz
+sfz-get-range
+sfz-preset-file
+sfz-preset-loaded?
 "  (remhash name *sfz-tables*))
 
 (defun db->amp (db)
@@ -301,8 +346,10 @@ get-sfz-preset
 
 
 (defun add-sfz-preset (preset file)
-  "Register the association between a preset name and its corresponding sfz
-file.
+  "Register the association between a sfz preset name /key/ and the
+/filename/ of its /.sfz/ file. The filename can be absolute or
+relative. If relative, all folders in <<*sfz-preset-path*>> will get
+recursively searched when the preset gets loaded.
 
 @Arguments
 preset - A keyword or symbol to name the preset
@@ -318,9 +365,14 @@ implicitely when the preset is used by a playing function like
 <<#'get-sfz-preset>>.
 
 @See-also
+add-sfz-preset
 ensure-sfz-preset
 get-sfz-preset
+load-sfz-preset
+remove-sfz-preset
 sfz
+sfz-get-range
+sfz-preset-file
 sfz-preset-loaded?
 "
   (setf (gethash preset cl-user::*sfz-preset-lookup*) file))
@@ -333,6 +385,13 @@ preset - Keyword or symbol of a registered sfz preset.
 
 @See-also
 add-sfz-preset
+ensure-sfz-preset
+get-sfz-preset
+load-sfz-preset
+remove-sfz-preset
+sfz
+sfz-get-range
+sfz-preset-loaded?
 "
   (and
    (boundp 'cl-user::*sfz-preset-lookup*)
@@ -367,8 +426,12 @@ has been loaded before.
 @See-also
 add-sfz-preset
 ensure-sfz-preset
+get-sfz-preset
 load-sfz-preset
 remove-sfz-preset
+sfz
+sfz-get-range
+sfz-preset-file
 sfz-preset-loaded?
 "
   (or

@@ -375,6 +375,9 @@
 
       A collection of Common Lisp utility functions.
 * Installation
+  :PROPERTIES:
+  :CUSTOM_ID: installation
+  :END:
 ** clamps-install
    Clamps is currently supported on the Linux and OSX platforms. It
    can be installed using the [[https://github.com/ormf/clamps-install][clamps-install]] repository on

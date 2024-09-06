@@ -378,7 +378,7 @@ curr-preset.lisp buffer."
           ~a
           (~{~a~^~%~}))"
             ref
-            (with-proplist/collecting (slot val) (aref preset 0)
+            (do-proplist/collecting (slot val) (aref preset 0)
               (format nil ":~a ~s" slot val)))))
 
 ;;; (preset->string 0)

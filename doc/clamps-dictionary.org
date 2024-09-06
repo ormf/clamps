@@ -73,7 +73,7 @@
    with the original, the additions of the Clamps package have been
    separated into this [[./index.html][Clamps Dictionary]]. Both dictionaries are
    accessed by the same keyboard shortcut /<C-c C-d c>/, automatically
-   integrated into the Clamps system using the standard [[overview:Installation][Installation]].
+   integrated into the Clamps system using the standard [[overview:clamps-install][Installation]].
 
    The Notation of the Clamps Dictionary is simpler than the Notation
    used in the CM Dictionary. Function and Macro definitions use the
@@ -93,7 +93,16 @@
    #+BEGIN_SRC lisp
      (add-buffer buf)
    #+END_SRC
-   add buffer to registry.
+   Add buffer to registry.
+*** Arguments
+    =buf= -- Incudine:buffer
+
+
+*** See also
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
+    - [[remove-all-buffers][remove-all-buffers]]
 ** add-dsp
    Function
    #+BEGIN_SRC lisp
@@ -173,8 +182,10 @@
    #+BEGIN_SRC lisp
      (add-sfz-preset preset file)
    #+END_SRC
-   Register the association between a preset name and its corresponding sfz
-   file.
+   Register the association between a sfz preset name /key/ and the
+   /filename/ of its /.sfz/ file. The filename can be absolute or
+   relative. If relative, all folders in [[#sfz-preset-path][*​​sfz-preset-path​​*]] will get
+   recursively searched when the preset gets loaded.
 *** Arguments
     =preset= -- A keyword or symbol to name the preset
 
@@ -191,9 +202,14 @@
     [[get-sfz-preset][#'get-sfz-preset]].
     
 *** See also
+    - [[add-sfz-preset][add-sfz-preset]]
     - [[ensure-sfz-preset][ensure-sfz-preset]]
     - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
     - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** all-permutations
    Function
@@ -392,20 +408,8 @@
 ** ccin
    Function
    #+BEGIN_SRC lisp
-     (ccin ccnum &optional (channel *global-midi-channel*))
+     (ccin ccnum)
    #+END_SRC
-   Return the last received MIDI CC value of controller number /ccnum/
-   at MIDI channel /channel/. Setfable.
-*** Arguments
-    =ccnum= -- Integer in the range [1..128] indicating the Controller
-    Number.
-
-    =channel= -- Integer in the range [1..16] indicating the MIDI
-    channel.
-
-
-*** See also
-    - [[#midi-cc-state][*​​midi-cc-state​​*]]
 ** cd
    Function
    #+BEGIN_SRC lisp
@@ -985,6 +989,11 @@
       
       (differentiate (integrate '(17 2 4))) ; => (17 2 4)
     #+END_SRC
+** digest-poolplayer-preset-form-to-array
+   Function
+   #+BEGIN_SRC lisp
+     (digest-poolplayer-preset-form-to-array args)
+   #+END_SRC
 ** do-proplist
    Macro
    #+BEGIN_SRC lisp
@@ -1119,8 +1128,21 @@
    #+BEGIN_SRC lisp
      (ensure-buffer file &key (path *sfile-path*))
    #+END_SRC
-   load and register buffer from file if not loaded already. Return
+   Load and register buffer from /file/ if not loaded already. Return
    buffer.
+*** Arguments
+    =file= -- Pathname or String denoting a soundfile.
+
+    =:path= -- A list of Pathnames or Strings
+
+
+*** See also
+    - [[add-buffer][add-buffer]]
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
+    - [[remove-all-buffers][remove-all-buffers]]
+    - [[#sfile-path][*​​sfile-path​​*]]
 ** ensure-prop
    Macro
    #+BEGIN_SRC lisp
@@ -1180,8 +1202,12 @@
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
     - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
     - [[load-sfz-preset][load-sfz-preset]]
     - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** *​env1​*
    :PROPERTIES:
@@ -1273,6 +1299,11 @@
    #+BEGIN_SRC lisp
      (faderfox-gui #:id gui-parent &key (chan 4))
    #+END_SRC
+** faderfox-gui-f.orm
+   Function
+   #+BEGIN_SRC lisp
+     (faderfox-gui-f.orm id gui-parent &key (chan 4))
+   #+END_SRC
 ** faderfox-midi
    Class
 
@@ -1319,8 +1350,17 @@
    #+BEGIN_SRC lisp
      (find-buffer name)
    #+END_SRC
-   find all buffers with a name being a full pathname or the
-   pathname-name of <name>.
+   Find all buffers with a name being a full pathname or the
+   pathname-name of /name/.
+*** Arguments
+    =name= -- String or Pathname denoting the buffer's filename.
+
+
+*** See also
+    - [[add-buffer][add-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
+    - [[remove-all-buffers][remove-all-buffers]]
 ** find-controller
    Function
    #+BEGIN_SRC lisp
@@ -1572,8 +1612,12 @@
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
     - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
     - [[load-sfz-preset][load-sfz-preset]]
     - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** get-sndfile-path
    Function
@@ -1888,7 +1932,12 @@
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
     - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
     - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** lsample
    Structure
 
@@ -2363,17 +2412,11 @@
 ** midi-controller
    Class
 
-   Generic base class for midi controllers. An instance should get
-   initialized with [[add-midi-controller][add-midi-controller]] and removed with
-   [[remove-midi-controller][remove-midi-controller]], using its id as argument in order to close
-   the gui and remove its handler functions from the midi controller
-   registry.
-** midi-controller
-   Generic Function
-   #+BEGIN_SRC lisp
-     (midi-controller object)
-   #+END_SRC
-   Accessor method for the /midi-controller/ slot of a [[clog-midi-controller][clog-midi-controller]] instance.
+   Generic base class for midi controllers in the /cl-midictl/
+   package. An instance of a class derived from /midi-controller/ should
+   get initialized with [[add-midi-controller][add-midi-controller]] and removed with
+   [[remove-midi-controller][remove-midi-controller]] in order to add/remove it to/from the midi
+   controller registry.
 ** *​midi-debug​*
    :PROPERTIES:
    :CUSTOM_ID: midi-debug
@@ -2385,7 +2428,8 @@
    #+BEGIN_SRC lisp
      (midi-input object)
    #+END_SRC
-   automatically generated reader method
+   Accessor method for the midi-input slot of an instance of type
+   [[midi-controller][midi-controller]].
 ** *​midi-note-fns​*
    :PROPERTIES:
    :CUSTOM_ID: midi-note-fns
@@ -2417,7 +2461,8 @@
    #+BEGIN_SRC lisp
      (midi-output object)
    #+END_SRC
-   automatically generated reader method
+   Accessor method for the midi-output slot of an instance of type
+   [[midi-controller][midi-controller]].
 ** mtof
    Function
    #+BEGIN_SRC lisp
@@ -2665,6 +2710,11 @@
    #+BEGIN_SRC lisp
      (nanoktl2-preset-gui #:id container &key (chan 5))
    #+END_SRC
+** nanoktl2-preset-gui-f.orm
+   Function
+   #+BEGIN_SRC lisp
+     (nanoktl2-preset-gui-f.orm id container &key (chan 5))
+   #+END_SRC
 ** nanoktl2-preset-midi
    Class
 
@@ -2720,8 +2770,21 @@
    #+BEGIN_SRC lisp
      (of-buffer-load file &key (path *sfile-path*))
    #+END_SRC
-   load and register buffer from file if not loaded already. Return
+   Load and register buffer from /file/ if not loaded already. Return
    buffer.
+*** Arguments
+    =file= -- Pathname or String denoting a soundfile.
+
+    =:path= -- A list of Pathnames or Strings
+
+
+*** See also
+    - [[add-buffer][add-buffer]]
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
+    - [[remove-all-buffers][remove-all-buffers]]
+    - [[#sfile-path][*​​sfile-path​​*]]
 ** on-deps-update
    Macro
    #+BEGIN_SRC lisp
@@ -2846,6 +2909,11 @@
    Function
    #+BEGIN_SRC lisp
      (play-buffer-stretch-env-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+** play-buffer-stretch-env-pan-bus-out*
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-stretch-env-pan-bus-out* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (busnum 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch-env-pan-out
    Function
@@ -3270,7 +3338,12 @@
    #+BEGIN_SRC lisp
      (remove-all-buffers)
    #+END_SRC
-   remove all buffers from registry.
+   Remove all buffers from registry.
+*** See also
+    - [[add-buffer][add-buffer]]
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
 ** remove-all-channel-midi-cc-fns
    Function
    #+BEGIN_SRC lisp
@@ -3325,7 +3398,16 @@
    #+BEGIN_SRC lisp
      (remove-buffer buf)
    #+END_SRC
-   remove buffer from registry.
+   Remove buffer from registry.
+*** Arguments
+    =buf= -- Incudine:buffer
+
+
+*** See also
+    - [[add-buffer][add-buffer]]
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-all-buffers][remove-all-buffers]]
 ** remove-dsp
    Function
    #+BEGIN_SRC lisp
@@ -3393,8 +3475,15 @@
     keynums and the buffers are removed.
     
 *** See also
-    - [[load-sfz-preset][load-sfz-preset]]
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
     - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** repeat
    Function
    #+BEGIN_SRC lisp
@@ -3687,6 +3776,13 @@
    #+BEGIN_SRC lisp
      (setf-default sym test default)
    #+END_SRC
+** *​sfile-path​*
+   :PROPERTIES:
+   :CUSTOM_ID: sfile-path
+   :END:
+   Variable
+
+   List of directories to search recursively for soundfiles.
 ** sfz
    Common Music Class
    #+BEGIN_SRC lisp
@@ -3766,7 +3862,20 @@
    #+BEGIN_SRC lisp
      (sfz-get-range ref)
    #+END_SRC
-   get the range of a sfz preset or a sfz file.
+   Get the keynum range of a sfz preset or a sfz file denoted by /ref/.
+*** Arguments
+    =ref= -- String, Keynum or Symbol reference the sfz preset.
+
+
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** sfz-preset-buffer
    Function
    #+BEGIN_SRC lisp
@@ -3785,6 +3894,13 @@
 
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** sfz-preset-loaded?
    Function
    #+BEGIN_SRC lisp
@@ -3811,7 +3927,20 @@
     #+END_SRC
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
     - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
+** *​sfz-preset-path​*
+   :PROPERTIES:
+   :CUSTOM_ID: sfz-preset-path
+   :END:
+   Variable
+
+   List of directories to search recursively for /.sfz/ files.
 ** show-midi-cc-fns
    Function
    #+BEGIN_SRC lisp

@@ -84,8 +84,18 @@
 
 
 (defun find-buffer (name)
-  "find all buffers with a name being a full pathname or the
-pathname-name of <name>."
+  "Find all buffers with a name being a full pathname or the
+pathname-name of /name/.
+
+@Arguments
+name - String or Pathname denoting the buffer's filename.
+
+@See-also
+add-buffer
+of-buffer-load
+remove-buffer
+remove-all-buffers
+"
   (or (gethash name *buffers*)
       (let ((sfname (canonicalize-name name)))
         (loop for entry being the hash-key of *buffer-ids*
@@ -97,7 +107,17 @@ pathname-name of <name>."
 ;;; (loop for i below 10 if (evenp i) collect i into result finally (return result))
 
 (defun add-buffer (buf)
-  "add buffer to registry."
+  "Add buffer to registry.
+
+@Arguments
+buf - Incudine:buffer
+
+@See-also
+find-buffer
+of-buffer-load
+remove-buffer
+remove-all-buffers
+"
   (unless (gethash buf *buffer-ids*)
     (setf (gethash (or (pop *buffer-next-id*) (incf *buffer-max-id*)) *buffers*) buf)
     (setf (gethash buf *buffer-ids*) *buffer-max-id*)
@@ -106,7 +126,17 @@ pathname-name of <name>."
     buf))
 
 (defun remove-buffer (buf)
-  "remove buffer from registry."
+  "Remove buffer from registry.
+
+@Arguments
+buf - Incudine:buffer
+
+@See-also
+add-buffer
+find-buffer
+of-buffer-load
+remove-all-buffers
+"
   (let ((id (buffer-id buf)))
     (unless (and
              id
@@ -117,7 +147,14 @@ pathname-name of <name>."
       (warn "Can't remove buffer ~a: buf or id not found in databases!" buf))))
 
 (defun remove-all-buffers ()
-  "remove all buffers from registry."
+  "Remove all buffers from registry.
+
+@See-also
+add-buffer
+find-buffer
+of-buffer-load
+remove-buffer
+"
   (setf *buffer-ids* (make-hash-table :test #'equal))
   (setf *buffers* (make-hash-table))
   (setf *buffer-next-id* '())
@@ -127,17 +164,42 @@ pathname-name of <name>."
 ;;; (remove-all-buffers)
 
 (defun bufname= (buf file)
-     "compare file with the filename of buf. If buf is a list, compare
+     "Compare file with the filename of buf. If buf is a list, compare
 file to the filenames of all elements of list and return buf if any is
-matching."
+matching.
+
+@Arguments
+buf - Incudine:buffer
+file - String denoting the file.
+
+@See-also
+add-buffer
+find-buffer
+of-buffer-load
+remove-buffer
+remove-all-buffers
+"
      (cond
        ((null buf) nil)
        ((consp buf) (or (bufname= (first buf) file) (bufname= (rest buf) file)))
        (t (and (string= (format nil "~a" (buffer-file buf)) (format nil "~a" file)) buf))))
 
 (defun of-buffer-load (file &key (path cl-user:*sfile-path*))
-  "load and register buffer from file if not loaded already. Return
-buffer."
+  "Load and register buffer from /file/ if not loaded already. Return
+buffer.
+
+@Arguments
+file - Pathname or String denoting a soundfile.
+:path - A list of Pathnames or Strings
+
+@See-also
+add-buffer
+find-buffer
+of-buffer-load
+remove-buffer
+remove-all-buffers
+*sfile-path*
+"
   (let ((buf (find-buffer file)))
     (if (bufname= buf file)
         buf

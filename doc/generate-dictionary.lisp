@@ -262,7 +262,9 @@ set-tempo
 
   (defparameter *clamps-extra-symbols*
     (append (mapcar #'first *clamps-extra-doc*)
-            '(cm:svg->browser cm:rts-hush incudine:node-free-unprotected
+            '(cl-user:*sfz-preset-path*
+              cl-user:*sfile-path*
+              cm:svg->browser cm:rts-hush incudine:node-free-unprotected
               cm:rts cm::rts? ;; cl-midictl::midi-controller
               clog-midi-controller::clog-midi-controller))))
 
