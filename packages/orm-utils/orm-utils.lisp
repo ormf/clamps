@@ -2633,11 +2633,44 @@ function or with getf."
     ((numberp id) (elt seq id))
     (t (getf seq id))))
 
-(defun r-getf (seq &rest props)
-  "recursively traverse nested seq using props as idx. The values for
-props can be either numbers using #'elt or keywords/symbols (using
-getf)."
-  (reduce #'getf-or-elt props :initial-value seq))
+(defun r-getf (list &rest props)
+  "Recursively traverse nested /list/ using /props/ as idx. The values for
+props can be either keywords/symbols (using #'getf) or numbers (using
+#'elt).
+
+@Arguments
+list - a nested List to search.
+props - one or more Keywords/Symbols, or Numbers interpreted as idx.
+
+@Examples
+
+(defvar *geodata*
+  '(:Italy
+    (:Latium (:Rome (:Inhabitants 2749031 :size 1287.36 :River \"Tevere\"))
+     :Lombardy (:Milano (:Inhabitants 1349930 :size 182 :River \"Naviglio Grande\")))
+    :Kenia
+    (:Nairobi (:Nairobi (:Inhabitants 4397073 :size 703.9 :River \"Athi\")))
+    :Germany
+    (:Bavaria (:Munich (:Inhabitants 1510378 :size 310.7 :River \"Isar\"))
+     :Berlin (:Berlin (:Inhabitants 6340918 :size 891.7 :River \"Spree\")))))
+
+(r-getf *geodata* :Kenia :Nairobi :Nairobi :Inhabitants) ; => 4397073
+
+(r-getf *geodata* :Germany)
+
+;; => (:bavaria (:munich (:inhabitants 1510378 :size 310.7 :river \"Isar\"))
+;;     :berlin (:berlin (:inhabitants 6340918 :size 891.7 :river \"Spree\")))
+
+(r-getf *geodata* :Italy 3 :Rome)
+
+;; => (:inhabitants 2749031 :size 1287.36 :river \"Tevere\")
+
+(r-getf *geodata* 5 3)
+;; => (:berlin (:inhabitants 6340918 :size 891.7 :river \"Spree\"))
+
+(r-getf *geodata* :Italy 1 1 5) ; => \"Naviglio Grande\"
+"
+  (reduce #'getf-or-elt props :initial-value list))
 
 (defun index-list (list &key (n 0))
   "Return /list/ with increasing indexes consed to the front of each
@@ -2654,19 +2687,19 @@ n - Integer denoting starting index
       nil
       (cons (cons n (first list)) (index-seq (rest list) (1+ n)))))
 
-(defun mysubseq (seq start &optional end)
-  "Like subseq, but allowing negative values for end, indicating the
-number of elems before the end.
+(defun subseqx (seq start &optional end)
+  "Like #'subseq, but allowing negative values for /end/, indicating the
+number of elems at the end of /seq/ to be omitted.
 
 @Arguments
 seq - A Common Lisp Sequence.
 start - Non Negative Integer denoting starting index of seq.
-end - Integer denoting last index of seq. If negative, count from end.
+end - Integer denoting last element's position in seq. If positive, the last element is /(elt seq (1- end))/. If end is negative, /(abs end)/ denotes the number of elements to be omitted from the end of seq.
 
-@Example
-(mysubseq '(a b c d e f g) 0 3) ; => (a b c)
+@Examples
+(subseqx '(a b c d e f g) 0 3) ; => (a b c)
 
-(mysubseq '(a b c d e f g) 0 -2) ; => (a b c d e)
+(subseqx '(a b c d e f g) 0 -2) ; => (a b c d e)
 "
   (let ((end (and end (if (< end 0) (+ end (length seq)) end))))
     (subseq seq start end)))

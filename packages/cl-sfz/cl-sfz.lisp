@@ -22,6 +22,12 @@
 
 (setf *print-case* :downcase)
 
+(unless (boundp 'cl-user::*sfz-preset-lookup*)
+  (defvar cl-user::*sfz-preset-lookup* (make-hash-table)))
+
+(unless (boundp 'cl-user::*sfz-preset-lookup*)
+  (defvar cl-user::*sfz-preset-path* nil))
+
 (defparameter *sfz-tables* (make-hash-table))
 
 (defparameter keynames '("C" "C#" "D" "D#" "E" "F" "F#" "G" "G#" "A" "A#" "B"))
@@ -220,7 +226,7 @@ loaded presets should be returned. If /nil/ all registered preset
 names are returned.
 "
   (if loaded (sort (loop for k being each hash-key of *sfz-tables* collect k) #'string<)
-      (sort (loop for k being each hash-key of cl-user:*sfz-preset-lookup* collect k) #'string<)))
+      (sort (loop for k being each hash-key of cl-user::*sfz-preset-lookup* collect k) #'string<)))
 
 (defun sfz-preset-buffer (preset pitch)
   "return the buffer(s) of preset for pitch in a list."
@@ -317,7 +323,7 @@ get-sfz-preset
 sfz
 sfz-preset-loaded?
 "
-  (setf (gethash preset cl-user:*sfz-preset-lookup*) file))
+  (setf (gethash preset cl-user::*sfz-preset-lookup*) file))
 
 (defun sfz-preset-file (preset)
   "Return the full path of /preset/.
@@ -329,13 +335,13 @@ preset - Keyword or symbol of a registered sfz preset.
 add-sfz-preset
 "
   (and
-   (boundp 'cl-user:*sfz-preset-lookup*)
-   (boundp 'cl-user:*sfz-preset-path*)
-   (let ((name (gethash preset cl-user:*sfz-preset-lookup*)))
+   (boundp 'cl-user::*sfz-preset-lookup*)
+   (boundp 'cl-user::*sfz-preset-path*)
+   (let ((name (gethash preset cl-user::*sfz-preset-lookup*)))
      (and name
           (incudine-bufs:get-sndfile-path
            name
-           cl-user:*sfz-preset-path*)))))
+           cl-user::*sfz-preset-path*)))))
 
 (defun get-sfz-preset (preset &key force (play-fn  #'play-sfz-loop))
   "Load the sfz definition of /preset/ and all its samples into the

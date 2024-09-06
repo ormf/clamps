@@ -116,10 +116,13 @@ accessible at the URL /https://localhost:8282/.
 
 (setf (fdefinition 'clamps::set-bpm) #'clamps:set-tempo)
 
+;;; breakpoint versions of n-lin and n-exp
+
 (defun n-lin-bp (x bp min max)
   (n-lin (apply #'interp x (flatten bp)) min max))
 
 (defun n-exp-bp (x bp min max)
+  (declare (float min max))
   (n-exp (apply #'interp x (flatten bp)) min max))
 
 (defun plot-2d (seq)

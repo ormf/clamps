@@ -1625,7 +1625,7 @@ it's called with the same value of KEY.  All other times, the cached
                 (when (> (length text) 0)
                   ;; Open the new markup if necessary and insert the text.
                   (when (not (cl-equalp fstruct-list last-fstruct-list))
-                    (funcall close-markup)
+                    (if close-markup (funcall close-markup))
                     (setq last-fstruct-list fstruct-list)
                     (setq close-markup
                           (funcall text-markup fstruct-list htmlbuf)))
@@ -1634,7 +1634,7 @@ it's called with the same value of KEY.  All other times, the cached
 
               ;; We've gone through the buffer; close the markup from
               ;; the last run, if any.
-              (funcall close-markup))
+              (if close-markup (funcall close-markup)))
 
             ;; Insert the epilog and post-process the buffer.
             (with-current-buffer htmlbuf

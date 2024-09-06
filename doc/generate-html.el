@@ -18,29 +18,6 @@
 
 (setq org-html-htmlize-output-type 'css)
 
-;; (custom-set-faces
-;;  '(font-lock-builtin-face ((t (:foreground "aquamarine"))))
-;;  '(font-lock-comment-face ((t (:foreground "light blue"))))
-;;  '(font-lock-constant-face ((t (:foreground "pale green"))))
-;;  '(font-lock-doc-face ((t (:foreground "light sky blue"))))
-;;  '(font-lock-doc-string-face ((t (:foreground "sky blue"))))
-;;  '(font-lock-function-name-face ((t (:bold t :foreground "aquamarine" :weight bold))))
-;;  '(font-lock-keyword-face ((t (:bold t :foreground "pale turquoise" :weight bold))))
-;;  '(font-lock-reference-face ((t (:foreground "pale green"))))
-;;  '(font-lock-string-face ((t (:foreground "light sky blue"))))
-;;  '(font-lock-type-face ((t (:bold t :foreground "sky blue" :weight bold))))
-;;  '(font-lock-variable-name-face ((t (:bold t :foreground "turquoise" :weight bold))))
-;;  '(font-lock-warning-face ((t (:bold t :foreground "Red" :weight bold))))
-;;  '(rainbow-delimiters-depth-1-face ((t (:foreground "yellow"))))
-;;  '(rainbow-delimiters-depth-2-face ((t (:foreground "dark gray"))))
-;;  '(rainbow-delimiters-depth-3-face ((t (:foreground "deep pink"))))
-;;  '(rainbow-delimiters-depth-4-face ((t (:foreground "green yellow"))))
-;;  '(rainbow-delimiters-depth-5-face ((t (:foreground "deep sky blue"))))
-;;  '(rainbow-delimiters-depth-6-face ((t (:foreground "yellow1"))))
-;;  '(rainbow-delimiters-depth-7-face ((t (:foreground "gold3"))))
-;;  '(rainbow-delimiters-depth-8-face ((t (:foreground "orange3"))))
-;;  '(rainbow-delimiters-depth-9-face ((t (:foreground "DarkOrange4")))))
-
 (add-hook
  'lisp-mode-hook
  (lambda ()
@@ -62,6 +39,7 @@
               "/../extra/elisp/clamps-links.el"))
 
 (setq org-confirm-babel-evaluate nil)
+(setq org-export-allow-bind-keywords t)
 ;;;(setq org-export-with-broken-links t)
 
 (defun generate-html (org-file)

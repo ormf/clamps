@@ -247,7 +247,8 @@ calls <<node-free-unprotected>>.
 
 @Note
 This command is bound to the Keyboard Sequence /<C-.>/ in emacs.
-"  (incudine:flush-pending)
+"
+  (incudine:flush-pending)
   (dotimes (chan 16) (cm::sprout
                       (cm::new cm::midi-control-change :time 0
                         :controller 123 :value 127 :channel chan)))
@@ -335,9 +336,10 @@ gui
 "  (clog:open-browser :url (format nil "http://127.0.0.1:~A/meters" clog::*clog-port*)))
 
 (defun clamps-start (&key (gui-root "/tmp") (qsynth nil) (open-gui nil))
-  "Start clamps, optionally starting qsynth (Linux only) and opening
-the gui in a browser. This function gets called by <<clamps>> and
-should normally not be called by the user.
+  "Entry function called by <<clamps>> to start the webserver for the
+GUI, call <<rts>> to set up IO and MIDI, start the OSC responder for
+Incudine, optionally start qsynth (Linux only) and open the gui in a
+browser. This function should normally not be called by the user.
 
 @Arguments
 gui-root - The root path of the gui
@@ -345,7 +347,9 @@ qsynth - Boolean indicating whether to start the qsynth softsynth (Linux only).
 open-gui - Boolean indicating whether to open the gui in a Browser window.
 
 @See-also
+clamps
 clamps-gui-root
+rts
 "
   (setf *package* (find-package :clamps))
   (restart-inkscape-osc)

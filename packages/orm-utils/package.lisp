@@ -124,7 +124,7 @@
    #:R-ELT
    #:R-GETF
    #:INDEX-LIST
-   #:MYSUBSEQ
+   #:SUBSEQX
    #:DELETE-PROPS
    #:CALCSNDBYTES
    #:GET-TIME
@@ -135,4 +135,5 @@
    #:DEFPARAMETER*
    #:DEFVAR*
    #:CLIP
-   ))
+   )
+  )

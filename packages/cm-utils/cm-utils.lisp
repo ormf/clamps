@@ -292,7 +292,8 @@ applied. This is the inverse function of the varispeed function."
   (char= (elt name 0) #\/))
 
 (defun g-export (obj &key (view t) (dir "/tmp/"))
-  (let* ((name (ou:mysubseq (sv obj cm::name) 0 -4))
+  "Wrapper to export a cm obj to svg."
+  (let* ((name (ou:subseqx (sv obj cm::name) 0 -4))
          (svg-file (if (abs-path? name)
                        (format nil "~a.svg" name)
                        (format nil "~a/~a.svg" dir name))))

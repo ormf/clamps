@@ -321,19 +321,16 @@ address."
                                    (encode-typetag ,types)
                                    (osc::encode-args (list ,@(loop for value in values
                                                                    collect value)))))))
-    (format t "~&not shadowing incudine.osc functions~%"))
+    (progn
+      (format t "~&not shadowing incudine.osc functions~%")))
 
-(define-compiler-macro message (stream address types &rest values)
-  (with-gensyms (s)
-    `(let ((,s ,stream))
-       (start-message ,s ,address ,types)
-       ,@(loop for val in values for i from 0
-               collect `(%set-value ,s ,i ,val))
-       ,(if (or values
-                (not (stringp types))
-                (not (required-values-p types)))
-            `(send ,s)
-            0))))
+(defun incudine.osc:message (stream address types &rest values)
+  (cu-osc:send stream
+               (concatenate
+                '(vector (unsigned-byte 8))
+                (osc::encode-address address)
+                (encode-typetag types)
+                (encode-args values))))
 
 (in-package :incudine)
 

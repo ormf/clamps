@@ -62,7 +62,7 @@
   (setq max-lisp-eval-depth 10000)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-dict-to-clamps)
-#+BIND: org-html-htmlize-output-type 'css
+#+BIND: org-html-htmlize-output-type css
 # \[\[\([^\[]+\)\]\] → [[\1][\1]]
 # C-x 8 RET 200b RET C-x 8 0
 
@@ -120,10 +120,39 @@
      (add-elements container-obj &rest elems)
    #+END_SRC
    add elements supplied either as svg-objects or as list(s) of svg-objects
+** add-midi-cc-fn
+   Function
+   #+BEGIN_SRC lisp
+     (add-midi-cc-fn fn channel ccnum)
+   #+END_SRC
+   Add /fn/ to *​midi-cc-fns​* for /channel/ and /ccnum/.
+   /fn/ will be called with the controller value as argument when MIDI
+   input at /channel/ and /ccnum/ is received.
+*** Arguments
+    =fn= -- Function of one Argument to call on MIDI input
+
+    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
+
+    =ccnum= -- Integer in the range [1..128] denoting the MIDI
+    Controller number.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (add-midi-cc-fn
+        (lambda (cc-val) (format t "Received Controller Value ~a~%" cc-val))
+        1 1)
+      ;; => (#<function (lambda (cc-val)) {564DA61B}>)
+    #+END_SRC
+*** See also
+    - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
+    - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+    - [[remove-midi-cc-fns][remove-midi-cc-fns]]
+    - [[show-midi-cc-fns][show-midi-cc-fns]]
 ** add-midi-controller
    Function
    #+BEGIN_SRC lisp
-     (add-midi-controller class #:id &rest args)
+     (add-midi-controller class id &rest args)
    #+END_SRC
    Register a MIDI controller of class /class/ with ID /id/ and optional
    initialization argumens /args/.
@@ -368,13 +397,15 @@
    Return the last received MIDI CC value of controller number /ccnum/
    at MIDI channel /channel/. Setfable.
 *** Arguments
-    =ccnum= -- Integer in the range [0..127] indicating the Controller
+    =ccnum= -- Integer in the range [1..128] indicating the Controller
     Number.
 
-    =channel= -- Integer in the range [0..15] indicating the MIDI
+    =channel= -- Integer in the range [1..16] indicating the MIDI
     channel.
 
 
+*** See also
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
 ** cd
    Function
    #+BEGIN_SRC lisp
@@ -388,24 +419,27 @@
 
 *** See also
     - [[pwd][pwd]]
+** chan
+   Generic Function
+   #+BEGIN_SRC lisp
+     (chan object)
+   #+END_SRC
+   automatically generated reader method
 ** clamps
    Function
    #+BEGIN_SRC lisp
-     (clamps &rest args)
+     (clamps &key (gui-root "/tmp") (qsynth nil) (open-gui nil))
    #+END_SRC
    Start Clamps including the gui.
    
-   Besides starting the Gui the function also:
+   Apart from starting the webserver for the Gui, the function also:
    
-   - Starts the osc responder for Inkscape.
-   - Starts the realtime engine calling #'rts.
-   - Creates groups and buses for incudine dsps (see the
-   Chapter [[clamps:General Incudine Setup][General Incudine Setup]].
-   - Starts the documentation acceptor for the searchable online doc
-   at /http://localhost:8282/overview/index.html/.
+   - Starts the OSC responder for Inkscape.
+   - Starts the realtime engine and sets up MIDI ports and receivers by calling [[rts][rts]].
+   - Creates groups and buses for incudine dsps (see the Chapter [[clamps:General Incudine Setup][General Incudine Setup]].
+   - Starts the documentation acceptor for the online doc at /http://localhost:8282/overview/index.html/.
    
-   In the given path the following directories
-   will be created:
+   The following directories will be created in the gui-root path :
    
    - /<clamps-gui-root>/www//
    - /<clamps-gui-root>/www/svg/
@@ -417,18 +451,66 @@
    into the /<clamps-gui-root>/www// subdirectory with their filenames
    relative to this directory.
 *** Arguments
-    =gui-root= -- String or Pathname indicating where to put the /www/
+    =:gui-root= -- String or Pathname indicating where to put the /www/
     subfolder for files accessible by the gui (nicknamed /<clamps-gui-
     root>/).
 
-    =open= -- Boolean indicating whether to open the /<clamps-base-url>/
-    in a browser window after starting the gui.
+    =:open-gui= -- Boolean indicating whether to open the /<clamps-base-
+    url>/ in a browser window after starting the gui.
+
+    =:qsynth= -- Boolean indicating whether to start the Qsynth
+    softsynth (Linux only).
 
 
 *** See also
     - [[clamps-base-url][clamps-base-url]]
     - [[clamps-restart-gui][clamps-restart-gui]]
+    - [[clamps-start][clamps-start]]
     - [[clamps-gui-root][clamps-gui-root]]
+    - [[rts][rts]]
+** clamps
+   Function
+   #+BEGIN_SRC lisp
+     (clamps &key (gui-root "/tmp") (qsynth nil) (open-gui nil))
+   #+END_SRC
+   Start Clamps including the gui.
+   
+   Apart from starting the webserver for the Gui, the function also:
+   
+   - Starts the OSC responder for Inkscape.
+   - Starts the realtime engine and sets up MIDI ports and receivers by calling [[rts][rts]].
+   - Creates groups and buses for incudine dsps (see the Chapter [[clamps:General Incudine Setup][General Incudine Setup]].
+   - Starts the documentation acceptor for the online doc at /http://localhost:8282/overview/index.html/.
+   
+   The following directories will be created in the gui-root path :
+   
+   - /<clamps-gui-root>/www//
+   - /<clamps-gui-root>/www/svg/
+   
+   The latter is the file path for svg files used in the
+   /<clamps-base-url>/svg-display/ page of the Gui.
+   
+   Any files which need to be accessible by the Gui have to be put
+   into the /<clamps-gui-root>/www// subdirectory with their filenames
+   relative to this directory.
+*** Arguments
+    =:gui-root= -- String or Pathname indicating where to put the /www/
+    subfolder for files accessible by the gui (nicknamed /<clamps-gui-
+    root>/).
+
+    =:open-gui= -- Boolean indicating whether to open the /<clamps-base-
+    url>/ in a browser window after starting the gui.
+
+    =:qsynth= -- Boolean indicating whether to start the Qsynth
+    softsynth (Linux only).
+
+
+*** See also
+    - [[clamps-base-url][clamps-base-url]]
+    - [[clamps-restart-gui][clamps-restart-gui]]
+    - [[clamps-start][clamps-start]]
+    - [[clamps-gui-root][clamps-gui-root]]
+    - [[rts][rts]]
 ** clamps-base-url
    Function
    #+BEGIN_SRC lisp
@@ -501,9 +583,10 @@
    #+BEGIN_SRC lisp
      (clamps-start &key (gui-root "/tmp") (qsynth nil) (open-gui nil))
    #+END_SRC
-   Start clamps, optionally starting qsynth (Linux only) and opening
-   the gui in a browser. This function gets called by [[clamps][clamps]] and
-   should normally not be called by the user.
+   Entry function called by [[clamps][clamps]] to start the webserver for the
+   GUI, call [[rts][rts]] to set up IO and MIDI, start the OSC responder for
+   Incudine, optionally start qsynth (Linux only) and open the gui in a
+   browser. This function should normally not be called by the user.
 *** Arguments
     =gui-root= -- The root path of the gui
 
@@ -515,7 +598,9 @@
 
 
 *** See also
+    - [[clamps][clamps]]
     - [[clamps-gui-root][clamps-gui-root]]
+    - [[rts][rts]]
 ** clear-bindings
    Function
    #+BEGIN_SRC lisp
@@ -532,23 +617,28 @@
    #+BEGIN_SRC lisp
      (clip val min max)
    #+END_SRC
-   Clip val into the range [min..max].
-*** Arguments
-    =val= -- Number to be clipped.
+** clog-midi-controller
+   Class
 
-    =min= -- Number denoting minimum bound.
-
-    =min= -- Number denoting maximum bound.
-
-
-*** Example
-    #+BEGIN_SRC lisp
-      (clip -10 0 3) ; => 0
-      
-      (clip 10 0 3) ; => 3
-      
-      (clip 1.73 0 3) ; => 1.73
-    #+END_SRC
+   Base Class for the Gui instance of a MIDI controller. Note that each
+   open Gui window will create a new instance of all clog-midi-controller
+   it contains and multiple instances of the same Gui page will all share
+   the same midi-controller instance. Any update of any Gui element in
+   any connected Gui will call the [[set-val][set-val]] function of the
+   corresponding [[ref-object][ref-object]] in a slot of the midi-controller
+   instance, automatically triggering updates in all other connected
+   Guis.
+   
+   clog-midi-controller implements the following slots:
+   
+   =:midi-controller= -- The midi controller instance of cl-midictl, derived from its [[midi-controller][midi-controller]] class
+   
+   =:connection-hash-key= -- A read-only slot containing the hash key of the web connection of the Gui instance.
+** close
+   Function
+   #+BEGIN_SRC lisp
+     (close stream)
+   #+END_SRC
 ** collect-pool
    Function
    #+BEGIN_SRC lisp
@@ -623,6 +713,16 @@
       (count-elements '((a 10) (b 11) (a 12) (d 13)) :key #'first :sort t)
       ;; => ((a 2) (d 1) (b 1))
     #+END_SRC
+** counter
+   Macro
+   #+BEGIN_SRC lisp
+     (counter start end &key (step 1) loop-p done-action)
+   #+END_SRC
+   Count from START to END (excluded) by STEP, optionally in loop if
+   LOOP-P is T.
+   
+   The one-argument function DONE-ACTION is called at the end if LOOP-P is NIL.
+   The function argument is the DSP node.
 ** create-collection
    Function
    #+BEGIN_SRC lisp
@@ -1224,7 +1324,7 @@
 ** find-controller
    Function
    #+BEGIN_SRC lisp
-     (find-controller #:id)
+     (find-controller id)
    #+END_SRC
    Return MIDI controller instance with ID /id/.
 *** Arguments
@@ -1249,12 +1349,6 @@
     - [[add-dsp][add-dsp]]
     - [[list-dsps][list-dsps]]
     - [[remove-dsp][remove-dsp]]
-** firstn
-   Function
-   #+BEGIN_SRC lisp
-     (firstn seq n)
-   #+END_SRC
-   Return the first /n/ elems of /seq/.
 ** flash
    Generic Function
    #+BEGIN_SRC lisp
@@ -1577,6 +1671,15 @@
 *** See also
     - [[clamps-base-url][clamps-base-url]]
     - [[meters][meters]]
+** gui
+   Function
+   #+BEGIN_SRC lisp
+     (gui)
+   #+END_SRC
+   Open the page at /<clamps-base-url>/ in a Browser.
+*** See also
+    - [[clamps-base-url][clamps-base-url]]
+    - [[meters][meters]]
 * H
 ** handle-midi-in
    Generic Function
@@ -1656,10 +1759,13 @@
     #+BEGIN_SRC lisp
       (index-list '(a b c d e)) ; => ((0 . a) (1 . b) (2 . c) (3 . d) (4 . e))
     #+END_SRC
-** index-seq
+** input-stream
+   Structure
+
+** input-stream-p
    Function
    #+BEGIN_SRC lisp
-     (index-seq seq &optional (n 0))
+     (input-stream-p object)
    #+END_SRC
 * K
 ** keynum->hz
@@ -2233,16 +2339,31 @@
    :END:
    Variable
 
+   2-dimensional Array of 16x128 lists containing functions to be called
+   on a received MIDI CC message individually for the 128 CC numbers on
+   all 16 MIDI channels with the CC value as argument.
+*** See also
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
+    - [[#midi-note-fns][*​​midi-note-fns​​*]]
+    - [[#midi-note-state][*​​midi-note-state​​*]]
 ** *​midi-cc-state​*
    :PROPERTIES:
    :CUSTOM_ID: midi-cc-state
    :END:
    Variable
 
+   2-dimensional Array of 16x128 [[ref-object][ref-objects]] reflecting the last received
+   CC value of a MIDI CC message for all 128 CC numbers on all 16 MIDI
+   channels.
+*** See also
+    - [[ccin][ccin]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[#midi-note-fns][*​​midi-note-fns​​*]]
+    - [[#midi-note-state][*​​midi-note-state​​*]]
 ** midi-controller
    Class
 
-   Generic class for midi controllers. An instance should get
+   Generic base class for midi controllers. An instance should get
    initialized with [[add-midi-controller][add-midi-controller]] and removed with
    [[remove-midi-controller][remove-midi-controller]], using its id as argument in order to close
    the gui and remove its handler functions from the midi controller
@@ -2252,7 +2373,7 @@
    #+BEGIN_SRC lisp
      (midi-controller object)
    #+END_SRC
-   automatically generated reader method
+   Accessor method for the /midi-controller/ slot of a [[clog-midi-controller][clog-midi-controller]] instance.
 ** *​midi-debug​*
    :PROPERTIES:
    :CUSTOM_ID: midi-debug
@@ -2265,6 +2386,32 @@
      (midi-input object)
    #+END_SRC
    automatically generated reader method
+** *​midi-note-fns​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-note-fns
+   :END:
+   Variable
+
+   2-dimensional Array of 16x128 lists containing functions to be called
+   on a received MIDI note on message individually for all 128 keynums on
+   all 16 MIDI channels with the velocity as argument.
+*** See also
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
+    - [[#midi-note-state][*​​midi-note-state​​*]]
+** *​midi-note-state​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-note-state
+   :END:
+   Variable
+
+   2-dimensional Array of 16x128 [[ref-object][ref-objects]] reflecting the last received
+   velocity of a MIDI note on message for all 128 keynums on all 16 MIDI
+   channels.
+*** See also
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
+    - [[#midi-note-fns][*​​midi-note-fns​​*]]
 ** midi-output
    Generic Function
    #+BEGIN_SRC lisp
@@ -2335,28 +2482,6 @@
       (multf *test* 3) ; => 6
       
       *test*  ; => 6
-    #+END_SRC
-** mysubseq
-   Function
-   #+BEGIN_SRC lisp
-     (mysubseq seq start &optional end)
-   #+END_SRC
-   Like subseq, but allowing negative values for end, indicating the
-   number of elems before the end.
-*** Arguments
-    =seq= -- A Common Lisp Sequence.
-
-    =start= -- Non Negative Integer denoting starting index of seq.
-
-    =end= -- Integer denoting last index of seq. If negative, count from
-    end.
-
-
-*** Example
-    #+BEGIN_SRC lisp
-      (mysubseq '(a b c d e f g) 0 3) ; => (a b c)
-      
-      (mysubseq '(a b c d e f g) 0 -2) ; => (a b c d e)
     #+END_SRC
 * N
 ** n-apply
@@ -2603,6 +2728,24 @@
      (on-deps-update &rest body)
    #+END_SRC
    return body if *​update-deps​* is non-nil, otherwise return nil.
+** open
+   Function
+   #+BEGIN_SRC lisp
+     (open filename &key (direction :input) (element-type 'character) (if-exists nil if-exists-given) (if-does-not-exist nil if-does-not-exist-given) (external-format :default) (class 'fd-stream))
+   #+END_SRC
+   Return a stream which reads from or writes to FILENAME.
+     Defined keywords:
+      :DIRECTION - one of :INPUT, :OUTPUT, :IO, or :PROBE
+      :ELEMENT-TYPE - the type of object to read or write, default BASE-CHAR
+      :IF-EXISTS - one of :ERROR, :NEW-VERSION, :RENAME, :RENAME-AND-DELETE,
+                          :OVERWRITE, :APPEND, :SUPERSEDE or NIL
+      :IF-DOES-NOT-EXIST - one of :ERROR, :CREATE or NIL
+     See the manual for details.
+** open
+   Function
+   #+BEGIN_SRC lisp
+     (open &key (host *host*) (port *in-port*) (direction :input) (element-type 'character) (protocol :tcp))
+   #+END_SRC
 ** osc-midi-write-short
    Function
    #+BEGIN_SRC lisp
@@ -2618,6 +2761,14 @@
    Function
    #+BEGIN_SRC lisp
      (out-stream-open? s)
+   #+END_SRC
+** output-stream
+   Structure
+
+** output-stream-p
+   Function
+   #+BEGIN_SRC lisp
+     (output-stream-p object)
    #+END_SRC
 * P
 ** partition-seq
@@ -2840,6 +2991,12 @@
      (plot data &rest args &key region header options grid x-axis num-values data-fn &allow-other-keys)
    #+END_SRC
    Plot input data given as an incudine envelope.
+** plot
+   Generic Function
+   #+BEGIN_SRC lisp
+     (plot data &rest args &key region header options grid x-axis num-values data-fn &allow-other-keys)
+   #+END_SRC
+   Plot input data given as an incudine envelope.
 ** plot-2d
    Function
    #+BEGIN_SRC lisp
@@ -2955,6 +3112,23 @@
       
       (r-elt '(dog cat bird cow)) ; => dog, cat, bird or cow
     #+END_SRC
+** r-elt
+   Function
+   #+BEGIN_SRC lisp
+     (r-elt seq)
+   #+END_SRC
+   Return a random element of seq.
+*** Arguments
+    =seq= -- a sequence fulfilling the predicate /(typep seq 'sequence)/
+    like a list or a vector.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (r-elt #(1 2 3 4)) ; => 1, 2, 3 or 4
+      
+      (r-elt '(dog cat bird cow)) ; => dog, cat, bird or cow
+    #+END_SRC
 ** r-exp
    Function
    #+BEGIN_SRC lisp
@@ -2979,11 +3153,46 @@
 ** r-getf
    Function
    #+BEGIN_SRC lisp
-     (r-getf seq &rest props)
+     (r-getf list &rest props)
    #+END_SRC
-   recursively traverse nested seq using props as idx. The values for
-   props can be either numbers using #'elt or keywords/symbols (using
-   getf).
+   Recursively traverse nested /list/ using /props/ as idx. The values for
+   props can be either keywords/symbols (using #'getf) or numbers (using
+   #'elt).
+*** Arguments
+    =list= -- a nested List to search.
+
+    =props= -- one or more Keywords/Symbols, or Numbers interpreted as
+    idx.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defvar *geodata*
+        '(:Italy
+          (:Latium (:Rome (:Inhabitants 2749031 :size 1287.36 :River "Tevere"))
+           :Lombardy (:Milano (:Inhabitants 1349930 :size 182 :River "Naviglio Grande")))
+          :Kenia
+          (:Nairobi (:Nairobi (:Inhabitants 4397073 :size 703.9 :River "Athi")))
+          :Germany
+          (:Bavaria (:Munich (:Inhabitants 1510378 :size 310.7 :River "Isar"))
+           :Berlin (:Berlin (:Inhabitants 6340918 :size 891.7 :River "Spree")))))
+      
+      (r-getf *geodata* :Kenia :Nairobi :Nairobi :Inhabitants) ; => 4397073
+      
+      (r-getf *geodata* :Germany)
+      
+      ;; => (:bavaria (:munich (:inhabitants 1510378 :size 310.7 :river "Isar"))
+      ;;     :berlin (:berlin (:inhabitants 6340918 :size 891.7 :river "Spree")))
+      
+      (r-getf *geodata* :Italy 3 :Rome)
+      
+      ;; => (:inhabitants 2749031 :size 1287.36 :river "Tevere")
+      
+      (r-getf *geodata* 5 3)
+      ;; => (:berlin (:inhabitants 6340918 :size 891.7 :river "Spree"))
+      
+      (r-getf *geodata* :Italy 1 1 5) ; => "Naviglio Grande"
+    #+END_SRC
 ** r-lin
    Function
    #+BEGIN_SRC lisp
@@ -2998,16 +3207,6 @@
 
 *** See also
     - [[r-exp][r-exp]]
-** random-elem
-   Function
-   #+BEGIN_SRC lisp
-     (random-elem seq)
-   #+END_SRC
-   Return a random element of seq.
-*** Arguments
-    =seq= -- A Common Lisp Sequence.
-
-
 ** range
    Function
    #+BEGIN_SRC lisp
@@ -3072,11 +3271,45 @@
      (remove-all-buffers)
    #+END_SRC
    remove all buffers from registry.
+** remove-all-channel-midi-cc-fns
+   Function
+   #+BEGIN_SRC lisp
+     (remove-all-channel-midi-cc-fns channel)
+   #+END_SRC
+   Remove all functions from *​midi-cc-fns​* for all ccnums of /channel/. 
+*** Arguments
+    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (remove-all-channel-midi-cc-fns 1) ; => nil
+    #+END_SRC
+*** See also
+    - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[remove-midi-cc-fns][remove-midi-cc-fns]]
+    - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+    - [[show-midi-cc-fns][show-midi-cc-fns]]
 ** remove-all-dsps
    Function
    #+BEGIN_SRC lisp
      (remove-all-dsps)
    #+END_SRC
+** remove-all-midi-cc-fns
+   Function
+   #+BEGIN_SRC lisp
+     (remove-all-midi-cc-fns)
+   #+END_SRC
+   Remove all functions from *​midi-cc-fns​* for all ccnums and channels.
+*** Example
+    #+BEGIN_SRC lisp
+      (remove-all-midi-cc-fns) ; => nil
+    #+END_SRC
+*** See also
+    - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[remove-midi-cc-fns][remove-midi-cc-fns]]
+    - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
+    - [[show-midi-cc-fns][show-midi-cc-fns]]
 ** remove-all-midi-controllers
    Function
    #+BEGIN_SRC lisp
@@ -3107,10 +3340,32 @@
     - [[add-dsp][add-dsp]]
     - [[find-dsp][find-dsp]]
     - [[list-dsps][list-dsps]]
+** remove-midi-cc-fns
+   Function
+   #+BEGIN_SRC lisp
+     (remove-midi-cc-fns channel ccnum)
+   #+END_SRC
+   Remove all functions from *​midi-cc-fns​* for /channel/ and /ccnum/.
+*** Arguments
+    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
+
+    =ccnum= -- Integer in the range [1..128] denoting the MIDI
+    Controller number.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (remove-midi-cc-fns 1 1) ; => nil
+    #+END_SRC
+*** See also
+    - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
+    - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+    - [[show-midi-cc-fns][show-midi-cc-fns]]
 ** remove-midi-controller
    Function
    #+BEGIN_SRC lisp
-     (remove-midi-controller #:id)
+     (remove-midi-controller id)
    #+END_SRC
    Unregister and delete the instance of a midi controller with ID /id/.
 *** Arguments
@@ -3210,6 +3465,17 @@
 *** Note
     This function needs to be called if /Clamps/ is started from a Lisp
     Image.
+** reset-logger-stream
+   Function
+   #+BEGIN_SRC lisp
+     (reset-logger-stream)
+   #+END_SRC
+   Resets /incudine:*​logger-stream​*/ to /*​​error-output​​*/ Call this
+   function, if calls to /incudine.util:msg/ don't produce any output in
+   the REPL.
+*** Note
+    This function needs to be called if /Clamps/ is started from a Lisp
+    Image.
 ** restore-envs
    Function
    #+BEGIN_SRC lisp
@@ -3276,6 +3542,38 @@
       
       (rotate '(dog bird lion cat horse) 4733) ; => (lion cat horse dog bird)
     #+END_SRC
+** rts
+   Function
+   #+BEGIN_SRC lisp
+     (rts &key (rt-wait 0))
+   #+END_SRC
+   Start the real-time system of Clamps. This functions sets the
+   following special variables:
+   
+   *​midi-in1​* -- The default Midi Input
+   
+   *​midi-out1​* -- The default Midi Output
+   
+   *​rts-out​* -- The default output for realtime events from Clamps/CM.
+   
+   It also starts the rt engine of incudine calling
+   /incudine:rt-start/ and the midi receivers.
+*** Arguments
+    =rt-wait= -- Time in seconds to wait before starting.
+
+
+*** Note
+    
+    This command is an replacement of the /rts/ command of CM, described
+    [[../cm-dict/index.html#rts-fn.html][here]], so none of the options
+    mentioned there or the decription in
+    [[../cm-dict/index.html#rts-topic.html][RTS]] apply to Clamps. Other
+    related CM functions, like /rts-pause/, /rts-continue/ and /rts-stop/
+    also don't work in Clamps.
+    
+*** See also
+    - [[clamps][clamps]]
+    - [[rts?][rts?]]
 ** rts-hush
    Function
    #+BEGIN_SRC lisp
@@ -3284,7 +3582,20 @@
    Flush pending events from incudine's event queue, send out an all
    notes off message to all 16 channels of *​​midi-out1​​* and call
    [[node-free-unprotected][node-free-unprotected]].
+** rts?
+   Function
+   #+BEGIN_SRC lisp
+     (rts? &optional arg)
+   #+END_SRC
+   Checks if rts is started and running.
+*** See also
+    - [[rts][rts]]
 * S
+** send
+   Function
+   #+BEGIN_SRC lisp
+     (send stream msg)
+   #+END_SRC
 ** set-basedir
    Function
    #+BEGIN_SRC lisp
@@ -3501,6 +3812,31 @@
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
     - [[get-sfz-preset][get-sfz-preset]]
+** show-midi-cc-fns
+   Function
+   #+BEGIN_SRC lisp
+     (show-midi-cc-fns channel ccnum)
+   #+END_SRC
+   Show all functions stored in *​midi-cc-fns​* for /channel/ and /ccnum/.
+*** Arguments
+    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
+
+    =ccnum= -- Integer in the range [1..128] denoting the MIDI
+    Controller number.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (show-midi-cc-fns 1 1) ; => nil
+      
+      ;; Output in the REPL:
+      ;; cc-fns of channel 1, ccnum 1: (#<function (lambda (ccval)) {564E441B}>)
+    #+END_SRC
+*** See also
+    - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[remove-midi-cc-fns][remove-midi-cc-fns]]
+    - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
+    - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
 ** *​sine1024​*
    :PROPERTIES:
    :CUSTOM_ID: sine1024
@@ -3647,6 +3983,43 @@
 *** Example
     #+BEGIN_SRC lisp
       (str-concat "Hello" " World") ; => "Hello World"
+    #+END_SRC
+** stream
+   Structure
+
+** stream-open?
+   Function
+   #+BEGIN_SRC lisp
+     (stream-open? s)
+   #+END_SRC
+** stream-p
+   Function
+   #+BEGIN_SRC lisp
+     (stream-p object)
+   #+END_SRC
+** subseqx
+   Function
+   #+BEGIN_SRC lisp
+     (subseqx seq start &optional end)
+   #+END_SRC
+   Like #'subseq, but allowing negative values for /end/, indicating the
+   number of elems at the end of /seq/ to be omitted.
+*** Arguments
+    =seq= -- A Common Lisp Sequence.
+
+    =start= -- Non Negative Integer denoting starting index of seq.
+
+    =end= -- Integer denoting last element's position in seq. If
+    positive, the last element is /(elt seq (1- end))/. If end is
+    negative, /(abs end)/ denotes the number of elements to be omitted
+    from the end of seq.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (subseqx '(a b c d e f g) 0 3) ; => (a b c)
+      
+      (subseqx '(a b c d e f g) 0 -2) ; => (a b c d e)
     #+END_SRC
 ** svg->browser
    Function
@@ -3846,11 +4219,6 @@
    #+END_SRC
    return closure with ipfn bound to an exponential interpolation of
    the input range 0..127 between min and max.
-** with-file-stream
-   Macro
-   #+BEGIN_SRC lisp
-     (with-file-stream (stream fname &key (direction :output) (if-exists :supersede)) &rest body)
-   #+END_SRC
 ** with-gnuplot-instance
    Macro
    #+BEGIN_SRC lisp

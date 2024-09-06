@@ -21,40 +21,42 @@
 #+HTML_HEAD: <script src="../js/clamps-doc.js"></script>
 # #+SETUPFILE: theme-readtheorg-local.setup
 #+BEGIN_SRC emacs-lisp :exports results :results: none
-      (load (format "%s%s" (file-name-directory (buffer-file-name))
-                    "../extra/elisp/clamps-dict.el"))
-      (load (format "%s%s" (file-name-directory (buffer-file-name))
-                    "../extra/elisp/clamps-overview-lookup.el"))
-      (defun export-clamps-syms (s backend info)
-          (message "exporting clamps syms")
-          (with-temp-buffer 
-            (insert "(defvar *clamps-doc-symbols*)
-      (setq *clamps-doc-symbols* (make-vector 63 0))
-      (mapcar
-         (lambda (entry)
-           (let ((symbol (intern (car entry)
-        			 ,*clamps-doc-symbols*)))
-             (if (boundp symbol)
-        	 (push (cadr entry) (symbol-value symbol))
-               (set symbol (cdr entry)))))
-         '(\n")
-            (mapcar
-             (lambda (entry)
-               (insert
-                (format "   (\"%s\" \"clamps/%s\")\n"
-                        (org-html-element-title (car entry))
-                        (plist-get (cdr entry) :href))))
-             (cl-remove-if
-              (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
-              (plist-get info :multipage-toc-lookup)))
-            (insert "))\n")
-            (write-region (point-min) (point-max) "../extra/elisp/clamps-lookup.el"))
-          (load (format "%s%s" (file-name-directory (buffer-file-name))
-                     "../extra/elisp/clamps-lookup.el"))
-          s)
+    (load (format "%s%s" (file-name-directory (buffer-file-name))
+                  "../extra/elisp/clamps-dict.el"))
+    (load (format "%s%s" (file-name-directory (buffer-file-name))
+                  "../extra/elisp/clamps-overview-lookup.el"))
+    (defun export-clamps-syms (s backend info)
+        (message "exporting clamps syms")
+        (save-excursion
+        (with-temp-buffer 
+          (insert "(defvar *clamps-doc-symbols*)
+    (setq *clamps-doc-symbols* (make-vector 63 0))
+    (mapcar
+       (lambda (entry)
+         (let ((symbol (intern (car entry)
+      			 ,*clamps-doc-symbols*)))
+           (if (boundp symbol)
+      	 (push (cadr entry) (symbol-value symbol))
+             (set symbol (cdr entry)))))
+       '(\n")
+          (mapcar
+           (lambda (entry)
+             (insert
+              (format "   (\"%s\" \"clamps/%s\")\n"
+                      (org-html-element-title (car entry))
+                      (plist-get (cdr entry) :href))))
+           (cl-remove-if
+            (lambda (x) (= 1 (plist-get (cdr x) :relative-level)))
+            (plist-get info :multipage-toc-lookup)))
+          (insert "))\n")
+          (write-region (point-min) (point-max) "../extra/elisp/clamps-lookup.el"))
+        (load (format "%s%s" (file-name-directory (buffer-file-name))
+                   "../extra/elisp/clamps-lookup.el"))
+        )
+        s)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-clamps-syms)
-#+BIND: org-html-htmlize-output-type 'css
+#+BIND: org-html-htmlize-output-type css
 #  #:\([^ ]+\) →    - [[dict:\1][\1]]
 
 
@@ -191,86 +193,378 @@
    cl-midictl implements the basic infrastructure for dealing with
    MIDI in/output, a registry for midi-controllers and implements
    basic classes for midi-controllers.
-*** Receiving and handling MIDI Input
-    MIDI input handling is started using the function
-    [[dict:start-midi-receive][start-midi-receive]].
+*** Opening MIDI Ports
+    Before being able to work with MIDI in/output in Clamps, its MIDI
+    Ports have to get opened. Clamps uses the function [[dict:rts][rts]] to
+    open the Ports, which is called by the [[dict:clamps][clamps]] function at
+    the beginning of the session. If realtime processing is
+    activated[fn:1], the ports should appear in JACK.
+*** MIDI Output
+    Once the ports have been opened and an external program or
+    hardware device has been connected to Incudine's JACK ports,
+    issuing any MIDI output command will send the MIDI events to the
+    program/device:
 
-*** Exported Symbols
-    cl-midictl exports the following symbols:
+    #+BEGIN_SRC lisp
+      ;; Send a midi note with keynum 60 and duration 0.5 seconds to Incudine's Midi Output
 
-  - [[dict:#midi-in1][*​midi-in1​*]]
-  - [[dict:#midi-out1][*​midi-out1​*]]
-  - [[dict:start-midi-receive][start-midi-receive]]
-  - [[dict:stop-midi-receive][stop-midi-receive]]
-  - [[dict:add-midi-controller][add-midi-controller]]
-  - [[dict:remove-midi-controller][remove-midi-controller]]
-  - [[dict:remove-all-midi-controllers][remove-all-midi-controllers]]
-  - [[dict:midi-controller][midi-controller]]
-  - [[dict:ccin][ccin]]
-  - [[dict:find-controller][find-controller]]
-  - [[dict:nanoktl2-midi][nanoktl2-midi]]
-  - [[dict:nanoktl2-preset-midi][nanoktl2-preset-midi]]
-  - [[dict:#nanoktl2-presets-file][*​nanoktl2-presets-file​*]]
-  - [[dict:save-presets][save-presets]]
-  - [[dict:load-presets][load-presets]]
-  - [[dict:set-player-buttons][set-player-buttons]]
-  - [[dict:init-nk2][init-nk2]]
-  - [[dict:gui][gui]]
-  - [[dict:echo][echo]]
-  - [[dict:chan][chan]]
-  - [[dict:#midi-debug][*​midi-debug​*]]
-  - [[dict:#midi-cc-state][*​midi-cc-state​*]]
-  - [[dict:#midi-cc-fns][*​midi-cc-fns​*]]
-  - [[dict:#oscin][*​oscin​*]]
-  - [[dict:start-osc-midi-receive][start-osc-midi-receive]]
-  - [[dict:stop-osc-midi-receive][stop-osc-midi-receive]]
-  - [[dict:osc-midi-write-short][osc-midi-write-short]]
-  - [[dict:cc-map][cc-map]]
-  - [[dict:id][id]]
-  - [[dict:chan][chan]]
-  - [[dict:midi-input][midi-input]]
-  - [[dict:midi-output][midi-output]]
-  - [[dict:last-note-on][last-note-on]]
-  - [[dict:cc-state][cc-state]]
-  - [[dict:cc-fns][cc-fns]]
-  - [[dict:note-state][note-state]]
-  - [[dict:note-fns][note-fns]]
-  - [[dict:toggle-slot][toggle-slot]]
-  - [[dict:handle-midi-in][handle-midi-in]]
-  - [[dict:nk2-faders][nk2-faders]]
-  - [[dict:nk2-last-cc][nk2-last-cc]]
-  - [[dict:nk2-fader-modes][nk2-fader-modes]]
-  - [[dict:nk2-fader-update-fns][nk2-fader-update-fns]]
-  - [[dict:s-buttons][s-buttons]]
-  - [[dict:m-buttons][m-buttons]]
-  - [[dict:r-buttons][r-buttons]]
-  - [[dict:track-left][track-left]]
-  - [[dict:track-right][track-right]]
-  - [[dict:bank-buttons][bank-buttons]]
-  - [[dict:cycle][cycle]]
-  - [[dict:set-marker][set-marker]]
-  - [[dict:marker-left][marker-left]]
-  - [[dict:marker-right][marker-right]]
-  - [[dict:tr-rewind][tr-rewind]]
-  - [[dict:tr-ffwd][tr-ffwd]]
-  - [[dict:tr-stop][tr-stop]]
-  - [[dict:tr-play][tr-play]]
-  - [[dict:tr-rec][tr-rec]]
-  - [[dict:cc-nums][cc-nums]]
-  - [[dict:gui][gui]]
-  - [[dict:gui-update-off][gui-update-off]]
-  - [[dict:with-gui-update-off][with-gui-update-off]]
-  - [[dict:faderfox-midi][faderfox-midi]]
-  - [[dict:curr-player][curr-player]]
-  - [[dict:faderfox-midi-f.orm][faderfox-midi-f.orm]]
-  - [[dict:update-state][update-state]]
-  - [[dict:update-all-controllers][update-all-controllers]]
-  - [[dict:update-preset-buttons][update-preset-buttons]]
-  - [[dict:handle-player-switch][handle-player-switch]]
-  - [[dict:get-ref][get-ref]]
-  - [[dict:start-midi-engine][start-midi-engine]]
-  - [[dict:presets][presets]]
-  - [[dict:unwatch][unwatch]]
+      (in-package :clamps)
+
+      (output (new midi)) ; => ; No values
+
+      ;; Send 10 midi events with random keynums:
+
+      (loop
+        repeat 10
+        for time from 0 by 0.1
+        do (sprout (new midi :time time :keynum (between 49 82))))
+    #+END_SRC
+
+*** MIDI Input
+**** Receiving and handling MIDI Input
+     After the Ports have been opened, MIDI input handling is started
+     using the function [[dict:start-midi-receive][start-midi-receive]], which gets called
+     automatically on startup using the [[dict:clamps][clamps]] function. MIDI input
+     handling can be suspended using the [[dict:stop-midi-receive][stop-midi-receive]]
+     function. Note that this will not close the MIDI ports, so
+     connections to external devices or programs will be persistent. A
+     later call to [[dict:start-midi-receive][start-midi-receive]] will continue to process MIDI
+     input.
+
+     Handling MIDI input in Clamps is done in 3 different stages:
+
+     - All note and cc input is captured in the special variables
+       *​midi-cc-state​* and *​midi-note-state​*. Both contain a
+       2-dimensional array of 16x128 [[The ref-object class][ref-objects]] which capture the
+       last received values of the 128 controller numbers or note
+       numbers of all 16 MIDI channels. [[overview:Code Inspection][Inspect]] this value to see the
+       current state of the MIDI input of Clamps.
+
+     - In addition two other special variables, *​midi-cc-fns​* and
+       *​midi-note-fns* contain 16x128 lists, intially empty. When
+       receiving MIDI cc or MIDI note input, Clamps will address these
+       arrays and call all functions stored in the list of the
+       corresponding channel and CC number or keynum with the received
+       controller value or note velocity as arguments.
+      
+     - At last, the #'handle-midi-in method of all midi controller
+       instances registered with the function [[dict:add-midi-controller][add-midi-controller]] will
+       get called.
+
+**** A practical Example using *​midi-cc-fns​*
+     Let's show this in action. We want to attach behaviour when
+     controller 1 of MIDI channel 1 is moved. One possibility is using
+     *​midi-cc-fns​* like this:
+     #+BEGIN_SRC lisp
+       ;; add a function to the slot of *midi-cc-fns* corresponding to
+       ;; the desired CC number and MIDI channel
+
+       (push
+        (lambda (cc-val)
+          (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1" cc-val))
+        (aref (aref *midi-cc-fns* 0) 0))
+       
+       ;; => (#<function (lambda (cc-val)) {557AF50B}>)
+
+       #+END_SRC
+     When a MIDI controller outputting to MIDI channel 1 is connected
+     to the JACK input of Incudine, moving controller 1 will print
+     something like the following in the REPL:
+     #+BEGIN_SRC lisp
+
+       warn: Received CC Value 46 on Midi Channel 0 and CC Number 0
+       warn: Received CC Value 47 on Midi Channel 0 and CC Number 0
+       warn: Received CC Value 48 on Midi Channel 0 and CC Number 0
+       warn: Received CC Value 49 on Midi Channel 0 and CC Number 0
+
+       #+END_SRC
+
+     In order to avoid the nested aref calls and the push, a couple of
+     convenience functions have been added to cl-midictl. Rather than
+     using zero-based numbers for the MIDI channel and CC number in
+     the array references, those numbers start counting from 1 as
+     common in most programs and hardware controllers.
+
+     The following call is equivalent to the call above:
+     #+BEGIN_SRC lisp
+
+       (add-midi-cc-fn
+        (lambda (ccval)
+          (imsg :warn
+                "Received CC Value ~a on Midi Channel 1 and CC Number 1"
+                ccval))
+        1 1)
+
+       ;; => (#<function (lambda (cc-val)) {564DA61B}>)
+
+      #+END_SRC
+
+     In a similar fashion the following functions are defined for
+     convenience:
+
+     - [[dict:show-midi-cc-fns][show-midi-cc-fns]]
+     - [[dict:remove-midi-cc-fns][remove-midi-cc-fns]]
+     - [[dict:remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
+     - [[dict:remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+
+     Check their documentation how they are used.
+**** A practical Example using *​midi-cc-state​*
+     The exact same behaviour can be achieved using
+     *​midi-cc-state​*​. As mentioned before, the values received for all
+     128 CC Numbers on all 16 MIDI Channels are registered in [[The ref-object
+      class][ref-objects]] in the [[dict:#midi-cc-state][*​midi-cc-state​*]] array. By attaching a [[watch]]
+     function to any of them the same behaviour as in the previous
+     example can be achieved:
+     #+BEGIN_SRC lisp
+       ;; define a storage for removal of the watch relations
+       (defparameter *unwatch* nil)
+
+       (push
+        (watch
+         (lambda ()
+           (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1"
+                 (get-val (aref (aref *midi-cc-state* 0) 0)))))
+        *unwatch*)
+
+       ;; => (#<function (lambda () :in watch) {1003126D9B}>)
+
+     #+END_SRC
+     Note that the function supplied to the /watch/ function has no
+     arguments: The CC value is obtained by using the #'get-val
+     function in the function body.
+
+     To remove the connection between the MIDI controller and the
+     watch function, the function returned by the call to /watch/ has
+     to be called. This can be done like this:
+     #+BEGIN_SRC lisp
+       ;; remove "connections"
+
+       (mapc #'funcall *unwatch*)
+
+       ;; => (#<function (lambda () :in watch) {1003126D9B}>)
+
+       ;; clear the *unwatch* list
+
+       (setf *unwatch* nil) ; => nil
+
+     #+END_SRC
+
+     Again there is a convenience function for accessing the
+     *​midi-cc-state​* of Clamps called [[dict:ccin][ccin]]. The function gets the CC
+     Number and the MIDI channel as argument (both counting from 1)
+     and returns the current value of that controller. The MIDI
+     channel is optional and defaults to the special variable
+     *​global-midi-channel​*.
+
+     Using [[dict:ccin][ccin]], the example above can be rewritten like this:
+     #+BEGIN_SRC lisp
+       (push
+        (watch
+         (lambda ()
+           (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1"
+                 (ccin 1 1))))
+        *unwatch*)
+
+       ;; => (#<function (lambda () :in watch) {100981F52B}>)
+
+     #+END_SRC
+
+     As it can be quite confusing, when establishing connections
+     between MIDI CC input and actions triggered by it dynamically
+     over the course of a session, it is advisable to establish a
+     bookkeeping infrastructure, which makes it easy to restart a
+     session at any time. Here are examples for both cases:
+     #+BEGIN_SRC lisp
+       ;; using *midi-cc-fns*
+
+       (defun init-connections ()
+         (remove-all-midi-cc-fns) ;; clear all connections
+         (add-midi-cc-fn
+          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1" ccval))
+          1 1)  
+         (add-midi-cc-fn
+          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 2" ccval))
+          1 2)  
+         (add-midi-cc-fn
+          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 3" ccval))
+          1 3))
+                
+       ;; => init-connections
+
+       ;; using *midi-cc-state*
+
+       (defun init-connections ()
+         (mapc #'funcall *unwatch*) ;; clear all connections
+         (setf *unwatch* nil)
+         (watch
+          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1" ccval)))  
+         (add-midi-cc-fn
+          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 2" ccval))
+          1 2)  
+         (add-midi-cc-fn
+          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 3" ccval))
+          1 3))
+
+       ;; => init-connections
+     #+END_SRC
+     In both cases, calling #'init-connections will first remove all
+     existing connections and then set them up. Whenever a new
+     connection is made, it can be added to the init-connections
+     function. After compiling the function and calling it, all
+     connections are set up.
+**** A third example using Incudine responders
+     It is not required to rely on the infrastructure of Clamps to
+     react to Midi input events. Incudine provides all necessary tools
+     to set up your own MIDI input handlers, giving you even more
+     flexibility[fn:2].
+
+     Reacting to MIDI input is done by defining
+     /responders/. Responders are functions called whenever MIDI input
+     is received. The function /make-responder/ takes the MIDI input
+     stream and a function to be called whenever MIDI input is
+     received on the stream and returns a MIDI responder.
+
+     The function supplied to /make-responder/ takes three arguments:
+     The /status/ byte, the /data1/ byte and the /data2/ byte. Each of
+     these arguments takes an integer number in the range [0..127],
+     the usual range for MIDI messages. The /status/ byte contains the
+     /type/ of the MIDI message and the /channel number/. The
+     information of the /data1/ and /data2/ parameters depends on the
+     message type. In the case of MIDI CC messages, /data1/ is the /CC
+     number/ and /data2/ the /CC value/. In case of note-on or
+     note-off messages, /data1/ represents the /keynum/ and /data2/
+     the /velocity/.
+
+     As the status byte is not straightforward to decode, CM provides
+     utility functions called status->channel and status->opcode to
+     extract the channel and opcode information from the status
+     byte. status->opcode returns ist results as a keyword. /:cc/ for
+     CC messages and /:note-on/ or /:note-off/ for note
+     messages[fn:3].
+
+     /recv-start/ and /recv-stop/ are functions of Incudine which
+     start or suspend receiving MIDI messages on a particular MIDI
+     input stream aupplied as argument to these functions. Both
+     functions can get called at any time and will also work in the
+     two first examples[fn:4].
+     #+BEGIN_SRC lisp
+       ;; suspend receiving midi events
+
+       (incudine:recv-stop *midi-in1*)
+
+       ;; => #<RECEIVER jackmidi:input-stream stopped>
+
+       ;; (re)start receiving midi events
+
+       (recv-start *midi-in1*)
+
+       ;; => #<RECEIVER jackmidi:input-stream running>
+
+     #+END_SRC
+
+     
+     Below is an example how to achieve the behaviour of the first two
+     examples. 
+     
+     #+BEGIN_SRC lisp
+       ;; define a variable to store all responders:
+
+       (defvar *my-midi-responder* nil) ; => *my-midi-responder*
+
+       (setf *my-midi-responder*
+        (make-responder
+         ,*midi-in1*
+         (lambda (st d1 d2)
+           (let ((channel (status->channel st))
+                 (opcode (status->opcode st)))
+             (case channel
+               (1 (case opcode
+                    (:cc (let ((ccnum d1)
+                               (cc-val d2))
+                           (case ccnum
+                             (1 (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1"
+                                      cc-val))
+                             (2 (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 2"
+                                      cc-val))
+                             (3 (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 3"
+                                      cc-val))))))))))))
+
+       ;;  => #S(#:responder
+       ;; :receiver #<RECEIVER jackmidi:input-stream running>
+       ;; :function #<function (lambda
+       ;;                          (incudine::status incudine::data1 incudine::data2
+       ;;                           stream)
+       ;;                        :in
+       ;;                        incudine::midi-responder-wrapper) {10025E7C0B}>)
+
+
+
+       ;; removing the responder
+
+       (remove-responder *my-midi-responder*) ; => ; No value
+
+       ;; If the message is always the same, the function can be simplified
+
+       (setf *my-midi-responder*
+         (make-responder
+          *midi-in1*
+          (lambda (st d1 d2)
+            (let ((channel (status->channel st))
+                  (opcode (status->opcode st)))
+              (case opcode
+                (:cc (let ((cc-num d1)
+                           (cc-val d2))
+                       (imsg (imsg :warn "Received CC Value ~a on Midi Channel ~a and CC Number ~a"
+                                   cc-val channel cc-num)))))))))
+
+       ;; => #S(#:responder
+       ;;   :receiver #<RECEIVER jackmidi:input-stream running>
+       ;;   :function #<function (lambda
+       ;;                            (incudine::status incudine::data1 incudine::data2
+       ;;                             stream)
+       ;;                          :in
+       ;;                          incudine::midi-responder-wrapper) {1002D4D76B}>)
+
+
+       ;; remove the midi responder
+
+       (remove-responder *my-midi-responder*) ; => ; No value
+
+     #+END_SRC
+     All these methods have their advantages and disadvantages. The
+     last example combines all MIDI input handling in one function
+     which is compact and nice if there aren't too many responders to
+     be used, but can become bloated if responding to many different
+     messages. On the other hand, there is no need to just define one
+     responder in Incudine. Different functionality can be distributed
+     to different responders.
+
+**** Exercise
+
+     Pure Data provides Midi responders for all common message types,
+     called /notein/, /ctlin/, /bendin/, etc. It outputs 3 or 2
+     values, depending on the message type.
+
+     Write a wrapper around Incudine's /make-responder/, called
+     /notein/, /ctlin/ and /bendin/, which uses *​midi-in1​* as
+     input. Each of these functions accepts only a function as
+     argument and returns the responder. Depending on the implemented
+     MIDI type, this function will have either 3 or 2 arguments, equal
+     to the number of outlets of the corresponding Pure Data objects.
+
+     Give an example for each of the functions which will print out
+     the received midi input in the following formats:
+
+     /"midi notein: <keynum> <velocity> <channel>"/
+
+     /"midi ctlin: <cc-val> <cc-num> <channel>"/
+
+     /"midi bendin: <bendvalue> <channel>"/
+
+*** MIDI Controllers
+    cl-midictl implements an object oriented infrastructure to support
+    dealing with hardware MIDI controllers. [[dict:midi-controller][midi-controller]]
+*** Debugging MIDI IO
 
 ** clog-midi-controller
    TBA
@@ -348,7 +642,7 @@
    /defparameter/ or /defconstant/. During the course of running an
    application, the value bound to a symbol may change frequently as
    a consequence of user interaction or programmatic behaviour in
-   certain situations, like reacting to external events, etc.[fn:1]
+   certain situations, like reacting to external events, etc.[fn:5]
     
    Tracking those changes can be a challenging task, especially if
    the complexity of a program increases and values of different
@@ -461,7 +755,7 @@
     definition of the variables and the application logic into
     distinct parts, automating the updating of variables behind the
     scenes. This makes the maintenance of the program much
-    easier[fn:2].
+    easier[fn:6].
 
     For a variable with possible relations to other variables,
     /cl-ref/ uses a special class called /ref-object/. Three main
@@ -576,7 +870,7 @@
      argument. This function is called, whenever one or more
      ref-objects referenced in its body using /get-val/ are
      changed. In that way actions can be triggered and associated
-     with the change of ref-objects[fn:3]. Since actions can also
+     with the change of ref-objects[fn:7]. Since actions can also
      involve changing other ref-objects, /watch/ can be used in a
      similar fashion as /make-computed/.
 
@@ -589,7 +883,7 @@
      /watch/ returns a function to remove the action defined by the
      supplied function. It is crucial to capture this result in order
      to be able to later remove the established connections between
-     variables and associated actions[fn:4].
+     variables and associated actions[fn:8].
 
      IMPORTANT NOTE: Calling the same watch expression twice will
      establish two independent functions which will always be called
@@ -663,18 +957,32 @@
    orm-utils is a collection of utilities developed for general
    purpose use. Ist is included here for completeness only.
 
-[fn:1] With the notable exception of a value bound by /defconstant/,
+* Footnotes
+
+[fn:1] Starting and stopping realtime processing can be done using the
+Keyboard shortcuts /<C-c M-.>/ or /<C-c C-.>/
+
+[fn:2] After all the MIDI input infrastructure of Clamps was built
+on top of Incudine's infrastructure.
+
+[fn:3] Be aware that most MIDI controllers and MIDI software don't
+send /:note-off/ messages explicitely, but rather use a /:note-on/
+message with a velocity of /0/ to denote a note off.
+
+[fn:4] clamps' [[dict:start-midi-receive][start-midi-receive]] and [[dict:stop-midi-receive][stop-midi-receive]] are in fact merely wrappers around /recv-start/ and /recv-stop/.
+
+[fn:5] With the notable exception of a value bound by /defconstant/,
 as a constant is an /immutable/ value, which never changes.
 
-[fn:2] The implementation ideas are similar to javascript frameworks
+[fn:6] The implementation ideas are similar to javascript frameworks
 which became increasingly popular in the 2010s like [[https://en.wikipedia.org/wiki/React_(JavaScript_library)][React]] or [[https://en.wikipedia.org/wiki/Vue.js][Vue.js]],
 although they are rooted in much older concepts from the 1970s and
 80s.
 
-[fn:3] In Lisp parlance this is the classic example of a
+[fn:7] In Lisp parlance this is the classic example of a
 /side-effect/.
 
-[fn:4] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
+[fn:8] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
 [[https://en.wikipedia.org/wiki/Max_(software)][Max/MSP]], /watch/ serves a similar purpose as patch cords in these
 systems. Calling the function returned by /watch/ in that context is
 similar to removing a patch cord, although the analogy shouldn't be

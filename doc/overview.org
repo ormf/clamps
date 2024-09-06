@@ -54,7 +54,7 @@
           s)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-overview-syms)
-#+BIND: org-html-htmlize-output-type 'css
+#+BIND: org-html-htmlize-output-type css
 
 # fomus documentation integrieren
 

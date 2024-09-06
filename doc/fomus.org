@@ -53,7 +53,7 @@
     s)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-fomus-syms)
-#+BIND: org-html-htmlize-output-type 'css
+#+BIND: org-html-htmlize-output-type css
 #+BIND: org-export-with-brokenlinks t
 
 * Disclaimer

@@ -67,13 +67,14 @@ to be supplied. The sym of the stream gets interned as a parameter."
   "Start the real-time system of Clamps. This functions sets the
 following special variables:
 
-*midi-in1* - The default Midi Input
-*midi-out1* - The default Midi Output
-*rts-out* - The default output for realtime messages from
-Clamps/CM.
+*midi-in1* -- The default Midi Input
+
+*midi-out1* -- The default Midi Output
+
+*rts-out* -- The default output for realtime events from Clamps/CM.
 
 It also starts the rt engine of incudine calling
-/incudine:rt-start/.
+/incudine:rt-start/ and the midi receivers.
 
 @Arguments
 rt-wait - Time in seconds to wait before starting.
@@ -87,6 +88,7 @@ related CM functions, like /rts-pause/, /rts-continue/ and /rts-stop/
 also don't work in Clamps.
 
 @See-also
+clamps
 rts?
 "  (declare (ignore rt-wait))
 ;;;  (cm)

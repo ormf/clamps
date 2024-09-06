@@ -126,6 +126,104 @@
   (let ((status (+ chan (ash #b1011 4))))
     (midi-out stream status ccno ccval)))
 
+(defun add-midi-cc-fn (fn channel ccnum)
+  "Add /fn/ to *midi-cc-fns* for /channel/ and /ccnum/.
+/fn/ will be called with the controller value as argument when MIDI
+input at /channel/ and /ccnum/ is received.
+
+@Arguments
+fn - Function of one Argument to call on MIDI input
+channel - Integer in the range [1..16] denoting the MIDI channel.
+ccnum - Integer in the range [1..128] denoting the MIDI Controller number.
+
+@Example
+(add-midi-cc-fn
+  (lambda (cc-val) (format t \"Received Controller Value ~a~%\" cc-val))
+  1 1)
+;; => (#<function (lambda (cc-val)) {564DA61B}>)
+
+@See-also
+remove-all-channel-midi-cc-fns
+remove-all-midi-cc-fns
+remove-midi-cc-fns
+show-midi-cc-fns
+"
+  (push fn (aref (aref *midi-cc-fns* (1- channel)) (1- ccnum))))
+
+(defun show-midi-cc-fns (channel ccnum)
+  "Show all functions stored in *midi-cc-fns* for /channel/ and /ccnum/.
+
+@Arguments
+channel - Integer in the range [1..16] denoting the MIDI channel.
+ccnum - Integer in the range [1..128] denoting the MIDI Controller number.
+
+@Example
+(show-midi-cc-fns 1 1) ; => nil
+
+;; Output in the REPL:
+;; cc-fns of channel 1, ccnum 1: (#<function (lambda (ccval)) {564E441B}>)
+
+@See-also
+add-midi-cc-fn
+remove-midi-cc-fns
+remove-all-channel-midi-cc-fns
+remove-all-midi-cc-fns
+"
+  (format t "cc-fns of channel ~a, ccnum ~a: ~a~%" channel ccnum
+        (aref (aref *midi-cc-fns* (1- channel)) (1- ccnum))))
+
+(defun remove-midi-cc-fns (channel ccnum)
+  "Remove all functions from *midi-cc-fns* for /channel/ and /ccnum/.
+
+@Arguments
+channel - Integer in the range [1..16] denoting the MIDI channel.
+ccnum - Integer in the range [1..128] denoting the MIDI Controller number.
+
+@Example
+(remove-midi-cc-fns 1 1) ; => nil
+
+@See-also
+add-midi-cc-fn
+remove-all-channel-midi-cc-fns
+remove-all-midi-cc-fns
+show-midi-cc-fns
+"
+  (setf (aref (aref *midi-cc-fns* (1- channel)) (1- ccnum)) nil))
+
+(defun remove-all-channel-midi-cc-fns (channel)
+  "Remove all functions from *midi-cc-fns* for all ccnums of /channel/. 
+
+@Arguments
+channel - Integer in the range [1..16] denoting the MIDI channel.
+
+@Example
+(remove-all-channel-midi-cc-fns 1) ; => nil
+
+@See-also
+add-midi-cc-fn
+remove-midi-cc-fns
+remove-all-midi-cc-fns
+show-midi-cc-fns
+"
+  (dotimes (ccnum 128)
+    (remove-midi-cc-fns (1- channel) (1+ ccnum))))
+
+(defun remove-all-midi-cc-fns ()
+  "Remove all functions from *midi-cc-fns* for all ccnums and channels.
+
+@Example
+(remove-all-midi-cc-fns) ; => nil
+
+@See-also
+add-midi-cc-fn
+remove-midi-cc-fns
+remove-all-channel-midi-cc-fns
+show-midi-cc-fns
+"
+  (dotimes (channel 16)
+    (dotimes (ccnum 128)
+      (remove-midi-cc-fns (1+ channel) (1+ ccnum)))))
+
 (defparameter *midi-controllers* (make-hash-table :test #'equal)
   "hash-table which stores all currently active midi controllers by id
   and an entry for all used midi-ins of the active controllers by

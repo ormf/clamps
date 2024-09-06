@@ -134,7 +134,7 @@
   (setq max-lisp-eval-depth 10000)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-dict-to-clamps)
-#+BIND: org-html-htmlize-output-type 'css
+#+BIND: org-html-htmlize-output-type css
 # \\[\\[\\([^\\[]+\\)\\]\\] → [[\\1][\\1]]
 # C-x 8 RET 200b RET C-x 8 0
 
@@ -262,15 +262,16 @@ set-tempo
 
   (defparameter *clamps-extra-symbols*
     (append (mapcar #'first *clamps-extra-doc*)
-            '(cm:svg->browser cm:rts-hush incudine:node-free-unprotected))))
+            '(cm:svg->browser cm:rts-hush incudine:node-free-unprotected
+              cm:rts cm::rts? ;; cl-midictl::midi-controller
+              clog-midi-controller::clog-midi-controller))))
 
 (defun all-clamps-symbols ()
   (let ((acc nil))
     (dolist (pkg *clamps-packages* (cons 'cl-user:clamps (nreverse acc)))
-      (do-external-symbols (sym pkg)
-        (let ((pkg-name (package-name (symbol-package sym))))
-          (when (member pkg-name *clamps-packages* :test #'string=)
-            (pushnew sym acc)))))))
+      (format t "~a~%" (find-package pkg))
+      (do-external-symbols (sym (find-package pkg))
+        (push sym acc)))))
 
 (defparameter *included-package-names*
  '("ASDF/SYSTEM" "KEYWORD"))
@@ -406,7 +407,7 @@ set-tempo
     cl-refs:%trigger svg-import-export:visible svg-import-export:w-height
     svg-import-export:w-width svg-import-export:w-x svg-import-export:w-y
     orm-utils:with-output-to-file
-    orm-utils:with-stream-to-string cl-refs:with-updating-deps cl-poolplayer:x
+     cl-refs:with-updating-deps cl-poolplayer:x
     svg-import-export:width
     svg-import-export:x svg-import-export:x1 svg-import-export:x2
     svg-import-export:xscale-lines svg-import-export:xscale-points
@@ -828,5 +829,4 @@ file."
 (write-dict "/home/orm/work/programmieren/lisp/clamps/doc/clamps-dictionary.org")
 
 ;;(sb-ext:quit)
-
 
