@@ -103,16 +103,19 @@ set-bpm
 "  (setf cm:*tempo* bpm)
   (setf (bpm *tempo*) bpm))
 
-(defvar *clamps-doc-acceptor* (make-instance 'hunchentoot:easy-acceptor
+(defparameter *clamps-doc-acceptor* (make-instance 'hunchentoot:easy-acceptor
         :port 8282
-        :document-root (asdf:system-relative-pathname :clamps "doc/")))
+        :document-root (asdf:system-relative-pathname :clamps "doc/html/clamps-doc/")))
 
 (defun start-doc-acceptor ()
   "Start the doc acceptor for online documentation. This is done
 automatically on startup to make the clamps documentation
 accessible at the URL /https://localhost:8282/.
-"  (unless (hunchentoot::acceptor-listen-socket *clamps-doc-acceptor*)
-     (hunchentoot:start *clamps-doc-acceptor*)))
+"  (when (hunchentoot::acceptor-listen-socket *clamps-doc-acceptor*)
+     (hunchentoot:stop *clamps-doc-acceptor*))  
+  (hunchentoot:start *clamps-doc-acceptor*))
+
+;;; (start-doc-acceptor)
 
 (setf (fdefinition 'clamps::set-bpm) #'clamps:set-tempo)
 
@@ -138,7 +141,7 @@ interpreted as 2-d coordinate pairs.
   (values))
 
 (defun plot-3d (seq)
-  "plot a linear sequence by grouping the elements in 3."
+  "Plot a flat sequence of coordinates by grouping the elements in 3."
   (plot (ou:group seq 3))
   (values))
 
