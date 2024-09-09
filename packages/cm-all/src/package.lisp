@@ -23,7 +23,9 @@
           lsample envelope
           lsample-keynum lsample-play-fn lsample-amp lsample-buffer
           lsample-buffer remove-all-responders recv-stop
-          cycle without-interrupts))
+          cycle without-interrupts
+          midi-output
+          ))
 (shadowing-import '(*midi-in1* *midi-out1*
                     chan id)
                   'cl-midictl)

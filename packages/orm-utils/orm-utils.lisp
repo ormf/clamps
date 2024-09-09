@@ -2033,6 +2033,35 @@ with-props
   `(loop for (,keysym ,valuesym) on ,proplist by #'cddr
          do ,@body))
 
+#|
+(export 'with-proplist/collecting 'orm-utils)
+(defmacro with-proplist/collecting ((keysym valuesym) proplist &body body)
+  "Like do-proplist but collecting the result. All keys and values of
+/proplist/ are bound to the symbols /keysym/ and /valuesym/ in the
+lexical scope of /body/.
+
+@Arguments
+keysym - Symbol bound to all keys of the property list.
+valuesym - Symbol bound to all values of the property list.
+proplist - Property list to be traversed.
+
+@Examples
+(do-proplist/collecting (key val) '(:a 2 :b 5 :c 4)
+  (list key (1+ val)))
+;; => ((:a 3) (:b 6) (:c 5))
+
+@See-also
+delete-props
+do-proplist
+get-prop
+get-props-list
+map-proplist
+with-props
+"
+  `(loop for (,keysym ,valuesym) on ,proplist by #'cddr
+         collect ,@body))
+|#
+
 (defmacro do-proplist/collecting ((keysym valuesym) proplist &body body)
   "Like do-proplist but collecting the result. All keys and values of
 /proplist/ are bound to the symbols /keysym/ and /valuesym/ in the

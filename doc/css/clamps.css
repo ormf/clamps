@@ -272,6 +272,8 @@ h1.title {
 #text-table-of-contents {
     margin-left: -1.5em;
     line-height: 1.3em;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 sup {
@@ -433,17 +435,10 @@ code {
     color: var(--anchor-active);
 }
 
-.toc-hidden {
-    /* display: none; */
+.ul-toc-level-3 .toc-hidden {
+    display: var(--clamps-toc-hidden-display);
 }
 
-.toc-entry {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display:inline-block;
-    white-space: nowrap;
-    width: 22em;
-}
 
 .toc-level-1 a {
     color: var(--h2-color);
@@ -463,6 +458,9 @@ code {
 .toc-level-2 .toc-active {
     color: var(--anchor-active);
     pointer-events: auto;
+    text-overflow: hidden;
+    text-overflow: ellipsis;
+    width: 15em;
 }
 
 .toc-level-2 .toc-active:hover {
@@ -500,9 +498,8 @@ code {
     text-overflow: ellipsis;
     display:inline-block;
     white-space: nowrap;
-    width: 22em;
+    width: 15em;
 }
-
 
 #footnotes {
   margin-top: 5em;

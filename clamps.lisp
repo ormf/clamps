@@ -32,6 +32,18 @@
 (set-on-new-window #'clamps-gui :boot-file "/start.html")
 (set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
 
+(in-package :cl-midictl)
+
+#|
+(defun cl-midictl::ensure-default-midi-in (midi-in)
+  (or (cm:ensure-jackmidi midi-input)
+      (cm:ensure-jackmidi *midi-in1*)))
+
+(defun cl-midictl::ensure-default-midi-out (midi-out)
+  (or (cm:ensure-jackmidi midi-output)
+      (cm:ensure-jackmidi *midi-out1*)))
+|#
+
 (in-package #:clamps)
 
 (defparameter *svg-dir* nil)

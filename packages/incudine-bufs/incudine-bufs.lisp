@@ -190,7 +190,7 @@ buffer.
 
 @Arguments
 file - Pathname or String denoting a soundfile.
-:path - A list of Pathnames or Strings
+:path - List of Pathnames or Strings to search for file.
 
 @See-also
 add-buffer

@@ -73,7 +73,7 @@
    with the original, the additions of the Clamps package have been
    separated into this [[./index.html][Clamps Dictionary]]. Both dictionaries are
    accessed by the same keyboard shortcut /<C-c C-d c>/, automatically
-   integrated into the Clamps system using the standard [[overview:clamps-install][Installation]].
+   integrated into the Clamps system using the standard [[overview:Installation][Installation]].
 
    The Notation of the Clamps Dictionary is simpler than the Notation
    used in the CM Dictionary. Function and Macro definitions use the
@@ -83,11 +83,6 @@
    Names of argumens in the /Arguments/ section of entries are printed
    in =red= and emphasized words appear in /green/.
 * A
-** abs-path
-   Function
-   #+BEGIN_SRC lisp
-     (abs-path sample-path sfz-file-path)
-   #+END_SRC
 ** add-buffer
    Function
    #+BEGIN_SRC lisp
@@ -128,13 +123,20 @@
    #+BEGIN_SRC lisp
      (add-elements container-obj &rest elems)
    #+END_SRC
-   add elements supplied either as svg-objects or as list(s) of svg-objects
+   Add elements supplied either as svg-objects or as list(s) of svg-objects to /container-obj/.
+*** Arguments
+    =container-obj= -- Instance of an svg container.
+
+    =elems= -- One or more Instances of svg objects or lists of
+    Instances to add.
+
+
 ** add-midi-cc-fn
    Function
    #+BEGIN_SRC lisp
      (add-midi-cc-fn fn channel ccnum)
    #+END_SRC
-   Add /fn/ to *​midi-cc-fns​* for /channel/ and /ccnum/.
+   Add /fn/ to [[#midi-cc-fns][*​​midi-cc-fns​​*]] for /channel/ and /ccnum/.
    /fn/ will be called with the controller value as argument when MIDI
    input at /channel/ and /ccnum/ is received.
 *** Arguments
@@ -154,6 +156,7 @@
       ;; => (#<function (lambda (cc-val)) {564DA61B}>)
     #+END_SRC
 *** See also
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
     - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
     - [[remove-midi-cc-fns][remove-midi-cc-fns]]
@@ -161,7 +164,7 @@
 ** add-midi-controller
    Function
    #+BEGIN_SRC lisp
-     (add-midi-controller class id &rest args)
+     (add-midi-controller class #:id &rest args)
    #+END_SRC
    Register a MIDI controller of class /class/ with ID /id/ and optional
    initialization argumens /args/.
@@ -174,7 +177,9 @@
 
 
 *** See also
+    - [[list-midi-controllers][list-midi-controllers]]
     - [[find-controller][find-controller]]
+    - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
     - [[remove-all-midi-controllers][remove-all-midi-controllers]]
 ** add-sfz-preset
@@ -289,7 +294,9 @@
    #+BEGIN_SRC lisp
      (audio-bus object)
    #+END_SRC
-   automatically generated reader method
+   Accessor for the audio-bus slot of dsp /object/.
+*** See also
+    - [[named-bus][named-bus]]
 * B
 ** bang-object
    Class
@@ -350,7 +357,9 @@
    #+BEGIN_SRC lisp
      (bus-name object)
    #+END_SRC
-   automatically generated reader method
+   Accessor for the name slot of dsp /object/.
+*** See also
+    - [[named-bus][named-bus]]
 * C
 ** calcsndbytes
    Function
@@ -408,8 +417,20 @@
 ** ccin
    Function
    #+BEGIN_SRC lisp
-     (ccin ccnum)
+     (ccin ccnum &optional (channel *global-midi-channel*))
    #+END_SRC
+   Return the last received MIDI CC value of controller number /ccnum/
+   at MIDI channel /channel/. Setfable.
+*** Arguments
+    =ccnum= -- Integer in the range [1..128] indicating the Controller
+    Number.
+
+    =channel= -- Integer in the range [1..16] indicating the MIDI
+    channel.
+
+
+*** See also
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
 ** cd
    Function
    #+BEGIN_SRC lisp
@@ -428,13 +449,15 @@
    #+BEGIN_SRC lisp
      (chan object)
    #+END_SRC
-   automatically generated reader method
+   Accessor method for the chan slot of an instance of type
+   [[midi-controller][midi-controller]].
 ** clamps
    Function
    #+BEGIN_SRC lisp
      (clamps &key (gui-root "/tmp") (qsynth nil) (open-gui nil))
    #+END_SRC
-   Start Clamps including the gui.
+   Start Clamps including the Gui. This function can be called from the
+   /:cl-user/ package.
    
    Apart from starting the webserver for the Gui, the function also:
    
@@ -477,7 +500,8 @@
    #+BEGIN_SRC lisp
      (clamps &key (gui-root "/tmp") (qsynth nil) (open-gui nil))
    #+END_SRC
-   Start Clamps including the gui.
+   Start Clamps including the Gui. This function can be called from the
+   /:cl-user/ package.
    
    Apart from starting the webserver for the Gui, the function also:
    
@@ -625,19 +649,25 @@
    Class
 
    Base Class for the Gui instance of a MIDI controller. Note that each
-   open Gui window will create a new instance of all clog-midi-controller
-   it contains and multiple instances of the same Gui page will all share
-   the same midi-controller instance. Any update of any Gui element in
-   any connected Gui will call the [[set-val][set-val]] function of the
-   corresponding [[ref-object][ref-object]] in a slot of the midi-controller
-   instance, automatically triggering updates in all other connected
-   Guis.
+   open Gui window will create a new instance of all
+   clog-midi-controllers it contains. Multiple instances of the same
+   clog-midi-controller in different GUi windows will all share the same
+   midi-controller instance.
    
-   clog-midi-controller implements the following slots:
+   clog-midi-controller implements the following slots with initargs
+   being the keywords of the slot symbol:
    
-   =:midi-controller= -- The midi controller instance of cl-midictl, derived from its [[midi-controller][midi-controller]] class
+   =midi-controller= -- The midi controller instance of [[clamps:cl-midictl][cl-midictl]], its class derived from [[midi-controller][midi-controller]].
    
-   =:connection-hash-key= -- A read-only slot containing the hash key of the web connection of the Gui instance.
+   =connection-hash-key= -- A read-only slot containing the hash key of the web connection of the Gui instance.
+*** Note
+    Any update of any Gui element in any connected Gui window will call
+    the [[set-val][set-val]] function of the corresponding [[ref-object][ref-object]] in a slot
+    of the shared midi-controller instance, automatically triggering
+    updates of the same Gui Element in all other connected Gui windows.
+    
+*** See also
+    - [[m-controller][m-controller]]
 ** close
    Function
    #+BEGIN_SRC lisp
@@ -826,13 +856,15 @@
    be created using the [[add-dsp][add-dsp]] function and its slots automatically
    filled on initialization.
    
-   cuda-dsp accepts the following slot initializations:
+   cuda-dsp implements the following slots with accessor methods of the
+   same name (if not indicated otherwise) and initargs being the keywords
+   of the slot symbol:
    
-   =id= -- The id used in the clamps dsp infrastructure.
+   =id= -- The id used in the clamps dsp infrastructure. Accessor is [[dsp-id][dsp-id]].
    
-   =nodes= -- The active Incudine nodes of a running instance.
+   =nodes= -- The active Incudine nodes of a running instance. Accessor is [[dsp-nodes][dsp-nodes]]
    
-   =node-group= -- The Incudine group of a running instance.
+   =node-group= -- The Incudine group of a running instance. Defaults to 300.
    
    =unwatch= -- List of unwatch functions used by the instance.
 *** Note
@@ -989,11 +1021,6 @@
       
       (differentiate (integrate '(17 2 4))) ; => (17 2 4)
     #+END_SRC
-** digest-poolplayer-preset-form-to-array
-   Function
-   #+BEGIN_SRC lisp
-     (digest-poolplayer-preset-form-to-array args)
-   #+END_SRC
 ** do-proplist
    Macro
    #+BEGIN_SRC lisp
@@ -1111,7 +1138,7 @@
    #+BEGIN_SRC lisp
      (dsp-id object)
    #+END_SRC
-   Return the id of dsp /object/. Read-only.
+   Accessor for the id slot of dsp /object/. Read-only.
 *** See also
     - [[cuda-dsp][cuda-dsp]]
 ** dsp-nodes
@@ -1119,7 +1146,7 @@
    #+BEGIN_SRC lisp
      (dsp-nodes object)
    #+END_SRC
-   Accessor for the Incudine nodes slot of dsp /object/.
+   Accessor for the nodes slot of dsp /object/.
 *** See also
     - [[cuda-dsp][cuda-dsp]]
 * E
@@ -1299,11 +1326,6 @@
    #+BEGIN_SRC lisp
      (faderfox-gui #:id gui-parent &key (chan 4))
    #+END_SRC
-** faderfox-gui-f.orm
-   Function
-   #+BEGIN_SRC lisp
-     (faderfox-gui-f.orm id gui-parent &key (chan 4))
-   #+END_SRC
 ** faderfox-midi
    Class
 
@@ -1364,15 +1386,18 @@
 ** find-controller
    Function
    #+BEGIN_SRC lisp
-     (find-controller id)
+     (find-controller #:id)
    #+END_SRC
-   Return MIDI controller instance with ID /id/.
+   Return MIDI controller instance with ID /id/ or /nil/ if not
+   registered.
 *** Arguments
     =id= -- Keyword or Symbol used as ID of a midicontroller instance .
 
 
 *** See also
     - [[add-midi-controller][add-midi-controller]]
+    - [[list-midi-controllers][list-midi-controllers]]
+    - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
     - [[remove-all-midi-controllers][remove-all-midi-controllers]]
 ** find-dsp
@@ -1656,6 +1681,17 @@
     - [[make-ref][make-ref]]
     - [[set-val][set-val]]
     - [[watch][watch]]
+** *​global-midi-channel​*
+   :PROPERTIES:
+   :CUSTOM_ID: global-midi-channel
+   :END:
+   Variable
+
+   Default MIDI channel for midi controllers or access functions like
+   [[ccin][ccin]].
+*** See also
+    - [[ccin][ccin]]
+    - [[midi-controller][midi-controller]]
 ** *​gnuplot-header​*
    :PROPERTIES:
    :CUSTOM_ID: gnuplot-header
@@ -1754,31 +1790,20 @@
      (highlight clog-element value)
    #+END_SRC
 * I-J
-** id
-   Generic Function
-   #+BEGIN_SRC lisp
-     (id object)
-   #+END_SRC
-   automatically generated reader method
-** id-hash
-   Generic Function
-   #+BEGIN_SRC lisp
-     (id-hash object)
-   #+END_SRC
-   automatically generated reader method
 ** idump
    Function
    #+BEGIN_SRC lisp
-     (idump node)
+     (idump &optional (node 0))
    #+END_SRC
    Dump all active dsps of /node/ to the /incudine:*​​logger-stream​​*/
    output.
 *** Arguments
-    =node= -- The id of the node
+    =node= -- Either a Non Negative Integer denoting the id of the node
+    or an /incudine:node/ Instance.
 
 
 *** Note
-    If /(idump)/ doesn't create any output although dsps are running,
+    If calling idump doesn't produce any output although dsps are running,
     reset the logger-stream using [[reset-logger-stream][reset-logger-stream]].
 ** *​in-refs​*
    :PROPERTIES:
@@ -1884,11 +1909,23 @@
      (list-dsps)
    #+END_SRC
    Return all running Incudine dsps registered with [[add-dsp][add-dsp]] in a
-   list.
+   list sorted by ID.
 *** See also
     - [[add-dsp][add-dsp]]
     - [[find-dsp][find-dsp]]
     - [[remove-dsp][remove-dsp]]
+** list-midi-controllers
+   Function
+   #+BEGIN_SRC lisp
+     (list-midi-controllers)
+   #+END_SRC
+   Return the IDs of all registered midi controllers in a list.
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[find-controller][find-controller]]
+    - [[midi-controller][midi-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
 ** list-sfz-presets
    Function
    #+BEGIN_SRC lisp
@@ -1969,6 +2006,14 @@
 *** See also
     - [[sfz][sfz]]
 * M
+** m-controller
+   Generic Function
+   #+BEGIN_SRC lisp
+     (m-controller object)
+   #+END_SRC
+   Accessor method for the /midi-controller/ slot of a [[clog-midi-controller][clog-midi-controller]] instance.
+*** See also
+    - [[clog-midi-controller][clog-midi-controller]]
 ** m-exp
    Function
    #+BEGIN_SRC lisp
@@ -2417,6 +2462,45 @@
    get initialized with [[add-midi-controller][add-midi-controller]] and removed with
    [[remove-midi-controller][remove-midi-controller]] in order to add/remove it to/from the midi
    controller registry.
+   
+   midi-controller implements the following slots with initargs
+   being the keywords of the slot symbol:
+   
+   =cc-map= -- Array mapping CC nums to internal indexes of the instance.
+   
+   =cc-fns= -- Array of 128 lists storing functions to call when
+   receiving a value at any of the 128 CC numbers.
+   
+   =cc-state= -- Array of 128 [[ref-object][ref-objects]] storing the last
+   received CC value for each CC number.
+   
+   =chan= -- Integer in the range [1..16] denoting the MIDI channel.
+   
+   =echo= -- Boolean to en/disable echoing of midi input to midi output.
+   
+   =id= -- Keyword or Symbol to identify the controller in the registry.
+   
+   =last-note-on= -- The keynum of the last received note-on event with positive
+   velocity.
+   
+   =midi-input= -- jackmidi:input-stream for MIDI input.
+   
+   =midi-output= -- jackmidi:output-stream for MIDI output.
+   
+   =note-fns= -- Array of 128 lists storing functions to call with the
+   velocity as argument, mapped to a received note-on event on any of the
+   128 keynumbers.
+   
+   =note-state= -- Array of 128 [[ref-object][ref-objects]] storing the last
+   received velocity for each keynum.
+   
+   =unwatch= -- Storage for unwatch functions for the slots of the
+   controller instance, handled internally.
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[find-controller][find-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
 ** *​midi-debug​*
    :PROPERTIES:
    :CUSTOM_ID: midi-debug
@@ -2463,6 +2547,31 @@
    #+END_SRC
    Accessor method for the midi-output slot of an instance of type
    [[midi-controller][midi-controller]].
+** msg
+   Macro
+   #+BEGIN_SRC lisp
+     (msg type format-control &rest format-arguments)
+   #+END_SRC
+   Imported from incudine.util: Produce a formatted log message controlled
+   by /format-control/ and /format-arguments/.
+   
+   /type/ should be one of :error, :warn, :info or :debug.
+*** Arguments
+    =type= -- Keynum or Symbol from the following list:
+
+    - /:error/
+    - /:warn/
+    - /:info/
+    - /:debug/
+    =format-control= -- A format control string like in Common Lisp's
+    #'format function.
+
+    =format-arguments= -- Zero or more format arguments like in Common
+    Lisp's #'format function.
+
+
+*** See also
+    - [[nrt-msg][nrt-msg]]
 ** mtof
    Function
    #+BEGIN_SRC lisp
@@ -2701,19 +2810,82 @@
 ** named-bus
    Class
 
+   Class for an incudine audio bus.
+   
+   named-bus is derived from [[cuda-dsp][cuda-dsp]]. It implements the following
+   slots with accessor methods of the same name (if not indicated
+   otherwise) and initargs being the keywords of the slot symbol:
+   
+   =name= -- String naming the bus. Accessor is [[bus-name][bus-name]]. Defaults to the empty string.
+   
+   =num-chans= -- Positive Integer denoting the number of channels. Defaults to 2.
+   
+   =audio-bus= -- Non Negative Integer denoting the bus number. Defaults to 0.
+   
+   =create-bus= -- Boolean denoting whether to create the dsp on initialization. Defaults to /t/.
+   
+   =channel-offset= -- Non Negative Integer denoting the channel offset of the audio output. Defaults to 0.
+*** See also
+    - [[cuda-dsp][cuda-dsp]]
 ** nanoktl2-midi
    Class
 
    Class for a Nanoktl2 midi controller.
+   
+   nanoktl2-midi implements the following slots with accessor methods of
+   the same name and initargs being the keywords of the slot symbol:
+   
+   =cc-nums= -- Array of 128 elements containing the CC numbers of all
+   buttons and faders of the NanoKontrol2.
+   
+   =nk2-faders= -- Array of 16 elements containing the
+   [[ref-object][ref-objects]] of the 8 knobs and the 8 faders of the
+   NanoKontrol2.
+   
+   =nk2-fader-update-fns=
+   
+   =nk2-fader-modes= Array of 16 elements containing the mode of the
+   fader when the hardware fader is out of sync with the program state of
+   the fader. Currently implemented are:
+   
+   - /:scale/ Scale fader values when moving the hardware fader.
+   - /:jump/ Jump to the value when moving the hardware fader.
+   
+   =nk2-fader-last-cc= Storage of the last CC value of the 16 faders.
+   
+   =s-buttons= Array of 8 [[ref-object][ref-objects]] containing the state of the 8 S buttons with a value of 0 or 1.
+   
+   =m-buttons= Array of 8 [[ref-object][ref-objects]] containing the state of the 8 M buttons with a value of 0 or 1.
+   
+   =r-buttons= Array of 8 [[ref-object][ref-objects]] containing the state of the 8 R buttons with a value of 0 or 1.
+   
+   =track-left= [[ref-object][ref-object]] of the track left button.
+   
+   =track-right= [[ref-object][ref-object]] of the track right button.
+   
+   =cycle= [[ref-object][ref-object]] of the cycle button.
+   
+   =set-marker= [[ref-object][ref-object]] of the set marker button.
+   
+   =marker-left= [[ref-object][ref-object]] of the marker left button.
+   
+   =marker-right= [[ref-object][ref-object]] of the marker right button.
+   
+   =tr-rewind= [[ref-object][ref-object]] of the rewind transport button.
+   
+   =tr-ffwd= [[ref-object][ref-object]] of the fast forward transport button.
+   
+   =tr-stop= [[ref-object][ref-object]] of the stop transport button.
+   
+   =tr-play= [[ref-object][ref-object]] of the play transport button.
+   
+   =tr-record= [[ref-object][ref-object]] of the record transport button.
+*** See also
+    - [[midi-controller][midi-controller]]
 ** nanoktl2-preset-gui
    Function
    #+BEGIN_SRC lisp
      (nanoktl2-preset-gui #:id container &key (chan 5))
-   #+END_SRC
-** nanoktl2-preset-gui-f.orm
-   Function
-   #+BEGIN_SRC lisp
-     (nanoktl2-preset-gui-f.orm id container &key (chan 5))
    #+END_SRC
 ** nanoktl2-preset-midi
    Class
@@ -2738,9 +2910,34 @@
    #+BEGIN_SRC lisp
      (node-group object)
    #+END_SRC
-   Accessor for the Incudine node-group slot of dsp /object/.
+   Accessor for the node-group slot of dsp /object/.
 *** See also
     - [[cuda-dsp][cuda-dsp]]
+** nrt-msg
+   Macro
+   #+BEGIN_SRC lisp
+     (nrt-msg type format-control &rest format-arguments)
+   #+END_SRC
+   Imported from incudine.util: Produce a formatted log message in the
+   nrt-thread controlled by /format-control/ and /format-arguments/.
+   
+   /type/ should be one of :error, :warn, :info or :debug.
+*** Arguments
+    =type= -- Keynum or Symbol from the following list:
+
+    - /:error/
+    - /:warn/
+    - /:info/
+    - /:debug/
+    =format-control= -- A format control string like in Common Lisp's
+    #'format function.
+
+    =format-arguments= -- Zero or more format arguments like in Common
+    Lisp's #'format function.
+
+
+*** See also
+    - [[msg][msg]]
 ** ntom
    Function
    #+BEGIN_SRC lisp
@@ -2764,6 +2961,14 @@
     #+END_SRC
 *** See also
     - [[mton][mton]]
+** num-chans
+   Generic Function
+   #+BEGIN_SRC lisp
+     (num-chans object)
+   #+END_SRC
+   Accessor for the num-chans slot of dsp /object/.
+*** See also
+    - [[named-bus][named-bus]]
 * O
 ** of-buffer-load
    Function
@@ -2775,7 +2980,7 @@
 *** Arguments
     =file= -- Pathname or String denoting a soundfile.
 
-    =:path= -- A list of Pathnames or Strings
+    =:path= -- List of Pathnames or Strings to search for file.
 
 
 *** See also
@@ -2909,11 +3114,6 @@
    Function
    #+BEGIN_SRC lisp
      (play-buffer-stretch-env-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
-   #+END_SRC
-** play-buffer-stretch-env-pan-bus-out*
-   Function
-   #+BEGIN_SRC lisp
-     (play-buffer-stretch-env-pan-bus-out* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (busnum 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch-env-pan-out
    Function
@@ -3360,6 +3560,7 @@
     #+END_SRC
 *** See also
     - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[remove-midi-cc-fns][remove-midi-cc-fns]]
     - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
     - [[show-midi-cc-fns][show-midi-cc-fns]]
@@ -3380,6 +3581,7 @@
     #+END_SRC
 *** See also
     - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[remove-midi-cc-fns][remove-midi-cc-fns]]
     - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
     - [[show-midi-cc-fns][show-midi-cc-fns]]
@@ -3391,7 +3593,9 @@
    Unregister and delete all currently registered MIDI controller instances.
 *** See also
     - [[add-midi-controller][add-midi-controller]]
+    - [[list-midi-controllers][list-midi-controllers]]
     - [[find-controller][find-controller]]
+    - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
 ** remove-buffer
    Function
@@ -3441,13 +3645,14 @@
     #+END_SRC
 *** See also
     - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
     - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
     - [[show-midi-cc-fns][show-midi-cc-fns]]
 ** remove-midi-controller
    Function
    #+BEGIN_SRC lisp
-     (remove-midi-controller id)
+     (remove-midi-controller #:id)
    #+END_SRC
    Unregister and delete the instance of a midi controller with ID /id/.
 *** Arguments
@@ -3456,7 +3661,9 @@
 
 *** See also
     - [[add-midi-controller][add-midi-controller]]
+    - [[list-midi-controllers][list-midi-controllers]]
     - [[find-controller][find-controller]]
+    - [[midi-controller][midi-controller]]
     - [[remove-all-midi-controllers][remove-all-midi-controllers]]
 ** remove-sfz-preset
    Function
@@ -3792,24 +3999,24 @@
    
    sfz accepts the following slot initializations:
    
-   =:time= The output time in seconds, initially unbound.
+   =:time= -- The output time in seconds, initially unbound.
    
-   =:keynum= Keynum in Midicents.
+   =:keynum= -- Keynum in Midicents.
    
-   =:amplitude= Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
+   =:amplitude= -- Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
    
-   =:duration= Duration in seconds.
+   =:duration= -- Duration in seconds.
    
-   =:preset= Keyword or symbol of a registered preset name.
+   =:preset= -- Keyword or symbol of a registered preset name.
    
-   =:play-fn= The play function to be used for sample playback.
+   =:play-fn= -- The play function to be used for sample playback.
    
-   =:pan= Number in the range /[0..1]/ defining equal power panning
+   =:pan= -- Number in the range /[0..1]/ defining equal power panning
    between the two outputs of the dsp on playback.
    
-   =:startpos= The startposition in the sample in seconds.
+   =:startpos= -- The startposition in the sample in seconds.
    
-   =:chan= The channel (layer) used in svg output.
+   =:chan= -- The channel (layer) used in svg output.
 *** Examples
     #+BEGIN_SRC lisp
         (new sfz)
@@ -3847,6 +4054,8 @@
    Convert an entry of a sfz file into a lsample.
 *** Arguments
     =sfz-entry= -- Instance of sfz class.
+
+    =dir= -- Pathname or String denoting the directory of the sfz file.
 
     =:play-fn= -- The play function to play the lsample. Possible
     options are:
@@ -3963,6 +4172,7 @@
     #+END_SRC
 *** See also
     - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[remove-midi-cc-fns][remove-midi-cc-fns]]
     - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
     - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
@@ -4180,12 +4390,6 @@
    Also removes duplicates and flattens subgroups. Points are simple
    two-element lists containing x and y coordinates. The y coordinate is
    supposed to be a midifloat value, x ist translated into secs/beats.
-** svg-class
-   Generic Function
-   #+BEGIN_SRC lisp
-     (svg-class object)
-   #+END_SRC
-   automatically generated reader method
 ** svg-clone
    Class
 
@@ -4198,30 +4402,12 @@
      (svg-collect-lines layer parse-state &key (timescale 1) (x-offset 0) (xquantize nil) (yquantize nil) layer?)
    #+END_SRC
    return a list of svg-cm-line instances of layer with a given parse-state.
-** svg-file
-   Class
-
-** svg-group
-   Class
-
 ** svg-gui-path
    Function
    #+BEGIN_SRC lisp
      (svg-gui-path str)
    #+END_SRC
-** svg-layer
-   Class
-
-** svg-line
-   Class
-
-** svg-point
-   Class
-
 ** svg-rect
-   Class
-
-** svg-text
    Class
 
 ** system-version

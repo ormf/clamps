@@ -41,8 +41,8 @@
                   :cm-poolevt
                   :cm-poolplayer
                   :cm-fomus
-                  :cl-midictl
                   :cm-incudine
+                  :cl-midictl
                   :cm-utils
                   :clog-dsp-widgets
                   :clog-cuda

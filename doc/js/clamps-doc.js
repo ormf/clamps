@@ -11,9 +11,32 @@ function calculateSettingAsThemeString({ localStorageTheme, systemSettingDark })
 
 var r = document.querySelector(':root');
 var tocHidden;
+var tocUnfolded;
+
+function toggleClampsTocUnfold () {
+    if (tocUnfolded == 'true') {
+        r.style.setProperty('--clamps-toc-hidden-display', 'none');
+        tocUnfolded = 'false';
+    }
+    else {
+        r.style.setProperty('--clamps-toc-hidden-display', 'display-block');
+        tocUnfolded = 'true';
+    }
+    localStorage.setItem('clamps-toc-unfolded', tocUnfolded);
+}
 
 function setTocStartState () {
+    let localStorageTocUnfolded = localStorage.getItem("clamps-toc-unfolded");
     let localStorageTocHidden = localStorage.getItem("clamps-toc-hidden");
+    
+    if (localStorageTocUnfolded != null && localStorageTocUnfolded == "false") {
+        console.log("toc-unfolded = false");
+        tocUnfolded = "true";
+    }
+    else {
+        tocUnfolded = "false";
+        console.log("toc-unfolded = true");
+    }
     if (localStorageTocHidden != null && localStorageTocHidden == "false") {
         console.log("toc-start: hidden = false");
         tocHidden = "true";
@@ -23,6 +46,7 @@ function setTocStartState () {
         console.log("toc-start: hidden = true");
     }
     toggleToc();
+    toggleClampsTocUnfold();
 }
 
 const localStorageTheme = localStorage.getItem("clamps-doc-theme");

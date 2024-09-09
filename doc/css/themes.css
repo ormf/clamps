@@ -1,7 +1,7 @@
 [data-theme="dark"] {
-    --global-font-size: 13.5pt;
+    --global-font-size: 10pt;
     --overview-toc-width: 17.8em;
-    --clamps-toc-width: 17.8em;
+    --clamps-toc-width: 20em;
     --clamps-dict-toc-width: 17.8em;
     --fomus-toc-width: 17.8em;
     --text-font:  DejaVu, sans;
@@ -62,9 +62,9 @@
 }
 
 [data-theme="light"] {
-    --global-font-size: 13.5pt;
+    --global-font-size: 10pt;
     --overview-toc-width: 17.8em;
-    --clamps-toc-width: 17.8em;
+    --clamps-toc-width: 20em;
     --clamps-dict-toc-width: 17.8em;
     --fomus-toc-width: 17.8em;
     --text-font:  DejaVu, sans;

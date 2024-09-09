@@ -22,7 +22,14 @@
 
 (defparameter *midi-in1* nil)
 (defparameter *midi-out1* nil)
-(defparameter *global-midi-channel* 0)
+(defparameter *global-midi-channel* 1
+  "Default MIDI channel for midi controllers or access functions like
+<<ccin>>.
+
+@See-also
+ccin
+midi-controller
+")
 
 (defparameter *midi-cc-state*
   (make-array 16 :initial-contents

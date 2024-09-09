@@ -110,7 +110,7 @@
          (v-collect (n 11) (+ n 40)))
     (dotimes (i (length cc-nums))
       (unless (<= 40 i 45)
-        (set-val (aref cc-state i) (get-val (aref (aref *midi-cc-state* chan) (aref cc-nums i))))))
+        (set-val (aref cc-state i) (get-val (aref (aref *midi-cc-state* (1- chan)) (aref cc-nums i))))))
     (update-state obj)
     (mapcar #'funcall unwatch)
     (loop for idx below 8
@@ -126,7 +126,7 @@
                            (update-preset-buttons obj))
                          (set-val (aref r-buttons idx) 0))))))
           unwatch))
-    (let ((opcode (+ chan 176)))
+    (let ((opcode (+ (1- chan) 176)))
       (loop for idx below 8 ;;; state change in any of the preset buttons
             do (loop
                  for offs in '(16 24)
@@ -197,7 +197,7 @@ off is determined by <initial-flash>."
                  (let ((next (+ time pulse-time)))
                    (osc-midi-write-short
                     (midi-output midi-controller)
-                    (+ (chan midi-controller) 176) cc-num (if flash-state 127 0))
+                    (+ (1- (chan midi-controller)) 176) cc-num (if flash-state 127 0))
                    (setf flash-state (not flash-state))
                    (at next #'inner next)))))
       (inner (now)))))

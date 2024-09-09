@@ -63,11 +63,51 @@
 |#
 
 (defclass named-bus (cuda-dsp)
-  ((name :initarg :bus-name :initform "" :accessor bus-name)
-   (num :initform 2 :initarg :num :accessor num-channels)
-   (audio-bus :initform 0 :initarg :audio-bus :accessor audio-bus)
-   (create-bus :initform t :initarg :create-bus :type boolean)
-   (channel-offset :initform 0 :initarg :channel-offset :accessor channel-offs)))
+  ((name :initarg :bus-name :initform "" :accessor bus-name
+         :documentation "Accessor for the name slot of dsp /object/.
+@See-also
+named-bus
+")
+   (num-chans :initform 2 :initarg :num-chans :accessor num-chans
+              :documentation "Accessor for the num-chans slot of dsp /object/.
+@See-also
+named-bus
+"             )
+   (audio-bus :initform 0 :initarg :audio-bus :accessor audio-bus
+              :documentation "Accessor for the audio-bus slot of dsp /object/.
+@See-also
+named-bus
+")
+   (create-bus :initform t :initarg :create-bus :type boolean
+               :documentation "Accessor for the create-bus slot of dsp /object/.
+@See-also
+named-bus
+")
+   (channel-offset :initform 0 :initarg :channel-offset :accessor channel-offs
+                   :documentation "Accessor for the channel-offset slot of dsp /object/.
+@See-also
+named-bus
+"))
+  (:documentation "Class for an incudine audio bus.
+
+named-bus is derived from <<cuda-dsp>>. It implements the following
+slots with accessor methods of the same name (if not indicated
+otherwise) and initargs being the keywords of the slot symbol:
+
+=name= -- String naming the bus. Accessor is <<bus-name>>. Defaults to the empty string.
+
+=num-chans= -- Positive Integer denoting the number of channels. Defaults to 2.
+
+=audio-bus= -- Non Negative Integer denoting the bus number. Defaults to 0.
+
+=create-bus= -- Boolean denoting whether to create the dsp on initialization. Defaults to /t/.
+
+=channel-offset= -- Non Negative Integer denoting the channel offset of the audio output. Defaults to 0.
+
+@See-also
+cuda-dsp
+"
+   ))
 
 (defmethod initialize-instance :after ((instance named-bus) &rest initargs)
   (declare (ignorable initargs))

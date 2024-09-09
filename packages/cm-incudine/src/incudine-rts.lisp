@@ -56,9 +56,6 @@
   (setf (io-class-file-types <incudine-stream>) '("*.ic"))
   (values))
 
-(defmethod incudine-output ((obj #+portaudio pm:output-stream #-portaudio jackmidi:output-stream))
-               obj)
-
 (defmethod print-object ((obj incudine-stream) port)
            (let ((name (object-name obj))
                  (pids (event-stream-stream obj))
@@ -563,11 +560,6 @@
            send-fudi
 ))
 |#
-
-(defun ensure-jackmidi (stream)
-  (if(typep stream 'incudine-stream)
-     (incudine-output stream)
-     stream))
 
 (export '(rts *rts-out* incudine-stream incudine-output incudine-input
           samps->time time->samps secs->samps samps->secs at amp->velo

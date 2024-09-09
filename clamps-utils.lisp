@@ -77,20 +77,47 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
         (format t e)))
   (values))
 
-(defun clamps:idump (node)
+(defvar node nil)
+(setf (fdefinition 'node) #'incudine:node)
+(defvar bus nil)
+(setf (fdefinition 'bus) #'incudine:bus)
+(defsetf bus incudine::set-bus)
+
+#|
+(defmacro imsg (type format-control &rest format-arguments)
+  "Produce a formatted log message controlled by FORMAT-CONTROL and
+FORMAT-ARGUMENTS.
+
+TYPE should be one of ERROR, WARN, INFO or DEBUG."
+  `(incudine.util::%msg ',(incudine::ensure-symbol type "INCUDINE.UTIL")
+         ,format-control (list ,@format-arguments)))
+
+(export '(reinit-midi restart-qsynth jack-connect-qsynth
+          *mt-out01* *midi-in1* *midi-out1*
+          start-cm-all cm-restart-gui reset-logger-stream
+          *sly-connected-hooks* call-sly-connected-hooks
+          install-standard-sly-hooks)
+        'cm)
+|#
+
+(defun clamps:idump (&optional (node 0))
   "Dump all active dsps of /node/ to the /incudine:*​logger-stream​*/
 output.
 
 @Arguments
-node - The id of the node
+
+node - Either a Non Negative Integer denoting the id of the node or an
+/incudine:node/ Instance.
 
 @Note
-If /(idump)/ doesn't create any output although dsps are running,
+If calling idump doesn't produce any output although dsps are running,
 reset the logger-stream using <<reset-logger-stream>>.
 "
   (unless incudine.util:*logger-stream*
     (reset-logger-stream))
-  (dump (incudine:node node)))
+  (dump (if (numberp node)
+            (incudine:node node)
+            node)))
 
 (defun clamps:set-tempo (bpm)
   "Set the tempo in beats per minute for both, CM and Incudine.

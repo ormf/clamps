@@ -43,7 +43,60 @@
    (tr-play :accessor tr-play)
    (tr-rec :accessor tr-rec)
    (cc-nums :accessor cc-nums))
-  (:documentation "Class for a Nanoktl2 midi controller."))
+  (:documentation "Class for a Nanoktl2 midi controller.
+
+nanoktl2-midi implements the following slots with accessor methods of
+the same name and initargs being the keywords of the slot symbol:
+
+=cc-nums= -- Array of 128 elements containing the CC numbers of all
+buttons and faders of the NanoKontrol2.
+
+=nk2-faders= -- Array of 16 elements containing the
+<<ref-object><ref-objects>> of the 8 knobs and the 8 faders of the
+NanoKontrol2.
+
+=nk2-fader-update-fns=
+
+=nk2-fader-modes= Array of 16 elements containing the mode of the
+fader when the hardware fader is out of sync with the program state of
+the fader. Currently implemented are:
+
+- /:scale/ Scale fader values when moving the hardware fader.
+- /:jump/ Jump to the value when moving the hardware fader.
+
+=nk2-fader-last-cc= Storage of the last CC value of the 16 faders.
+
+=s-buttons= Array of 8 <<ref-object><ref-objects>> containing the state of the 8 S buttons with a value of 0 or 1.
+
+=m-buttons= Array of 8 <<ref-object><ref-objects>> containing the state of the 8 M buttons with a value of 0 or 1.
+
+=r-buttons= Array of 8 <<ref-object><ref-objects>> containing the state of the 8 R buttons with a value of 0 or 1.
+
+=track-left= <<ref-object>> of the track left button.
+
+=track-right= <<ref-object>> of the track right button.
+
+=cycle= <<ref-object>> of the cycle button.
+
+=set-marker= <<ref-object>> of the set marker button.
+
+=marker-left= <<ref-object>> of the marker left button.
+
+=marker-right= <<ref-object>> of the marker right button.
+
+=tr-rewind= <<ref-object>> of the rewind transport button.
+
+=tr-ffwd= <<ref-object>> of the fast forward transport button.
+
+=tr-stop= <<ref-object>> of the stop transport button.
+
+=tr-play= <<ref-object>> of the play transport button.
+
+=tr-record= <<ref-object>> of the record transport button.
+
+
+@See-also
+midi-controller"))
 
 (export '(nanoktl2-midi
           nk2-faders nk2-fader-update-fns
@@ -127,14 +180,14 @@ nanokontrol2.
          (v-collect (n 11) (+ n 40)))
     (dotimes (i (length cc-nums))
       (unless (<= 40 i 45)
-        (set-val (aref cc-state i) (get-val (aref (aref *midi-cc-state* chan) (aref cc-nums i)))))))
+        (set-val (aref cc-state i) (get-val (aref (aref *midi-cc-state* (1- chan)) (aref cc-nums i)))))))
   (update-state obj))
 
 
 #|
                    (osc-midi-write-short
                       (midi-output midi-controller)
-                      (+ (chan midi-controller) 176) cc-num (if flash-state 127 0))
+                      (+ (1- (chan midi-controller)) 176) cc-num (if flash-state 127 0))
 
 |#
 (defmethod handle-midi-in ((instance nanoktl2-midi) opcode d1 d2)
@@ -187,5 +240,5 @@ nanokontrol2.
         (let ((cc-num (aref cc-nums local-idx)))
           (osc-midi-write-short
            midi-output
-           (+ chan 176) cc-num (round (get-val (aref cc-state local-idx)))))))))
+           (+ (1- chan) 176) cc-num (round (get-val (aref cc-state local-idx)))))))))
 

@@ -39,7 +39,11 @@
         (push elem (elements svg)))))
 
 (defmethod add-elements ((obj svg-group) &rest elems)
-  "add elements supplied either as svg-objects or as list(s) of svg-objects"
+  "Add elements supplied either as svg-objects or as list(s) of svg-objects to /container-obj/.
+
+@Arguments
+container-obj - Instance of an svg container.
+elems - One or more Instances of svg objects or lists of Instances to add."
   (list (cons obj
               (let (result)
                 (dolist (elem (reverse elems))

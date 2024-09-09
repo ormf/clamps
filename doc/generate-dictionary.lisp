@@ -176,6 +176,56 @@ the REPL.
 This function needs to be called if /Clamps/ is started from a Lisp
 Image.
 "))
+      (incudine.util:msg
+       (macro
+        (type format-control &rest format-arguments)
+        "Imported from incudine.util: Produce a formatted log message controlled
+by /format-control/ and /format-arguments/.
+
+/type/ should be one of :error, :warn, :info or :debug.
+
+@Arguments
+type - Keynum or Symbol from the following list:
+
+- /:error/
+- /:warn/
+- /:info/
+- /:debug/
+
+format-control - A format control string like in Common Lisp's #'format function.
+
+format-arguments - Zero or more format arguments like in Common Lisp's #'format function.
+
+@See-also
+nrt-msg
+"))
+
+
+      (incudine.util:nrt-msg
+       (macro
+        (type format-control &rest format-arguments)
+        "Imported from incudine.util: Produce a formatted log message in the
+nrt-thread controlled by /format-control/ and /format-arguments/.
+
+/type/ should be one of :error, :warn, :info or :debug.
+
+@Arguments
+type - Keynum or Symbol from the following list:
+
+- /:error/
+- /:warn/
+- /:info/
+- /:debug/
+
+format-control - A format control string like in Common Lisp's #'format function.
+
+format-arguments - Zero or more format arguments like in Common Lisp's #'format function.
+
+@See-also
+msg
+"
+        
+        ))
 
       (cm:sfz (cm-class
                (&key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
@@ -184,24 +234,24 @@ Image.
 
 sfz accepts the following slot initializations:
 
-=:time= The output time in seconds, initially unbound.
+=:time= -- The output time in seconds, initially unbound.
 
-=:keynum= Keynum in Midicents.
+=:keynum= -- Keynum in Midicents.
 
-=:amplitude= Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
+=:amplitude= -- Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
 
-=:duration= Duration in seconds.
+=:duration= -- Duration in seconds.
 
-=:preset= Keyword or symbol of a registered preset name.
+=:preset= -- Keyword or symbol of a registered preset name.
 
-=:play-fn= The play function to be used for sample playback.
+=:play-fn= -- The play function to be used for sample playback.
 
-=:pan= Number in the range /[0..1]/ defining equal power panning
+=:pan= -- Number in the range /[0..1]/ defining equal power panning
 between the two outputs of the dsp on playback.
 
-=:startpos= The startposition in the sample in seconds.
+=:startpos= -- The startposition in the sample in seconds.
 
-=:chan= The channel (layer) used in svg output.
+=:chan= -- The channel (layer) used in svg output.
    
 @Examples
   (new sfz)
@@ -266,7 +316,8 @@ set-tempo
               cl-user:*sfile-path*
               cm:svg->browser cm:rts-hush incudine:node-free-unprotected
               cm:rts cm::rts? ;; cl-midictl::midi-controller
-              clog-midi-controller::clog-midi-controller))))
+              clog-midi-controller::clog-midi-controller
+              clog-midi-controller::m-controller))))
 
 (defun all-clamps-symbols ()
   (let ((acc nil))
@@ -303,10 +354,22 @@ set-tempo
 
 (defparameter *clamps-symbols-to-ignore*
   '(orm-utils:param-exp-func
+    of-incudine-dsps:abs-path
     orm-utils:defconst
     orm-utils::while
     cm:pwd
     svg-import-export:add-svg-attr-props-to-quote
+    ;;
+    svg-import-export:id
+    svg-import-export:id-hash
+    svg-import-export:svg-class
+    svg-import-export:svg-file
+    svg-import-export:svg-group
+    svg-import-export:svg-layer
+    svg-import-export:svg-line
+    svg-import-export:svg-point
+    svg-import-export:svg-text
+
     clog-dsp-widgets:amp-node
     cl-poolplayer:args ats-cuda-display:ats-amod ats-cuda-display:ats-bw
     ats-cuda-display:ats-crosshairs ats-cuda-display:ats-data

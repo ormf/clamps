@@ -46,6 +46,10 @@
     (,+ml-key-pressure-opcode+ . :key-pressure)
     (,+ml-channel-pressure-opcode+ . :channel-pressure)))
 
+(defun ensure-jackmidi (stream)
+  (if(typep stream 'incudine-stream)
+     (cm:incudine-output stream)
+     stream))
 
 (defun status->opcode (st)
   (cdr (assoc (ash (logand st +ml-opcode-mask+) -4)
@@ -344,7 +348,7 @@ filtering."
            midi-out ctl-out note-on note-off pitch-bend pgm-change midi-note midi-write-message
           midi-open-default midi-close-default
           incudine-ensure-microtuning *rt-scale* *midi-in1* *midi-out1* *midi-rcv-type-dummy*
-          *midi-obj-name-dummy*)
+          *midi-obj-name-dummy* ensure-jackmidi)
         'cm)
 
 

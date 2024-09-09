@@ -41,7 +41,7 @@ list-dsps
 remove-dsp
 "
   (setf (gethash id *dsps*)
-        (apply #'make-instance dsp args)))
+        (apply #'make-instance dsp (list* :id id args))))
 
 (defun remove-dsp (id)
   "Remove a running Incudine dsp registered with <<add-dsp>>.
@@ -77,13 +77,15 @@ remove-dsp
 
 (defun list-dsps ()
   "Return all running Incudine dsps registered with <<add-dsp>> in a
-list.
+list sorted by ID.
 
 @See-also
 add-dsp
 find-dsp
 remove-dsp
 "
-  (loop
-    for key being the hash-keys of *dsps*
-    collect key))
+  (sort
+   (loop
+     for key being the hash-keys of *dsps*
+     collect key)
+   #'string< :key #'symbol-name))

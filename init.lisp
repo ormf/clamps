@@ -30,7 +30,8 @@
       :if-does-not-exist nil)
 
 (defun clamps (&key (gui-root "/tmp") (qsynth nil) (open-gui nil))
-  "Start Clamps including the gui.
+  "Start Clamps including the Gui. This function can be called from the
+/:cl-user/ package.
 
 Apart from starting the webserver for the Gui, the function also:
 
@@ -91,7 +92,5 @@ rts
                         (symbol-value sym)))))))
     (funcall #'clampscall :clamps-start
              :gui-root gui-root :qsynth qsynth :open-gui open-gui)))
-(defun clamps-no-gui ()
-  (clamps :open-gui nil))
 
 (export '(*sfz-preset-lookup* *sfz-preset-path* *sfile-path* clamps clamps-no-gui) 'cl-user)

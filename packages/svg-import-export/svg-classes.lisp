@@ -160,8 +160,24 @@
    (id-hash :accessor id-hash :initarg :id-hash :initform (make-hash-table) :export t)))
 
 (def-exporting-class svg-item ()
-  ((id :accessor id :initarg :id :initform nil :export t)
-   (svg-class :accessor svg-class :initarg :svg-class :initform nil :export t)))
+    ((id :accessor id :initarg :id :initform nil :export t
+         :documentation "Accessor for the id slot of svg /object/.
+@See-also
+svg-file
+svg-group
+svg-layer
+svg-line
+svg-point
+svg-text")
+     (svg-class :accessor svg-class :initarg :svg-class :initform nil :export t
+                :documentation "Accessor for the svg-class slot of svg /object/.
+@See-also
+svg-file
+svg-group
+svg-layer
+svg-line
+svg-point
+svg-text")))
 
 (def-exporting-class svg-group (svg-item)
   ())

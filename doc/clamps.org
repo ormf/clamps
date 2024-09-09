@@ -3,7 +3,7 @@
 #+LANGUAGE: en
 #+OPTIONS: html5-fancy:t
 #+OPTIONS: num:nil
-#+OPTIONS: toc:3 h:4 html-multipage-join-empty-bodies:t
+#+OPTIONS: toc:4 h:4 html-multipage-join-empty-bodies:t
 #+OPTIONS: html-multipage-split-level:toc
 #+OPTIONS: html-multipage-toc-to-top:t
 #+OPTIONS: html-multipage-export-directory:html/clamps-doc/clamps
@@ -61,7 +61,8 @@
 
 
 * General
-** Package Naming
+** Clamps Packages Overview
+*** Package Naming
    The additional packages developed for clamps serve different
    purposes, reflected in their name.
 
@@ -79,6 +80,49 @@
    /cm-sfz/. The /cl-/ part is a more general implementation of basic
    functionality, while the /cm-/ part adds the specific extensions
    for the integration into Common Music.
+*** Reading the Documentation
+    The Clamps Packages Documentation aims to explain the concepts of
+    the different parts of Clamps with some examples. For that reason
+    the table of contents is ordered systematically.
+
+    Although each of the chapters can be considered an introduction to
+    exemplify how to use the part it describes, it is not a thorough
+    presentation of all components of the API of the package. It
+    should nevertheless provide enough information to get a rough
+    understanding of the concepts to be able to start using it.
+
+    The [[../clamps-dict/index.html][Clamps Dictionary]] is the place to go to get a more complete
+    picture of the API. The sections of the Clamps Package
+    Documentation provide links to the dictionary in many places.
+
+    The reader is encouraged to go back and forth between these
+    documentation sources, use the cross references in the dictionary
+    or even consult the source code.
+
+    Due to this open concept there is no preferred sequence to read
+    the Clamps Packages Documentation. Nevertheless some parts depend
+    on the knowledge of other parts of the documentation. As an
+    example, the [[cm-sfz]] part can only be understood, when the concept
+    of the [[cl-sfz]] package is known.
+
+    Below is a graph of "dependencies" of the package
+    explanations. The entries at the end of an arrow indicate that
+    they can only be fully understood, when the documentation of the
+    entry at the start of the array is understood. The reader may
+    construct her or his individual reading path from these
+    dependencies:
+
+    [[clamps]] -> [[cl-refs]] -> [[cl-midictl]]
+
+    [[cl-refs]] -> [[clog-dsp-widgets]]
+
+    [[of-incudine-dsps]] -> [[incudine-bufs]] -> [[cl-sfz]] -> [[cm-sfz]]
+
+    [[cm-svg]] -> [[cm-svg.rts]]
+
+    [[General Incudine Setup]] -> [[of-incudine-dsps]]
+    
+    
 ** clamps
 *** Startup
    The clamps package is loaded from the REPL using quicklisp:
@@ -196,7 +240,7 @@
 *** Opening MIDI Ports
     Before being able to work with MIDI in/output in Clamps, its MIDI
     Ports have to get opened. Clamps uses the function [[dict:rts][rts]] to
-    open the Ports, which is called by the [[dict:clamps][clamps]] function at
+    open the ports, which is called by the [[dict:clamps][clamps]] function at
     the beginning of the session. If realtime processing is
     activated[fn:1], the ports should appear in JACK.
 *** MIDI Output
@@ -251,17 +295,17 @@
        instances registered with the function [[dict:add-midi-controller][add-midi-controller]] will
        get called.
 
-**** A practical Example using *​midi-cc-fns​*
+**** Example using *​midi-cc-fns​*
      Let's show this in action. We want to attach behaviour when
-     controller 1 of MIDI channel 1 is moved. One possibility is using
-     *​midi-cc-fns​* like this:
+     controller 1 of MIDI channel 1 is moved. One way is to use the
+     *​midi-cc-fns​* variable like this:
      #+BEGIN_SRC lisp
        ;; add a function to the slot of *midi-cc-fns* corresponding to
        ;; the desired CC number and MIDI channel
 
        (push
         (lambda (cc-val)
-          (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1" cc-val))
+          (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1" cc-val))
         (aref (aref *midi-cc-fns* 0) 0))
        
        ;; => (#<function (lambda (cc-val)) {557AF50B}>)
@@ -272,10 +316,10 @@
      something like the following in the REPL:
      #+BEGIN_SRC lisp
 
-       warn: Received CC Value 46 on Midi Channel 0 and CC Number 0
-       warn: Received CC Value 47 on Midi Channel 0 and CC Number 0
-       warn: Received CC Value 48 on Midi Channel 0 and CC Number 0
-       warn: Received CC Value 49 on Midi Channel 0 and CC Number 0
+       warn: Received CC Value 46 on Midi Channel 1 and CC Number 1
+       warn: Received CC Value 47 on Midi Channel 1 and CC Number 1
+       warn: Received CC Value 48 on Midi Channel 1 and CC Number 1
+       warn: Received CC Value 49 on Midi Channel 1 and CC Number 1
 
        #+END_SRC
 
@@ -290,7 +334,7 @@
 
        (add-midi-cc-fn
         (lambda (ccval)
-          (imsg :warn
+          (msg :warn
                 "Received CC Value ~a on Midi Channel 1 and CC Number 1"
                 ccval))
         1 1)
@@ -308,7 +352,7 @@
      - [[dict:remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
 
      Check their documentation how they are used.
-**** A practical Example using *​midi-cc-state​*
+**** Example using *​midi-cc-state​*
      The exact same behaviour can be achieved using
      *​midi-cc-state​*​. As mentioned before, the values received for all
      128 CC Numbers on all 16 MIDI Channels are registered in [[The ref-object
@@ -322,7 +366,7 @@
        (push
         (watch
          (lambda ()
-           (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1"
+           (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1"
                  (get-val (aref (aref *midi-cc-state* 0) 0)))))
         *unwatch*)
 
@@ -361,7 +405,7 @@
        (push
         (watch
          (lambda ()
-           (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1"
+           (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1"
                  (ccin 1 1))))
         *unwatch*)
 
@@ -380,13 +424,13 @@
        (defun init-connections ()
          (remove-all-midi-cc-fns) ;; clear all connections
          (add-midi-cc-fn
-          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1" ccval))
+          (lambda (ccval) (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1" ccval))
           1 1)  
          (add-midi-cc-fn
-          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 2" ccval))
+          (lambda (ccval) (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 2" ccval))
           1 2)  
          (add-midi-cc-fn
-          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 3" ccval))
+          (lambda (ccval) (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 3" ccval))
           1 3))
                 
        ;; => init-connections
@@ -397,12 +441,12 @@
          (mapc #'funcall *unwatch*) ;; clear all connections
          (setf *unwatch* nil)
          (watch
-          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1" ccval)))  
+          (lambda (ccval) (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1" ccval)))  
          (add-midi-cc-fn
-          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 2" ccval))
+          (lambda (ccval) (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 2" ccval))
           1 2)  
          (add-midi-cc-fn
-          (lambda (ccval) (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 3" ccval))
+          (lambda (ccval) (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 3" ccval))
           1 3))
 
        ;; => init-connections
@@ -412,7 +456,7 @@
      connection is made, it can be added to the init-connections
      function. After compiling the function and calling it, all
      connections are set up.
-**** A third example using Incudine responders
+**** Example using Incudine responders
      It is not required to rely on the infrastructure of Clamps to
      react to Midi input events. Incudine provides all necessary tools
      to set up your own MIDI input handlers, giving you even more
@@ -482,11 +526,11 @@
                     (:cc (let ((ccnum d1)
                                (cc-val d2))
                            (case ccnum
-                             (1 (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1"
+                             (1 (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 1"
                                       cc-val))
-                             (2 (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 2"
+                             (2 (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 2"
                                       cc-val))
-                             (3 (imsg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 3"
+                             (3 (msg :warn "Received CC Value ~a on Midi Channel 1 and CC Number 3"
                                       cc-val))))))))))))
 
        ;;  => #S(#:responder
@@ -507,15 +551,15 @@
 
        (setf *my-midi-responder*
          (make-responder
-          *midi-in1*
+          ,*midi-in1*
           (lambda (st d1 d2)
             (let ((channel (status->channel st))
                   (opcode (status->opcode st)))
               (case opcode
                 (:cc (let ((cc-num d1)
                            (cc-val d2))
-                       (imsg (imsg :warn "Received CC Value ~a on Midi Channel ~a and CC Number ~a"
-                                   cc-val channel cc-num)))))))))
+                       (msg :warn "Received CC Value ~a on Midi Channel ~a and CC Number ~a"
+                             cc-val channel cc-num))))))))
 
        ;; => #S(#:responder
        ;;   :receiver #<RECEIVER jackmidi:input-stream running>
@@ -563,11 +607,413 @@
 
 *** MIDI Controllers
     cl-midictl implements an object oriented infrastructure to support
-    dealing with hardware MIDI controllers. [[dict:midi-controller][midi-controller]]
-*** Debugging MIDI IO
+    dealing with hardware MIDI controllers. Its base class is
+    [[dict:midi-controller][midi-controller]]. Currently classes for the [[https://www.korg.com/de/products/computergear/nanokontrol2/][Korg NanoKONTROL2]] and
+    the [[https://faderfox.de/ec4.html][Faderfox EC4]] are implemented.
 
+**** Using a NanoKONTROL2 Controller
+     To use a defined midi controller, issue the [[dict:add-midi-controller][add-midi-controller]]
+     method with the class of the controller, a custom ID (choosable
+     by the user) and optionally its channel as arguments:
+     #+BEGIN_SRC lisp
+       ;; create an instance of a NanoKONTROL2 midi-controller with ID :nk2
+       ;; using MIDI channel 1 and add it to the registry:
+
+       (add-midi-controller 'nanoktl2-midi :nk2 :chan 1)
+    #+END_SRC
+    
+     When the factory settings of the NanoKONTROL2 are in place and
+     the controller is attached to clamps' midi ports, it can now be
+     used.
+
+     We can add behaviour to it by attaching [[watch]] functions to the
+     knobs and faders:
+
+     #+NAME: nanoktl2-example
+     #+BEGIN_SRC lisp
+       (with-slots (unwatch nk2-faders) (find-controller :nk2)
+         (dotimes (i 8)
+           (let ((n i))
+             (push (watch
+                    (lambda () (msg :warn (format nil "Knob ~a turned: ~a" (1+ n)
+                                              (get-val (aref nk2-faders n))))))
+                   unwatch)
+             (push (watch
+                    (lambda () (msg :warn (format nil "Fader ~a moved: ~a" (1+ n)
+                                             (get-val (aref nk2-faders (+ n 8)))))))
+                   unwatch))))
+       ;; => nil
+       ;;
+       ;; output in REPL:
+       ;; warn: Knob 1 turned: 0
+       ;; warn: Fader 1 moved: 0
+       ;; warn: Knob 2 turned: 0
+       ;; warn: Fader 2 moved: 0
+       ;; warn: Knob 3 turned: 0
+       ;; warn: Fader 3 moved: 0
+       ;; warn: Knob 4 turned: 0
+       ;; warn: Fader 4 moved: 0
+       ;; warn: Knob 5 turned: 0
+       ;; warn: Fader 5 moved: 0
+       ;; warn: Knob 6 turned: 0
+       ;; warn: Fader 6 moved: 0
+       ;; warn: Knob 7 turned: 0
+       ;; warn: Fader 7 moved: 0
+       ;; warn: Knob 8 turned: 0
+       ;; warn: Fader 8 moved: 0
+     #+END_SRC
+
+     The output in the REPL signals that the watch function has been
+     established for all knobs and faders.
+
+     Moving a fader works like expected:
+     #+BEGIN_SRC lisp
+      clamps> 
+      warn: Fader 1 moved: 1.0
+      warn: Fader 1 moved: 2.0
+      warn: Fader 1 moved: 3.0
+      warn: Fader 1 moved: 4.0
+      warn: Fader 1 moved: 5.0
+      warn: Fader 1 moved: 6.0
+      warn: Fader 1 moved: 7.0
+      warn: Fader 1 moved: 8.0
+      warn: Fader 1 moved: 9.0
+      <...>
+      clamps> 
+     #+END_SRC
+
+#+HTML: <h5>Important Note</h5>
+#+LATEX: Important Note
+
+     In the above [[nanoktl2-example][example]], it might not be obvious that the binding of
+     /n/ to /i/ using the /let/ in the body of the /dotimes/ is
+     crucial for this to work. If it isn't clear, why it wouldn't work
+     to use /i/ directly in the /lambda/ forms of the /watch/
+     expressions, refer to the section [[Excursion: Closures]]. The
+     section tries to shed some light on binding and the difference of
+     /compile-time/ vs. /run-time/. Knowing how to deal with closures
+     is a recurring necessity when working with Clamps and a thorough
+     understanding indispensible.
+**** Other Utility Functions
+     To get a registered intance of a midi controller, use the
+     [[dict:find-midi-controller][find-controller]] function with its ID as argument.
+     #+BEGIN_SRC lisp
+       (find-controller :nk2) ; => #<nanoktl2-midi {100438D503}>
+     #+END_SRC
+
+     [[dict:remove-midi-controller][remove-midi-controller]] removes a midi controller. This also calls
+     all functions in the list stored in the /unwatch/ slot of the
+     midi-controller.
+
+     To remove all midi controllers, use
+     [[dict:remove-all-midi-controllers][remove-all-midi-controllers]]:
+
+     #+BEGIN_SRC lisp
+       (remove-midi-controller :nk2) ;; => t
+
+       (remove-all-midi-controllers) ;; => nil
+     #+END_SRC
+
+     [[dict:list-midi-controllers][list-midi-controllers]] will list the id of all registered midi
+     controllers.
+     #+BEGIN_SRC lisp
+       (add-midi-controller 'nanoktl2-midi :nk2 :chan 1)
+       ;; => #<nanoktl2-midi {1007370403}>
+       ;;
+       ;; output in the REPL:
+       ;; adding midi controller :nk2
+
+       (list-midi-controllers)
+       ;; => (:nk2)
+
+       (remove-all-midi-controllers) 
+       ;;  => nil
+       ;;
+       ;; output in the REPL:
+       ;; removing midi controller :nk2 (t)
+
+     #+END_SRC
+
+     
+**** Excursion: Closures
+     The definition of the watch functions in the [[nanoktl2-example][NanoKONTROL2 example]]
+     contains a tricky part: The variable /i/ of the /dolist/ is bound
+     to a symbol /n/ in each iteration using a /let/ expression in its
+     body.
+
+     This is necessary: If the /let/ form is omitted and the variable
+     /i/ directly referenced in all 16 watched functions, it wouldn't
+     work as expected: /i/ would be dereferenced at the moment, when
+     the lambda function gets /called/ as an effect of moving a fader
+     and not at the moment, the lambda form got /defined/ in the
+     context of the call to the watch function during the evaluation
+     of the dolist.
+
+     After the dolist has finished, the value of /i/ is 8 and that
+     will be the value seen in any of the functions defined by
+     /watch/.  All functions dereference the same /i/ when a fader is
+     moved.
+
+     Let's see this in action:
+    #+BEGIN_SRC lisp
+      ;; WARNING: Faulty implementation of binding watch functions in an
+      ;; iteration:
+
+      (with-slots (unwatch nk2-faders) (find-controller :nk2)
+        (dotimes (i 8)
+          (push (watch
+                 (lambda () (msg :warn (format nil "Knob ~a turned: ~a" (1+ i)
+                                           (get-val (aref nk2-faders i))))))
+                unwatch)
+          (push (watch
+                 (lambda () (msg :warn (format nil "Fader ~a moved: ~a" (1+ i)
+                                           (get-val (aref nk2-faders (+ i 8)))))))
+                unwatch)))
+      ;; => nil
+      ;; Output in the REPL:
+      ;; warn: Knob 1 turned: 0
+      ;; warn: Fader 1 moved: 0
+      ;; warn: Knob 2 turned: 0
+      ;; warn: Fader 2 moved: 0
+      ;; warn: Knob 3 turned: 0
+      ;; warn: Fader 3 moved: 0
+      ;; warn: Knob 4 turned: 0
+      ;; warn: Fader 4 moved: 0
+      ;; warn: Knob 5 turned: 0
+      ;; warn: Fader 5 moved: 0
+      ;; warn: Knob 6 turned: 0
+      ;; warn: Fader 6 moved: 0
+      ;; warn: Knob 7 turned: 0
+      ;; warn: Fader 7 moved: 0
+      ;; warn: Knob 8 turned: 0
+      ;; warn: Fader 8 moved: 0
+
+    #+END_SRC
+    When initializing the watch functions everything seems to work: On
+    definition of the watch in the dolist iteration, the lambda
+    function gets called once. This moment is called /compile-time/
+    and at that moment, /i/ has the correct value as can be seen in
+    the REPL output above.
+
+    But after the /dotimes/ has finished, the variable /i/ is bound to
+    the value 8, which becomes evident when moving any fader at
+    /run-time/:
+    #+BEGIN_SRC lisp
+      ;; Output in the REPL when moving a fader:
+
+      clamps>
+      error: Invalid index 16 for (vector t 16), should be a non-negative integer below 16.
+      error: Invalid index 16 for (vector t 16), should be a non-negative integer below 16.
+      error: Invalid index 16 for (vector t 16), should be a non-negative integer below 16.
+      error: Invalid index 16 for (vector t 16), should be a non-negative integer below 16.
+      error: Invalid index 16 for (vector t 16), should be a non-negative integer below 16.
+      clamps>
+
+    #+END_SRC
+
+    The error occurs only, when a fader is moved, because their lambda
+    functions use the index (+ 8 i) which is 16 in this faulty
+    implementation and beyond the maximum index 15 of the fader array
+    in the Nanoktl2 instance. When moving a knob, the output in the
+    REPL will state that knob 9 has been turned (which doesn't exist)
+    and the value reported will be the last value received from Fader
+    1 because that is the Fader at index 8 of the array[fn:5]:
+
+    #+BEGIN_SRC lisp
+      ;; Output in the REPL when turning a knob:
+
+      clamps>
+      ;; warn: Knob 9 turned: 0.0
+      ;; warn: Knob 9 turned: 0.0
+      ;; warn: Knob 9 turned: 0.0
+      ;; warn: Knob 9 turned: 0.0
+      ;; warn: Knob 9 turned: 0.0
+      clamps>
+    #+END_SRC
+
+    To avoid this situation, the /let/ expression in the [[nanoktl2-example][correct
+    example]] serves the purpose of using a new variable /n/ in each
+    iteration of the dolist to capture the value of /i/ at the
+    /compile-time/ of the function so that dereferencing /n/ at
+    /run-time/ will refer to the correct value.
+    
+    Capturing variable bindings of functions at compile-time for
+    correct dereferencing at run-time uses so-called [[https://en.wikipedia.org/wiki/Closure_(computer_programming)][closures]]. It is
+    very important to have a good understanding of this concept when
+    working with clamps (or any dynamic system with functional
+    properties).
+
+    Without going into too much detail, following are some examples
+    intended to clarify what is happening above. It is important to
+    study the examples thoroughly until it is completely understood
+    what is happening.
+    #+BEGIN_SRC lisp
+      (defparameter *my-fn* nil)
+      ;; => *my-fn*
+
+      ;; example of a closure: The symbol i is bound outside of the function
+      ;; body and the function dereferences its value, whenever it gets
+      ;; called:
+
+      (let ((i 3))
+        (setf *my-fn*
+              (lambda () i)))
+      ;; => #<function (lambda ())
+
+      (funcall *my-fn*) ; => 3
+
+      ;; This is the same in the context of an iteration: The symbol i is
+      ;; incremented on each iteration of the dotimes until it reaches the
+      ;; value 8, which stops the iteration. In other words: After the
+      ;; iteration has ended, i has the value 8. As the function
+      ;; dereferences the value of i at the time the function gets called,
+      ;; it returns the value 8:
+
+      (dotimes (i 8)
+        (setf *my-fn* (lambda () i)))
+      ;; => nil
+
+      (funcall *my-fn*) ; => 8
+
+      ;; The same again but showing, that i is never reaching the value 8
+      ;; within the iteration:
+
+      (dotimes (i 8)
+        (print i)
+        (setf *my-fn* (lambda () i)))
+      ;; => nil
+      ;; output in the REPL:
+      ;; 0 
+      ;; 1 
+      ;; 2 
+      ;; 3 
+      ;; 4 
+      ;; 5 
+      ;; 6 
+      ;; 7 
+
+      ;; As before, when calling *my-fn* it will return the value of i after
+      ;; the iteration has finished:
+
+      (funcall *my-fn*) ; => 8
+
+      ;; Binding the symbol n to the value of i within the dotimes will
+      ;; dereference the values of i during the loop:
+
+      (dotimes (i 8)
+        (let ((n i))
+          (setf *my-fn* (lambda () n))))
+      ;; => nil
+
+      ;; The let binds a new n with the current value of the outer i in each
+      ;; iteration. When the iteration is done, *my-fn* has been
+      ;; rebound/redefined 8 times to reference the new inner n
+      ;; symbols. After the loop has finished, *my-fn* returns the value of
+      ;; the last binding of n in the last loop iteration.
+      ;;
+      ;; In that iteration i had the value 7 and n was bound to that value,
+      ;; so when n gets dereferenced later, it will evaluate to 7:
+
+      (funcall *my-fn*) ; => 7
+
+      ;; For clarity: The let creates a new and different n on-the-fly on
+      ;; each iteration. This might get clearer when spelling out the
+      ;; 8 iterations of the dotimes:
+
+      (block nil
+        (let ((i 0))                       ;; start of the dotimes: i is 0
+          (let ((n i))                     ;; a new n is bound to 0
+            (setf *my-fn* (lambda () n)))
+          (incf i)                         ;; i is 1
+          (if (= i 8) (return))
+          (let ((n i))                     ;; a new n is bound to 1
+            (setf *my-fn* (lambda () n)))
+          (incf i)                         ;; i is 2
+          (if (= i 8) (return))
+          (let ((n i))                     ;; a new n is bound to 2
+            (setf *my-fn* (lambda () n)))
+          (incf i)                         ;; i is 3
+          (if (= i 8) (return))
+          (let ((n i))                     ;; a new n is bound to 3
+            (setf *my-fn* (lambda () n)))
+          (incf i)                         ;; i is 4
+          (if (= i 8) (return))
+          (let ((n i))                     ;; a new n is bound to 4
+            (setf *my-fn* (lambda () n)))
+          (incf i)                         ;; i is 5
+          (if (= i 8) (return))
+          (let ((n i))                     ;; a new n is bound to 5
+            (setf *my-fn* (lambda () n)))
+          (incf i)                         ;; i is 6
+          (if (= i 8) (return))
+          (let ((n i))                     ;; a new n is bound to 6
+            (setf *my-fn* (lambda () n)))
+          (incf i)                         ;; i is 7
+          (if (= i 8) (return))
+          (let ((n i))                     ;; a new n is bound to 7
+            (setf *my-fn* (lambda () n)))  ;; last definition of *my-fn* which will get used
+          (incf i)                         ;; i is 8
+          (if (= i 8) (return))))          ;; end of the dotimes
+      ;; => nil
+
+      (funcall *my-fn*) ; => 7
+    #+END_SRC
+
+    In the [[nanoktl2-example][correct example]], two new watch function bindings are
+    established in each of the 8 iterations. As in the example above,
+    the /let/ binds a new /symbol/ n to the current /value/ of the
+    outer iteration variable i.
+
+    It is crucial to understand, that n is not bound to the /symbol/
+    i, but to its /value/ because the /let/ evaluates i, before
+    binding n to it.
+
+    Also it is crucial to understand that the different symbols /n/ in
+    the /let/ forms above are actually different and are only valid
+    and accessible within the body of the /let/ in which they are
+    bound (which is the main idea of /let/ in the first place).
+
+    Last not least it should be mentioned that it is not uncommon, to
+    use the same symbol for the outer iteration and the inner let like
+    this:
+
+    #+BEGIN_SRC lisp
+      ;; using an array of 8 functions for clarity:
+
+      (defparameter *my-fns* #(nil nil nil nil nil nil nil nil))
+      ;; => *my-fns*
+
+      (dotimes (n 8)
+        (let ((n n))
+          (setf (aref *my-fns* n) (lambda () n))))
+      ;; => nil
+
+      (funcall (aref *my-fns* 0)) ; => 0
+      (funcall (aref *my-fns* 1)) ; => 1
+      (funcall (aref *my-fns* 4)) ; => 4
+      (funcall (aref *my-fns* 7)) ; => 7
+    #+END_SRC
+    This is exactly the same as before: In the let, a new symbol /n/
+    gets bound to the /value/ of the outer symbol n in every
+    iteration. In the lexical scope (the body) of the let, the new
+    binding of n takes precedence over the outer n, so referencing n
+    in the /aref/ and in the /lambda/ expression will dereference the
+    new binding established in the /let/. This is called /shadowing/,
+    or, in other words, the inner n /"shadows"/ the outer n.
+
+    Closures are such a powerful construct that they have become
+    increasingly common in many programming languages and many books
+    have been dedicated to their exploration[fn:0]. But as in real
+    life: With power comes responsibility and it should be mentioned
+    that this power can come at the price of an overwhelming
+    complexity, so it should be handled with care.
+    
+# *** Debugging MIDI IO
 ** clog-midi-controller
-   TBA
+   clog-midi-controller define the GUI parts of midi controllers
+   defined in the framework of [[cl-midictl]]. To understand how they work
+   it is necessary to study how Gui programming in Clamps works in
+   general using [[clog-dsp-widgets]].
 * CM Extensions
 ** cm-svg
    TBA
@@ -577,14 +1023,12 @@
    TBA
 ** cm-poolevt
    TBA
-** cm-poolplayer
-   TBA
+# ** cm-poolplayer
 ** cm-fomus
    TBA
 ** cm-incudine
    TBA
-** cm-all
-   TBA
+# ** cm-all
 * Incudine Extensions
 ** General Incudine Setup
    :PROPERTIES:
@@ -642,7 +1086,7 @@
    /defparameter/ or /defconstant/. During the course of running an
    application, the value bound to a symbol may change frequently as
    a consequence of user interaction or programmatic behaviour in
-   certain situations, like reacting to external events, etc.[fn:5]
+   certain situations, like reacting to external events, etc.[fn:6]
     
    Tracking those changes can be a challenging task, especially if
    the complexity of a program increases and values of different
@@ -755,7 +1199,7 @@
     definition of the variables and the application logic into
     distinct parts, automating the updating of variables behind the
     scenes. This makes the maintenance of the program much
-    easier[fn:6].
+    easier[fn:7].
 
     For a variable with possible relations to other variables,
     /cl-ref/ uses a special class called /ref-object/. Three main
@@ -870,7 +1314,7 @@
      argument. This function is called, whenever one or more
      ref-objects referenced in its body using /get-val/ are
      changed. In that way actions can be triggered and associated
-     with the change of ref-objects[fn:7]. Since actions can also
+     with the change of ref-objects[fn:8]. Since actions can also
      involve changing other ref-objects, /watch/ can be used in a
      similar fashion as /make-computed/.
 
@@ -883,7 +1327,7 @@
      /watch/ returns a function to remove the action defined by the
      supplied function. It is crucial to capture this result in order
      to be able to later remove the established connections between
-     variables and associated actions[fn:8].
+     variables and associated actions[fn:9].
 
      IMPORTANT NOTE: Calling the same watch expression twice will
      establish two independent functions which will always be called
@@ -947,8 +1391,7 @@
      #+END_SRC
 ** cl-sfz
    TBA
-** cl-poolplayer
-   TBA
+# ** cl-poolplayer
 ** plot
    TBA
 ** cm-utils
@@ -959,8 +1402,11 @@
 
 * Footnotes
 
-[fn:1] Starting and stopping realtime processing can be done using the
-Keyboard shortcuts /<C-c M-.>/ or /<C-c C-.>/
+[fn:0] For examples see Dan Graham's famous book "On Lisp" or Doug
+Hoyte's "Let over Lambda".
+  
+[fn:1] Starting and stopping realtime processing can be achieved withqn
+the Keyboard shortcuts /<C-c M-.>/ or /<C-c C-.>/
 
 [fn:2] After all the MIDI input infrastructure of Clamps was built
 on top of Incudine's infrastructure.
@@ -971,18 +1417,24 @@ message with a velocity of /0/ to denote a note off.
 
 [fn:4] clamps' [[dict:start-midi-receive][start-midi-receive]] and [[dict:stop-midi-receive][stop-midi-receive]] are in fact merely wrappers around /recv-start/ and /recv-stop/.
 
-[fn:5] With the notable exception of a value bound by /defconstant/,
+[fn:5] When such an error happens in practice, it is often quite
+puzzling what is at fault and such behaviour can be very hard to
+debug. Therefore it is extremely important to be aware of the reasons
+for such behaviour and to be alert when defining functions referencing
+variables outside of their scope, expecially in iterations.
+
+[fn:6] With the notable exception of a value bound by /defconstant/,
 as a constant is an /immutable/ value, which never changes.
 
-[fn:6] The implementation ideas are similar to javascript frameworks
+[fn:7] The implementation ideas are similar to javascript frameworks
 which became increasingly popular in the 2010s like [[https://en.wikipedia.org/wiki/React_(JavaScript_library)][React]] or [[https://en.wikipedia.org/wiki/Vue.js][Vue.js]],
 although they are rooted in much older concepts from the 1970s and
 80s.
 
-[fn:7] In Lisp parlance this is the classic example of a
+[fn:8] In Lisp parlance this is the classic example of a
 /side-effect/.
 
-[fn:8] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
+[fn:9] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
 [[https://en.wikipedia.org/wiki/Max_(software)][Max/MSP]], /watch/ serves a similar purpose as patch cords in these
 systems. Calling the function returned by /watch/ in that context is
 similar to removing a patch cord, although the analogy shouldn't be
