@@ -68,7 +68,7 @@
 @See-also
 named-bus
 ")
-   (num-chans :initform 2 :initarg :num-chans :accessor num-chans
+   (num-chans :initform 2 :initarg :num-chans :accessor num-channels
               :documentation "Accessor for the num-chans slot of dsp /object/.
 @See-also
 named-bus
@@ -96,7 +96,7 @@ otherwise) and initargs being the keywords of the slot symbol:
 
 =name= -- String naming the bus. Accessor is <<bus-name>>. Defaults to the empty string.
 
-=num-chans= -- Positive Integer denoting the number of channels. Defaults to 2.
+=num-chans= -- Positive Integer denoting the number of channels. Defaults to 2. Accessor is <<num-channels>>
 
 =audio-bus= -- Non Negative Integer denoting the bus number. Defaults to 0.
 

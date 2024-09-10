@@ -121,9 +121,43 @@
     [[cm-svg]] -> [[cm-svg.rts]]
 
     [[General Incudine Setup]] -> [[of-incudine-dsps]]
-    
-    
+        
 ** clamps
+*** Symbols
+   The clamps package imports most common music and incudine symbols.
+   They can be used without prepending the package name as if being in
+   the /:cm/ or /:incudine.scratch/ package. Not imported are the
+   symbols of /:clog/ (with some exceptions). In addition clamps
+   imports all symbols from clamps packages which extend the
+   functionality of Common Music, Incudine or CLOG, documented in the
+   [[./index.html][Clamps Packages]] section.
+   
+   The clamps package exports all exported symbols from its internal
+   packages plus the imported symbols of CM. It does not export the
+   symbols imported from incudine. As a rule of thumb, all symbols
+   present in the [[../clamps-dict/index.html][Clamps Dictionary]] should be available from another
+   package when issuing /(use-package :clamps)/ in that package:
+
+   #+BEGIN_SRC lisp
+     (ql:quickload :clamps)
+
+     (defpackage :test
+       (:use :clamps :cl))
+
+     (in-package :test)
+
+     (clamps)
+
+     (sprout
+      (process
+        with repeats = 32
+        for x from 0 to 1 by (/ (1- repeats))
+        for dtime = (n-exp (interp x 0 0 0.3 1 0.7 1 1 0) 0.5 0.04)
+        output (new sfz :keynum (+ 74 (n-lin-dev (interp x 0 0 0.5 0.1 1 1) 28.0)) :duration 0.1)
+        wait dtime))
+
+   #+END_SRC
+   
 *** Startup
    The clamps package is loaded from the REPL using quicklisp:
    #+BEGIN_SRC lisp
@@ -196,42 +230,6 @@
    #+attr_html: :width 80%
    #+CAPTION: Clamps Meters display
    [[./img/meters.png]]
-*** Symbols
-   The clamps package imports most common music and incudine symbols.
-   They can be used without prepending the package name as if being in
-   the /:cm/ or /:incudine.scratch/ package. Not imported are the
-   symbols of /:clog/ (with some exceptions). In addition clamps
-   imports all symbols from clamps packages which extend the
-   functionality of Common Music, Incudine or CLOG, documented in the
-   [[./index.html][Clamps Packages]] section.
-   
-   Notable exceptions of symbols not imported from /:cm/ are the
-   symbols in the body of the [[dict:process][process]] macro, as they collide with
-   common lisp's /loop/ symbols. To get around this restriction,
-   evaluate a call to the process macro within the /:cm/ package like
-   this:
-   #+BEGIN_SRC lisp
-     (in-package :cm)
-
-     (process
-       repeat 5
-       output (new sfz)
-       wait 1)
-   #+END_SRC
-   The clamps package exports the following symbols:
-
-   - [[dict:clamps][clamps]]
-   - [[dict:clamps-restart-gui][clamps-restart-gui]]
-   - [[dict:clamps-start][clamps-start]]
-   - [[dict:clamps-gui-root][clamps-gui-root]]
-   - [[dict:gui][gui]]
-   - [[dict:idump][idump]]
-   - [[dict:meters][meters]]
-   - [[dict:reset-logger-stream][reset-logger-stream]]
-   - [[dict:set-tempo][set-tempo]]
-   - [[dict:start-doc-acceptor][start-doc-acceptor]]
-   - [[dict:svg-gui-path][svg-gui-path]] 
-
 * Midi
 ** cl-midictl
    cl-midictl implements the basic infrastructure for dealing with

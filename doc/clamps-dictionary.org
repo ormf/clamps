@@ -82,7 +82,19 @@
 
    Names of argumens in the /Arguments/ section of entries are printed
    in =red= and emphasized words appear in /green/.
+* A-
+
+* -@
+** +ml-channel-mask+
+   Constant
+
+** +ml-opcode-mask+
+   Constant
+
 * A
+** accumulation
+   Class
+
 ** add-buffer
    Function
    #+BEGIN_SRC lisp
@@ -98,6 +110,41 @@
     - [[of-buffer-load][of-buffer-load]]
     - [[remove-buffer][remove-buffer]]
     - [[remove-all-buffers][remove-all-buffers]]
+** add-buffer
+   Function
+   #+BEGIN_SRC lisp
+     (add-buffer buf)
+   #+END_SRC
+   Add buffer to registry.
+*** Arguments
+    =buf= -- Incudine:buffer
+
+
+*** See also
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
+    - [[remove-all-buffers][remove-all-buffers]]
+** add-dsp
+   Function
+   #+BEGIN_SRC lisp
+     (add-dsp dsp id &rest args)
+   #+END_SRC
+   Add a new instance of /dsp/ with id /id/ to the registry, optionally
+   supplying the dsp creation with initialization arguments /args/.
+*** Arguments
+    =dsp= -- The dsp type to add
+
+    =id= -- Keyword or Symbol to identify the registered dsp.
+
+    =args= -- Optional initialization arguments accepted by the used dsp
+    class.
+
+
+*** See also
+    - [[find-dsp][find-dsp]]
+    - [[list-dsps][list-dsps]]
+    - [[remove-dsp][remove-dsp]]
 ** add-dsp
    Function
    #+BEGIN_SRC lisp
@@ -161,6 +208,36 @@
     - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
     - [[remove-midi-cc-fns][remove-midi-cc-fns]]
     - [[show-midi-cc-fns][show-midi-cc-fns]]
+** add-midi-cc-fn
+   Function
+   #+BEGIN_SRC lisp
+     (add-midi-cc-fn fn channel ccnum)
+   #+END_SRC
+   Add /fn/ to [[#midi-cc-fns][*​​midi-cc-fns​​*]] for /channel/ and /ccnum/.
+   /fn/ will be called with the controller value as argument when MIDI
+   input at /channel/ and /ccnum/ is received.
+*** Arguments
+    =fn= -- Function of one Argument to call on MIDI input
+
+    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
+
+    =ccnum= -- Integer in the range [1..128] denoting the MIDI
+    Controller number.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (add-midi-cc-fn
+        (lambda (cc-val) (format t "Received Controller Value ~a~%" cc-val))
+        1 1)
+      ;; => (#<function (lambda (cc-val)) {564DA61B}>)
+    #+END_SRC
+*** See also
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
+    - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+    - [[remove-midi-cc-fns][remove-midi-cc-fns]]
+    - [[show-midi-cc-fns][show-midi-cc-fns]]
 ** add-midi-controller
    Function
    #+BEGIN_SRC lisp
@@ -182,6 +259,61 @@
     - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
     - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+** add-midi-controller
+   Function
+   #+BEGIN_SRC lisp
+     (add-midi-controller class #:id &rest args)
+   #+END_SRC
+   Register a MIDI controller of class /class/ with ID /id/ and optional
+   initialization argumens /args/.
+*** Arguments
+    =class= -- The class of the midi controller to add.
+
+    =id= -- Keyword or Symbol used as ID of the instance.
+
+    =args= -- Initialization arguments appropriate for the class.
+
+
+*** See also
+    - [[list-midi-controllers][list-midi-controllers]]
+    - [[find-controller][find-controller]]
+    - [[midi-controller][midi-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+** add-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (add-sfz-preset preset file)
+   #+END_SRC
+   Register the association between a sfz preset name /key/ and the
+   /filename/ of its /.sfz/ file. The filename can be absolute or
+   relative. If relative, all folders in [[#sfz-preset-path][*​​sfz-preset-path​​*]] will get
+   recursively searched when the preset gets loaded.
+*** Arguments
+    =preset= -- A keyword or symbol to name the preset
+
+    =file= -- A string or path to the associated sfz file. If the file
+    path is relative, it will be searched recursively in all paths of /
+    cl-user::*​​sfz-file-path​​*/.
+
+
+*** Note
+    This function only stores the association between the preset
+    name and its sfz file. Loading of its samples into memory is done
+    implicitely when the preset is used by a playing function like
+    [[play-sfz][#'play-sfz]] or by using [[ensure-sfz-preset][#'ensure-sfz-preset]] or its synonym
+    [[get-sfz-preset][#'get-sfz-preset]].
+    
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** add-sfz-preset
    Function
    #+BEGIN_SRC lisp
@@ -247,6 +379,53 @@
       ;;
       ;; => Error: list to be permuted exceeds maximum length.
     #+END_SRC
+** all-permutations
+   Function
+   #+BEGIN_SRC lisp
+     (all-permutations list &key (test #'eql) (max-length 10))
+   #+END_SRC
+   Get all permutations of /list/. Make sure to supply a /test/
+   function in case the elements can't be compared with #'eql, otherwise
+   the function will blow the stack. /max-length/ is the maximum length
+   of /list/ accepted. This serves as a safety measure to avoid making
+   the lisp process unresponsive due to an excessive number of
+   permutations.
+*** Arguments
+    =list= -- List of elements to be permuted.
+
+    =:test= -- Function to test for equality of elements in list.
+
+    =:max-length= -- maximum length of list accepted.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (all-permutations (range 4))
+      ;; => ((0 1 2 3) (0 1 3 2) (0 2 1 3) (0 2 3 1) (0 3 1 2) (0 3 2 1) (1 0 2 3)
+      ;; (1 0 3 2) (1 2 0 3) (1 2 3 0) (1 3 0 2) (1 3 2 0) (2 0 1 3) (2 0 3 1)
+      ;; (2 1 0 3) (2 1 3 0) (2 3 0 1) (2 3 1 0) (3 0 1 2) (3 0 2 1) (3 1 0 2)
+      ;; (3 1 2 0) (3 2 0 1) (3 2 1 0))
+      
+      (all-permutations (range 20))
+      ;;
+      ;; => Error: list to be permuted exceeds maximum length.
+    #+END_SRC
+** amp->db
+   Function
+   #+BEGIN_SRC lisp
+     (amp->db amp)
+   #+END_SRC
+   Return dB value of linear amplitude /amp/. An amplitude of 0 returns a
+   dB value of -100.
+*** Arguments
+    =amp= -- Positive Integer denoting amplitude.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (amp->db 1) ; => 0.0
+      (amp->db 0) ;= -100
+    #+END_SRC
 ** amp->db
    Function
    #+BEGIN_SRC lisp
@@ -268,6 +447,26 @@
    #+BEGIN_SRC lisp
      (amp->db-slider amp &key (min -40) (max 12))
    #+END_SRC
+** amp->db-slider
+   Function
+   #+BEGIN_SRC lisp
+     (amp->db-slider amp &key (min -40) (max 12))
+   #+END_SRC
+** amp->velo
+   Function
+   #+BEGIN_SRC lisp
+     (amp->velo amp)
+   #+END_SRC
+** amplitude
+   Generic Function
+   #+BEGIN_SRC lisp
+     (amplitude amp &optional softest loudest power)
+   #+END_SRC
+** append-object
+   Generic Function
+   #+BEGIN_SRC lisp
+     (append-object obj1 obj2)
+   #+END_SRC
 ** array-slice
    Function
    #+BEGIN_SRC lisp
@@ -276,6 +475,32 @@
    Return the row with index /row-idx/ of a 2-dimensional array as
    1-dimensional array, sharing the same data structure by utilizing
    Common Lisp's displaced array functionality.
+** array-slice
+   Function
+   #+BEGIN_SRC lisp
+     (array-slice arr row-idx)
+   #+END_SRC
+   Return the row with index /row-idx/ of a 2-dimensional array as
+   1-dimensional array, sharing the same data structure by utilizing
+   Common Lisp's displaced array functionality.
+** at
+   Function
+   #+BEGIN_SRC lisp
+     (at time function &rest args)
+   #+END_SRC
+** ats->browser
+   Function
+   #+BEGIN_SRC lisp
+     (ats->browser ats-snd &key (reload t))
+   #+END_SRC
+   Display the ats struct /ats-snd/ graphically in the interactive ATS
+   Player located at /<clamps-base-url>/ats-display/ in the Gui.
+*** Arguments
+    =ats-snd= -- The ats struct to display.
+
+
+*** See also
+    - [[clamps-base-url][clamps-base-url]]
 ** ats->browser
    Function
    #+BEGIN_SRC lisp
@@ -294,13 +519,41 @@
    #+BEGIN_SRC lisp
      (audio-bus object)
    #+END_SRC
-   Accessor for the audio-bus slot of dsp /object/.
-*** See also
-    - [[named-bus][named-bus]]
+   automatically generated reader method
+** audio-bus
+   Generic Function
+   #+BEGIN_SRC lisp
+     (audio-bus object)
+   #+END_SRC
+   automatically generated reader method
 * B
 ** bang-object
    Class
 
+** bang-object
+   Class
+
+** *​beat​*
+   :PROPERTIES:
+   :CUSTOM_ID: beat
+   :END:
+   Variable
+
+** best-normal-form
+   Function
+   #+BEGIN_SRC lisp
+     (best-normal-form set)
+   #+END_SRC
+** between
+   Function
+   #+BEGIN_SRC lisp
+     (between lb ub &optional exception (state *random-state*))
+   #+END_SRC
+** bind-ref-to-attr
+   Generic Function
+   #+BEGIN_SRC lisp
+     (bind-ref-to-attr refvar attr &optional map)
+   #+END_SRC
 ** bind-ref-to-attr
    Generic Function
    #+BEGIN_SRC lisp
@@ -311,6 +564,17 @@
    #+BEGIN_SRC lisp
      (bind-refs-to-attrs &rest refs-and-attrs)
    #+END_SRC
+** bind-refs-to-attrs
+   Function
+   #+BEGIN_SRC lisp
+     (bind-refs-to-attrs &rest refs-and-attrs)
+   #+END_SRC
+** *​bindings​*
+   :PROPERTIES:
+   :CUSTOM_ID: bindings
+   :END:
+   Variable
+
 ** *​bindings​*
    :PROPERTIES:
    :CUSTOM_ID: bindings
@@ -336,6 +600,31 @@
    its current value and the maximum value, if it moves down (< curr
    old), the software target will be interpolated between the current
    value and 0 using the remaining space below the hardware fader.
+** buchla-scale
+   Function
+   #+BEGIN_SRC lisp
+     (buchla-scale curr old target &key (max 127))
+   #+END_SRC
+   Set the <target> fader by interpolating between 0 and <max>, using
+   the <curr> and <old> values of a source fader.
+   
+   The function serves the purpose of avoiding jumps when working with
+   non motorized hardware faders: If the value of the software target
+   of the hardware fader has changed (e.g. by a preset or some program
+   logic) without the hardware fader being updated, moving the
+   hardware fader will not cause a jump in the target:
+   
+   If the hardware fader moves up (> curr old), the remaining space
+   above the fader will interpolate the target software fader between
+   its current value and the maximum value, if it moves down (< curr
+   old), the software target will be interpolated between the current
+   value and 0 using the remaining space below the hardware fader.
+** buffer-id
+   Function
+   #+BEGIN_SRC lisp
+     (buffer-id buffer)
+   #+END_SRC
+   get index of buffer from registry.
 ** buffer-id
    Function
    #+BEGIN_SRC lisp
@@ -347,6 +636,16 @@
    #+BEGIN_SRC lisp
      (buffer-loop-play* buffer rate start-pos loopstart loopend &optional ugen-node)
    #+END_SRC
+** buffer-loop-play*
+   Function
+   #+BEGIN_SRC lisp
+     (buffer-loop-play* buffer rate start-pos loopstart loopend &optional ugen-node)
+   #+END_SRC
+** buffer-stretch-play
+   Function
+   #+BEGIN_SRC lisp
+     (buffer-stretch-play buffer rate wwidth start end stretch)
+   #+END_SRC
 ** buffer-stretch-play
    Function
    #+BEGIN_SRC lisp
@@ -357,10 +656,45 @@
    #+BEGIN_SRC lisp
      (bus-name object)
    #+END_SRC
-   Accessor for the name slot of dsp /object/.
-*** See also
-    - [[named-bus][named-bus]]
+   automatically generated reader method
+** bus-name
+   Generic Function
+   #+BEGIN_SRC lisp
+     (bus-name object)
+   #+END_SRC
+   automatically generated reader method
 * C
+** calc-dur
+   Function
+   #+BEGIN_SRC lisp
+     (calc-dur min max orig-dur)
+   #+END_SRC
+   calculate effective duration of exponential function from minspeed,
+   maxspeed and original duration.
+** calcsndbytes
+   Function
+   #+BEGIN_SRC lisp
+     (calcsndbytes hr min sec &key (samplerate 44100) (bytes-per-sample 4))
+   #+END_SRC
+   Return the number of bytes (not samples!) from /hr/, /min/ and
+   /sec/. Samplerate and the number of bytes per sample can be supplied
+   using the /samplerate/ and /bytes-per-sample/ keywords..
+*** Arguments
+    =hr= -- Number of hours.
+
+    =min= -- Number of minutes.
+
+    =hr= -- Number of seconds.
+
+    =samplerate= -- Number of samples per second.
+
+    =bytes-per-sample= -- Number of bytes per sample.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (calcsndbytes 0 1 10) ; => 12348000
+    #+END_SRC
 ** calcsndbytes
    Function
    #+BEGIN_SRC lisp
@@ -408,6 +742,35 @@
     #+END_SRC
 *** See also
     - [[v-collect][v-collect]]
+** call/collecting
+   Function
+   #+BEGIN_SRC lisp
+     (call/collecting f n &optional (tail '()))
+   #+END_SRC
+   Call function /f/ /n/ times, with idx [0..n-1] as argument,
+   collecting its results. Return results with tail appended.
+*** Arguments
+    =f= -- Function of one argument (an integer in the range [0..n])
+
+    =n= -- Positive integer
+
+    =tail= -- A list collected into by prepending to it
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (call/collecting (lambda (x) (* x x)) 4 '()) ; => (0 1 4 9)
+      
+      (call/collecting (lambda (x) (1+ x)) 4 '(hallo)) ; => (1 2 3 4 hallo)
+    #+END_SRC
+*** See also
+    - [[v-collect][v-collect]]
+** case-ext
+   Macro
+   #+BEGIN_SRC lisp
+     (case-ext keyform test &rest body)
+   #+END_SRC
+   case with compare function as second element.
 ** case-ext
    Macro
    #+BEGIN_SRC lisp
@@ -431,6 +794,33 @@
 
 *** See also
     - [[#midi-cc-state][*​​midi-cc-state​​*]]
+** ccin
+   Function
+   #+BEGIN_SRC lisp
+     (ccin ccnum &optional (channel *global-midi-channel*))
+   #+END_SRC
+   Return the last received MIDI CC value of controller number /ccnum/
+   at MIDI channel /channel/. Setfable.
+*** Arguments
+    =ccnum= -- Integer in the range [1..128] indicating the Controller
+    Number.
+
+    =channel= -- Integer in the range [1..16] indicating the MIDI
+    channel.
+
+
+*** See also
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
+** cd
+   Function
+   #+BEGIN_SRC lisp
+     (cd &optional (dirarg (user-homedir-pathname)))
+   #+END_SRC
+** cd
+   Function
+   #+BEGIN_SRC lisp
+     (cd &optional (dirarg (user-homedir-pathname)))
+   #+END_SRC
 ** cd
    Function
    #+BEGIN_SRC lisp
@@ -444,6 +834,11 @@
 
 *** See also
     - [[pwd][pwd]]
+** cents->scaler
+   Function
+   #+BEGIN_SRC lisp
+     (cents->scaler cents)
+   #+END_SRC
 ** chan
    Generic Function
    #+BEGIN_SRC lisp
@@ -451,6 +846,35 @@
    #+END_SRC
    Accessor method for the chan slot of an instance of type
    [[midi-controller][midi-controller]].
+** chan
+   Generic Function
+   #+BEGIN_SRC lisp
+     (chan object)
+   #+END_SRC
+   Accessor method for the chan slot of an instance of type
+   [[midi-controller][midi-controller]].
+** chan->color
+   Function
+   #+BEGIN_SRC lisp
+     (chan->color midi-chan &optional (colormap *svg-colormap*))
+   #+END_SRC
+   rgb color lookup for the first 16 MIDI channels.
+** chord
+   Class
+
+** chord-derive
+   Function
+   #+BEGIN_SRC lisp
+     (chord-derive seq &key (level '(1)))
+   #+END_SRC
+   rotation of seq transposed to the first note of the original seq
+   developed/used by Boulez.
+** *​chromatic-scale​*
+   :PROPERTIES:
+   :CUSTOM_ID: chromatic-scale
+   :END:
+   Variable
+
 ** clamps
    Function
    #+BEGIN_SRC lisp
@@ -634,6 +1058,17 @@
    #+BEGIN_SRC lisp
      (clear-bindings)
    #+END_SRC
+** clear-bindings
+   Function
+   #+BEGIN_SRC lisp
+     (clear-bindings)
+   #+END_SRC
+** clear-dependencies
+   Function
+   #+BEGIN_SRC lisp
+     (clear-dependencies co cb)
+   #+END_SRC
+   clear all dependencies of a computed ref object.
 ** clear-dependencies
    Function
    #+BEGIN_SRC lisp
@@ -673,11 +1108,50 @@
    #+BEGIN_SRC lisp
      (close stream)
    #+END_SRC
+** cm
+   Function
+   #+BEGIN_SRC lisp
+     (cm &rest systems)
+   #+END_SRC
+** cm-restart-gui
+   Function
+   #+BEGIN_SRC lisp
+     (cm-restart-gui gui-root &key (start-gui t) (port 54619) (open t))
+   #+END_SRC
+** cm-store
+   Function
+   #+BEGIN_SRC lisp
+     (cm-store objs &key (export t) (view t) (play t) (name "curr") (dir "/tmp/"))
+   #+END_SRC
+** cm-version
+   Function
+   #+BEGIN_SRC lisp
+     (cm-version &rest fmat)
+   #+END_SRC
+** cm-version-number
+   Function
+   #+BEGIN_SRC lisp
+     (cm-version-number &rest arg)
+   #+END_SRC
+** cmn
+   Class
+
 ** collect-pool
    Function
    #+BEGIN_SRC lisp
      (collect-pool &rest keys)
    #+END_SRC
+** color->chan
+   Function
+   #+BEGIN_SRC lisp
+     (color->chan color &optional (colormap *svg-colormap*))
+   #+END_SRC
+** combinations
+   Function
+   #+BEGIN_SRC lisp
+     (combinations seq &optional (n 2))
+   #+END_SRC
+   Get all n combinations of seq.
 ** combinations
    Function
    #+BEGIN_SRC lisp
@@ -691,16 +1165,80 @@
    #+END_SRC
    Helper function to construct the gnuplot command with a given
    header, options and a grid flag.
+** copier
+   Class
+
 ** copy-instance
    Generic Function
    #+BEGIN_SRC lisp
      (copy-instance object &rest initargs &key &allow-other-keys)
+   #+END_SRC
+** copy-instance
+   Generic Function
+   #+BEGIN_SRC lisp
+     (copy-instance object &rest initargs &key &allow-other-keys)
+   #+END_SRC
+** copy-object
+   Generic Function
+   #+BEGIN_SRC lisp
+     (copy-object obj)
    #+END_SRC
 ** copy-ref
    Function
    #+BEGIN_SRC lisp
      (copy-ref ref)
    #+END_SRC
+** copy-ref
+   Function
+   #+BEGIN_SRC lisp
+     (copy-ref ref)
+   #+END_SRC
+** count-elements
+   Function
+   #+BEGIN_SRC lisp
+     (count-elements seq &key (test #'eql) (key #'identity) (sort t))
+   #+END_SRC
+   Count the number of occurences of all mutually equal elems in
+   /seq/ extracted from its items according to the /key/ function and
+   satisfying the /test/ function as predicate. Return the results as
+   list with sublists of the form (elem count) for each elem, optionally
+   sorted according to the setting of /sort/.
+*** Arguments
+    =seq= -- A Common Lisp Sequence.
+
+    =:test= -- Function accepted as test function by #'make-hash-table.
+
+    =:key= -- Function to extract the key to compare from each element.
+
+    =:sort= -- Boolean indicationg whether and how to sort the results.
+    Possible Values are:
+
+    - /:from-end/
+    - /t/
+    - /nil/
+
+   If /:sort/ is /nil/, result returns the items in the order of their
+   first occurence, if /:sort/ is /:from-end/, they are returned in
+   reverse order of occurence, if /:sort/ is /t/, they are either sorted
+   by their value, if all elems are numbers or by the number of occurences
+   otherwise.
+*** Examples
+    #+BEGIN_SRC lisp
+      (count-elements '(1 3 2 6 5 4 3 8 1 3 5 2 4 3 6 5 3 3 4 1))
+      ;; => ((1 3) (2 2) (3 6) (4 3) (5 3) (6 2) (8 1))
+      
+      (count-elements '(1 3 2 6 5 4 3 8 1 3 5 2 4 3 6 5 3 3 4 1) :sort :from-end)
+      ;; => ((8 1) (4 3) (5 3) (6 2) (2 2) (3 6) (1 3))
+      
+      (count-elements '(1 3 2 6 5 4 3 8 1 3 5 2 4 3 6 5 3 3 4 1) :sort t)
+      ;; => ((1 3) (2 2) (3 6) (4 3) (5 3) (6 2) (8 1))
+      
+      (count-elements '(a b a d e c d a e d e b d f d e) :sort t)
+      ;; => ((d 5) (e 4) (a 3) (b 2) (f 1) (c 1))
+      
+      (count-elements '((a 10) (b 11) (a 12) (d 13)) :key #'first :sort t)
+      ;; => ((a 2) (d 1) (b 1))
+    #+END_SRC
 ** count-elements
    Function
    #+BEGIN_SRC lisp
@@ -757,10 +1295,30 @@
    
    The one-argument function DONE-ACTION is called at the end if LOOP-P is NIL.
    The function argument is the DSP node.
+** counter
+   Macro
+   #+BEGIN_SRC lisp
+     (counter start end &key (step 1) loop-p done-action)
+   #+END_SRC
+   Count from START to END (excluded) by STEP, optionally in loop if
+   LOOP-P is T.
+   
+   The one-argument function DONE-ACTION is called at the end if LOOP-P is NIL.
+   The function argument is the DSP node.
 ** create-collection
    Function
    #+BEGIN_SRC lisp
      (create-collection parent width)
+   #+END_SRC
+** create-collection
+   Function
+   #+BEGIN_SRC lisp
+     (create-collection parent width)
+   #+END_SRC
+** create-grid
+   Function
+   #+BEGIN_SRC lisp
+     (create-grid parent class width)
    #+END_SRC
 ** create-grid
    Function
@@ -772,10 +1330,25 @@
    #+BEGIN_SRC lisp
      (create-hide-button parent element-to-hide &key label (background '("transparent" "orange")) color flash-time values css (val 1) auto-place)
    #+END_SRC
+** create-hide-button
+   Function
+   #+BEGIN_SRC lisp
+     (create-hide-button parent element-to-hide &key label (background '("transparent" "orange")) color flash-time values css (val 1) auto-place)
+   #+END_SRC
 ** create-o-bang
    Function
    #+BEGIN_SRC lisp
      (create-o-bang parent bindings &key width height label (background '("transparent" "orange")) color flash-time css flash)
+   #+END_SRC
+** create-o-bang
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-bang parent bindings &key width height label (background '("transparent" "orange")) color flash-time css flash)
+   #+END_SRC
+** create-o-knob
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-knob parent bindings &key (unit "") (precision 2) min max width height step css)
    #+END_SRC
 ** create-o-knob
    Function
@@ -787,10 +1360,25 @@
    #+BEGIN_SRC lisp
      (create-o-multislider parent bindings &key (direction :up) (value 0) (min 0) (max 1) width height label background colors (thumb-color "transparent") (mapping :lin) (clip-zero nil))
    #+END_SRC
+** create-o-multislider
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-multislider parent bindings &key (direction :up) (value 0) (min 0) (max 1) width height label background colors (thumb-color "transparent") (mapping :lin) (clip-zero nil))
+   #+END_SRC
 ** create-o-numbox
    Function
    #+BEGIN_SRC lisp
      (create-o-numbox parent bindings &key min max width height (precision 2) css)
+   #+END_SRC
+** create-o-numbox
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-numbox parent bindings &key min max width height (precision 2) css)
+   #+END_SRC
+** create-o-radio
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-radio parent bindings &key labels label width height (background '(("transparent" ("orange")))) color flash-time values (num 8) (direction :right) css)
    #+END_SRC
 ** create-o-radio
    Function
@@ -802,6 +1390,16 @@
    #+BEGIN_SRC lisp
      (create-o-scope parent bindings &key width height css buffer)
    #+END_SRC
+** create-o-scope
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-scope parent bindings &key width height css buffer)
+   #+END_SRC
+** create-o-slider
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-slider parent bindings &key (direction :up) (min 0) (max 1) label background thumb-color bar-color (mapping :lin) (clip-zero nil) (width "1em") (height "8em") padding css)
+   #+END_SRC
 ** create-o-slider
    Function
    #+BEGIN_SRC lisp
@@ -812,10 +1410,25 @@
    #+BEGIN_SRC lisp
      (create-o-svg parent bindings &key svg padding css (cursor-pos 0) (shift-x 0) (shift-y 0) (background "#fff") (scale 1) (inverse 0))
    #+END_SRC
+** create-o-svg
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-svg parent bindings &key svg padding css (cursor-pos 0) (shift-x 0) (shift-y 0) (background "#fff") (scale 1) (inverse 0))
+   #+END_SRC
 ** create-o-toggle
    Function
    #+BEGIN_SRC lisp
      (create-o-toggle parent bindings &key width height label (background '("transparent" "orange")) color flash-time values css)
+   #+END_SRC
+** create-o-toggle
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-toggle parent bindings &key width height label (background '("transparent" "orange")) color flash-time values css)
+   #+END_SRC
+** create-o-vumeter
+   Function
+   #+BEGIN_SRC lisp
+     (create-o-vumeter parent bindings &key (direction :up) (type :led) (mapping :db-lin) (width "1em") (height "8em") padding css)
    #+END_SRC
 ** create-o-vumeter
    Function
@@ -848,6 +1461,38 @@
     #+END_SRC
 *** See also
     - [[fr->ct][fr->ct]]
+** ct->fr
+   Function
+   #+BEGIN_SRC lisp
+     (ct->fr ct)
+   #+END_SRC
+   Return the frequency ratio of the Midicents interval /ct/.
+*** Arguments
+    =ct= -- The interval in Midicents.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (ct->fr 12) ;; => 2
+      
+      (ct->fr 1) ;; => 1.0594631
+      
+      (ct->fr 7) ;; => 1.4983071
+      
+      (ct->fr -12) ;; => 1/2
+      
+      (mapcar #'ct->fr (range 13))
+      ;;  => (1 1.0594631 1.122462 1.1892071 1.2599211 1.3348398 1.4142135 1.4983071
+      ;;      1.587401 1.6817929 1.7817974 1.8877486 2)
+    #+END_SRC
+*** See also
+    - [[fr->ct][fr->ct]]
+** ctl-out
+   Function
+   #+BEGIN_SRC lisp
+     (ctl-out stream ccno ccval chan)
+   #+END_SRC
+   wrapper for midi ctl-change messages.
 ** cuda-dsp
    Class
 
@@ -876,7 +1521,50 @@
 *** See also
     - [[clamps:clog-dsp-widgets][clog-dsp-widgets]]
     - [[add-dsp][add-dsp]]
+** cuda-dsp
+   Class
+
+   Superclass for dsp objects of the dsp infrastructure
+   of /clog-dsp-widgets/ in Clamps. An object derived from this type will
+   be created using the [[add-dsp][add-dsp]] function and its slots automatically
+   filled on initialization.
+   
+   cuda-dsp implements the following slots with accessor methods of the
+   same name (if not indicated otherwise) and initargs being the keywords
+   of the slot symbol:
+   
+   =id= -- The id used in the clamps dsp infrastructure. Accessor is [[dsp-id][dsp-id]].
+   
+   =nodes= -- The active Incudine nodes of a running instance. Accessor is [[dsp-nodes][dsp-nodes]]
+   
+   =node-group= -- The Incudine group of a running instance. Defaults to 300.
+   
+   =unwatch= -- List of unwatch functions used by the instance.
+*** Note
+    Except for the /unwatch/ slot, the user normally will not be dealing
+    with the slots of a cuda-dsp instance directly except for inspection
+    purposes. The slots are documented here mainly for clarity and
+    insight.
+    
+*** See also
+    - [[clamps:clog-dsp-widgets][clog-dsp-widgets]]
+    - [[add-dsp][add-dsp]]
+** cycle
+   Class
+
 * D
+** date-and-time
+   Function
+   #+BEGIN_SRC lisp
+     (date-and-time)
+   #+END_SRC
+** date-string
+   Function
+   #+BEGIN_SRC lisp
+     (date-string)
+   #+END_SRC
+   Return a string of the current time in the format
+     /"yyyy-mm-dd-hr-min-sec"/
 ** date-string
    Function
    #+BEGIN_SRC lisp
@@ -901,10 +1589,42 @@
       (db->amp -6) ; => 0.5011872
       (db->amp -100) ; => 0
     #+END_SRC
+** db->amp
+   Function
+   #+BEGIN_SRC lisp
+     (db->amp db)
+   #+END_SRC
+   Return amp value of dB value /db/. The dB value is clipped below -100
+   and returns the amplitude 0.
+*** Arguments
+    =amp= -- Positive Integer denoting amplitude.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (db->amp 0) ; => 1
+      (db->amp -6) ; => 0.5011872
+      (db->amp -100) ; => 0
+    #+END_SRC
 ** db->db-slider
    Function
    #+BEGIN_SRC lisp
      (db->db-slider db &key (min -40) (max 12))
+   #+END_SRC
+** db->db-slider
+   Function
+   #+BEGIN_SRC lisp
+     (db->db-slider db &key (min -40) (max 12))
+   #+END_SRC
+** db->opacity
+   Function
+   #+BEGIN_SRC lisp
+     (db->opacity db)
+   #+END_SRC
+** db-slider->amp
+   Function
+   #+BEGIN_SRC lisp
+     (db-slider->amp x &key (min -40) (max 12))
    #+END_SRC
 ** db-slider->amp
    Function
@@ -916,6 +1636,26 @@
    #+BEGIN_SRC lisp
      (db-slider->db slider-val &key (min -40) (max 12))
    #+END_SRC
+** db-slider->db
+   Function
+   #+BEGIN_SRC lisp
+     (db-slider->db slider-val &key (min -40) (max 12))
+   #+END_SRC
+** decimals
+   Function
+   #+BEGIN_SRC lisp
+     (decimals value places)
+   #+END_SRC
+** decode-interval
+   Function
+   #+BEGIN_SRC lisp
+     (decode-interval int)
+   #+END_SRC
+** def-params
+   Macro
+   #+BEGIN_SRC lisp
+     (def-params &rest syms)
+   #+END_SRC
 ** def-params
    Macro
    #+BEGIN_SRC lisp
@@ -925,6 +1665,16 @@
    Generic Function
    #+BEGIN_SRC lisp
      (define-watch refvar attr new)
+   #+END_SRC
+** define-watch
+   Generic Function
+   #+BEGIN_SRC lisp
+     (define-watch refvar attr new)
+   #+END_SRC
+** defobject
+   Macro
+   #+BEGIN_SRC lisp
+     (defobject name supers slots &body options)
    #+END_SRC
 ** defparameter*
    Macro
@@ -952,6 +1702,63 @@
     #+END_SRC
 *** See also
     - [[defvar*][defvar*]]
+** defparameter*
+   Macro
+   #+BEGIN_SRC lisp
+     (defparameter* &rest pairs)
+   #+END_SRC
+   Form for the definition of multiple parameters. /Pairs/ are one or
+   more elements, being the arguments of a single defparameter form.
+*** Arguments
+    =pairs= -- one or more elements, either a Symbol or a list of 1-3
+    elements with a Symbol as first and a String as third element.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defparameter* *a* (*b*) (*c* 1) (*d* 1 "parameter d"))
+      
+      ;; The above form is the same as:
+      
+      (progn
+        (defparameter *a* nil)
+        (defparameter *b* nil)
+        (defparameter *c* 1)
+        (defparameter *d* "parameter d"))
+    #+END_SRC
+*** See also
+    - [[defvar*][defvar*]]
+** defprocess
+   Macro
+   #+BEGIN_SRC lisp
+     (defprocess &body forms)
+   #+END_SRC
+** defvar*
+   Macro
+   #+BEGIN_SRC lisp
+     (defvar* &rest pairs)
+   #+END_SRC
+   Form for the definition of multiple variable. /Pairs/ are one or
+   more elements, being the arguments of a single defparameter form.
+*** Arguments
+    =pairs= -- one or more elements, either a Symbol or a list of 1-3
+    elements with a Symbol as first and a String as third element.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defvar​* *​a​* (*​b​*) (*​c​* 1) (*​d​* 1 "variable d"))
+      
+      ;; The above form is the same as:
+      
+      (progn
+        (defvar *a* nil)
+        (defvar *b* nil)
+        (defvar *c* 1)
+        (defvar *d* "variable d"))
+    #+END_SRC
+*** See also
+    - [[defparameter*][defparameter*]]
 ** defvar*
    Macro
    #+BEGIN_SRC lisp
@@ -998,6 +1805,26 @@
     - [[get-props-list][get-props-list]]
     - [[map-proplist][map-proplist]]
     - [[with-props][with-props]]
+** delete-props
+   Function
+   #+BEGIN_SRC lisp
+     (delete-props proplist &rest props)
+   #+END_SRC
+   Destructively remove props from property list /proplist/ and return
+   it.
+*** Arguments
+    =proplist= -- Property list.
+
+    =props= -- One or more properties to delete.
+
+
+*** See also
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
+    - [[map-proplist][map-proplist]]
+    - [[with-props][with-props]]
 ** differentiate
    Function
    #+BEGIN_SRC lisp
@@ -1021,6 +1848,76 @@
       
       (differentiate (integrate '(17 2 4))) ; => (17 2 4)
     #+END_SRC
+** differentiate
+   Function
+   #+BEGIN_SRC lisp
+     (differentiate list &key (modifier #'-) (start (first list)))
+   #+END_SRC
+   Return differences between subsequent elements of list.
+*** Arguments
+    =list= -- List to integrate
+
+    =:modifier= -- Function to apply to all elements accumulationg the
+    results.
+
+    =:start= -- Number denoting the start value.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (differentiate '(0 2 3 7 12)) ; => (0 2 1 4 5)
+      
+      (differentiate '(1 2 6 12 48) :modifier #'/) ; => (1 2 3 2 4)
+      
+      (differentiate (integrate '(17 2 4))) ; => (17 2 4)
+    #+END_SRC
+** display
+   Function
+   #+BEGIN_SRC lisp
+     (display seqs &key (file "/tmp/test.ly"))
+   #+END_SRC
+   display a (seq of) seq of notes in lilypond.
+** do-proplist
+   Macro
+   #+BEGIN_SRC lisp
+     (do-proplist (keysym valuesym) proplist &body body)
+   #+END_SRC
+   Like dolist but traversing a property list. All keys and values of
+   /proplist/ are bound to the symbols /keysym/ and /valuesym/ in the
+   lexical scope of /body/.
+*** Arguments
+    =keysym= -- Symbol bound to all keys of the property list.
+
+    =valuesym= -- Symbol bound to all values of the property list.
+
+    =proplist= -- Property list to be traversed.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (do-proplist (key value) '(a 1 b 2 c 3 d 4)
+        (format t "key: ~a, value: ~a~%" key value)) ;  => nil
+      
+      ;; Output in REPL:
+      ;;
+      ;; key: a, value: 1
+      ;; key: b, value: 2
+      ;; key: c, value: 3
+      ;; key: d, value: 4
+      
+      (let ((proplist '(a 1 b 2 c 3 d 4)))
+        (do-proplist (key value) proplist
+          (setf (getf proplist key) (incf value 10)))
+        proplist)
+      ;; => (a 11 b 12 c 13 d 14)
+    #+END_SRC
+*** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
+    - [[map-proplist][map-proplist]]
+    - [[with-props][with-props]]
 ** do-proplist
    Macro
    #+BEGIN_SRC lisp
@@ -1091,6 +1988,35 @@
     - [[get-props-list][get-props-list]]
     - [[map-proplist][map-proplist]]
     - [[with-props][with-props]]
+** do-proplist/collecting
+   Macro
+   #+BEGIN_SRC lisp
+     (do-proplist/collecting (keysym valuesym) proplist &body body)
+   #+END_SRC
+   Like do-proplist but collecting the result. All keys and values of
+   /proplist/ are bound to the symbols /keysym/ and /valuesym/ in the
+   lexical scope of /body/.
+*** Arguments
+    =keysym= -- Symbol bound to all keys of the property list.
+
+    =valuesym= -- Symbol bound to all values of the property list.
+
+    =proplist= -- Property list to be traversed.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (do-proplist/collecting (key val) '(:a 2 :b 5 :c 4)
+        (list key (1+ val)))
+      ;; => ((:a 3) (:b 6) (:c 5))
+    #+END_SRC
+*** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist][do-proplist]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
+    - [[map-proplist][map-proplist]]
+    - [[with-props][with-props]]
 ** do-repeated
    Function
    #+BEGIN_SRC lisp
@@ -1113,6 +2039,33 @@
     #+END_SRC
 *** See also
     - [[repeated][repeated]]
+** do-repeated
+   Function
+   #+BEGIN_SRC lisp
+     (do-repeated n fn &rest args)
+   #+END_SRC
+   Recursively apply /fn/ to /args/ /n/ times.
+*** Arguments
+    =n= -- Integer number of repetitions.
+
+    =fn= -- Function to apply.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (do-repeated 4 (lambda (x) (* x 2)) 1) ; => 16
+      
+      (do-repeated 4 (lambda (x) (* x x)) 2)  ; => 65536
+      
+      (do-repeated 6 (lambda (list) (cons 1 list)) '()) ; => (1 1 1 1 1 1)
+    #+END_SRC
+*** See also
+    - [[repeated][repeated]]
+** doeach
+   Macro
+   #+BEGIN_SRC lisp
+     (doeach pars &body forms)
+   #+END_SRC
 ** dround
    Function
    #+BEGIN_SRC lisp
@@ -1133,6 +2086,46 @@
       
       (dround 1) ; => 1.0
     #+END_SRC
+** dround
+   Function
+   #+BEGIN_SRC lisp
+     (dround num &optional (prec 2))
+   #+END_SRC
+   Return a float of /num/ rounded to /prec/ decimal places.
+*** Arguments
+    =num= -- The number to round.
+
+    =prec= -- Non Negative Integer denoting the number of decimal places.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (dround 1/3) ; => 0.33
+      
+      (dround 1/3 5) ; => 0.33333
+      
+      (dround 1) ; => 1.0
+    #+END_SRC
+** drunk
+   Function
+   #+BEGIN_SRC lisp
+     (drunk n width &key (low most-negative-fixnum) (high most-positive-fixnum) (mode :reflect) (avoid nil) (state *random-state*))
+   #+END_SRC
+** drunk-traverse
+   Function
+   #+BEGIN_SRC lisp
+     (drunk-traverse seq &key (weight 0.5))
+   #+END_SRC
+   shuffle an ordered list slightly by randomly swapping the positions
+   of neighboring elements.
+** dsp-id
+   Generic Function
+   #+BEGIN_SRC lisp
+     (dsp-id object)
+   #+END_SRC
+   Accessor for the id slot of dsp /object/. Read-only.
+*** See also
+    - [[cuda-dsp][cuda-dsp]]
 ** dsp-id
    Generic Function
    #+BEGIN_SRC lisp
@@ -1149,6 +2142,19 @@
    Accessor for the nodes slot of dsp /object/.
 *** See also
     - [[cuda-dsp][cuda-dsp]]
+** dsp-nodes
+   Generic Function
+   #+BEGIN_SRC lisp
+     (dsp-nodes object)
+   #+END_SRC
+   Accessor for the nodes slot of dsp /object/.
+*** See also
+    - [[cuda-dsp][cuda-dsp]]
+** dumposc
+   Function
+   #+BEGIN_SRC lisp
+     (dumposc file &rest args)
+   #+END_SRC
 * E
 ** ensure-buffer
    Function
@@ -1160,7 +2166,7 @@
 *** Arguments
     =file= -- Pathname or String denoting a soundfile.
 
-    =:path= -- A list of Pathnames or Strings
+    =:path= -- List of Pathnames or Strings to search for file.
 
 
 *** See also
@@ -1170,6 +2176,63 @@
     - [[remove-buffer][remove-buffer]]
     - [[remove-all-buffers][remove-all-buffers]]
     - [[#sfile-path][*​​sfile-path​​*]]
+** ensure-buffer
+   Function
+   #+BEGIN_SRC lisp
+     (ensure-buffer file &key (path *sfile-path*))
+   #+END_SRC
+   Load and register buffer from /file/ if not loaded already. Return
+   buffer.
+*** Arguments
+    =file= -- Pathname or String denoting a soundfile.
+
+    =:path= -- List of Pathnames or Strings to search for file.
+
+
+*** See also
+    - [[add-buffer][add-buffer]]
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
+    - [[remove-all-buffers][remove-all-buffers]]
+    - [[#sfile-path][*​​sfile-path​​*]]
+** ensure-jackmidi
+   Function
+   #+BEGIN_SRC lisp
+     (ensure-jackmidi stream)
+   #+END_SRC
+** ensure-prop
+   Macro
+   #+BEGIN_SRC lisp
+     (ensure-prop proplist prop default)
+   #+END_SRC
+   Ensure that the property /prop/ exists in /proplist/, otherwise set it
+   to /default/. Return the value of prop.
+*** Arguments
+    =proplist= -- Property list.
+
+    =prop= -- Property key to ensure.
+
+    =default= -- The value property should get assigned to if not set.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defvar *proplist* '(:a 10 :b hello :c "world"))
+      
+      (ensure-prop *proplist* :d 5)
+      ;; => 5
+      
+      *proplist* ; => (:d 5 :a 10 :b hello :c "world")
+      
+      ;; As property :a already exists, don't change it and return its
+      ;; current value:
+      
+      (ensure-prop *proplist* :a 3)
+      ;; => 10
+      
+      *proplist* ; => (:d 5 :a 10 :b hello :c "world")
+    #+END_SRC
 ** ensure-prop
    Macro
    #+BEGIN_SRC lisp
@@ -1236,6 +2299,56 @@
     - [[sfz-get-range][sfz-get-range]]
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** ensure-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (ensure-sfz-preset preset &key force (play-fn #'play-sfz-loop))
+   #+END_SRC
+   Load the sfz definition of /preset/ and all its samples into the
+   system if it hasn't been loaded previously. If force is /t/, force
+   reload. Optionally set a play function.
+   
+   The association between the preset name and its sfz file has to be
+   established before using [[add-sfz-preset][add-sfz-preset]], otherwise a warning is
+   issued and no file is loaded.
+*** Arguments
+    =preset= -- A keynum or symbol to serve as the name/id of the
+    preset.
+
+    =:force= -- A boolean indicating to force a reload even if the
+    preset has been loaded before.
+
+    =:play-fn= -- The play function to be used. Possible options are:
+
+    - [[play-sfz-loop][#'play-sfz-loop]]
+    - [[play-sfz-one-shot][#'play-sfz-one-shot]]
+
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** *​env1​*
+   :PROPERTIES:
+   :CUSTOM_ID: env1
+   :END:
+   Variable
+
+   Incudine three point ASR envelope with attack time 0 and release time
+   0.1 of the total duration.
+*** Example
+      #+BEGIN_SRC lisp
+      (plot *env1*)
+      ;; => nil
+      #+END_SRC
+      #+attr_html: :width 50%
+      #+CAPTION: *​env1​* envelope
+      [[./img/env1-plot.svg]]
 ** *​env1​*
    :PROPERTIES:
    :CUSTOM_ID: env1
@@ -1257,6 +2370,47 @@
    #+BEGIN_SRC lisp
      (envelope* env gate time-scale done-action &optional ugen-node)
    #+END_SRC
+** envelope*
+   Function
+   #+BEGIN_SRC lisp
+     (envelope* env gate time-scale done-action &optional ugen-node)
+   #+END_SRC
+** eod?
+   Generic Function
+   #+BEGIN_SRC lisp
+     (eod? obj)
+   #+END_SRC
+** eop?
+   Generic Function
+   #+BEGIN_SRC lisp
+     (eop? obj)
+   #+END_SRC
+** events
+   Function
+   #+BEGIN_SRC lisp
+     (events object &rest args)
+   #+END_SRC
+** every-nth
+   Function
+   #+BEGIN_SRC lisp
+     (every-nth list n &key (offset 0))
+   #+END_SRC
+   Return a sublist of /list/ containing every element with an index
+   being a multiple of /n/.
+*** Arguments
+    =list= -- Input list.
+
+    =n= -- Positive integer indicating the index distance between
+    elements.
+
+    =:offset= -- Positive integer indicating offset into the input list.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (every-nth '(9 10 11 12 13 14 15 16 17 18 19 20) 3 :offset 1)
+      ;; => (10 13 16 19)
+    #+END_SRC
 ** every-nth
    Function
    #+BEGIN_SRC lisp
@@ -1310,6 +2464,58 @@
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
+** exp-n
+   Macro
+   #+BEGIN_SRC lisp
+     (exp-n val min max)
+   #+END_SRC
+   Return the reverse exponential interpolation for a value in the range
+   /[min..max]/ as a normalized float value. /Min/ and /max/ have to be
+   positive numbers.
+*** Arguments
+    =x= -- An input value in the range /[min..max]/ to be interpolated.
+
+    =min= -- The minimum value.
+
+    =max= -- The maximum value.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (exp-n 1 1 100) ; => 0.0
+      
+      (exp-n 10 1 100) ; => 0.5
+      
+      (exp-n 100 1 100) ; => 1.0
+    #+END_SRC
+*** See also
+    - [[lin-n][lin-n]]
+    - [[m-exp][m-exp]]
+    - [[m-lin][m-lin]]
+    - [[n-exp][n-exp]]
+    - [[n-exp-dev][n-exp-dev]]
+    - [[n-lin][n-lin]]
+    - [[n-lin-dev][n-lin-dev]]
+** expl
+   Function
+   #+BEGIN_SRC lisp
+     (expl power &key (y0 0.0) (y1 1.0) (base 2))
+   #+END_SRC
+** explseg
+   Function
+   #+BEGIN_SRC lisp
+     (explseg i len num power)
+   #+END_SRC
+** explsegs
+   Function
+   #+BEGIN_SRC lisp
+     (explsegs len sum power)
+   #+END_SRC
+** export-poolplayer-events
+   Function
+   #+BEGIN_SRC lisp
+     (export-poolplayer-events &key (evts *poolplayer-events*) (file "/tmp/test.svg"))
+   #+END_SRC
 ** export-svg
    Function
    #+BEGIN_SRC lisp
@@ -1326,9 +2532,37 @@
    #+BEGIN_SRC lisp
      (faderfox-gui #:id gui-parent &key (chan 4))
    #+END_SRC
+** faderfox-gui
+   Function
+   #+BEGIN_SRC lisp
+     (faderfox-gui #:id gui-parent &key (chan 4))
+   #+END_SRC
 ** faderfox-midi
    Class
 
+** faderfox-midi
+   Class
+
+** false
+   Variable
+
+** fibonacci
+   Function
+   #+BEGIN_SRC lisp
+     (fibonacci n)
+   #+END_SRC
+   Calculate the /n/-th element of the Fibonacci series. The function is
+   not recursive, but calculates the value directly, running in constant
+   time.
+*** Arguments
+    =n= -- Non Negative Integer denoting the index of the Fibonacci
+    series.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (mapcar #'fibonacci (range 12)) ; => (1 1 2 3 5 8 13 21 34 55 89 144)
+    #+END_SRC
 ** fibonacci
    Function
    #+BEGIN_SRC lisp
@@ -1351,6 +2585,11 @@
    #+BEGIN_SRC lisp
      (file-string infile)
    #+END_SRC
+** file-string
+   Function
+   #+BEGIN_SRC lisp
+     (file-string infile)
+   #+END_SRC
 ** filter
    Function
    #+BEGIN_SRC lisp
@@ -1367,6 +2606,38 @@
     #+BEGIN_SRC lisp
       (filter (lambda (e) (< e 9)) '(3 1 12 17 5 4)) ; => (3 1 5 4)
     #+END_SRC
+** filter
+   Function
+   #+BEGIN_SRC lisp
+     (filter pred seq)
+   #+END_SRC
+   Return a list of all elements of /seq/ satisfying /pred/.
+*** Arguments
+    =seq= -- A Common Lisp sequence
+
+    =pred= -- Function of one element for filtering elements.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (filter (lambda (e) (< e 9)) '(3 1 12 17 5 4)) ; => (3 1 5 4)
+    #+END_SRC
+** find-buffer
+   Function
+   #+BEGIN_SRC lisp
+     (find-buffer name)
+   #+END_SRC
+   Find all buffers with a name being a full pathname or the
+   pathname-name of /name/.
+*** Arguments
+    =name= -- String or Pathname denoting the buffer's filename.
+
+
+*** See also
+    - [[add-buffer][add-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
+    - [[remove-all-buffers][remove-all-buffers]]
 ** find-buffer
    Function
    #+BEGIN_SRC lisp
@@ -1400,6 +2671,23 @@
     - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
     - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+** find-controller
+   Function
+   #+BEGIN_SRC lisp
+     (find-controller #:id)
+   #+END_SRC
+   Return MIDI controller instance with ID /id/ or /nil/ if not
+   registered.
+*** Arguments
+    =id= -- Keyword or Symbol used as ID of a midicontroller instance .
+
+
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[list-midi-controllers][list-midi-controllers]]
+    - [[midi-controller][midi-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
 ** find-dsp
    Function
    #+BEGIN_SRC lisp
@@ -1414,11 +2702,58 @@
     - [[add-dsp][add-dsp]]
     - [[list-dsps][list-dsps]]
     - [[remove-dsp][remove-dsp]]
+** find-dsp
+   Function
+   #+BEGIN_SRC lisp
+     (find-dsp id)
+   #+END_SRC
+   Find a running Incudine dsp registered with [[add-dsp][add-dsp]].
+*** Arguments
+    =id= -- Keyword or Symbol identifying the dsp.
+
+
+*** See also
+    - [[add-dsp][add-dsp]]
+    - [[list-dsps][list-dsps]]
+    - [[remove-dsp][remove-dsp]]
+** find-object
+   Function
+   #+BEGIN_SRC lisp
+     (find-object string &optional err? class)
+   #+END_SRC
+** fit
+   Function
+   #+BEGIN_SRC lisp
+     (fit number lb ub &optional (mode :reflect))
+   #+END_SRC
 ** flash
    Generic Function
    #+BEGIN_SRC lisp
      (flash clog-obj)
    #+END_SRC
+** flash
+   Generic Function
+   #+BEGIN_SRC lisp
+     (flash clog-obj)
+   #+END_SRC
+** flatten
+   Function
+   #+BEGIN_SRC lisp
+     (flatten form)
+   #+END_SRC
+   Remove all brackets except the outmost from /form/. Non-recursive,
+   non-stack version from Rosetta Code.
+*** Arguments
+    =form= -- A Common Lisp form.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (flatten '((a b) (((c d) (e f)) (g h)) (i k)))
+      ;; -> (a b c d e f g h i k)
+    #+END_SRC
+*** See also
+    - [[flatten-fn][flatten-fn]]
 ** flatten
    Function
    #+BEGIN_SRC lisp
@@ -1456,6 +2791,35 @@
     #+END_SRC
 *** See also
     - [[flatten][flatten]]
+** flatten-fn
+   Function
+   #+BEGIN_SRC lisp
+     (flatten-fn seq &key (test #'atom) (key #'identity))
+   #+END_SRC
+   Remove all brackets except the outmost in seq. Use test and key to
+      determine where to stop removing brackets.
+*** Examples
+    #+BEGIN_SRC lisp
+      (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)))
+      ;; -> (a b c d e f g h i k)
+      
+      ;; keep one level of brackets:
+      
+      (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)) :key #'car)
+      ;; -> ((a b) (c d) (e f) (g h) (i k))
+    #+END_SRC
+*** See also
+    - [[flatten][flatten]]
+** fm-spectrum
+   Function
+   #+BEGIN_SRC lisp
+     (fm-spectrum carrier mratio index &key (spectrum nil) (minimum nil) (maximum nil) invert (ignore-zero nil izp) (amplitudes (eq spectrum ':raw)) all-sidebands scale-order (remove-duplicates t))
+   #+END_SRC
+** fold-objects
+   Function
+   #+BEGIN_SRC lisp
+     (fold-objects fn objects acc &rest args)
+   #+END_SRC
 ** format-with-slots
    Macro
    #+BEGIN_SRC lisp
@@ -1487,12 +2851,88 @@
     #+END_SRC
 *** See also
     - [[ct->fr][ct->fr]]
+** fr->ct
+   Function
+   #+BEGIN_SRC lisp
+     (fr->ct fr)
+   #+END_SRC
+   Return the Midicents interval of the frequency ratio /fr/.
+*** Arguments
+    =fr= -- The frequency ratio of the interval.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (fr->ct 2) ;; => 12.0
+      
+      (fr->ct 4/5) ;; => -3.863137
+      
+      (fr->ct 3/2) ;; => 7.01955
+      
+      (fr->ct 1/2) ;; => -12.0
+      
+      (mapcar #'fr->ct (range 1 17))
+      ;; => (0.0 12.0 19.01955 24.0 27.863136 31.01955 33.68826 36.0 38.0391 39.863136
+      ;;     41.51318 43.01955 44.405277 45.68826 46.882687 48.0)
+    #+END_SRC
+*** See also
+    - [[ct->fr][ct->fr]]
 ** ftom
    Function
    #+BEGIN_SRC lisp
      (ftom f &key (tuning-base 440))
    #+END_SRC
+** fudi-close-default
+   Function
+   #+BEGIN_SRC lisp
+     (fudi-close-default &rest args)
+   #+END_SRC
+** *​fudi-in​*
+   :PROPERTIES:
+   :CUSTOM_ID: fudi-in
+   :END:
+   Variable
+
+** fudi-open
+   Function
+   #+BEGIN_SRC lisp
+     (fudi-open &key (host "127.0.0.1") (port 3001) (protocol :tcp) (element-type 'character) (direction :input))
+   #+END_SRC
+** fudi-open-default
+   Function
+   #+BEGIN_SRC lisp
+     (fudi-open-default &key (host "127.0.0.1") (port 3001) (protocol :tcp) (element-type 'character) (direction :input))
+   #+END_SRC
+** *​fudi-out​*
+   :PROPERTIES:
+   :CUSTOM_ID: fudi-out
+   :END:
+   Variable
+
+** fudi-output-stream
+   Function
+   #+BEGIN_SRC lisp
+     (fudi-output-stream)
+   #+END_SRC
+** funcall
+   Function
+   #+BEGIN_SRC lisp
+     (funcall function &rest arguments)
+   #+END_SRC
+   Call FUNCTION with the given ARGUMENTS.
 * G
+** g-export
+   Function
+   #+BEGIN_SRC lisp
+     (g-export obj &key (view t) (dir "/tmp/"))
+   #+END_SRC
+   Wrapper to export a cm obj to svg.
+** get-buffer
+   Function
+   #+BEGIN_SRC lisp
+     (get-buffer id)
+   #+END_SRC
+   get buffer from registry by index.
 ** get-buffer
    Function
    #+BEGIN_SRC lisp
@@ -1542,11 +2982,62 @@
       
       (get-duplicates '(0 1 3 2 4 3 9 3 1 3 4 2 3) :once t)  ; => (1 2 4 3)
     #+END_SRC
+** get-duplicates
+   Function
+   #+BEGIN_SRC lisp
+     (get-duplicates list &key (test #'eql) (once nil))
+   #+END_SRC
+   Return all Elements of /list/ which occur more than once with respect
+   to the /test/ predicate. If /once/ is non-nil, return each duplicate
+   element only once.
+*** Arguments
+    =list= -- List being examined.
+
+    =test= -- Function to determine equality of elements.
+
+    =once= -- Boolean to determine if only one of the duplicate elements
+    is returned.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (get-duplicates '(0 1 3 2 4 3 9 3 1 3 4 2 3)) ; => (1 3 2 4 3 3 3)
+      
+      (get-duplicates '(0 1 3 2 4 3 9 3 1 3 4 2 3) :once t)  ; => (1 2 4 3)
+    #+END_SRC
 ** get-keynum
    Function
    #+BEGIN_SRC lisp
      (get-keynum entry)
    #+END_SRC
+** get-keynum
+   Function
+   #+BEGIN_SRC lisp
+     (get-keynum entry)
+   #+END_SRC
+** get-prop
+   Function
+   #+BEGIN_SRC lisp
+     (get-prop proplist key &optional default)
+   #+END_SRC
+   Like getf but using #'equal for testing of the property key.
+*** Arguments
+    =proplist= -- Property list
+
+    =key= -- Lisp Object ervong as key in property list.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (get-prop '("George" "Maciunas" "Simone" "de Beauvoir") "Simone") ; => "de Beauvoir"
+    #+END_SRC
+*** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-props-list][get-props-list]]
+    - [[map-proplist][map-proplist]]
+    - [[with-props][with-props]]
 ** get-prop
    Function
    #+BEGIN_SRC lisp
@@ -1603,6 +3094,46 @@
     - [[get-prop][get-prop]]
     - [[map-proplist][map-proplist]]
     - [[with-props][with-props]]
+** get-props-list
+   Function
+   #+BEGIN_SRC lisp
+     (get-props-list proplist props &key (force-all nil))
+   #+END_SRC
+   Return a new property list containing /props/ and their values
+   extracted from /proplist/. Properties not present in proplist are
+   ignored. If /force-all/ is non-nil, also return properties not present
+   in proplist with nil as value.
+*** Arguments
+    =proplist= -- Property list.
+
+    =props= -- Properties to extract from proplist.
+
+    =:force-all= -- Boolean to indicate if non-present props should get
+    included in result.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (get-props-list '(:a 1 :b 2 :c 3 :d "Foo") '(:d :a)) ; => (:d "Foo" :a 1)
+      
+      (get-props-list '(:a 1 :b 2 :c 3 :d "Foo") '(:a :e)) ; => (:a 1)
+      
+      (get-props-list '(:a 1 :b 2 :c 3 :d "Foo" :a 4) '(:a :e) :force-all t)  ; => (:a 1 :e nil)
+    #+END_SRC
+*** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[map-proplist][map-proplist]]
+    - [[with-props][with-props]]
+** get-ref
+   Function
+   #+BEGIN_SRC lisp
+     (get-ref controller ref-idx)
+   #+END_SRC
+   return the ref-object of the midi-controller <controller> given the
+   <ref-idx> indexing into the cc-nums slot of the controller.
 ** get-ref
    Function
    #+BEGIN_SRC lisp
@@ -1644,11 +3175,67 @@
     - [[sfz-get-range][sfz-get-range]]
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** get-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (get-sfz-preset preset &key force (play-fn #'play-sfz-loop))
+   #+END_SRC
+   Load the sfz definition of /preset/ and all its samples into the
+   system if it hasn't been loaded previously. If force is /t/, force
+   reload. Optionally set a play function.
+   
+   The association between the preset name and its sfz file has to be
+   established before using [[add-sfz-preset][add-sfz-preset]], otherwise a warning is
+   issued and no file is loaded.
+*** Arguments
+    =preset= -- A keynum or symbol to serve as the name/id of the
+    preset.
+
+    =:force= -- A boolean indicating to force a reload even if the
+    preset has been loaded before.
+
+    =:play-fn= -- The play function to be used. Possible options are:
+
+    - [[play-sfz-loop][#'play-sfz-loop]]
+    - [[play-sfz-one-shot][#'play-sfz-one-shot]]
+
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** get-sndfile-path
    Function
    #+BEGIN_SRC lisp
      (get-sndfile-path fname path)
    #+END_SRC
+** get-sndfile-path
+   Function
+   #+BEGIN_SRC lisp
+     (get-sndfile-path fname path)
+   #+END_SRC
+** get-time
+   Function
+   #+BEGIN_SRC lisp
+     (get-time secs &key (prec 2))
+   #+END_SRC
+   Convert a /secs/ representing seconds into a list of the form /(hr min
+   secs)/.
+*** Arguments
+    =secs= -- Number representing time in seconds.
+
+    =prec= -- Number of digits after the comma of seconds
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (get-time 2753.3) ; => (0 45 53.30005)
+    #+END_SRC
 ** get-time
    Function
    #+BEGIN_SRC lisp
@@ -1681,6 +3268,32 @@
     - [[make-ref][make-ref]]
     - [[set-val][set-val]]
     - [[watch][watch]]
+** get-val
+   Function
+   #+BEGIN_SRC lisp
+     (get-val ref)
+   #+END_SRC
+   Return the value of /ref-object/.
+*** Arguments
+    =ref-object= -- An instance of [[ref-object][ref-object]].
+
+
+*** See also
+    - [[make-computed][make-computed]]
+    - [[make-ref][make-ref]]
+    - [[set-val][set-val]]
+    - [[watch][watch]]
+** *​global-midi-channel​*
+   :PROPERTIES:
+   :CUSTOM_ID: global-midi-channel
+   :END:
+   Variable
+
+   Default MIDI channel for midi controllers or access functions like
+   [[ccin][ccin]].
+*** See also
+    - [[ccin][ccin]]
+    - [[midi-controller][midi-controller]]
 ** *​global-midi-channel​*
    :PROPERTIES:
    :CUSTOM_ID: global-midi-channel
@@ -1710,6 +3323,9 @@
    :END:
    Variable
 
+** graph
+   Class
+
 ** group
    Function
    #+BEGIN_SRC lisp
@@ -1735,6 +3351,32 @@
       (group-by '(1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 2 3 4 5 6) '(2 3 5))
       ;; => ((1 2) (3 4 5) (6 7 8 9 1) (2 3) (4 5 6) (7 8 9 1 2) (3 4) (5 6))
     #+END_SRC
+** group-by
+   Function
+   #+BEGIN_SRC lisp
+     (group-by list group-lengths)
+   #+END_SRC
+   Partition /list/ into sublists of lengths given by /group-lenghts/
+   cyclically.
+*** Arguments
+    =list= -- The list to partition.
+
+    =group-lenghts= -- A list of Positive Integers denoting the sequence
+    of lengths of the partitions.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (group-by '(1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 2 3 4 5 6) '(2 3 5))
+      ;; => ((1 2) (3 4 5) (6 7 8 9 1) (2 3) (4 5 6) (7 8 9 1 2) (3 4) (5 6))
+    #+END_SRC
+** group-by-key
+   Function
+   #+BEGIN_SRC lisp
+     (group-by-key source &key (test #'=) (key #'car))
+   #+END_SRC
+   Group elems of /source/ into sublists depending on /test/ and
+   /key/. Source has to be sorted according to test!
 ** group-by-key
    Function
    #+BEGIN_SRC lisp
@@ -1766,6 +3408,11 @@
    #+BEGIN_SRC lisp
      (handle-midi-in instance opcode d1 d2)
    #+END_SRC
+** handle-midi-in
+   Generic Function
+   #+BEGIN_SRC lisp
+     (handle-midi-in instance opcode d1 d2)
+   #+END_SRC
 ** *​hanning1024​*
    :PROPERTIES:
    :CUSTOM_ID: hanning1024
@@ -1784,12 +3431,53 @@
       [[./img/hanning-plot.svg]]
 *** See also
     - [[#sine1024][*​​sine1024​​*]]
+** *​hanning1024​*
+   :PROPERTIES:
+   :CUSTOM_ID: hanning1024
+   :END:
+   Variable
+
+   Incudine buffer of length 1024 containing a Hanning window.
+*** Example
+      #+BEGIN_SRC lisp
+      (plot *hanning1024*)
+      ;; => #<incudine:buffer :FRAMES 1024 :CHANNELS 1 :SR 44100.0>
+      #+END_SRC
+      
+      #+attr_html: :width 50%
+      #+CAPTION: *​hanning1024​* buffer
+      [[./img/hanning-plot.svg]]
+*** See also
+    - [[#sine1024][*​​sine1024​​*]]
+** harmonics
+   Function
+   #+BEGIN_SRC lisp
+     (harmonics h1 h2 &key ((:hertz hz) 1) invert undertones ((:keynum knum) nil) ((:rescale scaler) nil) scale-order harmonic)
+   #+END_SRC
+** heap
+   Class
+
+** hertz
+   Function
+   #+BEGIN_SRC lisp
+     (hertz freq &rest args)
+   #+END_SRC
 ** highlight
    Generic Function
    #+BEGIN_SRC lisp
      (highlight clog-element value)
    #+END_SRC
-* I-J
+** highlight
+   Generic Function
+   #+BEGIN_SRC lisp
+     (highlight clog-element value)
+   #+END_SRC
+** histogram
+   Function
+   #+BEGIN_SRC lisp
+     (histogram numbers lo hi slots)
+   #+END_SRC
+* I
 ** idump
    Function
    #+BEGIN_SRC lisp
@@ -1805,12 +3493,50 @@
 *** Note
     If calling idump doesn't produce any output although dsps are running,
     reset the logger-stream using [[reset-logger-stream][reset-logger-stream]].
+** import-events
+   Generic Function
+   #+BEGIN_SRC lisp
+     (import-events obj &rest args &key seq x-offset layer x-scale colormap start end group? layer? tracks meta-exclude channel-exclude time-format tempo exclude-tracks keynum-format channel-tuning pitch-bend-width note-off-stack output)
+   #+END_SRC
+** imsg
+   Macro
+   #+BEGIN_SRC lisp
+     (imsg type format-control &rest format-arguments)
+   #+END_SRC
+   Produce a formatted log message controlled by FORMAT-CONTROL and
+   FORMAT-ARGUMENTS.
+   
+   TYPE should be one of ERROR, WARN, INFO or DEBUG.
 ** *​in-refs​*
    :PROPERTIES:
    :CUSTOM_ID: in-refs
    :END:
    Variable
 
+** *​in-refs​*
+   :PROPERTIES:
+   :CUSTOM_ID: in-refs
+   :END:
+   Variable
+
+** incudine-ensure-microtuning
+   Function
+   #+BEGIN_SRC lisp
+     (incudine-ensure-microtuning keyn chan stream time)
+   #+END_SRC
+   return values keynum and chan according to tuning specs in stream.
+** incudine-input
+   Generic Function
+   #+BEGIN_SRC lisp
+     (incudine-input object)
+   #+END_SRC
+   automatically generated reader method
+** incudine-output
+   Generic Function
+   #+BEGIN_SRC lisp
+     (incudine-output object)
+   #+END_SRC
+   automatically generated reader method
 ** index-list
    Function
    #+BEGIN_SRC lisp
@@ -1828,6 +3554,30 @@
     #+BEGIN_SRC lisp
       (index-list '(a b c d e)) ; => ((0 . a) (1 . b) (2 . c) (3 . d) (4 . e))
     #+END_SRC
+** index-list
+   Function
+   #+BEGIN_SRC lisp
+     (index-list list &key (n 0))
+   #+END_SRC
+   Return /list/ with increasing indexes consed to the front of each
+   element of list starting from /n/.
+*** Arguments
+    =list= -- List containing elements which get prepended indices.
+
+    =n= -- Integer denoting starting index
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (index-list '(a b c d e)) ; => ((0 . a) (1 . b) (2 . c) (3 . d) (4 . e))
+    #+END_SRC
+** inkscape-export->cm
+   Function
+   #+BEGIN_SRC lisp
+     (inkscape-export->cm svg-evts &key (x-scale 1/32) (colormap *svg-colormap*))
+   #+END_SRC
+   convert svg elems exported by the inkscape 'Play Selection' extension
+   to sproutable cm-events.
 ** input-stream
    Structure
 
@@ -1836,7 +3586,80 @@
    #+BEGIN_SRC lisp
      (input-stream-p object)
    #+END_SRC
+** insert-object
+   Generic Function
+   #+BEGIN_SRC lisp
+     (insert-object obj1 obj2)
+   #+END_SRC
+** install-standard-sly-hooks
+   Function
+   #+BEGIN_SRC lisp
+     (install-standard-sly-hooks)
+   #+END_SRC
+** interp
+   Function
+   #+BEGIN_SRC lisp
+     (interp x &rest coords)
+   #+END_SRC
+** interpl
+   Function
+   #+BEGIN_SRC lisp
+     (interpl x coords &key min max (offset min) scale (base 1))
+   #+END_SRC
+** interval
+   Generic Function
+   #+BEGIN_SRC lisp
+     (interval int &optional int2)
+   #+END_SRC
+** invert
+   Generic Function
+   #+BEGIN_SRC lisp
+     (invert ref &optional pc?)
+   #+END_SRC
+** io
+   Macro
+   #+BEGIN_SRC lisp
+     (io str &body args)
+   #+END_SRC
+* J
+** jack-connect-qsynth
+   Function
+   #+BEGIN_SRC lisp
+     (jack-connect-qsynth)
+   #+END_SRC
+** jackmidi-input-stream
+   Function
+   #+BEGIN_SRC lisp
+     (jackmidi-input-stream)
+   #+END_SRC
+** jackmidi-output-stream
+   Function
+   #+BEGIN_SRC lisp
+     (jackmidi-output-stream)
+   #+END_SRC
+** jbmf
+   Function
+   #+BEGIN_SRC lisp
+     (jbmf &rest args)
+   #+END_SRC
+   midi-rendering of "Jesu bleibet meine Freude of J.S.Bach (Hommage
+     to the Video Series of "Structures and Interpretation of Computer
+     Programs")
+** join
+   Class
+
 * K
+** keynum
+   Function
+   #+BEGIN_SRC lisp
+     (keynum freq &rest args)
+   #+END_SRC
+** keynum->hz
+   Function
+   #+BEGIN_SRC lisp
+     (keynum->hz keynum)
+   #+END_SRC
+   Convert VALUE dB to linear value.
 ** keynum->hz
    Function
    #+BEGIN_SRC lisp
@@ -1849,6 +3672,14 @@
    #+BEGIN_SRC lisp
      (let-default ((sym test default)) &body body)
    #+END_SRC
+** let-default
+   Macro
+   #+BEGIN_SRC lisp
+     (let-default ((sym test default)) &body body)
+   #+END_SRC
+** levelmeter
+   Class
+
 ** levelmeter
    Class
 
@@ -1856,6 +3687,16 @@
    Function
    #+BEGIN_SRC lisp
      (levelmeter-full-gui id gui-parent &key (#:group 300) (type :bus) refs (num 1) (audio-bus 0))
+   #+END_SRC
+** levelmeter-full-gui
+   Function
+   #+BEGIN_SRC lisp
+     (levelmeter-full-gui id gui-parent &key (#:group 300) (type :bus) refs (num 1) (audio-bus 0))
+   #+END_SRC
+** levelmeter-gui
+   Function
+   #+BEGIN_SRC lisp
+     (levelmeter-gui id gui-parent &key (#:group 300) (type :bus) refs (num 1) (audio-bus 0))
    #+END_SRC
 ** levelmeter-gui
    Function
@@ -1893,6 +3734,45 @@
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
+** lin-n
+   Function
+   #+BEGIN_SRC lisp
+     (lin-n val min max)
+   #+END_SRC
+   Return the reverse linear interpolation for a value in the range
+   /[min..max]/ as a normalized float value.
+*** Arguments
+    =x= -- An input value in the range /[min..max]/ to be interpolated.
+
+    =min= -- The minimum value.
+
+    =max= -- The maximum value.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (lin-n 10 10 20) ; => 0.0
+      
+      (lin-n 15 10 20) ; => 0.5
+      
+      (lin-n 20 10 20) ; => 1.0
+    #+END_SRC
+*** See also
+    - [[exp-n][exp-n]]
+    - [[m-exp][m-exp]]
+    - [[m-lin][m-lin]]
+    - [[n-exp][n-exp]]
+    - [[n-exp-dev][n-exp-dev]]
+    - [[n-lin][n-lin]]
+    - [[n-lin-dev][n-lin-dev]]
+** line*
+   Function
+   #+BEGIN_SRC lisp
+     (line* start end duration done-action &optional ugen-node)
+   #+END_SRC
+** line
+   Class
+
 ** line*
    Function
    #+BEGIN_SRC lisp
@@ -1903,6 +3783,17 @@
    #+BEGIN_SRC lisp
      (lines->svg list svg-file &key color opacity (stroke-width 0.5))
    #+END_SRC
+** list-dsps
+   Function
+   #+BEGIN_SRC lisp
+     (list-dsps)
+   #+END_SRC
+   Return all running Incudine dsps registered with [[add-dsp][add-dsp]] in a
+   list sorted by ID.
+*** See also
+    - [[add-dsp][add-dsp]]
+    - [[find-dsp][find-dsp]]
+    - [[remove-dsp][remove-dsp]]
 ** list-dsps
    Function
    #+BEGIN_SRC lisp
@@ -1926,6 +3817,35 @@
     - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
     - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+** list-midi-controllers
+   Function
+   #+BEGIN_SRC lisp
+     (list-midi-controllers)
+   #+END_SRC
+   Return the IDs of all registered midi controllers in a list.
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[find-controller][find-controller]]
+    - [[midi-controller][midi-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+** list-named-objects
+   Function
+   #+BEGIN_SRC lisp
+     (list-named-objects &optional type)
+   #+END_SRC
+** list-sfz-presets
+   Function
+   #+BEGIN_SRC lisp
+     (list-sfz-presets &key (loaded nil))
+   #+END_SRC
+   Return a sorted list of all sfz preset names.
+*** Arguments
+    =:loaded= -- Boolean to indicate whether only the preset names of
+    loaded presets should be returned. If /nil/ all registered preset
+    names are returned.
+
+
 ** list-sfz-presets
    Function
    #+BEGIN_SRC lisp
@@ -1975,6 +3895,54 @@
     - [[sfz-get-range][sfz-get-range]]
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** load-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (load-sfz-preset file name &key force (play-fn #'play-sfz-loop))
+   #+END_SRC
+   Load a sfz file into a preset with the id name. In case this preset
+   already exists, the old one will only be overwritten if force is
+   set to t. This function normally doesn't need to be called
+   explicitely. The preferred mechanism to deal with sfz presets is by
+   using a combination of [[add-sfz-preset][add-sfz-preset]] and [[ensure-sfz-preset][ensure-sfz-preset]].
+*** Arguments
+    =file= -- Path or filename of the sfz file to load
+
+    =name= -- symbol to identify the preset (preferably a keyword, but
+    any symbol works)
+
+    =:force= -- Force loading of the preset even if it already exists.
+
+    =:play-fn= -- The play-fn to use when playing a sound. Possible
+    choices are:
+
+    - [[play-sfz-loop][#'play-sfz-loop]]
+    - [[play-sfz-one-shot][#'play-sfz-one-shot]]
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (load-sfz-preset "~/quicklisp/local-projects/clamps/packages/cl-sfz/snd/sfz/Flute-nv/000_Flute-nv.sfz" :flute-nv)
+    #+END_SRC
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** lookup
+   Function
+   #+BEGIN_SRC lisp
+     (lookup num lst)
+   #+END_SRC
+** *​loudest​*
+   :PROPERTIES:
+   :CUSTOM_ID: loudest
+   :END:
+   Variable
+
 ** lsample
    Structure
 
@@ -2005,6 +3973,11 @@
     
 *** See also
     - [[sfz][sfz]]
+** lsample->poolevt
+   Function
+   #+BEGIN_SRC lisp
+     (lsample->poolevt lsample &key keynum (time 0) (startpos 0) dur (ampdb 0))
+   #+END_SRC
 * M
 ** m-controller
    Generic Function
@@ -2048,6 +4021,47 @@
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
+** m-exp
+   Function
+   #+BEGIN_SRC lisp
+     (m-exp x min max)
+   #+END_SRC
+   Return the exponential interpolation for a MIDI value in the range
+   /[min..max]/ as a float value. The min and max values have to be
+   positive.
+*** Arguments
+    =x= -- An input value in the range /[0..127]/ to be interpolated.
+
+    =min= -- The output value for /x = 0/.
+
+    =max= -- The output value for /x = 127/.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      #+BEGIN_SRC lisp
+      (m-exp 0 1 100) ; => 1.0 (100.0%)
+      
+      (m-exp 64 1 100) ; => 10.18296
+      
+      (m-exp 127 1 100) ; => 100.0
+      #+END_SRC
+    #+END_SRC
+*** See also
+    - [[exp-n][exp-n]]
+    - [[lin-n][lin-n]]
+    - [[m-lin][m-lin]]
+    - [[n-exp][n-exp]]
+    - [[n-exp-dev][n-exp-dev]]
+    - [[n-lin][n-lin]]
+    - [[n-lin-dev][n-lin-dev]]
+** m-exp-dev
+   Function
+   #+BEGIN_SRC lisp
+     (m-exp-dev x max)
+   #+END_SRC
+   return a random deviation factor, the deviation being exponentially
+   interpolated between 1 for x=0 and [1/max..max] for x=127.
 ** m-exp-dev
    Function
    #+BEGIN_SRC lisp
@@ -2061,6 +4075,18 @@
      (m-exp-fn min max)
    #+END_SRC
    exp interpolation for midivalues (x = [0..127])
+** m-exp-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-exp-fn min max)
+   #+END_SRC
+   exp interpolation for midivalues (x = [0..127])
+** m-exp-rd-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-exp-rd-fn min max)
+   #+END_SRC
+   rounded exp interpolation for midivalues (x = [0..127])
 ** m-exp-rd-fn
    Function
    #+BEGIN_SRC lisp
@@ -2072,6 +4098,17 @@
    #+BEGIN_SRC lisp
      (m-exp-rd-rev-fn min max)
    #+END_SRC
+** m-exp-rd-rev-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-exp-rd-rev-fn min max)
+   #+END_SRC
+** m-exp-rev-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-exp-rev-fn min max)
+   #+END_SRC
+   exp reverse interpolation fn for midivalues (x = [0..127])
 ** m-exp-rev-fn
    Function
    #+BEGIN_SRC lisp
@@ -2084,6 +4121,18 @@
      (m-exp-zero x min max)
    #+END_SRC
    exp interpolation for midivalues (x = [0..127]) with 0 for x = 0
+** m-exp-zero
+   Function
+   #+BEGIN_SRC lisp
+     (m-exp-zero x min max)
+   #+END_SRC
+   exp interpolation for midivalues (x = [0..127]) with 0 for x = 0
+** m-exp-zero-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-exp-zero-fn min max)
+   #+END_SRC
+   exp interpolation for midivalues (x = [0..127])
 ** m-exp-zero-fn
    Function
    #+BEGIN_SRC lisp
@@ -2096,6 +4145,45 @@
      (m-exp-zero-rev-fn min max)
    #+END_SRC
    exp reverse interpolation fn returning midivalues [0..127]
+** m-exp-zero-rev-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-exp-zero-rev-fn min max)
+   #+END_SRC
+   exp reverse interpolation fn returning midivalues [0..127]
+** m-lin
+   Function
+   #+BEGIN_SRC lisp
+     (m-lin x min max)
+   #+END_SRC
+   Return the linear interpolation for a MIDI value in the range
+   /[min..max]/ as a float value.
+*** Arguments
+    =x= -- An input value in the range /[0..127]/ to be interpolated.
+
+    =min= -- The output value for /x = 0/.
+
+    =max= -- The output value for /x = 127/.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      #+BEGIN_SRC lisp
+      (m-lin 0 10 20) ; => 10.0
+      
+      (m-lin 64 10 20) ; => 15.039371
+      
+      (m-lin 127 10 20)  ; => 20.0
+      #+END_SRC
+    #+END_SRC
+*** See also
+    - [[exp-n][exp-n]]
+    - [[lin-n][lin-n]]
+    - [[m-exp][m-exp]]
+    - [[n-exp][n-exp]]
+    - [[n-exp-dev][n-exp-dev]]
+    - [[n-lin][n-lin]]
+    - [[n-lin-dev][n-lin-dev]]
 ** m-lin
    Function
    #+BEGIN_SRC lisp
@@ -2136,6 +4224,19 @@
    #+END_SRC
    return a random deviation offset, the deviation being linearly
    interpolated between 0 for x=0 and [-max..max] for x=127.
+** m-lin-dev
+   Function
+   #+BEGIN_SRC lisp
+     (m-lin-dev x max)
+   #+END_SRC
+   return a random deviation offset, the deviation being linearly
+   interpolated between 0 for x=0 and [-max..max] for x=127.
+** m-lin-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-lin-fn min max)
+   #+END_SRC
+   linear interpolation for midivalues (x = [0..127])
 ** m-lin-fn
    Function
    #+BEGIN_SRC lisp
@@ -2148,6 +4249,17 @@
      (m-lin-rd-fn min max)
    #+END_SRC
    rounded linear interpolation for midivalues (x = [0..127])
+** m-lin-rd-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-lin-rd-fn min max)
+   #+END_SRC
+   rounded linear interpolation for midivalues (x = [0..127])
+** m-lin-rd-rev-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-lin-rd-rev-fn min max)
+   #+END_SRC
 ** m-lin-rd-rev-fn
    Function
    #+BEGIN_SRC lisp
@@ -2158,10 +4270,25 @@
    #+BEGIN_SRC lisp
      (m-lin-rev-fn min max)
    #+END_SRC
+** m-lin-rev-fn
+   Function
+   #+BEGIN_SRC lisp
+     (m-lin-rev-fn min max)
+   #+END_SRC
 ** make-adjustable-string
    Function
    #+BEGIN_SRC lisp
      (make-adjustable-string)
+   #+END_SRC
+** make-adjustable-string
+   Function
+   #+BEGIN_SRC lisp
+     (make-adjustable-string)
+   #+END_SRC
+** make-bang
+   Function
+   #+BEGIN_SRC lisp
+     (make-bang &optional fn)
    #+END_SRC
 ** make-bang
    Function
@@ -2174,6 +4301,30 @@
      (make-cm-line args)
    #+END_SRC
    wrapper function for mapping.
+** make-computed
+   Function
+   #+BEGIN_SRC lisp
+     (make-computed fn &optional (setter nil))
+   #+END_SRC
+   Return a [[ref-object][ref-object]] which recalculates and sets its value using
+   /fn/ whenever a ref-object accessed with [[get-val][get-val]] in the body of
+   /fn/ is changed.
+   
+   Refer to [[clamps:Defining relations][Defining relations]] in the Clamps documentation for
+   examples.
+*** Arguments
+    =fn= -- Function of no arguments to call whenever a value accessed
+    using [[get-val][get-val]] in the body of the function is changed.
+
+    =setter= -- Function of one argument called with the value of the
+    ref-object returned by /make-computed/ whenever it changes.
+
+
+*** See also
+    - [[get-val][get-val]]
+    - [[make-ref][make-ref]]
+    - [[set-val][set-val]]
+    - [[watch][watch]]
 ** make-computed
    Function
    #+BEGIN_SRC lisp
@@ -2212,11 +4363,45 @@
     #+BEGIN_SRC lisp
       (make-keyword "Hello") => :hello
     #+END_SRC
+** make-keyword
+   Function
+   #+BEGIN_SRC lisp
+     (make-keyword name)
+   #+END_SRC
+   Return a keyword from /name/.
+*** Arguments
+    =name= -- String to intern
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (make-keyword "Hello") => :hello
+    #+END_SRC
 ** make-lsample
    Function
    #+BEGIN_SRC lisp
      (make-lsample &key ((:filename #:filename) nil) ((:buffer #:buffer) nil) ((:play-fn #:play-fn) #'play-lsample-oneshot*) ((:keynum #:keynum) +sample-zero+) ((:loopstart #:loopstart) +sample-zero+) ((:amp #:amp) (sample 0)) ((:loopend #:loopend) +sample-zero+) ((:id #:id) nil))
    #+END_SRC
+** make-lsample
+   Function
+   #+BEGIN_SRC lisp
+     (make-lsample &key ((:filename #:filename) nil) ((:buffer #:buffer) nil) ((:play-fn #:play-fn) #'play-lsample-oneshot*) ((:keynum #:keynum) +sample-zero+) ((:loopstart #:loopstart) +sample-zero+) ((:amp #:amp) (sample 0)) ((:loopend #:loopend) +sample-zero+) ((:id #:id) nil))
+   #+END_SRC
+** make-mm-mask
+   Function
+   #+BEGIN_SRC lisp
+     (make-mm-mask opcode channels)
+   #+END_SRC
+   make a mask using midi opcode and channel mask for midi input
+   filtering.
+** make-mt-stream
+   Macro
+   #+BEGIN_SRC lisp
+     (make-mt-stream sym midi-out-stream chan-tuning)
+   #+END_SRC
+   Define, open and initialize a microtonal midistream. The (unquoted)
+   symbol of the stream and an already initialized midi-port-stream has
+   to be supplied. The sym of the stream gets interned as a parameter.
 ** make-oasr
    Function
    #+BEGIN_SRC lisp
@@ -2226,6 +4411,37 @@
    and RELEASE-TIME.
    
    The curvature CURVE defaults to -4.
+** make-oasr
+   Function
+   #+BEGIN_SRC lisp
+     (make-oasr suswidth suspan sustain-level &key (curve -4) base restart-level (real-time-p (allow-rt-memory-p)))
+   #+END_SRC
+   Create and return a new ENVELOPE structure with ATTACK-TIME, SUSTAIN-LEVEL
+   and RELEASE-TIME.
+   
+   The curvature CURVE defaults to -4.
+** make-quantlist
+   Function
+   #+BEGIN_SRC lisp
+     (make-quantlist vals)
+   #+END_SRC
+   Return the sorted list of quantization points in fractions of a beat
+   [0..1] for a list of the beat division numbers to be considered,
+   supplied in /vals/.
+*** Arguments
+    =vals= -- List of integer beat-divisions to be collected.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (make-quantlist '(4)) ; => (0 1/4 1/2 3/4 1)
+      
+      (make-quantlist '(3 4)) ; => (0 1/4 1/3 1/2 2/3 3/4 1)
+      
+      (make-quantlist '(3 4 5)) ; => (0 1/5 1/4 1/3 2/5 1/2 3/5 2/3 3/4 4/5 1)
+    #+END_SRC
+*** See also
+    - [[quantize-time][quantize-time]]
 ** make-quantlist
    Function
    #+BEGIN_SRC lisp
@@ -2268,6 +4484,48 @@
     - [[make-computed][make-computed]]
     - [[set-val][set-val]]
     - [[watch][watch]]
+** make-ref
+   Function
+   #+BEGIN_SRC lisp
+     (make-ref val &rest args)
+   #+END_SRC
+   Return an instance of [[ref-object][ref-object]] with initial value /val/.
+*** Arguments
+    =val= -- Initial value of the created instance. It can be of any
+    type.
+
+    =args= -- Optional args supplied to make-instance. They are used
+    internally and are not intended to be used directly when working
+    with /cl-refs/.
+
+
+*** See also
+    - [[get-val][get-val]]
+    - [[make-computed][make-computed]]
+    - [[set-val][set-val]]
+    - [[watch][watch]]
+** map-all-pairs
+   Function
+   #+BEGIN_SRC lisp
+     (map-all-pairs return-type fn list)
+   #+END_SRC
+   Execute /fn/ on all possible pairs of two different elements of
+   /list/. The pairs are given to fn in the order of appearance in the
+   list. /return-type/ serves the same purpose as in #'map.
+*** Arguments
+    =return-type= -- A Sequence type or nil.
+
+    =fn= -- Function of two arguments called on all pairs.
+
+    =list= -- List containing all elements to which fn gets applied
+    pairwise.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (map-all-pairs 'list #'list '(1 2 3 4 5))
+      ;; => ((1 2) (1 3) (1 4) (1 5) (2 3) (2 4) (2 5) (3 4) (3 5) (4 5))
+    #+END_SRC
 ** map-all-pairs
    Function
    #+BEGIN_SRC lisp
@@ -2314,10 +4572,49 @@
       (map-indexed 'list #'list '(a b c d e)  '(20 10 30 50 40))
       ;; => ((0 a 20) (1 b 10) (2 c 30) (3 d 50) (4 e 40))
     #+END_SRC
+** map-indexed
+   Macro
+   #+BEGIN_SRC lisp
+     (map-indexed result-type fn &rest seqs)
+   #+END_SRC
+   Map /fn/ over /seqs/ with incrementing zero-based idx. The idx will
+   get supplied as first arg to /fn/. /result-type/ serves the same
+   purpose as in #'map.
+*** Arguments
+    =result-type= -- Result type to return. If nil, don't return a
+    result.
+
+    =fn= -- Function to map over sequences. Needs to accept /(+ 1
+    (length seqs))/ arguments.
+
+    =seqs= -- One or more sequences where mapping gets applied, similar
+    to map.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (map-indexed 'list #'list '(a b c d e)  '(20 10 30 50 40))
+      ;; => ((0 a 20) (1 b 10) (2 c 30) (3 d 50) (4 e 40))
+    #+END_SRC
+** map-objects
+   Function
+   #+BEGIN_SRC lisp
+     (map-objects fn objs &key (start 0) end (step 1) (width 1) at test class key slot slot! arg2 &aux (doat nil) (indx nil) (this nil))
+   #+END_SRC
 ** map-params
    Macro
    #+BEGIN_SRC lisp
      (map-params syms values)
+   #+END_SRC
+** map-params
+   Macro
+   #+BEGIN_SRC lisp
+     (map-params syms values)
+   #+END_SRC
+** map-pattern-data
+   Generic Function
+   #+BEGIN_SRC lisp
+     (map-pattern-data fn obj)
    #+END_SRC
 ** map-proplist
    Macro
@@ -2343,6 +4640,75 @@
     - [[get-prop][get-prop]]
     - [[get-props-list][get-props-list]]
     - [[with-props][with-props]]
+** map-proplist
+   Macro
+   #+BEGIN_SRC lisp
+     (map-proplist fn proplist)
+   #+END_SRC
+   Like mapcar but traversing a property list. /fn/ has to accept two
+   values, the key and the value of each property in the proplist.
+*** Arguments
+    =fn= -- Function to apply to all entries of the property list.
+
+    =proplist= -- Property list to traverse.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (map-proplist #'list '(:a 2 :b 5 :c 4)) ; => ((:a 2) (:b 5) (:c 4))
+    #+END_SRC
+*** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
+    - [[with-props][with-props]]
+** map-subcontainers
+   Function
+   #+BEGIN_SRC lisp
+     (map-subcontainers fn container &key key recurse)
+   #+END_SRC
+** map-subobjects
+   Function
+   #+BEGIN_SRC lisp
+     (map-subobjects fn container &key key recurse test type)
+   #+END_SRC
+** map-tree
+   Function
+   #+BEGIN_SRC lisp
+     (map-tree fn tree &key (test (lambda (elem) (not (consp elem)))))
+   #+END_SRC
+   Map function recursively and non-destructively on all leaf nodes of
+   given tree (represented as a nested list). Leaf nodes are determind by
+   applying #'test on the list containing them. If /test/ returns /t/,
+   the node is considered to be a leaf node. Return the modified tree as
+   a new structure.
+*** Arguments
+    =fn= -- Function to call on the leaf nodes.
+
+    =tree= -- List to traverse, possibly nested
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (map-tree #'print '(1 (2 7 (8 9 ((17 15 (14)) 5 (3))))))
+      ;; => (1 (2 7 (8 9 ((17 15 (14)) 5 (3)))))
+      ;; output in the REPL:
+      1 
+      2 
+      7 
+      8 
+      9 
+      17 
+      15 
+      14 
+      5 
+      3 
+      
+      (map-tree (lambda (x) (+ x 100)) '(1 (2 7 (8 9 ((17 15 (14)) 5 (3))))))
+      ;; => (101 (102 107 (108 109 ((117 115 (114)) 105 (103)))))
+    #+END_SRC
 ** map-tree
    Function
    #+BEGIN_SRC lisp
@@ -2386,10 +4752,36 @@
    Append the results of calling fn on each element of list.
      Like mapcon, but uses append instead of nconc. Copied from Peter
      Norvig's AIP book.
+** mappend
+   Function
+   #+BEGIN_SRC lisp
+     (mappend fn list)
+   #+END_SRC
+   Append the results of calling fn on each element of list.
+     Like mapcon, but uses append instead of nconc. Copied from Peter
+     Norvig's AIP book.
 ** mapply
    Macro
    #+BEGIN_SRC lisp
      (mapply fn liste)
+   #+END_SRC
+** mapply
+   Macro
+   #+BEGIN_SRC lisp
+     (mapply fn liste)
+   #+END_SRC
+** markov
+   Class
+
+** markov-analyze
+   Function
+   #+BEGIN_SRC lisp
+     (markov-analyze seq &key (order 1) (print? t) (pattern? t) sort? (print-decimals 3) (period nil) key)
+   #+END_SRC
+** master-amp-bus-levelmeter-gui
+   Function
+   #+BEGIN_SRC lisp
+     (master-amp-bus-levelmeter-gui id gui-parent &key (#:group 300) (audio-bus 0) (out-chan 0) (num-channels 1) (amp (make-ref 1)) (amp-slider (make-ref (amp->db-slider 1))) meter-refs (meter-display (make-ref :post)) (bus-name "") (min -40) (max 12) nb-ampdb)
    #+END_SRC
 ** master-amp-bus-levelmeter-gui
    Function
@@ -2399,6 +4791,14 @@
 ** master-amp-meter-bus
    Class
 
+** master-amp-meter-bus
+   Class
+
+** master-amp-out-levelmeter-gui
+   Function
+   #+BEGIN_SRC lisp
+     (master-amp-out-levelmeter-gui id gui-parent &key (#:group 300) (out-chan 0) (num-channels 1) (amp (make-ref 1)) (amp-slider (make-ref (amp->db-slider 1))) meter-refs (meter-display (make-ref :post)) (bus-name "") (min -40) (max 12) nb-ampdb)
+   #+END_SRC
 ** master-amp-out-levelmeter-gui
    Function
    #+BEGIN_SRC lisp
@@ -2412,6 +4812,19 @@
    audio bus based levelmeter (group 300) routing NUM audio buses
    starting at AUDIO-BUS to audio-out CHANNEL-OFFSET. If CREATE-BUS is
    nil just create the levelmeter.
+** master-bus-levelmeter-gui
+   Function
+   #+BEGIN_SRC lisp
+     (master-bus-levelmeter-gui id gui-parent &key (#:group 300) refs (num 1) (audio-bus 0) (channel-offset 0) (create-bus t) (bus-name ""))
+   #+END_SRC
+   audio bus based levelmeter (group 300) routing NUM audio buses
+   starting at AUDIO-BUS to audio-out CHANNEL-OFFSET. If CREATE-BUS is
+   nil just create the levelmeter.
+** memorize-random-state
+   Function
+   #+BEGIN_SRC lisp
+     (memorize-random-state)
+   #+END_SRC
 ** memorize-random-state
    Function
    #+BEGIN_SRC lisp
@@ -2427,6 +4840,29 @@
 *** See also
     - [[clamps-base-url][clamps-base-url]]
     - [[gui][gui]]
+** midi->incudine
+   Generic Function
+   #+BEGIN_SRC lisp
+     (midi->incudine obj &rest args)
+   #+END_SRC
+** midi->sol
+   Generic Function
+   #+BEGIN_SRC lisp
+     (midi->sol obj &rest args)
+   #+END_SRC
+** *​midi-cc-fns​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-cc-fns
+   :END:
+   Variable
+
+   2-dimensional Array of 16x128 lists containing functions to be called
+   on a received MIDI CC message individually for the 128 CC numbers on
+   all 16 MIDI channels with the CC value as argument.
+*** See also
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
+    - [[#midi-note-fns][*​​midi-note-fns​​*]]
+    - [[#midi-note-state][*​​midi-note-state​​*]]
 ** *​midi-cc-fns​*
    :PROPERTIES:
    :CUSTOM_ID: midi-cc-fns
@@ -2454,6 +4890,72 @@
     - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[#midi-note-fns][*​​midi-note-fns​​*]]
     - [[#midi-note-state][*​​midi-note-state​​*]]
+** *​midi-cc-state​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-cc-state
+   :END:
+   Variable
+
+   2-dimensional Array of 16x128 [[ref-object][ref-objects]] reflecting the last received
+   CC value of a MIDI CC message for all 128 CC numbers on all 16 MIDI
+   channels.
+*** See also
+    - [[ccin][ccin]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[#midi-note-fns][*​​midi-note-fns​​*]]
+    - [[#midi-note-state][*​​midi-note-state​​*]]
+** midi-close-default
+   Function
+   #+BEGIN_SRC lisp
+     (midi-close-default &rest args)
+   #+END_SRC
+** midi-controller
+   Class
+
+   Generic base class for midi controllers in the /cl-midictl/
+   package. An instance of a class derived from /midi-controller/ should
+   get initialized with [[add-midi-controller][add-midi-controller]] and removed with
+   [[remove-midi-controller][remove-midi-controller]] in order to add/remove it to/from the midi
+   controller registry.
+   
+   midi-controller implements the following slots with initargs
+   being the keywords of the slot symbol:
+   
+   =cc-map= -- Array mapping CC nums to internal indexes of the instance.
+   
+   =cc-fns= -- Array of 128 lists storing functions to call when
+   receiving a value at any of the 128 CC numbers.
+   
+   =cc-state= -- Array of 128 [[ref-object][ref-objects]] storing the last
+   received CC value for each CC number.
+   
+   =chan= -- Integer in the range [1..16] denoting the MIDI channel.
+   
+   =echo= -- Boolean to en/disable echoing of midi input to midi output.
+   
+   =id= -- Keyword or Symbol to identify the controller in the registry.
+   
+   =last-note-on= -- The keynum of the last received note-on event with positive
+   velocity.
+   
+   =midi-input= -- jackmidi:input-stream for MIDI input.
+   
+   =midi-output= -- jackmidi:output-stream for MIDI output.
+   
+   =note-fns= -- Array of 128 lists storing functions to call with the
+   velocity as argument, mapped to a received note-on event on any of the
+   128 keynumbers.
+   
+   =note-state= -- Array of 128 [[ref-object][ref-objects]] storing the last
+   received velocity for each keynum.
+   
+   =unwatch= -- Storage for unwatch functions for the slots of the
+   controller instance, handled internally.
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[find-controller][find-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
 ** midi-controller
    Class
 
@@ -2507,6 +5009,26 @@
    :END:
    Variable
 
+** *​midi-debug​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-debug
+   :END:
+   Variable
+
+** midi-file-print
+   Function
+   #+BEGIN_SRC lisp
+     (midi-file-print file &key (stream t) (track 0))
+   #+END_SRC
+** *​midi-in1​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-in1
+   :END:
+   Variable
+
+   Default clamps MIDI input stream of type /<jackmidi:input-stream>/.
+*** See also
+    - [[#midi-out1][*​​midi-out1​​*]]
 ** midi-input
    Generic Function
    #+BEGIN_SRC lisp
@@ -2514,6 +5036,31 @@
    #+END_SRC
    Accessor method for the midi-input slot of an instance of type
    [[midi-controller][midi-controller]].
+** midi-input
+   Generic Function
+   #+BEGIN_SRC lisp
+     (midi-input object)
+   #+END_SRC
+   Accessor method for the midi-input slot of an instance of type
+   [[midi-controller][midi-controller]].
+** midi-note
+   Function
+   #+BEGIN_SRC lisp
+     (midi-note stream time pitch dur velo chan)
+   #+END_SRC
+** *​midi-note-fns​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-note-fns
+   :END:
+   Variable
+
+   2-dimensional Array of 16x128 lists containing functions to be called
+   on a received MIDI note on message individually for all 128 keynums on
+   all 16 MIDI channels with the velocity as argument.
+*** See also
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
+    - [[#midi-note-state][*​​midi-note-state​​*]]
 ** *​midi-note-fns​*
    :PROPERTIES:
    :CUSTOM_ID: midi-note-fns
@@ -2540,6 +5087,46 @@
     - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[#midi-cc-state][*​​midi-cc-state​​*]]
     - [[#midi-note-fns][*​​midi-note-fns​​*]]
+** *​midi-note-state​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-note-state
+   :END:
+   Variable
+
+   2-dimensional Array of 16x128 [[ref-object][ref-objects]] reflecting the last received
+   velocity of a MIDI note on message for all 128 keynums on all 16 MIDI
+   channels.
+*** See also
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
+    - [[#midi-note-fns][*​​midi-note-fns​​*]]
+** *​midi-obj-name-dummy​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-obj-name-dummy
+   :END:
+   Variable
+
+** midi-open-default
+   Function
+   #+BEGIN_SRC lisp
+     (midi-open-default &key (direction :input) portname)
+   #+END_SRC
+** midi-out
+   Function
+   #+BEGIN_SRC lisp
+     (midi-out stream status data1 data2 data-size)
+   #+END_SRC
+   create a closure to defer a call to jm_write_event.
+** *​midi-out1​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-out1
+   :END:
+   Variable
+
+   Default clamps MIDI output stream of type
+   /<jackmidi:output-stream>/.
+*** See also
+    - [[#midi-in1][*​​midi-in1​​*]]
 ** midi-output
    Generic Function
    #+BEGIN_SRC lisp
@@ -2547,6 +5134,30 @@
    #+END_SRC
    Accessor method for the midi-output slot of an instance of type
    [[midi-controller][midi-controller]].
+** midi-output
+   Generic Function
+   #+BEGIN_SRC lisp
+     (midi-output object)
+   #+END_SRC
+   Accessor method for the midi-output slot of an instance of type
+   [[midi-controller][midi-controller]].
+** *​midi-rcv-type-dummy​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-rcv-type-dummy
+   :END:
+   Variable
+
+** midi-system-event
+   Class
+
+** midi-write-message
+   Generic Function
+   #+BEGIN_SRC lisp
+     (midi-write-message msg mf time data)
+   #+END_SRC
+** mode
+   Class
+
 ** msg
    Macro
    #+BEGIN_SRC lisp
@@ -2572,6 +5183,12 @@
 
 *** See also
     - [[nrt-msg][nrt-msg]]
+** *​mt-out01​*
+   :PROPERTIES:
+   :CUSTOM_ID: mt-out01
+   :END:
+   Variable
+
 ** mtof
    Function
    #+BEGIN_SRC lisp
@@ -2617,6 +5234,49 @@
     #+END_SRC
 *** See also
     - [[ntom][ntom]]
+** mton
+   Function
+   #+BEGIN_SRC lisp
+     (mton m)
+   #+END_SRC
+   Return normalized value mapped from MIDI value m in the range
+   [0..127] as a single float.
+*** Arguments
+    =m= -- Number in the range [0..127]
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (mton 0) ; => 0
+      
+      (mton 13) ; => 0.10236221
+      
+      (mton 63.5) ; => 0.5
+      
+      (mton 127) ; => 1.0
+    #+END_SRC
+*** See also
+    - [[ntom][ntom]]
+** multf
+   Macro
+   #+BEGIN_SRC lisp
+     (multf #:place &optional (number 1))
+   #+END_SRC
+   Like incf but multiplying instead of adding.
+*** Arguments
+    =place= -- A setfable place.
+
+    =number= -- Number indicating the multiplication factor.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defvar *test* 2) ; => *test*
+      
+      (multf *test* 3) ; => 6
+      
+      *test*  ; => 6
+    #+END_SRC
 ** multf
    Macro
    #+BEGIN_SRC lisp
@@ -2646,6 +5306,47 @@
    call fn n times accumulating the results in acc. fn should accept two
    values, the current n and the accumulated results of previous
    calls. If collect is t return all results in a list.
+** n-apply
+   Function
+   #+BEGIN_SRC lisp
+     (n-apply n fn &key (initial-value '()) (collect nil))
+   #+END_SRC
+   call fn n times accumulating the results in acc. fn should accept two
+   values, the current n and the accumulated results of previous
+   calls. If collect is t return all results in a list.
+** n-exp
+   Function
+   #+BEGIN_SRC lisp
+     (n-exp x min max)
+   #+END_SRC
+   Return the exponential interpolation for a normalized value in the
+   range /[min..max]/ as a float value.
+*** Arguments
+    =x= -- An input value in the range /[0..1]/ to be interpolated.
+
+    =min= -- The output value for /x = 0/.
+
+    =max= -- The output value for /x = 1/.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      #+BEGIN_SRC lisp
+      (n-exp 0 1 100) ; => 1.0
+      
+      (n-exp 0.5 1 100) ; => 10.0
+      
+      (n-exp 1 1 100) ; => 100.0
+      #+END_SRC
+    #+END_SRC
+*** See also
+    - [[exp-n][exp-n]]
+    - [[lin-n][lin-n]]
+    - [[m-exp][m-exp]]
+    - [[m-lin][m-lin]]
+    - [[n-exp-dev][n-exp-dev]]
+    - [[n-lin][n-lin]]
+    - [[n-lin-dev][n-lin-dev]]
 ** n-exp
    Function
    #+BEGIN_SRC lisp
@@ -2710,6 +5411,43 @@
     - [[n-exp][n-exp]]
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
+** n-exp-dev
+   Function
+   #+BEGIN_SRC lisp
+     (n-exp-dev x max)
+   #+END_SRC
+   Return a random deviation factor, the deviation being exponentially
+   interpolated between /1/ for /x = 0/ and /[1/max..max]/ for /x = 1/.
+*** Arguments
+    =x= -- An input value in the range /[0..1]/ to be interpolated.
+
+    =max= -- The maximum deviation factor for /x = 1/;
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      #+BEGIN_SRC lisp
+      (n-exp-dev 0 4) ; => 1.0
+      
+      (n-exp-dev 0.5 4) ; a random value exponentially distributed in the range [0.5..2.0]
+      
+      (n-exp-dev 1 4) ; a random value exponentially distributed in the range [0.25..4.0]
+      #+END_SRC
+    #+END_SRC
+*** See also
+    - [[exp-n][exp-n]]
+    - [[lin-n][lin-n]]
+    - [[m-exp][m-exp]]
+    - [[m-lin][m-lin]]
+    - [[n-exp][n-exp]]
+    - [[n-lin][n-lin]]
+    - [[n-lin-dev][n-lin-dev]]
+** n-exp-fn
+   Function
+   #+BEGIN_SRC lisp
+     (n-exp-fn min max)
+   #+END_SRC
+   exponential interpolation for normalized x.
 ** n-exp-fn
    Function
    #+BEGIN_SRC lisp
@@ -2722,12 +5460,57 @@
      (n-exp-rev-fn min max)
    #+END_SRC
    reverse of exponential interpolation for normalized x.
+** n-exp-rev-fn
+   Function
+   #+BEGIN_SRC lisp
+     (n-exp-rev-fn min max)
+   #+END_SRC
+   reverse of exponential interpolation for normalized x.
 ** n-exp-zero
    Function
    #+BEGIN_SRC lisp
      (n-exp-zero x min max)
    #+END_SRC
    exp interpolation for normalized values (x = [0..1]) with 0 for x = 0
+** n-exp-zero
+   Function
+   #+BEGIN_SRC lisp
+     (n-exp-zero x min max)
+   #+END_SRC
+   exp interpolation for normalized values (x = [0..1]) with 0 for x = 0
+** n-lin
+   Function
+   #+BEGIN_SRC lisp
+     (n-lin x min max)
+   #+END_SRC
+   Return the linear interpolation for a normalized value in the range
+   /[min..max]/ as a float value.
+*** Arguments
+    =x= -- An input value in the range /[0..1]/ to be interpolated.
+
+    =min= -- The output value for /x = 0/.
+
+    =max= -- The output value for /x = 1/.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      #+BEGIN_SRC lisp
+      (n-lin 0 10 20) ; => 10.0
+      
+      (n-lin 0.5 10 20) ; => 15.0
+      
+      (n-lin 1 10 20)  ; => 20.0
+      #+END_SRC
+    #+END_SRC
+*** See also
+    - [[exp-n][exp-n]]
+    - [[lin-n][lin-n]]
+    - [[m-exp][m-exp]]
+    - [[m-lin][m-lin]]
+    - [[n-exp][n-exp]]
+    - [[n-exp-dev][n-exp-dev]]
+    - [[n-lin-dev][n-lin-dev]]
 ** n-lin
    Function
    #+BEGIN_SRC lisp
@@ -2792,6 +5575,43 @@
     - [[n-exp][n-exp]]
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin][n-lin]]
+** n-lin-dev
+   Function
+   #+BEGIN_SRC lisp
+     (n-lin-dev x max)
+   #+END_SRC
+   Return a random deviation value, the deviation being linearly
+   interpolated between /0/ for /x = 0/ and /[-max..max]/ for /x = 1/.
+*** Arguments
+    =x= -- An input value in the range /[0..1]/ to be interpolated.
+
+    =max= -- The maximum deviation value for /x = 1/;
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      #+BEGIN_SRC lisp
+      (n-lin-dev 0 4) ; => 0
+      
+      (n-lin-dev 0.5 4) ; a random value linearly distributed in the range [-2.0..2.0]
+      
+      (n-lin-dev 1 4) ; a random value linearly distributed in the range [-4.0..4.0]
+      #+END_SRC
+    #+END_SRC
+*** See also
+    - [[exp-n][exp-n]]
+    - [[lin-n][lin-n]]
+    - [[m-exp][m-exp]]
+    - [[m-lin][m-lin]]
+    - [[n-exp][n-exp]]
+    - [[n-exp-dev][n-exp-dev]]
+    - [[n-lin][n-lin]]
+** n-lin-fn
+   Function
+   #+BEGIN_SRC lisp
+     (n-lin-fn min max)
+   #+END_SRC
+   linear interpolation for normalized x.
 ** n-lin-fn
    Function
    #+BEGIN_SRC lisp
@@ -2804,6 +5624,15 @@
      (n-lin-rev-fn min max)
    #+END_SRC
    reverse of linear interpolation for normalized x.
+** n-lin-rev-fn
+   Function
+   #+BEGIN_SRC lisp
+     (n-lin-rev-fn min max)
+   #+END_SRC
+   reverse of linear interpolation for normalized x.
+** named-amp-bus
+   Class
+
 ** named-amp-bus
    Class
 
@@ -2818,7 +5647,27 @@
    
    =name= -- String naming the bus. Accessor is [[bus-name][bus-name]]. Defaults to the empty string.
    
-   =num-chans= -- Positive Integer denoting the number of channels. Defaults to 2.
+   =num-chans= -- Positive Integer denoting the number of channels. Defaults to 2. Accessor is [[num-channels][num-channels]]
+   
+   =audio-bus= -- Non Negative Integer denoting the bus number. Defaults to 0.
+   
+   =create-bus= -- Boolean denoting whether to create the dsp on initialization. Defaults to /t/.
+   
+   =channel-offset= -- Non Negative Integer denoting the channel offset of the audio output. Defaults to 0.
+*** See also
+    - [[cuda-dsp][cuda-dsp]]
+** named-bus
+   Class
+
+   Class for an incudine audio bus.
+   
+   named-bus is derived from [[cuda-dsp][cuda-dsp]]. It implements the following
+   slots with accessor methods of the same name (if not indicated
+   otherwise) and initargs being the keywords of the slot symbol:
+   
+   =name= -- String naming the bus. Accessor is [[bus-name][bus-name]]. Defaults to the empty string.
+   
+   =num-chans= -- Positive Integer denoting the number of channels. Defaults to 2. Accessor is [[num-channels][num-channels]]
    
    =audio-bus= -- Non Negative Integer denoting the bus number. Defaults to 0.
    
@@ -2882,6 +5731,66 @@
    =tr-record= [[ref-object][ref-object]] of the record transport button.
 *** See also
     - [[midi-controller][midi-controller]]
+** nanoktl2-midi
+   Class
+
+   Class for a Nanoktl2 midi controller.
+   
+   nanoktl2-midi implements the following slots with accessor methods of
+   the same name and initargs being the keywords of the slot symbol:
+   
+   =cc-nums= -- Array of 128 elements containing the CC numbers of all
+   buttons and faders of the NanoKontrol2.
+   
+   =nk2-faders= -- Array of 16 elements containing the
+   [[ref-object][ref-objects]] of the 8 knobs and the 8 faders of the
+   NanoKontrol2.
+   
+   =nk2-fader-update-fns=
+   
+   =nk2-fader-modes= Array of 16 elements containing the mode of the
+   fader when the hardware fader is out of sync with the program state of
+   the fader. Currently implemented are:
+   
+   - /:scale/ Scale fader values when moving the hardware fader.
+   - /:jump/ Jump to the value when moving the hardware fader.
+   
+   =nk2-fader-last-cc= Storage of the last CC value of the 16 faders.
+   
+   =s-buttons= Array of 8 [[ref-object][ref-objects]] containing the state of the 8 S buttons with a value of 0 or 1.
+   
+   =m-buttons= Array of 8 [[ref-object][ref-objects]] containing the state of the 8 M buttons with a value of 0 or 1.
+   
+   =r-buttons= Array of 8 [[ref-object][ref-objects]] containing the state of the 8 R buttons with a value of 0 or 1.
+   
+   =track-left= [[ref-object][ref-object]] of the track left button.
+   
+   =track-right= [[ref-object][ref-object]] of the track right button.
+   
+   =cycle= [[ref-object][ref-object]] of the cycle button.
+   
+   =set-marker= [[ref-object][ref-object]] of the set marker button.
+   
+   =marker-left= [[ref-object][ref-object]] of the marker left button.
+   
+   =marker-right= [[ref-object][ref-object]] of the marker right button.
+   
+   =tr-rewind= [[ref-object][ref-object]] of the rewind transport button.
+   
+   =tr-ffwd= [[ref-object][ref-object]] of the fast forward transport button.
+   
+   =tr-stop= [[ref-object][ref-object]] of the stop transport button.
+   
+   =tr-play= [[ref-object][ref-object]] of the play transport button.
+   
+   =tr-record= [[ref-object][ref-object]] of the record transport button.
+*** See also
+    - [[midi-controller][midi-controller]]
+** nanoktl2-preset-gui
+   Function
+   #+BEGIN_SRC lisp
+     (nanoktl2-preset-gui #:id container &key (chan 5))
+   #+END_SRC
 ** nanoktl2-preset-gui
    Function
    #+BEGIN_SRC lisp
@@ -2890,10 +5799,28 @@
 ** nanoktl2-preset-midi
    Class
 
+** nanoktl2-preset-midi
+   Class
+
+** new
+   Macro
+   #+BEGIN_SRC lisp
+     (new class &body args)
+   #+END_SRC
 ** new-id
    Function
    #+BEGIN_SRC lisp
      (new-id svg-file id-type)
+   #+END_SRC
+** new-permutation
+   Macro
+   #+BEGIN_SRC lisp
+     (new-permutation &key of permutation)
+   #+END_SRC
+** next
+   Function
+   #+BEGIN_SRC lisp
+     (next obj &optional num)
    #+END_SRC
 ** node-free-unprotected
    Function
@@ -2913,6 +5840,49 @@
    Accessor for the node-group slot of dsp /object/.
 *** See also
     - [[cuda-dsp][cuda-dsp]]
+** node-group
+   Generic Function
+   #+BEGIN_SRC lisp
+     (node-group object)
+   #+END_SRC
+   Accessor for the node-group slot of dsp /object/.
+*** See also
+    - [[cuda-dsp][cuda-dsp]]
+** note
+   Class
+
+** note
+   Function
+   #+BEGIN_SRC lisp
+     (note freq &rest args)
+   #+END_SRC
+** note-accidental
+   Function
+   #+BEGIN_SRC lisp
+     (note-accidental note &optional (scale *scale*))
+   #+END_SRC
+** note-name
+   Function
+   #+BEGIN_SRC lisp
+     (note-name note &optional (scale *scale*))
+   #+END_SRC
+** note-off
+   Function
+   #+BEGIN_SRC lisp
+     (note-off stream pitch velo chan)
+   #+END_SRC
+   wrapper for midi note-on messages.
+** note-on
+   Function
+   #+BEGIN_SRC lisp
+     (note-on stream pitch velo chan)
+   #+END_SRC
+   wrapper for midi note-on messages.
+** now
+   Function
+   #+BEGIN_SRC lisp
+     (now &optional abs-time)
+   #+END_SRC
 ** nrt-msg
    Macro
    #+BEGIN_SRC lisp
@@ -2961,15 +5931,82 @@
     #+END_SRC
 *** See also
     - [[mton][mton]]
-** num-chans
+** ntom
+   Function
+   #+BEGIN_SRC lisp
+     (ntom n)
+   #+END_SRC
+   Return rounded MIDI value mapped from normalized n in the range
+   [0..1].
+*** Arguments
+    =n= -- Number in the range [0..1]
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (ntom 0) ; => 0
+      
+      (ntom 0.1) ; => 13
+      
+      (ntom 0.5) ; => 64
+      
+      (ntom 1) ; => 127
+    #+END_SRC
+*** See also
+    - [[mton][mton]]
+* O
+** object->cmn
    Generic Function
    #+BEGIN_SRC lisp
-     (num-chans object)
+     (object->cmn obj)
    #+END_SRC
-   Accessor for the num-chans slot of dsp /object/.
+** object-name
+   Generic Function
+   #+BEGIN_SRC lisp
+     (object-name object)
+   #+END_SRC
+   automatically generated reader method
+** object-parameters
+   Function
+   #+BEGIN_SRC lisp
+     (object-parameters obj)
+   #+END_SRC
+** object-time
+   Generic Function
+   #+BEGIN_SRC lisp
+     (object-time object)
+   #+END_SRC
+   automatically generated reader method
+** octave-number
+   Function
+   #+BEGIN_SRC lisp
+     (octave-number note &optional (scale *scale*) real?)
+   #+END_SRC
+** odds
+   Function
+   #+BEGIN_SRC lisp
+     (odds n &optional (if-true-val t) (if-false-val nil) (state *random-state*))
+   #+END_SRC
+** of-buffer-load
+   Function
+   #+BEGIN_SRC lisp
+     (of-buffer-load file &key (path *sfile-path*))
+   #+END_SRC
+   Load and register buffer from /file/ if not loaded already. Return
+   buffer.
+*** Arguments
+    =file= -- Pathname or String denoting a soundfile.
+
+    =:path= -- List of Pathnames or Strings to search for file.
+
+
 *** See also
-    - [[named-bus][named-bus]]
-* O
+    - [[add-buffer][add-buffer]]
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
+    - [[remove-all-buffers][remove-all-buffers]]
+    - [[#sfile-path][*​​sfile-path​​*]]
 ** of-buffer-load
    Function
    #+BEGIN_SRC lisp
@@ -2996,6 +6033,30 @@
      (on-deps-update &rest body)
    #+END_SRC
    return body if *​update-deps​* is non-nil, otherwise return nil.
+** on-deps-update
+   Macro
+   #+BEGIN_SRC lisp
+     (on-deps-update &rest body)
+   #+END_SRC
+   return body if *​update-deps​* is non-nil, otherwise return nil.
+** opacity->db
+   Function
+   #+BEGIN_SRC lisp
+     (opacity->db opacity)
+   #+END_SRC
+** open
+   Function
+   #+BEGIN_SRC lisp
+     (open filename &key (direction :input) (element-type 'character) (if-exists nil if-exists-given) (if-does-not-exist nil if-does-not-exist-given) (external-format :default) (class 'fd-stream))
+   #+END_SRC
+   Return a stream which reads from or writes to FILENAME.
+     Defined keywords:
+      :DIRECTION - one of :INPUT, :OUTPUT, :IO, or :PROBE
+      :ELEMENT-TYPE - the type of object to read or write, default BASE-CHAR
+      :IF-EXISTS - one of :ERROR, :NEW-VERSION, :RENAME, :RENAME-AND-DELETE,
+                          :OVERWRITE, :APPEND, :SUPERSEDE or NIL
+      :IF-DOES-NOT-EXIST - one of :ERROR, :CREATE or NIL
+     See the manual for details.
 ** open
    Function
    #+BEGIN_SRC lisp
@@ -3014,6 +6075,17 @@
    #+BEGIN_SRC lisp
      (open &key (host *host*) (port *in-port*) (direction :input) (element-type 'character) (protocol :tcp))
    #+END_SRC
+** *​osc-inkscape-export-in​*
+   :PROPERTIES:
+   :CUSTOM_ID: osc-inkscape-export-in
+   :END:
+   Variable
+
+** osc-midi-write-short
+   Function
+   #+BEGIN_SRC lisp
+     (osc-midi-write-short stream st d1 d2)
+   #+END_SRC
 ** osc-midi-write-short
    Function
    #+BEGIN_SRC lisp
@@ -3025,10 +6097,21 @@
    :END:
    Variable
 
+** *​out-refs​*
+   :PROPERTIES:
+   :CUSTOM_ID: out-refs
+   :END:
+   Variable
+
 ** out-stream-open?
    Function
    #+BEGIN_SRC lisp
      (out-stream-open? s)
+   #+END_SRC
+** output
+   Function
+   #+BEGIN_SRC lisp
+     (output event &key to at (ahead 0))
    #+END_SRC
 ** output-stream
    Structure
@@ -3039,6 +6122,27 @@
      (output-stream-p object)
    #+END_SRC
 * P
+** palindrome
+   Class
+
+** partition-seq
+   Function
+   #+BEGIN_SRC lisp
+     (partition-seq seq pred)
+   #+END_SRC
+   Partition /seq/ into sublists based on a predicate called on successive
+   elements. /pred/ is a function of two args, an element of the seq and
+   its successor. If pred returns non-nil, a new subseq is started after
+   the current element. The result contains all elements of the original
+   seq in orginal order.
+*** Example
+    #+BEGIN_SRC lisp
+      (partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) (> (- y x) 1))) 
+      ;; => ((1 2) (4 5 6) (8 9))
+      
+      (partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) t)) 
+      ;; => ((1) (2) (4) (5) (6) (8) (9))
+    #+END_SRC
 ** partition-seq
    Function
    #+BEGIN_SRC lisp
@@ -3062,6 +6166,31 @@
    #+BEGIN_SRC lisp
      (path-find-file fname path)
    #+END_SRC
+** path-find-file
+   Function
+   #+BEGIN_SRC lisp
+     (path-find-file fname path)
+   #+END_SRC
+** pattern-state
+   Generic Function
+   #+BEGIN_SRC lisp
+     (pattern-state object)
+   #+END_SRC
+   automatically generated reader method
+** pattern-value
+   Generic Function
+   #+BEGIN_SRC lisp
+     (pattern-value object)
+   #+END_SRC
+   automatically generated reader method
+** pattern?
+   Generic Function
+   #+BEGIN_SRC lisp
+     (pattern? obj)
+   #+END_SRC
+** permutation
+   Class
+
 ** permute
    Function
    #+BEGIN_SRC lisp
@@ -3085,6 +6214,40 @@
     of /list/ is equal to the length of /permutation/. If it is shorter,
     an error occurs, if it is longer, not all elements of /list/ are
     returned.
+** permute
+   Function
+   #+BEGIN_SRC lisp
+     (permute list permutation)
+   #+END_SRC
+   Return a permutation of /list/ according to the indexes in
+   /permutation/.
+*** Arguments
+    =list= -- List of elements to be permuted.
+
+    =permutation= -- List of permutation indexes.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (permute '(1 2 3 4 5) '(3 1 4 2 0)) ; => (4 2 5 3 1)
+    #+END_SRC
+*** Note
+    For a valid permutation the /permutation/ index list should contain
+    all integer indexes of list starting from zero. In that case, length
+    of /list/ is equal to the length of /permutation/. If it is shorter,
+    an error occurs, if it is longer, not all elements of /list/ are
+    returned.
+** pgm-change
+   Function
+   #+BEGIN_SRC lisp
+     (pgm-change stream pgm chan)
+   #+END_SRC
+   wrapper for midi program-change messages.
+** phasor*
+   Function
+   #+BEGIN_SRC lisp
+     (phasor* freq #:init &optional ugen-node)
+   #+END_SRC
 ** phasor*
    Function
    #+BEGIN_SRC lisp
@@ -3094,6 +6257,42 @@
    Function
    #+BEGIN_SRC lisp
      (phasor-loop* rate start-pos loopstart loopend &optional ugen-node)
+   #+END_SRC
+** phasor-loop*
+   Function
+   #+BEGIN_SRC lisp
+     (phasor-loop* rate start-pos loopstart loopend &optional ugen-node)
+   #+END_SRC
+** pick
+   Function
+   #+BEGIN_SRC lisp
+     (pick &rest args)
+   #+END_SRC
+** pickl
+   Function
+   #+BEGIN_SRC lisp
+     (pickl seq &key (end (length seq)) (start 0) avoid (state *random-state*))
+   #+END_SRC
+** pitch-bend
+   Function
+   #+BEGIN_SRC lisp
+     (pitch-bend stream bendval chan)
+   #+END_SRC
+   wrapper for midi pitchbend messages (range between -1 and 1!)
+** pitch-class
+   Function
+   #+BEGIN_SRC lisp
+     (pitch-class note &optional (scale *scale*))
+   #+END_SRC
+** play
+   Function
+   #+BEGIN_SRC lisp
+     (play state name dtime &rest args)
+   #+END_SRC
+** play-buffer*
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (ampdb 0) (rate 1) (start 0) (end 0) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer*
    Function
@@ -3110,10 +6309,35 @@
    #+BEGIN_SRC lisp
      (play-buffer-stretch &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
+** play-buffer-stretch*
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-stretch* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+** play-buffer-stretch
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-stretch &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
 ** play-buffer-stretch-env-out
    Function
    #+BEGIN_SRC lisp
      (play-buffer-stretch-env-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+** play-buffer-stretch-env-out
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-stretch-env-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+** play-buffer-stretch-env-pan-out*
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-stretch-env-pan-out* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+** play-buffer-stretch-env-pan-out
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-stretch-env-pan-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch-env-pan-out
    Function
@@ -3130,6 +6354,33 @@
    #+BEGIN_SRC lisp
      (play-buffer-stretch-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
+** play-buffer-stretch-out
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-stretch-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+** play-curr
+   Function
+   #+BEGIN_SRC lisp
+     (play-curr)
+   #+END_SRC
+** play-fn
+   Generic Function
+   #+BEGIN_SRC lisp
+     (play-fn object)
+   #+END_SRC
+   automatically generated reader method
+** play-lsample*
+   Function
+   #+BEGIN_SRC lisp
+     (play-lsample* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (loopstart 0) (loopend 0) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+** play-lsample
+   Function
+   #+BEGIN_SRC lisp
+     (play-lsample lsample pitch db dur &key (pan 0.5) (startpos 0))
+   #+END_SRC
+   play lsample with given pitch, amp and duration with loop.
 ** play-lsample
    Function
    #+BEGIN_SRC lisp
@@ -3140,6 +6391,23 @@
    Function
    #+BEGIN_SRC lisp
      (play-lsample* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (loopstart 0) (loopend 0) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+** play-midi
+   Function
+   #+BEGIN_SRC lisp
+     (play-midi seqs &key (tempo 60))
+   #+END_SRC
+   display a (seq of) seq of notes in lilypond.
+** play-sample
+   Function
+   #+BEGIN_SRC lisp
+     (play-sample lsample pitch db dur &key (pan 0.5) (startpos 0))
+   #+END_SRC
+   play lsample once with given pitch, amp and duration.
+** play-sample*
+   Function
+   #+BEGIN_SRC lisp
+     (play-sample* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 1) (rate 1) (pan 0.5) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-sample*
    Function
@@ -3183,6 +6451,73 @@
 
 *** See also
     - [[play-sfz-loop][play-sfz-loop]]
+    - [[play-sfz-one-shot][play-sfz-one-shot]]
+** play-sfz
+   Function
+   #+BEGIN_SRC lisp
+     (play-sfz pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
+   #+END_SRC
+   Play a sfz preset with stereo panning to incudine's audio outputs
+   or a bus using the /play-fn/ of the sample to be played.
+*** Arguments
+    =pitch= -- Pitch in Midicent.
+
+    =db= -- Amplitude in dB. /0/ corresponds to a scaling factor
+    of /1/, /-100/ to a scaling factor of /0/.
+
+    =dur= -- Duration in seconds.
+
+    =:pan= -- Number in the range /[0..1]/ defining equal power panning
+    between /out0/ and /out1/.
+
+    =:preset= -- The name of a registered preset. If the preset hasn't
+    been loaded it will get loaded before playback starts.
+
+    =:startpos= -- The startposition in the sample in seconds.
+
+    =:out1= -- Zero based index of the first outlet.
+
+    =:out2= -- Zero based index of the second outlet. If not specified, /
+    (mod (1+ out1) 8)/ will be used.
+
+
+*** See also
+    - [[play-sfz-loop][play-sfz-loop]]
+    - [[play-sfz-one-shot][play-sfz-one-shot]]
+** play-sfz-loop
+   Function
+   #+BEGIN_SRC lisp
+     (play-sfz-loop pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
+   #+END_SRC
+   Play a sfz preset with stereo panning to incudine's audio outputs
+   or a bus. Loop the sound according to the loop settings of the
+   sample in the sfz file or loop the whole sound if not present. This
+   function always uses loop playback regardless of the setting of
+   /play-fn/ in the sample to be played.
+*** Arguments
+    =pitch= -- Pitch in Midicent.
+
+    =db= -- Amplitude in dB. /0/ corresponds to a scaling factor
+    of /1/, /-100/ to a scaling factor of /0/.
+
+    =dur= -- Duration in seconds.
+
+    =:pan= -- Number in the range /[0..1]/ defining equal power panning
+    between /out0/ and /out1/.
+
+    =:preset= -- The name of a registered preset. If the preset hasn't
+    been loaded it will get loaded before playback starts.
+
+    =:startpos= -- The startposition in the sample in seconds.
+
+    =:out1= -- Zero based index of the first outlet.
+
+    =:out2= -- Zero based index of the second outlet. If not specified, /
+    (mod (1+ out1) 8)/ will be used.
+
+
+*** See also
+    - [[play-sfz][play-sfz]]
     - [[play-sfz-one-shot][play-sfz-one-shot]]
 ** play-sfz-loop
    Function
@@ -3253,6 +6588,106 @@
 *** See also
     - [[play-sfz][play-sfz]]
     - [[play-sfz-loop][play-sfz-loop]]
+** play-sfz-one-shot
+   Function
+   #+BEGIN_SRC lisp
+     (play-sfz-one-shot pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
+   #+END_SRC
+   Play a sfz preset with stereo panning to incudine's audio outputs
+   or a bus once (regardless of the setting of /play-fn/ in the sample to
+   be played). Playback stops after /dur/ seconds or at the end of the
+   sample, if /dur/ is longer than the length of the sample.
+*** Arguments
+    =pitch= -- Pitch in Midicent.
+
+    =db= -- Amplitude in dB. /0/ corresponds to a scaling factor
+    of /1/, /-100/ to a scaling factor of /0/.
+
+    =dur= -- Duration in seconds.
+
+    =:pan= -- Number in the range /[0..1]/ defining equal power panning
+    between /out0/ and /out1/.
+
+    =:preset= -- The name of a registered preset. If the preset hasn't
+    been loaded it will get loaded before playback starts.
+
+    =:startpos= -- The startposition in the sample in seconds.
+
+    =:out1= -- Zero based index of the first outlet.
+
+    =:out2= -- Zero based index of the second outlet. If not specified, /
+    (mod (1+ out1) 8)/ will be used.
+
+
+*** See also
+    - [[play-sfz][play-sfz]]
+    - [[play-sfz-loop][play-sfz-loop]]
+** play-svg
+   Function
+   #+BEGIN_SRC lisp
+     (play-svg file &key (region '(0 nil)) (tscale 0.25))
+   #+END_SRC
+** player-cont
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-cont obj)
+   #+END_SRC
+** player-load-midifile
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-load-midifile obj fil)
+   #+END_SRC
+** player-mute
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-mute obj track)
+   #+END_SRC
+** player-pause
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-pause obj)
+   #+END_SRC
+** player-save-midifile
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-save-midifile obj fil)
+   #+END_SRC
+** player-set-tempo
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-set-tempo obj tempo)
+   #+END_SRC
+** player-solo
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-solo obj track)
+   #+END_SRC
+** player-start
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-start obj)
+   #+END_SRC
+** player-stop
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-stop obj)
+   #+END_SRC
+** player-unmute
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-unmute obj track)
+   #+END_SRC
+** player-unsolo
+   Generic Function
+   #+BEGIN_SRC lisp
+     (player-unsolo obj track)
+   #+END_SRC
+** plot
+   Generic Function
+   #+BEGIN_SRC lisp
+     (plot data &rest args &key region header options grid x-axis num-values data-fn &allow-other-keys)
+   #+END_SRC
+   Plot input data given as an incudine envelope.
 ** plot
    Generic Function
    #+BEGIN_SRC lisp
@@ -3268,6 +6703,19 @@
 ** plot-2d
    Function
    #+BEGIN_SRC lisp
+     (plot-2d seq)
+   #+END_SRC
+   Convenience wrapper around [[plot][plot]]: A flat sequence of numbers is
+   interpreted as 2-d coordinate pairs.
+*** Examples
+    #+BEGIN_SRC lisp
+      #+BEGIN_SRC lisp
+      (plot-2d '(2 1 4 3 6 10)) <=> (plot '((2 1) (4 3) (6 10)))
+      #+END_SRC
+    #+END_SRC
+** plot-2d
+   Function
+   #+BEGIN_SRC lisp
      (plot-2d data &rest args &key region header options grid &allow-other-keys)
    #+END_SRC
 ** points->svg
@@ -3275,6 +6723,78 @@
    #+BEGIN_SRC lisp
      (points->svg list svg-file &key color opacity radius)
    #+END_SRC
+** poolevt-amp
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-amp object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-attack
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-attack object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-end
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-end object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-keynum
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-keynum object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-lsample
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-lsample object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-out1
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-out1 object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-out2
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-out2 object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-pan
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-pan object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-release
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-release object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-start
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-start object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-stretch
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-stretch object)
+   #+END_SRC
+   automatically generated reader method
+** poolevt-wwidth
+   Generic Function
+   #+BEGIN_SRC lisp
+     (poolevt-wwidth object)
+   #+END_SRC
+   automatically generated reader method
 ** port-available-p
    Function
    #+BEGIN_SRC lisp
@@ -3286,6 +6806,35 @@
     =portno= -- Integer in the range [0..65535]
 
 
+** port-available-p
+   Function
+   #+BEGIN_SRC lisp
+     (port-available-p portno)
+   #+END_SRC
+   Check if IP port is available on /localhost/ by issuing shell
+   command. Only works on Unix with the /lsof/ program installed.
+*** Arguments
+    =portno= -- Integer in the range [0..65535]
+
+
+** prime-form
+   Function
+   #+BEGIN_SRC lisp
+     (prime-form notes &optional dont-decode)
+   #+END_SRC
+** process
+   Macro
+   #+BEGIN_SRC lisp
+     (process &body forms)
+   #+END_SRC
+** pulse
+   Function
+   #+BEGIN_SRC lisp
+     (pulse midi-controller slot cc-num &key (pulse-freq 2) (initial-flash nil))
+   #+END_SRC
+   pulse the LED of <midi-controller> at <cc-num> with frequency
+   <pulse-freq> as long as (get-val <slot>) equals 2. Starting with LED on or
+   off is determined by <initial-flash>.
 ** pulse
    Function
    #+BEGIN_SRC lisp
@@ -3298,6 +6847,16 @@
    Generic Function
    #+BEGIN_SRC lisp
      (pulse-off clog-obj)
+   #+END_SRC
+** pulse-off
+   Generic Function
+   #+BEGIN_SRC lisp
+     (pulse-off clog-obj)
+   #+END_SRC
+** pulse-on
+   Generic Function
+   #+BEGIN_SRC lisp
+     (pulse-on clog-obj &optional freq)
    #+END_SRC
 ** pulse-on
    Generic Function
@@ -3327,6 +6886,34 @@
       
       *test* ; => (4)
     #+END_SRC
+** push-if
+   Macro
+   #+BEGIN_SRC lisp
+     (push-if form list)
+   #+END_SRC
+   Push form to list if form evaluates to non-nil. Return the modified
+   list or nil if form evaluates to nil.
+*** Arguments
+    =form= -- Form to be pushed to list.
+
+    =list= -- List pushed into.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defvar *test* '()) ; => *test*
+      
+      (push-if 4 *test*) ; => (4)
+      
+      (push-if (eq 2 3) *test*) ; => nil
+      
+      *test* ; => (4)
+    #+END_SRC
+** pval
+   Macro
+   #+BEGIN_SRC lisp
+     (pval expr)
+   #+END_SRC
 ** pwd
    Function
    #+BEGIN_SRC lisp
@@ -3336,6 +6923,37 @@
 *** See also
     - [[cd][cd]]
 * Q
+** quantize
+   Function
+   #+BEGIN_SRC lisp
+     (quantize value step)
+   #+END_SRC
+** quantize-time
+   Function
+   #+BEGIN_SRC lisp
+     (quantize-time val &optional (quantlist (make-quantlist '(3 4 5))))
+   #+END_SRC
+   Quantize the fractional part of /val/ to a quantization list
+   /quantlist/ of possible quantization points in the range [0..1].
+*** Arguments
+    =val= -- The value to be quantized.
+
+    =quantlist= -- Sorted list of possible quantization points in the
+    range [0..1].
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (quantize-time 1/7 (make-quantlist '(3 4 5))) ; => 1/5
+      
+      (quantize-time 37/7 (make-quantlist '(3 4 5))) ; => 21/4
+      
+      (quantize-time 17/7 (make-quantlist '(3 4 5))) ; => 12/5
+      
+      (quantize-time 17/7 (make-quantlist '(3 4))) ; => 5/2 
+    #+END_SRC
+*** See also
+    - [[make-quantlist][make-quantlist]]
 ** quantize-time
    Function
    #+BEGIN_SRC lisp
@@ -3397,6 +7015,23 @@
       
       (r-elt '(dog cat bird cow)) ; => dog, cat, bird or cow
     #+END_SRC
+** r-elt
+   Function
+   #+BEGIN_SRC lisp
+     (r-elt seq)
+   #+END_SRC
+   Return a random element of seq.
+*** Arguments
+    =seq= -- a sequence fulfilling the predicate /(typep seq 'sequence)/
+    like a list or a vector.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (r-elt #(1 2 3 4)) ; => 1, 2, 3 or 4
+      
+      (r-elt '(dog cat bird cow)) ; => dog, cat, bird or cow
+    #+END_SRC
 ** r-exp
    Function
    #+BEGIN_SRC lisp
@@ -3411,6 +7046,27 @@
 
 *** See also
     - [[r-lin][r-lin]]
+** r-exp
+   Function
+   #+BEGIN_SRC lisp
+     (r-exp min max)
+   #+END_SRC
+   Random value between [min..max] with exponential distribution.
+*** Arguments
+    =min= -- Number indicationg the minimum value.
+
+    =max= -- Number indicationg the maximum value.
+
+
+*** See also
+    - [[r-lin][r-lin]]
+** r-exp-dev
+   Function
+   #+BEGIN_SRC lisp
+     (r-exp-dev max)
+   #+END_SRC
+   return a random deviation factor, the deviation being exponentially
+   interpolated between 1 for x=0 and [1/max..max] for x=1.
 ** r-exp-dev
    Function
    #+BEGIN_SRC lisp
@@ -3461,6 +7117,56 @@
       
       (r-getf *geodata* :Italy 1 1 5) ; => "Naviglio Grande"
     #+END_SRC
+** r-getf
+   Function
+   #+BEGIN_SRC lisp
+     (r-getf list &rest props)
+   #+END_SRC
+   Recursively traverse nested /list/ using /props/ as idx. The values for
+   props can be either keywords/symbols (using #'getf) or numbers (using
+   #'elt).
+*** Arguments
+    =list= -- a nested List to search.
+
+    =props= -- one or more Keywords/Symbols, or Numbers interpreted as
+    idx.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (defvar *geodata*
+        '(:Italy
+          (:Latium (:Rome (:Inhabitants 2749031 :size 1287.36 :River "Tevere"))
+           :Lombardy (:Milano (:Inhabitants 1349930 :size 182 :River "Naviglio Grande")))
+          :Kenia
+          (:Nairobi (:Nairobi (:Inhabitants 4397073 :size 703.9 :River "Athi")))
+          :Germany
+          (:Bavaria (:Munich (:Inhabitants 1510378 :size 310.7 :River "Isar"))
+           :Berlin (:Berlin (:Inhabitants 6340918 :size 891.7 :River "Spree")))))
+      
+      (r-getf *geodata* :Kenia :Nairobi :Nairobi :Inhabitants) ; => 4397073
+      
+      (r-getf *geodata* :Germany)
+      
+      ;; => (:bavaria (:munich (:inhabitants 1510378 :size 310.7 :river "Isar"))
+      ;;     :berlin (:berlin (:inhabitants 6340918 :size 891.7 :river "Spree")))
+      
+      (r-getf *geodata* :Italy 3 :Rome)
+      
+      ;; => (:inhabitants 2749031 :size 1287.36 :river "Tevere")
+      
+      (r-getf *geodata* 5 3)
+      ;; => (:berlin (:inhabitants 6340918 :size 891.7 :river "Spree"))
+      
+      (r-getf *geodata* :Italy 1 1 5) ; => "Naviglio Grande"
+    #+END_SRC
+** r-interpl
+   Function
+   #+BEGIN_SRC lisp
+     (r-interpl min max &key (base 1))
+   #+END_SRC
+   random value between [min..max] with variable base. Default is
+   linear (base=1).
 ** r-lin
    Function
    #+BEGIN_SRC lisp
@@ -3475,6 +7181,25 @@
 
 *** See also
     - [[r-exp][r-exp]]
+** r-lin
+   Function
+   #+BEGIN_SRC lisp
+     (r-lin min max)
+   #+END_SRC
+   Random value between [min..max] with linear distribution.
+*** Arguments
+    =min= -- Number indicationg the minimum value.
+
+    =max= -- Number indicationg the maximum value.
+
+
+*** See also
+    - [[r-exp][r-exp]]
+** ran
+   Function
+   #+BEGIN_SRC lisp
+     (ran &key (type ':uniform) from (below 1.0) (state *random-state*) a b distribution)
+   #+END_SRC
 ** range
    Function
    #+BEGIN_SRC lisp
@@ -3502,10 +7227,70 @@
 *** Note
     Unlike clozure's range function, this range function is not
     lazy: As a precaution (range) will return the empty list.
+** range
+   Class
+
+** range
+   Function
+   #+BEGIN_SRC lisp
+     (range &rest args)
+   #+END_SRC
+   Like clojure's range: Return a list of nums from start (inclusive) to
+   end (exclusive) by step. Start and step are optional args defaulting
+   to 0 and 1 respectively.
+   
+   Arities:
+   
+   (range end) 
+   
+   (range start end) 
+   
+   (range start end step) 
+*** Examples
+    #+BEGIN_SRC lisp
+      (range 8) ; => (0 1 2 3 4 5 6 7) 
+      
+      (range 3 9) ; => (3 4 5 6 7 8) 
+      
+      (range 1 10 2) ; => (1 3 5 7 9)
+    #+END_SRC
+*** Note
+    Unlike clozure's range function, this range function is not
+    lazy: As a precaution (range) will return the empty list.
+** ransegs
+   Function
+   #+BEGIN_SRC lisp
+     (ransegs num &key (type ':uniform) (min 0.0 mnp) (max 1.0 mxp) (sum 1.0 smp) a b)
+   #+END_SRC
 ** recall-random-state
    Function
    #+BEGIN_SRC lisp
      (recall-random-state)
+   #+END_SRC
+** recall-random-state
+   Function
+   #+BEGIN_SRC lisp
+     (recall-random-state)
+   #+END_SRC
+** recv
+   Generic Function
+   #+BEGIN_SRC lisp
+     (recv io &rest args)
+   #+END_SRC
+** recv-set!
+   Generic Function
+   #+BEGIN_SRC lisp
+     (recv-set! io hook &rest args)
+   #+END_SRC
+** recv?
+   Generic Function
+   #+BEGIN_SRC lisp
+     (recv? io)
+   #+END_SRC
+** reducing
+   Function
+   #+BEGIN_SRC lisp
+     (reducing fn seq &key key from-end (start 0) end (initial-value nil ivp))
    #+END_SRC
 ** reducing
    Function
@@ -3533,6 +7318,28 @@
    #+BEGIN_SRC lisp
      (regenerate-points svg-file &key (fname #p"/tmp/test.svg") (xquantize t) (yquantize t))
    #+END_SRC
+** region
+   Function
+   #+BEGIN_SRC lisp
+     (region obj &optional (start 0) end)
+   #+END_SRC
+   extract region from obj. subobjects need to be sorted.
+** reinit-midi
+   Function
+   #+BEGIN_SRC lisp
+     (reinit-midi)
+   #+END_SRC
+** remove-all-buffers
+   Function
+   #+BEGIN_SRC lisp
+     (remove-all-buffers)
+   #+END_SRC
+   Remove all buffers from registry.
+*** See also
+    - [[add-buffer][add-buffer]]
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-buffer][remove-buffer]]
 ** remove-all-buffers
    Function
    #+BEGIN_SRC lisp
@@ -3564,11 +7371,52 @@
     - [[remove-midi-cc-fns][remove-midi-cc-fns]]
     - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
     - [[show-midi-cc-fns][show-midi-cc-fns]]
+** remove-all-channel-midi-cc-fns
+   Function
+   #+BEGIN_SRC lisp
+     (remove-all-channel-midi-cc-fns channel)
+   #+END_SRC
+   Remove all functions from *​midi-cc-fns​* for all ccnums of /channel/. 
+*** Arguments
+    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (remove-all-channel-midi-cc-fns 1) ; => nil
+    #+END_SRC
+*** See also
+    - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[remove-midi-cc-fns][remove-midi-cc-fns]]
+    - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+    - [[show-midi-cc-fns][show-midi-cc-fns]]
 ** remove-all-dsps
    Function
    #+BEGIN_SRC lisp
      (remove-all-dsps)
    #+END_SRC
+** remove-all-dsps
+   Function
+   #+BEGIN_SRC lisp
+     (remove-all-dsps)
+   #+END_SRC
+** remove-all-midi-cc-fns
+   Function
+   #+BEGIN_SRC lisp
+     (remove-all-midi-cc-fns)
+   #+END_SRC
+   Remove all functions from *​midi-cc-fns​* for all ccnums and channels.
+*** Example
+    #+BEGIN_SRC lisp
+      (remove-all-midi-cc-fns) ; => nil
+    #+END_SRC
+*** See also
+    - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[remove-midi-cc-fns][remove-midi-cc-fns]]
+    - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
+    - [[show-midi-cc-fns][show-midi-cc-fns]]
 ** remove-all-midi-cc-fns
    Function
    #+BEGIN_SRC lisp
@@ -3597,6 +7445,33 @@
     - [[find-controller][find-controller]]
     - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
+** remove-all-midi-controllers
+   Function
+   #+BEGIN_SRC lisp
+     (remove-all-midi-controllers)
+   #+END_SRC
+   Unregister and delete all currently registered MIDI controller instances.
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[list-midi-controllers][list-midi-controllers]]
+    - [[find-controller][find-controller]]
+    - [[midi-controller][midi-controller]]
+    - [[remove-midi-controller][remove-midi-controller]]
+** remove-buffer
+   Function
+   #+BEGIN_SRC lisp
+     (remove-buffer buf)
+   #+END_SRC
+   Remove buffer from registry.
+*** Arguments
+    =buf= -- Incudine:buffer
+
+
+*** See also
+    - [[add-buffer][add-buffer]]
+    - [[find-buffer][find-buffer]]
+    - [[of-buffer-load][of-buffer-load]]
+    - [[remove-all-buffers][remove-all-buffers]]
 ** remove-buffer
    Function
    #+BEGIN_SRC lisp
@@ -3626,6 +7501,43 @@
     - [[add-dsp][add-dsp]]
     - [[find-dsp][find-dsp]]
     - [[list-dsps][list-dsps]]
+** remove-dsp
+   Function
+   #+BEGIN_SRC lisp
+     (remove-dsp id)
+   #+END_SRC
+   Remove a running Incudine dsp registered with [[add-dsp][add-dsp]].
+*** Arguments
+    =id= -- Keyword or Symbol identifying the dsp.
+
+
+*** See also
+    - [[add-dsp][add-dsp]]
+    - [[find-dsp][find-dsp]]
+    - [[list-dsps][list-dsps]]
+** remove-midi-cc-fns
+   Function
+   #+BEGIN_SRC lisp
+     (remove-midi-cc-fns channel ccnum)
+   #+END_SRC
+   Remove all functions from *​midi-cc-fns​* for /channel/ and /ccnum/.
+*** Arguments
+    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
+
+    =ccnum= -- Integer in the range [1..128] denoting the MIDI
+    Controller number.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (remove-midi-cc-fns 1 1) ; => nil
+    #+END_SRC
+*** See also
+    - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
+    - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+    - [[show-midi-cc-fns][show-midi-cc-fns]]
 ** remove-midi-cc-fns
    Function
    #+BEGIN_SRC lisp
@@ -3665,6 +7577,32 @@
     - [[find-controller][find-controller]]
     - [[midi-controller][midi-controller]]
     - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+** remove-midi-controller
+   Function
+   #+BEGIN_SRC lisp
+     (remove-midi-controller #:id)
+   #+END_SRC
+   Unregister and delete the instance of a midi controller with ID /id/.
+*** Arguments
+    =id= -- Keyword or Symbol used as ID of the instance.
+
+
+*** See also
+    - [[add-midi-controller][add-midi-controller]]
+    - [[list-midi-controllers][list-midi-controllers]]
+    - [[find-controller][find-controller]]
+    - [[midi-controller][midi-controller]]
+    - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+** remove-object
+   Generic Function
+   #+BEGIN_SRC lisp
+     (remove-object obj1 obj2)
+   #+END_SRC
+** remove-receiver!
+   Function
+   #+BEGIN_SRC lisp
+     (remove-receiver! stream)
+   #+END_SRC
 ** remove-sfz-preset
    Function
    #+BEGIN_SRC lisp
@@ -3691,6 +7629,37 @@
     - [[sfz-get-range][sfz-get-range]]
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** remove-sfz-preset
+   Function
+   #+BEGIN_SRC lisp
+     (remove-sfz-preset name)
+   #+END_SRC
+   Remove the soundfile map associated with name. This is the opposite of [[load-sfz-preset][load-sfz-preset]].
+*** Arguments
+    =name= -- Keyword or symbol of the registered preset.
+
+
+*** Note
+    The soundfile buffers of the samples used in the sfz description
+    and the association between the preset name and the sfz file are
+    *​not​* removed! Only the association between the preset name, the
+    keynums and the buffers are removed.
+    
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** remove-subobjects
+   Generic Function
+   #+BEGIN_SRC lisp
+     (remove-subobjects obj)
+   #+END_SRC
 ** repeat
    Function
    #+BEGIN_SRC lisp
@@ -3707,6 +7676,24 @@
 *** Examples
     #+BEGIN_SRC lisp
       (repeat 10 5) ;-> (5 5 5 5 5 5 5 5 5 5)
+    #+END_SRC
+** repeat-format
+   Macro
+   #+BEGIN_SRC lisp
+     (repeat-format stream expr num)
+   #+END_SRC
+   format /expr/ /num/ times to /stream/
+*** Arguments
+    =stream= -- Output stream as in format.
+
+    =expr= -- Expression to format repeatedly.
+
+    =num= -- Integer number of repetitions.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (repeat-format nil "la" 10) ; => "lalalalalalalalalala"
     #+END_SRC
 ** repeat-format
    Macro
@@ -3750,6 +7737,40 @@
     #+END_SRC
 *** See also
     - [[do-repeated][do-repeated]]
+** repeated
+   Function
+   #+BEGIN_SRC lisp
+     (repeated n fn)
+   #+END_SRC
+   Return a function which applies a given function /fn/ /n/ times onto
+   itself. /fn/ must be a function of at least one argument which returns
+   one argument. The return value of the function replaces the first
+   argument in the next recursive call, leaving all other arguments as
+   they were.
+*** Arguments
+    =n= -- Integer number of repetitions.
+
+    =fn= -- Function to be applied to itself.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (funcall (repeated 4 (lambda (x) (* x 2))) 1)  ; => 16
+      
+      (funcall (repeated 4 (lambda (x) (* x 2))) 3) ; => 48
+    #+END_SRC
+*** See also
+    - [[do-repeated][do-repeated]]
+** rescale
+   Function
+   #+BEGIN_SRC lisp
+     (rescale value oldmin oldmax newmin newmax)
+   #+END_SRC
+** rescale-envelope
+   Function
+   #+BEGIN_SRC lisp
+     (rescale-envelope env &key x-min x-max y-min y-max)
+   #+END_SRC
 ** reset-logger-stream
    Function
    #+BEGIN_SRC lisp
@@ -3772,10 +7793,41 @@
 *** Note
     This function needs to be called if /Clamps/ is started from a Lisp
     Image.
+** reset-logger-stream
+   Function
+   #+BEGIN_SRC lisp
+     (reset-logger-stream)
+   #+END_SRC
+   Resets /incudine:*​logger-stream​*/ to /*​​error-output​​*/ Call this
+   function, if calls to /incudine.util:msg/ don't produce any output in
+   the REPL.
+*** Note
+    This function needs to be called if /Clamps/ is started from a Lisp
+    Image.
+** restart-inkscape-osc
+   Macro
+   #+BEGIN_SRC lisp
+     (restart-inkscape-osc)
+   #+END_SRC
+** restart-qsynth
+   Function
+   #+BEGIN_SRC lisp
+     (restart-qsynth)
+   #+END_SRC
 ** restore-envs
    Function
    #+BEGIN_SRC lisp
      (restore-envs)
+   #+END_SRC
+** restore-envs
+   Function
+   #+BEGIN_SRC lisp
+     (restore-envs)
+   #+END_SRC
+** restore-tables
+   Function
+   #+BEGIN_SRC lisp
+     (restore-tables)
    #+END_SRC
 ** restore-tables
    Function
@@ -3795,6 +7847,56 @@
 *** Example
     #+BEGIN_SRC lisp
       (reverse-all '(1 (2 3) (4 (5 (6 7) 8) 9))) ; => ((9 (8 (7 6) 5) 4) (3 2) 1)
+    #+END_SRC
+** reverse-all
+   Function
+   #+BEGIN_SRC lisp
+     (reverse-all list)
+   #+END_SRC
+   Recursively reverse list and all its sublists.
+*** Arguments
+    =list= -- The list to recursively reverse.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (reverse-all '(1 (2 3) (4 (5 (6 7) 8) 9))) ; => ((9 (8 (7 6) 5) 4) (3 2) 1)
+    #+END_SRC
+** reverse-obj
+   Function
+   #+BEGIN_SRC lisp
+     (reverse-obj obj)
+   #+END_SRC
+   return the reverse of obj as a list. subobjects need to
+   be sorted.
+** rewrite
+   Class
+
+** rewrite-generation
+   Function
+   #+BEGIN_SRC lisp
+     (rewrite-generation obj &optional (new nil) (ids t))
+   #+END_SRC
+** rfind
+   Function
+   #+BEGIN_SRC lisp
+     (rfind item tree &key (test #'eql))
+   #+END_SRC
+   Find /item/ by traversing /tree/ recursively until /test/ called on
+   /item/ and a tree element returns non-nil. Return item or nil if item
+   is not found.
+*** Arguments
+    =item= -- Any Common Lisp Object.
+
+    =tree= -- A list possibly nested.
+
+    =:test= -- Function to test for equality between item and a tree
+    element.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (rfind 'd '(a (b c (a d c) ((g d (e)) h f)))) ; => d 
     #+END_SRC
 ** rfind
    Function
@@ -3817,6 +7919,16 @@
     #+BEGIN_SRC lisp
       (rfind 'd '(a (b c (a d c) ((g d (e)) h f)))) ; => d 
     #+END_SRC
+** rhythm
+   Generic Function
+   #+BEGIN_SRC lisp
+     (rhythm rhy &optional tempo beat)
+   #+END_SRC
+** rm-spectrum
+   Function
+   #+BEGIN_SRC lisp
+     (rm-spectrum set1 set2 &key (spectrum nil) (minimum nil) (maximum nil) (hz nil) (scale-order :up) (remove-duplicates nil))
+   #+END_SRC
 ** rotate
    Function
    #+BEGIN_SRC lisp
@@ -3838,6 +7950,83 @@
       
       (rotate '(dog bird lion cat horse) 4733) ; => (lion cat horse dog bird)
     #+END_SRC
+** rotate
+   Function
+   #+BEGIN_SRC lisp
+     (rotate list &optional (num 1))
+   #+END_SRC
+   Rotate /list/ by /num/ elems (to the right). /num/ can be negative. If
+   /num/ is larger than the list size it will wrap around as if the
+   rotation was called recursively num times.
+*** Arguments
+    =list= -- List to rotate
+
+    =num= -- Integer number of rotations.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (rotate '(dog bird lion cat horse) 1) ; => (horse dog bird lion cat)
+      (rotate '(dog bird lion cat horse) -1)  ; => (bird lion cat horse dog)
+      
+      (rotate '(dog bird lion cat horse) 4733) ; => (lion cat horse dog bird)
+    #+END_SRC
+** rotation
+   Class
+
+** rt-proc
+   Macro
+   #+BEGIN_SRC lisp
+     (rt-proc &body body)
+   #+END_SRC
+** *​rt-scale​*
+   :PROPERTIES:
+   :CUSTOM_ID: rt-scale
+   :END:
+   Variable
+
+** rt-sprout
+   Macro
+   #+BEGIN_SRC lisp
+     (rt-sprout s-expr &key (at))
+   #+END_SRC
+** rt-wait
+   Macro
+   #+BEGIN_SRC lisp
+     (rt-wait time &optional (yield t))
+   #+END_SRC
+** rts
+   Function
+   #+BEGIN_SRC lisp
+     (rts &key (rt-wait 0))
+   #+END_SRC
+   Start the real-time system of Clamps. This functions sets the
+   following special variables:
+   
+   *​midi-in1​* -- The default Midi Input
+   
+   *​midi-out1​* -- The default Midi Output
+   
+   *​rts-out​* -- The default output for realtime events from Clamps/CM.
+   
+   It also starts the rt engine of incudine calling
+   /incudine:rt-start/ and the midi receivers.
+*** Arguments
+    =rt-wait= -- Time in seconds to wait before starting.
+
+
+*** Note
+    
+    This command is an replacement of the /rts/ command of CM, described
+    [[../cm-dict/index.html#rts-fn.html][here]], so none of the options
+    mentioned there or the decription in
+    [[../cm-dict/index.html#rts-topic.html][RTS]] apply to Clamps. Other
+    related CM functions, like /rts-pause/, /rts-continue/ and /rts-stop/
+    also don't work in Clamps.
+    
+*** See also
+    - [[clamps][clamps]]
+    - [[rts?][rts?]]
 ** rts
    Function
    #+BEGIN_SRC lisp
@@ -3878,6 +8067,20 @@
    Flush pending events from incudine's event queue, send out an all
    notes off message to all 16 channels of *​​midi-out1​​* and call
    [[node-free-unprotected][node-free-unprotected]].
+** rts-hush
+   Function
+   #+BEGIN_SRC lisp
+     (rts-hush)
+   #+END_SRC
+   Flush pending events from incudine's event queue, send out an all
+   notes off message to all 16 channels of *​​midi-out1​​* and call
+   [[node-free-unprotected][node-free-unprotected]].
+** *​rts-out​*
+   :PROPERTIES:
+   :CUSTOM_ID: rts-out
+   :END:
+   Variable
+
 ** rts?
    Function
    #+BEGIN_SRC lisp
@@ -3887,11 +8090,145 @@
 *** See also
     - [[rts][rts]]
 * S
+** sampleevt-amp
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sampleevt-amp object)
+   #+END_SRC
+   automatically generated reader method
+** sampleevt-keynum
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sampleevt-keynum object)
+   #+END_SRC
+   automatically generated reader method
+** sampleevt-lsample
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sampleevt-lsample object)
+   #+END_SRC
+   automatically generated reader method
+** sampleevt-out
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sampleevt-out object)
+   #+END_SRC
+   automatically generated reader method
+** sampleevt-start
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sampleevt-start object)
+   #+END_SRC
+   automatically generated reader method
+** samps->secs
+   Function
+   #+BEGIN_SRC lisp
+     (samps->secs samps)
+   #+END_SRC
+** samps->time
+   Function
+   #+BEGIN_SRC lisp
+     (samps->time samps)
+   #+END_SRC
+** save-object
+   Function
+   #+BEGIN_SRC lisp
+     (save-object obj file)
+   #+END_SRC
+** *​scale​*
+   :PROPERTIES:
+   :CUSTOM_ID: scale
+   :END:
+   Variable
+
+** scale-amp
+   Function
+   #+BEGIN_SRC lisp
+     (scale-amp scale)
+   #+END_SRC
+   return a function amplitude scaling a supplied evt by scale.
+** scale-amplitude
+   Function
+   #+BEGIN_SRC lisp
+     (scale-amplitude scale)
+   #+END_SRC
+   return a function amplitude scaling a supplied evt by scale.
+** scale-max
+   Function
+   #+BEGIN_SRC lisp
+     (scale-max a b &optional (scale *scale*))
+   #+END_SRC
+** scale-min
+   Function
+   #+BEGIN_SRC lisp
+     (scale-min a b &optional (scale *scale*))
+   #+END_SRC
+** scale-mod
+   Generic Function
+   #+BEGIN_SRC lisp
+     (scale-mod freq modulus &key offset in accidental)
+   #+END_SRC
+** scale-order
+   Function
+   #+BEGIN_SRC lisp
+     (scale-order lis &optional (order ':up) unique?)
+   #+END_SRC
+** scale-shift-transform
+   Function
+   #+BEGIN_SRC lisp
+     (scale-shift-transform scale shift)
+   #+END_SRC
+   return a function timescaling and timeshifting a supplied evt by
+   scale and shift.
+** scale<
+   Function
+   #+BEGIN_SRC lisp
+     (scale< a b &optional (scale *scale*))
+   #+END_SRC
+** scale<=
+   Function
+   #+BEGIN_SRC lisp
+     (scale<= a b &optional (scale *scale*))
+   #+END_SRC
+** scale=
+   Function
+   #+BEGIN_SRC lisp
+     (scale= a b &optional (scale *scale*))
+   #+END_SRC
+** scale>
+   Function
+   #+BEGIN_SRC lisp
+     (scale> a b &optional (scale *scale*))
+   #+END_SRC
+** scale>=
+   Function
+   #+BEGIN_SRC lisp
+     (scale>= a b &optional (scale *scale*))
+   #+END_SRC
+** scaler->cents
+   Function
+   #+BEGIN_SRC lisp
+     (scaler->cents scaler)
+   #+END_SRC
+** secs->samps
+   Function
+   #+BEGIN_SRC lisp
+     (secs->samps secs)
+   #+END_SRC
 ** send
    Function
    #+BEGIN_SRC lisp
      (send stream msg)
    #+END_SRC
+** send-fudi
+   Function
+   #+BEGIN_SRC lisp
+     (send-fudi msg &key (stream *fudi-out*))
+   #+END_SRC
+   Send a FUDI message.
+** seq
+   Class
+
 ** set-basedir
    Function
    #+BEGIN_SRC lisp
@@ -3927,10 +8264,36 @@
      (set-marker object)
    #+END_SRC
    automatically generated reader method
+** set-marker
+   Generic Function
+   #+BEGIN_SRC lisp
+     (set-marker object)
+   #+END_SRC
+   automatically generated reader method
+** set-midi-output-hook!
+   Function
+   #+BEGIN_SRC lisp
+     (set-midi-output-hook! fn)
+   #+END_SRC
 ** set-on-data
    Generic Function
    #+BEGIN_SRC lisp
      (set-on-data obj handler)
+   #+END_SRC
+** set-on-data
+   Generic Function
+   #+BEGIN_SRC lisp
+     (set-on-data obj handler)
+   #+END_SRC
+** set-receiver!
+   Function
+   #+BEGIN_SRC lisp
+     (set-receiver! hook stream &rest args)
+   #+END_SRC
+** set-sco-output-hook!
+   Function
+   #+BEGIN_SRC lisp
+     (set-sco-output-hook! fn)
    #+END_SRC
 ** set-standard-pitch
    Function
@@ -3978,6 +8341,33 @@
     - [[make-computed][make-computed]]
     - [[make-ref][make-ref]]
     - [[watch][watch]]
+** set-val
+   Function
+   #+BEGIN_SRC lisp
+     (set-val ref value &key (force nil))
+   #+END_SRC
+   Set the value of ref-object /ref/ to /value/ if different than
+   previous value. If /force/ is non-nil, set in any case. Return
+   value.
+*** Arguments
+    =ref= -- An instance of [[ref-object][ref-object]]
+
+    =value= -- Any value of any type to be set.
+
+    =force= -- A boolean indicating to set the value even if it is eql
+    to the previous value of the ref-object.
+
+
+*** See also
+    - [[get-val][get-val]]
+    - [[make-computed][make-computed]]
+    - [[make-ref][make-ref]]
+    - [[watch][watch]]
+** setf-default
+   Macro
+   #+BEGIN_SRC lisp
+     (setf-default sym test default)
+   #+END_SRC
 ** setf-default
    Macro
    #+BEGIN_SRC lisp
@@ -3990,6 +8380,62 @@
    Variable
 
    List of directories to search recursively for soundfiles.
+** sfz
+   Common Music Class
+   #+BEGIN_SRC lisp
+     (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
+   #+END_SRC
+   Create a sfz Event.
+   
+   sfz accepts the following slot initializations:
+   
+   =:time= -- The output time in seconds, initially unbound.
+   
+   =:keynum= -- Keynum in Midicents.
+   
+   =:amplitude= -- Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
+   
+   =:duration= -- Duration in seconds.
+   
+   =:preset= -- Keyword or symbol of a registered preset name.
+   
+   =:play-fn= -- The play function to be used for sample playback.
+   
+   =:pan= -- Number in the range /[0..1]/ defining equal power panning
+   between the two outputs of the dsp on playback.
+   
+   =:startpos= -- The startposition in the sample in seconds.
+   
+   =:chan= -- The channel (layer) used in svg output.
+*** Examples
+    #+BEGIN_SRC lisp
+        (new sfz)
+        ;; => #i(sfz keynum 60 amplitude 1 duration 1 preset :flute-nv
+        ;;           play-fn nil pan 0.5 startpos 0 chan 100)
+      
+        ;; the following code should send 1 second of a flute middle C sound
+        ;; to the first two oulets of incudine:
+      
+        (output (new sfz)) ; => ; No value
+      
+        ;; => loading :flute-nv from ~/quicklisp/local-projects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz
+        ;; ; No values
+      
+        (loop
+           for idx below 200
+          for x = (/ idx 199)
+          for time = 0 then (+ time (n-exp (interp x 0 0  0.3 1  1 0) 0.01 0.1))
+          do (sprout
+              (new sfz
+                :time time
+                :keynum (+ 65.5 (random (n-lin (interp x 0 0 1 1) 1 5)))
+                :duration (+ 0.5 (random 2.0))
+                :amplitude (n-lin (interp x 0 0 0.8 0 1 1) -12 -24))))
+      
+        ;; => nil
+    #+END_SRC
+*** See also
+    - [[dict:midi][midi]]
 ** sfz
    Common Music Class
    #+BEGIN_SRC lisp
@@ -4066,6 +8512,26 @@
 *** See also
     - [[sfz][sfz]]
     - [[lsample][lsample]]
+** sfz->lsample
+   Function
+   #+BEGIN_SRC lisp
+     (sfz->lsample sfz-entry dir &key (play-fn #'play-sfz-loop))
+   #+END_SRC
+   Convert an entry of a sfz file into a lsample.
+*** Arguments
+    =sfz-entry= -- Instance of sfz class.
+
+    =dir= -- Pathname or String denoting the directory of the sfz file.
+
+    =:play-fn= -- The play function to play the lsample. Possible
+    options are:
+
+    - #'play-sfz-loop
+    - #'play-sfz-one-shot
+
+*** See also
+    - [[sfz][sfz]]
+    - [[lsample][lsample]]
 ** sfz-get-range
    Function
    #+BEGIN_SRC lisp
@@ -4085,12 +8551,80 @@
     - [[sfz][sfz]]
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** sfz-get-range
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-get-range ref)
+   #+END_SRC
+   Get the keynum range of a sfz preset or a sfz file denoted by /ref/.
+*** Arguments
+    =ref= -- String, Keynum or Symbol reference the sfz preset.
+
+
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** sfz-keynum
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sfz-keynum object)
+   #+END_SRC
+   automatically generated reader method
+** sfz-pan
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sfz-pan object)
+   #+END_SRC
+   automatically generated reader method
+** sfz-play-fn
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sfz-play-fn object)
+   #+END_SRC
+   automatically generated reader method
+** sfz-preset
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sfz-preset object)
+   #+END_SRC
+   automatically generated reader method
 ** sfz-preset-buffer
    Function
    #+BEGIN_SRC lisp
      (sfz-preset-buffer preset pitch)
    #+END_SRC
    return the buffer(s) of preset for pitch in a list.
+** sfz-preset-buffer
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-preset-buffer preset pitch)
+   #+END_SRC
+   return the buffer(s) of preset for pitch in a list.
+** sfz-preset-file
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-preset-file preset)
+   #+END_SRC
+   Return the full path of /preset/.
+*** Arguments
+    =preset= -- Keyword or symbol of a registered sfz preset.
+
+
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** sfz-preset-file
    Function
    #+BEGIN_SRC lisp
@@ -4143,6 +8677,39 @@
     - [[sfz][sfz]]
     - [[sfz-get-range][sfz-get-range]]
     - [[sfz-preset-file][sfz-preset-file]]
+** sfz-preset-loaded?
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-preset-loaded? preset)
+   #+END_SRC
+   Predicate to test if sfz preset is loaded.
+*** Arguments
+    =preset= -- Keyword or symbol of registered preset.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      #+BEGIN_SRC lisp
+      ;;; Directly after Clamps startup:
+      
+      (sfz-preset-loaded? :flute-nv) ;; => nil
+      
+      (output (new sfz))
+      ;; => loading :flute-nv from ~/quicklisp/local-procects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz
+      ;; No values
+      
+      (sfz-preset-loaded? :flute-nv) ;; => t
+      #+END_SRC
+    #+END_SRC
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[ensure-sfz-preset][ensure-sfz-preset]]
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
+    - [[remove-sfz-preset][remove-sfz-preset]]
+    - [[sfz][sfz]]
+    - [[sfz-get-range][sfz-get-range]]
+    - [[sfz-preset-file][sfz-preset-file]]
 ** *​sfz-preset-path​*
    :PROPERTIES:
    :CUSTOM_ID: sfz-preset-path
@@ -4150,6 +8717,17 @@
    Variable
 
    List of directories to search recursively for /.sfz/ files.
+** sfz-startpos
+   Generic Function
+   #+BEGIN_SRC lisp
+     (sfz-startpos object)
+   #+END_SRC
+   automatically generated reader method
+** shell
+   Function
+   #+BEGIN_SRC lisp
+     (shell cmd &key (wait t) (output t))
+   #+END_SRC
 ** show-midi-cc-fns
    Function
    #+BEGIN_SRC lisp
@@ -4176,6 +8754,55 @@
     - [[remove-midi-cc-fns][remove-midi-cc-fns]]
     - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
     - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+** show-midi-cc-fns
+   Function
+   #+BEGIN_SRC lisp
+     (show-midi-cc-fns channel ccnum)
+   #+END_SRC
+   Show all functions stored in *​midi-cc-fns​* for /channel/ and /ccnum/.
+*** Arguments
+    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
+
+    =ccnum= -- Integer in the range [1..128] denoting the MIDI
+    Controller number.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (show-midi-cc-fns 1 1) ; => nil
+      
+      ;; Output in the REPL:
+      ;; cc-fns of channel 1, ccnum 1: (#<function (lambda (ccval)) {564E441B}>)
+    #+END_SRC
+*** See also
+    - [[add-midi-cc-fn][add-midi-cc-fn]]
+    - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
+    - [[remove-midi-cc-fns][remove-midi-cc-fns]]
+    - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
+    - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+** shuffle
+   Function
+   #+BEGIN_SRC lisp
+     (shuffle seq &key (start 0) (end (length seq)) (state *random-state*) (copy t) &aux (width (- end start)))
+   #+END_SRC
+** *​sine1024​*
+   :PROPERTIES:
+   :CUSTOM_ID: sine1024
+   :END:
+   Variable
+
+   Incudine buffer of length 1024 containing one period of a sine wave.
+*** Example
+      #+BEGIN_SRC lisp
+      (plot *sine1024*)
+      ;; => #<incudine:buffer :FRAMES 1024 :CHANNELS 1 :SR 44100.0>
+      #+END_SRC
+      
+      #+attr_html: :width 50%
+      #+CAPTION: *​sine1024​* buffer
+      [[./img/sine-plot.svg]]
+*** See also
+    - [[#hanning1024][*​​hanning1024​​*]]
 ** *​sine1024​*
    :PROPERTIES:
    :CUSTOM_ID: sine1024
@@ -4201,12 +8828,48 @@
    #+END_SRC
    Return contents of file as a list of all lines read individually by
    the lisp reader.
+** slurp
+   Function
+   #+BEGIN_SRC lisp
+     (slurp file)
+   #+END_SRC
+   Return contents of file as a list of all lines read individually by
+   the lisp reader.
 ** slurp-string
    Function
    #+BEGIN_SRC lisp
      (slurp-string file)
    #+END_SRC
    Return contents of file as a string.
+** slurp-string
+   Function
+   #+BEGIN_SRC lisp
+     (slurp-string file)
+   #+END_SRC
+   Return contents of file as a string.
+** *​sly-connected-hooks​*
+   :PROPERTIES:
+   :CUSTOM_ID: sly-connected-hooks
+   :END:
+   Variable
+
+** *​softest​*
+   :PROPERTIES:
+   :CUSTOM_ID: softest
+   :END:
+   Variable
+
+** song
+   Function
+   #+BEGIN_SRC lisp
+     (song state ref dx transp dur color &rest args)
+   #+END_SRC
+** spit
+   Function
+   #+BEGIN_SRC lisp
+     (spit seq &key (outfile "/tmp/test.lisp"))
+   #+END_SRC
+   Print /seq/ to /outfile/, each element on a new line.
 ** spit
    Function
    #+BEGIN_SRC lisp
@@ -4236,6 +8899,34 @@
       (splice '((0 1) (4 7) (7 2) (0 3) (4 5) (1 7)) :key #'second)
        ; => (((0 1)) ((4 7) (1 7)) ((7 2)) ((0 3)) ((4 5)))
     #+END_SRC
+** splice
+   Function
+   #+BEGIN_SRC lisp
+     (splice list &key (key #'first) (test #'eq))
+   #+END_SRC
+   Return a list of all sublists containing elements mutually satisfying
+   the /test/ predicate.
+*** Arguments
+    =list= -- List to splice
+
+    =key= -- Function applied to each element of list before testing.
+
+    =test= -- Function to determine equality between two elements.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (splice '((0 1) (4 7) (7 2) (0 3) (4 5) (1 3)))
+       ; => (((0 1) (0 3)) ((4 7) (4 5)) ((7 2)) ((1 3)))
+      
+      (splice '((0 1) (4 7) (7 2) (0 3) (4 5) (1 7)) :key #'second)
+       ; => (((0 1)) ((4 7) (1 7)) ((7 2)) ((0 3)) ((4 5)))
+    #+END_SRC
+** sprout
+   Function
+   #+BEGIN_SRC lisp
+     (sprout obj &rest args &key to at &allow-other-keys)
+   #+END_SRC
 ** *​standard-pitch​*
    :PROPERTIES:
    :CUSTOM_ID: standard-pitch
@@ -4253,6 +8944,11 @@
     - [[ftom][ftom]]
     - [[mtof][mtof]]
     - [[set-standard-pitch][set-standard-pitch]]
+** start-cm-all
+   Function
+   #+BEGIN_SRC lisp
+     (start-cm-all &key (qsynth nil) (start-gui t))
+   #+END_SRC
 ** start-doc-acceptor
    Function
    #+BEGIN_SRC lisp
@@ -4266,6 +8962,22 @@
    #+BEGIN_SRC lisp
      (start-gui &key (port 54619) (gui-root (asdf:system-source-directory :clog-dsp-widgets)) (open t))
    #+END_SRC
+** start-gui
+   Function
+   #+BEGIN_SRC lisp
+     (start-gui &key (port 54619) (gui-root (asdf:system-source-directory :clog-dsp-widgets)) (open t))
+   #+END_SRC
+** start-inkscape-osc
+   Macro
+   #+BEGIN_SRC lisp
+     (start-inkscape-osc &optional (osc-conn '*osc-inkscape-export-in*))
+   #+END_SRC
+** start-midi-engine
+   Function
+   #+BEGIN_SRC lisp
+     (start-midi-engine)
+   #+END_SRC
+   open midi ports and start realtime thread.
 ** start-midi-engine
    Function
    #+BEGIN_SRC lisp
@@ -4285,12 +8997,64 @@
 
 *** See also
     - [[stop-midi-receive][stop-midi-receive]]
+** start-midi-receive
+   Function
+   #+BEGIN_SRC lisp
+     (start-midi-receive input)
+   #+END_SRC
+   Start the clamps generic midi handler and all registered MIDI responders
+   of input stream /input/.
+*** Arguments
+    =input= -- Input MIDI stream of type /<jackmidi:input-stream>/.
+
+
+*** See also
+    - [[stop-midi-receive][stop-midi-receive]]
 ** start-osc-midi-receive
    Function
    #+BEGIN_SRC lisp
      (start-osc-midi-receive local-midi-in &key (port 4711))
    #+END_SRC
    start osc on localhost:port and its receivers.
+** start-osc-midi-receive
+   Function
+   #+BEGIN_SRC lisp
+     (start-osc-midi-receive local-midi-in &key (port 4711))
+   #+END_SRC
+   start osc on localhost:port and its receivers.
+** status->channel
+   Function
+   #+BEGIN_SRC lisp
+     (status->channel st)
+   #+END_SRC
+** status->opcode
+   Function
+   #+BEGIN_SRC lisp
+     (status->opcode st)
+   #+END_SRC
+** stop
+   Generic Function
+   #+BEGIN_SRC lisp
+     (stop p)
+   #+END_SRC
+** stop-inkscape-osc
+   Macro
+   #+BEGIN_SRC lisp
+     (stop-inkscape-osc &optional (osc-conn '*osc-inkscape-export-in*))
+   #+END_SRC
+** stop-midi-receive
+   Function
+   #+BEGIN_SRC lisp
+     (stop-midi-receive input)
+   #+END_SRC
+   Stop the clamps generic midi handler and remove all registered MIDI
+   responders of input stream /input/.
+*** Arguments
+    =input= -- Input MIDI stream of type /<jackmidi:input-stream>/.
+
+
+*** See also
+    - [[start-midi-receive][start-midi-receive]]
 ** stop-midi-receive
    Function
    #+BEGIN_SRC lisp
@@ -4309,6 +9073,25 @@
    #+BEGIN_SRC lisp
      (stop-osc-midi-receive &optional local-midi-in)
    #+END_SRC
+** stop-osc-midi-receive
+   Function
+   #+BEGIN_SRC lisp
+     (stop-osc-midi-receive &optional local-midi-in)
+   #+END_SRC
+** str-concat
+   Function
+   #+BEGIN_SRC lisp
+     (str-concat &rest args)
+   #+END_SRC
+   concatenate strings.
+*** Arguments
+    =args= -- one or more strings to concatenate
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (str-concat "Hello" " World") ; => "Hello World"
+    #+END_SRC
 ** str-concat
    Function
    #+BEGIN_SRC lisp
@@ -4336,6 +9119,22 @@
    #+BEGIN_SRC lisp
      (stream-p object)
    #+END_SRC
+** *​stream-recv-responders​*
+   :PROPERTIES:
+   :CUSTOM_ID: stream-recv-responders
+   :END:
+   Variable
+
+** subcontainers
+   Generic Function
+   #+BEGIN_SRC lisp
+     (subcontainers obj)
+   #+END_SRC
+** subobjects
+   Function
+   #+BEGIN_SRC lisp
+     (subobjects object &rest args)
+   #+END_SRC
 ** subseqx
    Function
    #+BEGIN_SRC lisp
@@ -4360,6 +9159,52 @@
       
       (subseqx '(a b c d e f g) 0 -2) ; => (a b c d e)
     #+END_SRC
+** subseqx
+   Function
+   #+BEGIN_SRC lisp
+     (subseqx seq start &optional end)
+   #+END_SRC
+   Like #'subseq, but allowing negative values for /end/, indicating the
+   number of elems at the end of /seq/ to be omitted.
+*** Arguments
+    =seq= -- A Common Lisp Sequence.
+
+    =start= -- Non Negative Integer denoting starting index of seq.
+
+    =end= -- Integer denoting last element's position in seq. If
+    positive, the last element is /(elt seq (1- end))/. If end is
+    negative, /(abs end)/ denotes the number of elements to be omitted
+    from the end of seq.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (subseqx '(a b c d e f g) 0 3) ; => (a b c)
+      
+      (subseqx '(a b c d e f g) 0 -2) ; => (a b c d e)
+    #+END_SRC
+** sv
+   Macro
+   #+BEGIN_SRC lisp
+     (sv obj slot &body args)
+   #+END_SRC
+** sv*
+   Macro
+   #+BEGIN_SRC lisp
+     (sv* obj slot val &body more)
+   #+END_SRC
+** sv+
+   Macro
+   #+BEGIN_SRC lisp
+     (sv+ obj slot val &body more)
+   #+END_SRC
+** svfn
+   Macro
+   #+BEGIN_SRC lisp
+     (svfn obj fn slot &body more)
+   #+END_SRC
+   set the new value of a slot by calling a function fn with the old
+   slot value as argument
 ** svg->browser
    Function
    #+BEGIN_SRC lisp
@@ -4373,6 +9218,24 @@
     directory.
 
 
+** svg->browser
+   Function
+   #+BEGIN_SRC lisp
+     (svg->browser svg-file &key (bar-lines 1) (staff-systems 1) (piano-roll 0) (scale 1) (timescale 1/32) (inverse 0))
+   #+END_SRC
+   Display =svg-file= in the SVG Player Gui, located at
+   /<clamps-base-url>/svg-display/.
+*** Arguments
+    =svg-file= -- String naming the svg-file to display/play. The
+    filename is interpreted relative to the /<clamps-gui-root>/svg/
+    directory.
+
+
+** svg->cm
+   Function
+   #+BEGIN_SRC lisp
+     (svg->cm file layer x-scale &key (x-offset 0) colormap start end group? layer?)
+   #+END_SRC
 ** svg->lines
    Function
    #+BEGIN_SRC lisp
@@ -4390,6 +9253,24 @@
    Also removes duplicates and flattens subgroups. Points are simple
    two-element lists containing x and y coordinates. The y coordinate is
    supposed to be a midifloat value, x ist translated into secs/beats.
+** svg->poolevt
+   Function
+   #+BEGIN_SRC lisp
+     (svg->poolevt &rest args)
+   #+END_SRC
+   recreate a poolevt from the :attributes property of the svg element.
+** svg->sampleevt
+   Function
+   #+BEGIN_SRC lisp
+     (svg->sampleevt &rest args)
+   #+END_SRC
+   recreate a sampleevt from the :attributes property of the svg element.
+** svg->sfz
+   Function
+   #+BEGIN_SRC lisp
+     (svg->sfz &rest args)
+   #+END_SRC
+   recreate a sfz from the :attributes property and the coords of the svg element.
 ** svg-clone
    Class
 
@@ -4402,13 +9283,42 @@
      (svg-collect-lines layer parse-state &key (timescale 1) (x-offset 0) (xquantize nil) (yquantize nil) layer?)
    #+END_SRC
    return a list of svg-cm-line instances of layer with a given parse-state.
+** *​svg-colormap​*
+   :PROPERTIES:
+   :CUSTOM_ID: svg-colormap
+   :END:
+   Variable
+
+** *​svg-colormap-old​*
+   :PROPERTIES:
+   :CUSTOM_ID: svg-colormap-old
+   :END:
+   Variable
+
+** svg-display
+   Function
+   #+BEGIN_SRC lisp
+     (svg-display body)
+   #+END_SRC
+   On-new-window handler.
 ** svg-gui-path
    Function
    #+BEGIN_SRC lisp
      (svg-gui-path str)
    #+END_SRC
+** svg-lines->cm
+   Function
+   #+BEGIN_SRC lisp
+     (svg-lines->cm svg-lines &key (x-offset 0) (x-scale 1) end colormap)
+   #+END_SRC
 ** svg-rect
    Class
+
+** *​svg-x-scale​*
+   :PROPERTIES:
+   :CUSTOM_ID: svg-x-scale
+   :END:
+   Variable
 
 ** system-version
    Function
@@ -4425,13 +9335,70 @@
     #+BEGIN_SRC lisp
       (system-version :cm) ; => "2.12.0"
     #+END_SRC
+** system-version
+   Function
+   #+BEGIN_SRC lisp
+     (system-version system-designator)
+   #+END_SRC
+   Return the version of an installed /asdf/ system or nil if not
+   bound/existent.
+*** Arguments
+    =system-designator= -- A designator acceptable to /asdf:find-system/
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (system-version :cm) ; => "2.12.0"
+    #+END_SRC
 * T
+** *​tempo​*
+   :PROPERTIES:
+   :CUSTOM_ID: tempo
+   :END:
+   Variable
+
+** tendency
+   Function
+   #+BEGIN_SRC lisp
+     (tendency x low high &key min max (offset min) scale (ranfn #'random) (state *random-state*) &aux value)
+   #+END_SRC
 ** text-anchor
    Generic Function
    #+BEGIN_SRC lisp
      (text-anchor object)
    #+END_SRC
    automatically generated reader method
+** thunk
+   Class
+
+** time->samps
+   Function
+   #+BEGIN_SRC lisp
+     (time->samps time)
+   #+END_SRC
+** time->speed-fn
+   Function
+   #+BEGIN_SRC lisp
+     (time->speed-fn min max end-time)
+   #+END_SRC
+** time->vstime-fn
+   Function
+   #+BEGIN_SRC lisp
+     (time->vstime-fn min max end-time)
+   #+END_SRC
+   return a function calculating the real time of a sample in the buffer with varispeed
+   applied. This is the inverse function of the varispeed function.
+** *​time-slots​*
+   :PROPERTIES:
+   :CUSTOM_ID: time-slots
+   :END:
+   Variable
+
+** toggle-slot
+   Macro
+   #+BEGIN_SRC lisp
+     (toggle-slot slot)
+   #+END_SRC
 ** toggle-slot
    Macro
    #+BEGIN_SRC lisp
@@ -4443,12 +9410,49 @@
      (transform object)
    #+END_SRC
    automatically generated reader method
+** transform-obj
+   Function
+   #+BEGIN_SRC lisp
+     (transform-obj fn obj)
+   #+END_SRC
+   destructively transform obj by applying fn to all evts.
+** transpose
+   Generic Function
+   #+BEGIN_SRC lisp
+     (transpose note int &optional scale)
+   #+END_SRC
+** transpose-evt
+   Function
+   #+BEGIN_SRC lisp
+     (transpose-evt transp)
+   #+END_SRC
+   return a function transposing a supplied evt by transposition.
+** transposer
+   Class
+
 ** trigger
    Generic Function
    #+BEGIN_SRC lisp
      (trigger obj)
    #+END_SRC
+** trigger
+   Generic Function
+   #+BEGIN_SRC lisp
+     (trigger obj)
+   #+END_SRC
+** true
+   Variable
+
+** tuning
+   Class
+
 * U
+** ucopy
+   Generic Function
+   #+BEGIN_SRC lisp
+     (ucopy sym)
+   #+END_SRC
+   Copy an instance of a class recursively.
 ** ucopy
    Generic Function
    #+BEGIN_SRC lisp
@@ -4461,6 +9465,17 @@
      (unwatch object)
    #+END_SRC
    automatically generated reader method
+** unwatch
+   Generic Function
+   #+BEGIN_SRC lisp
+     (unwatch object)
+   #+END_SRC
+   automatically generated reader method
+** update-all-controllers
+   Function
+   #+BEGIN_SRC lisp
+     (update-all-controllers midi-in-port)
+   #+END_SRC
 ** update-all-controllers
    Function
    #+BEGIN_SRC lisp
@@ -4470,6 +9485,16 @@
    Function
    #+BEGIN_SRC lisp
      (update-preset-buttons controller)
+   #+END_SRC
+** update-preset-buttons
+   Function
+   #+BEGIN_SRC lisp
+     (update-preset-buttons controller)
+   #+END_SRC
+** update-state
+   Generic Function
+   #+BEGIN_SRC lisp
+     (update-state instance)
    #+END_SRC
 ** update-state
    Generic Function
@@ -4499,7 +9524,51 @@
     #+END_SRC
 *** See also
     - [[call/collecting][call/collecting]]
+** v-collect
+   Macro
+   #+BEGIN_SRC lisp
+     (v-collect (v n &optional (tail '())) &rest body)
+   #+END_SRC
+   Return a list of /n/ elems prepended to tail by evaluating /body/ /n/
+   times with the symbol /v/ bound to the iteration index in the lexical
+   scope of form.
+*** Arguments
+    =v= -- Symbol used as variable name.
+
+    =n= -- Integer indicating the number of iterations.
+
+    =body= -- Function body being evaluated n times.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (v-collect (n 10) (* n n)) ;-> (0 1 4 9 16 25 36 49 64 81)
+    #+END_SRC
+*** See also
+    - [[call/collecting][call/collecting]]
+** vary
+   Function
+   #+BEGIN_SRC lisp
+     (vary value variance &optional (where :around) (state *random-state*))
+   #+END_SRC
+** vstime->speed-fn
+   Function
+   #+BEGIN_SRC lisp
+     (vstime->speed-fn min max end-time)
+   #+END_SRC
+** vstime->time-fn
+   Function
+   #+BEGIN_SRC lisp
+     (vstime->time-fn min max end-time)
+   #+END_SRC
+   return a function calculating e.g. the sample-pos in a buffer at a
+   given time with given minspeed, maxspeed and end-time (= bufferlength).
 * W-Y
+** wait
+   Function
+   #+BEGIN_SRC lisp
+     (wait time)
+   #+END_SRC
 ** watch
    Function
    #+BEGIN_SRC lisp
@@ -4520,6 +9589,29 @@
     - [[make-computed][make-computed]]
     - [[make-ref][make-ref]]
     - [[set-val][set-val]]
+** watch
+   Function
+   #+BEGIN_SRC lisp
+     (watch fn)
+   #+END_SRC
+   Call /fn/ whenever a value accessed using [[get-val][get-val]] in the body of
+   the function is changed.
+   
+   /watch/ returns a function to remove the relation, /watch/ has
+   established. Refer to the chapter [[clamps:cl-refs][cl-refs]] in the Clamps
+   Packages documentation for examples.
+*** Arguments
+    =fn= -- Function of no arguments to call
+
+
+*** See also
+    - [[get-val][get-val]]
+    - [[make-computed][make-computed]]
+    - [[make-ref][make-ref]]
+    - [[set-val][set-val]]
+** weighting
+   Class
+
 ** with-curr-dir
    Macro
    #+BEGIN_SRC lisp
@@ -4527,6 +9619,20 @@
    #+END_SRC
    set the cwd to dir in the body, return the result of body after
    resetting the cwd.
+** with-curr-dir
+   Macro
+   #+BEGIN_SRC lisp
+     (with-curr-dir (dir) &body body)
+   #+END_SRC
+   set the cwd to dir in the body, return the result of body after
+   resetting the cwd.
+** with-exp-midi-fn
+   Macro
+   #+BEGIN_SRC lisp
+     (with-exp-midi-fn (min max) &body body)
+   #+END_SRC
+   return closure with ipfn bound to an exponential interpolation of
+   the input range 0..127 between min and max.
 ** with-exp-midi-fn
    Macro
    #+BEGIN_SRC lisp
@@ -4554,6 +9660,11 @@
    #+BEGIN_SRC lisp
      (with-gui-update-off (instance) &body body)
    #+END_SRC
+** with-gui-update-off
+   Macro
+   #+BEGIN_SRC lisp
+     (with-gui-update-off (instance) &body body)
+   #+END_SRC
 ** with-lin-midi-fn
    Macro
    #+BEGIN_SRC lisp
@@ -4561,6 +9672,47 @@
    #+END_SRC
    Return closure with ipfn bound to a linear interpolation of the
    input range 0..127 between min and max.
+** with-lin-midi-fn
+   Macro
+   #+BEGIN_SRC lisp
+     (with-lin-midi-fn (min max) &body body)
+   #+END_SRC
+   Return closure with ipfn bound to a linear interpolation of the
+   input range 0..127 between min and max.
+** with-props
+   Macro
+   #+BEGIN_SRC lisp
+     (with-props vars proplist &body body)
+   #+END_SRC
+   Like with-slots but using a property list instead of a class
+   instance. The properties in the /proplist/ to be used need to have a
+   symbol or a keyword as a key. /vars/ is a list of symbols bound to the
+   corresponding property values in the lexical scope of /body/. Each
+   element of vars corresponds to a key in proplist either being the
+   binding symbol itself or a keyword, derived by prepending a colon to
+   the binding symbol.
+*** Arguments
+    =vars= -- List of symbols of the Properties to use in the lexical
+    scope of body.
+
+    =proplist= -- Property list containing bound properties.
+
+    =body= -- The body in which the vars are bound.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (with-props (a b c) '(:a 1 :b 2 c 3)
+        (list a b c))
+      ;; => (1 2 3)
+    #+END_SRC
+*** See also
+    - [[delete-props][delete-props]]
+    - [[do-proplist][do-proplist]]
+    - [[do-proplist/collecting][do-proplist/collecting]]
+    - [[get-prop][get-prop]]
+    - [[get-props-list][get-props-list]]
+    - [[map-proplist][map-proplist]]
 ** with-props
    Macro
    #+BEGIN_SRC lisp
@@ -4623,6 +9775,34 @@
       
       *myvar* ; => 2
     #+END_SRC
+** with-shadowed-variable
+   Macro
+   #+BEGIN_SRC lisp
+     (with-shadowed-variable (var) &rest body)
+   #+END_SRC
+   Shadow /var/ in the local scope of /body/. /var/ should be bound
+   before entering /with-shadowed-variable/.
+*** Arguments
+    =var= -- Symbol of variable to shadow
+
+    =body= -- Body for the scope of the shadowing.
+
+
+*** Example
+    #+BEGIN_SRC lisp
+      (defvar *myvar* 2) ; => *myvar*
+      
+      (defun return-myvar ()
+       *myvar*)
+      
+      (with-shadowed-variable (*myvar*)
+        (setf *myvar* 10)
+        (return-myvar))
+      
+      ;; => 10
+      
+      *myvar* ; => 2
+    #+END_SRC
 ** with-svg-file
    Macro
    #+BEGIN_SRC lisp
@@ -4634,6 +9814,18 @@
      (with-unwatched bindings &body body)
    #+END_SRC
    all #'get-val forms contained in bindings are not watched.
+** with-unwatched
+   Macro
+   #+BEGIN_SRC lisp
+     (with-unwatched bindings &body body)
+   #+END_SRC
+   all #'get-val forms contained in bindings are not watched.
+** write-event
+   Generic Function
+   #+BEGIN_SRC lisp
+     (write-event obj io time)
+   #+END_SRC
+   play an lsample.
 * Z
 ** zoom
    Generic Function
@@ -4641,3 +9833,9 @@
      (zoom object)
    #+END_SRC
    automatically generated reader method
+** zero-shift
+   Function
+   #+BEGIN_SRC lisp
+     (zero-shift seq)
+   #+END_SRC
+   reduce :time of all elements of seq by the :time of the first element.

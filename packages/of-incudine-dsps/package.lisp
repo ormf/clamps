@@ -7,6 +7,7 @@
   (:shadow #:clip)
   (:export #:BUFFER-STRETCH-PLAY
            #:BUFFER-RECORD
+           #:PLAY-BUFFER*
            #:PLAY-BUFFER-STRETCH*
            #:PLAY-BUFFER-STRETCH
            #:PLAY-BUFFER-STRETCH-OUT

@@ -45,6 +45,7 @@
 
 (defparameter *clamps-packages*
   '("CLAMPS"
+    "CM"
     "CUDA-USOCKET-OSC"
     "ATS-CUDA-DISPLAY"
     "FUDI"
@@ -351,6 +352,8 @@ set-tempo
 (defparameter *all-clamps-syms*
   (let ((syms (all-clamps-symbols)))
     (mapcar #'cons (strip-package-names syms) syms)))
+
+(format t "~{~{~(~a~):~(~a~)~}~^ ~}" (mapcar (lambda (sym) (list (package-name (symbol-package sym)) (symbol-name sym))) (all-clamps-symbols)))
 
 (defparameter *clamps-symbols-to-ignore*
   '(orm-utils:param-exp-func

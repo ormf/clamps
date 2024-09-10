@@ -138,7 +138,8 @@ sfz
 
 (define-ugen buffer-loop-play* frame ((buffer buffer) rate start-pos
                                       loopstart loopend)
-  (with ((frm (make-frame (block-size)))
+  (with ((rate (/ (buffer-sample-rate buffer) *sample-rate*))
+         (frm (make-frame (block-size)))
          (ph1 (phasor-loop* rate start-pos loopstart loopend)))
     (maybe-expand ph1)
     (foreach-frame
@@ -146,12 +147,11 @@ sfz
         (setf (frame-ref frm current-frame) (buffer-read buffer p1 :interpolation :cubic))))
     frm))
 
-(dsp! play-lsample* ((buffer buffer) (env incudine.vug:envelope) dur amp rate pan loopstart loopend startpos (out1 fixnum) (out2 fixnum))
+(dsp! play-lsample* ((buffer buffer) (env incudine.vug:envelope) dur amp rate pan loopstart loopend start (out1 fixnum) (out2 fixnum))
   (:defaults (incudine:incudine-missing-arg "BUFFER")
              (incudine:incudine-missing-arg "ENV")
              1 0 1 0.5 0 0 0 0 1)
-  (with-samples ((rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
-                 (start (* startpos (buffer-sample-rate buffer)))
+  (with-samples ((startframe (* start (buffer-sample-rate buffer)))
                  (ampl (db->linear amp))
                  (loopend (if (zerop loopend) (incudine::sample (buffer-frames buffer)) (incudine::sample loopend)))
                  (ende (min dur (/ (buffer-frames buffer) (buffer-sample-rate buffer))))
@@ -159,7 +159,7 @@ sfz
                  (left (cos alpha))
                  (right (sin alpha)))
     (with ((frm1 (envelope* env 1 ende #'free))
-           (frm2 (buffer-loop-play* buffer rate start loopstart loopend)))
+           (frm2 (buffer-loop-play* buffer rate startframe loopstart loopend)))
       (maybe-expand frm1)
       (maybe-expand frm2)
       (foreach-frame
@@ -193,19 +193,21 @@ sfz
             (incf (audio-out out2) (* sig right))
             (incf (audio-out out1) (* sig left)))))))
 
-(define-ugen buffer-play* frame ((buffer buffer) start end dur)
+(define-ugen buffer-play* frame ((buffer buffer) rate startframe endframe)
   (with ((frm (make-frame (block-size)))
-         (ph1 (line* start end dur #'free)))
+         (dur (/ (- endframe startframe) (* rate *sample-rate*)))
+         (ph1 (line* startframe endframe dur #'free)))
     (maybe-expand ph1)
     (foreach-frame
       (let ((p1 (frame-ref ph1 current-frame)))
-        (setf (frame-ref frm current-frame) (buffer-read buffer p1 :interpolation :cubic))))
+        (setf (frame-ref frm current-frame)
+              (buffer-read buffer p1 :interpolation :cubic))))
     frm))
 
 (define-ugen buffer-loop-play* frame ((buffer buffer) rate start-pos
                                       loopstart loopend)
   (with ((frm (make-frame (block-size)))
-         (ph1 (phasor-loop* rate start-pos loopstart loopend)))
+         (ph1 (phasor-loop* (* rate (/ (buffer-sample-rate buffer) *sample-rate*)) start-pos loopstart loopend)))
     (maybe-expand ph1)
     (foreach-frame
       (let ((p1 (frame-ref ph1 current-frame)))
@@ -213,22 +215,22 @@ sfz
     frm))
 
 
-(dsp! play-sample* ((buffer buffer) (env incudine.vug:envelope) dur amp rate pan startpos (out1 fixnum) (out2 fixnum))
+(dsp! play-sample* ((buffer buffer) (env incudine.vug:envelope) dur amp rate pan start (out1 fixnum) (out2 fixnum))
   (:defaults (incudine:incudine-missing-arg "BUFFER")
              (incudine:incudine-missing-arg "ENV")
-             1 1 1 0.5 0 0 1)
+             1 0 1 0.5 0 0 1)
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha))
                  (ampl (db->linear amp))
-                 (bsr (incudine::sample (buffer-sample-rate buffer)))
-                 (start (* startpos (buffer-sample-rate buffer)))
-                 (rate (/ (* rate (buffer-sample-rate buffer)) *sample-rate*))
-                 (end (min (- (buffer-frames buffer) 1.0d0)
-                           (* (+ start (* *sample-rate* dur)) rate)))
-                 (duration (/ (- end start) (* rate *sample-rate*))))
-  (with ((frm1 (envelope* env 1 dur #'free))
-         (frm2 (buffer-loop-play* buffer start end duration)))
+                 (rate (* rate (/ (buffer-sample-rate buffer) *sample-rate*)))
+                 (startframe (* start (buffer-frames buffer)))
+                 (endframe
+                  (min (+ startframe (* dur rate *sample-rate*))
+                       (buffer-frames buffer)))
+                 (duration (* rate *sample-rate* (- endframe startframe))))
+  (with ((frm1 (envelope* env 1 duration #'free))
+         (frm2 (buffer-play* buffer rate startframe endframe)))
     (maybe-expand frm1)
     (maybe-expand frm2)
     (foreach-frame
