@@ -92,16 +92,23 @@ function svg(elem){
     var svgRightReject;
     var svgAtsRect;
 
+//    svg.body = document.getElementsByTagName('body')[0];
     
     svg.setPos = function(pos) {
         svgCursor.style.left = Math.round((pos*100)) + '%';
     }
 
     svg.shiftX = function(translate) {
+        let style = getComputedStyle(svg);
+        let winWidth = svg.offsetWidth / parseFloat(style.getPropertyValue('font-size'));
+        let svgEmWidth = winWidth * svg.baseScale;
+        svg.baseShift = winWidth/2;
+//        console.log('svg.baseShift: ' + svg.baseShift);
         svg.shiftXVal = parseFloat(translate);
+//        console.log('svg.width: ' + svg.width);
         svg.svgContent.style.transform =
-            'translate(' + (60 + -120*(svg.scale/100)*svg.scaleXAdjust
-                            *(svg.shiftXVal*100)/svg.width) + 'em)';
+            'translate(' + (svg.baseShift + -1 * svgEmWidth * 0.9969y
+                            * (svg.shiftXVal/svg.width)) + 'em)';
     }
 
     svg.shiftY = function(translate) {
@@ -132,7 +139,7 @@ function svg(elem){
 //            console.log('doScale', scale);
             svg.scale = scale;
             if (svg.svgContent.firstChild) {
-                svg.svgImage.setAttribute('width', scale*100 + '%');
+                svg.svgImage.setAttribute('width', Math.round(svg.baseScale*scale*100) + '%');
                 svg.svgImage.setAttribute('height', '100%');
             }
             
@@ -321,6 +328,7 @@ function svg(elem){
                     svgContent.appendChild(svg.svgImage);
                     let [xmin, ymin, width, height]  = parseViewBox(svgContent.firstChild.getAttribute('viewBox'), true);
                     //                console.log(xmin, ymin, width, height);
+                    svg.baseScale = width/300;
                     svg.doScale(svg.scale);
                     svg.setPos(svg.getAttribute('cursor-pos'));
                     let groups = Array.from(svg.querySelectorAll('g'));
@@ -350,7 +358,8 @@ function svg(elem){
     };
     
     function resize() {
-//        console.log('resize', svg.getBoundingClientRect().width)
+//        console.log('resize', svg.getBoundingClientRect().width);
+        svg.shiftX(svg.getAttribute('shift-x'));
     }
     
     function init() {

@@ -51,6 +51,27 @@
 (defparameter *play-hooks* nil)
 (defparameter *stop-hooks* nil)
 
+(defun tempo->svg-timescale (arg1 &optional arg2)
+  "Convert tempo setting into a timescale in seconds per svg unit for
+svg playback in the clamps Gui. The svg unit is a 1/16th rhythm.
+
+@Arguments
+arg1 - Number denoting either a rhythm value (1/4 for a quarter note), or a bpm value if arg2 isn't supplied.
+arg2 - Number denoting the bets per minute.
+
+@Examples
+
+(tempo->svg-timescale 1/4 60) -> 1/4
+
+(tempo->svg-timescale 1/2 60) -> 1/8
+
+(tempo->svg-timescale 60) -> 1/4
+"
+  (let ((bpm (or arg2 arg1))
+        (rh (if arg2 arg1 1/4)))
+    (/ 15/4 (* rh bpm))))
+
+
 (in-package :cm)
 
 ;;; (export 'sfz 'cm)
@@ -258,6 +279,18 @@
 svg-file - String naming the svg-file to display/play. The
 filename is interpreted relative to the /<clamps-gui-root>/svg/
 directory.
+
+:bar-lines - Boolean indicating whether to display barlines.
+
+:staff-systems - Boolean indicating whether to display staff systems.
+
+:piano-roll - Boolean indicating whether to display a piano roll.
+
+:scale - Positive Number denoting the zoom factor of the graphic.
+
+:timescale - Positive number denoting The timescale for playback.
+
+:inverse - 0 or 1 indicating inverse colors.
 "
   (set-val cm.svgd:svg-file svg-file)
   (set-val cm.svgd:piano-roll piano-roll)

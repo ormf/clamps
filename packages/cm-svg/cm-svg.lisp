@@ -60,6 +60,26 @@ gets generated from *svg-fn-assoc-syms* using #'create-svg-fn-assoc")
 
 ;;; (remove-svg-assoc-fn 'pmidi)
 
+(defun tempo->svg-timescale (arg1 &optional arg2)
+  "Convert tempo setting into the duration of one 16th note
+(in seconds) for svg playback in the clamps Gui.
+
+@Arguments
+arg1 - Number denoting either a rhythm value (1/4 for a quarter note), or a bpm value if arg2 isn't supplied.
+arg2 - Number denoting the beats per minute (bpm).
+
+@Examples
+
+(tempo->svg-timescale 1/4 60) -> 1/4
+
+(tempo->svg-timescale 1/2 60) -> 1/8
+
+(tempo->svg-timescale 60) -> 1/4
+"
+  (let ((bpm (or arg2 arg1))
+        (rh (if arg2 arg1 1/4)))
+    (/ 15/4 (* rh bpm))))
+
 (defun new-id (svg-file id-type)
   "return a new id of the specified id-type by incrementing a counter
 stored in a hash table with id-type as keys."
@@ -721,5 +741,6 @@ to sproutable cm-events."
 
 (export '(SVG->CM *SVG-COLORMAP-OLD* *SVG-COLORMAP* COLOR->CHAN CHAN->COLOR ADD-RECREATION-FN OPACITY->DB DB->OPACITY SVG-LINES->CM
           INKSCAPE-EXPORT->CM
-          *SVG-X-SCALE*)
+          *SVG-X-SCALE*
+          TEMPO->SVG-TIMESCALE)
         'cm)

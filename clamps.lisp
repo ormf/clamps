@@ -147,7 +147,7 @@ clamps-gui-root
     (uiop:run-program (format nil "mkdir -p ~Aats" (namestring dir)))
     (setf ats-cuda:*ats-snd-dir* (merge-pathnames "snd/" dir))
     (setf ats-cuda:*ats-file-dir* (merge-pathnames "ats/" dir))
-    (setf cm.svgd:svg-dir (merge-pathnames "www/svg/" dir))
+    (setf cm.svgd:svg-dir (merge-pathnames "svg/" *clamps-gui-root*))
     (let ((targetpath (namestring (merge-pathnames dir "/www"))))
       (dolist (dir-or-file '("js" "css" "favicon.ico" "start.html"))
         (let* ((subdirpath (format nil "www/~a" dir-or-file))

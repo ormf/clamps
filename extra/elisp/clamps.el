@@ -32,3 +32,8 @@
   (load "clamps-dict.el")
   data)
 
+(define-key sly-mode-map (kbd "\C-c\C-dc") 'cm-lookup)
+(define-key sly-mode-map (kbd "C-.") 'clamps-hush)
+(define-key sly-mode-map (kbd "C-c C-.") 'incudine-rt-stop)
+(define-key sly-mode-map (kbd "C-c M-.") 'incudine-rt-start)
+(define-key sly-mode-map (kbd "C-c t") 'test-midi)

@@ -19,7 +19,8 @@
    #:sf-table-get-range
    #:play-sfz
    #:play-sfz-loop
-   #:play-sfz-one-shot))
+   #:play-sfz-one-shot
+   #:*keynum-offset*))
 
 (in-package :of-incudine-dsps)
 

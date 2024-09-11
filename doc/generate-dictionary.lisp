@@ -40,12 +40,12 @@
   (:import-from #:sb-ext #:defined-type-name-p)
   (:import-from #:sb-introspect #:function-lambda-list)
   (:export #:write-clamps-version #:write-doc #:write-undocumented-symbols))
-
 (in-package :clamps.doc)
 
 (defparameter *clamps-packages*
-  '("CLAMPS"
-    "CM"
+  '(
+    ;; "CLAMPS"
+    ;; "CM"
     "CUDA-USOCKET-OSC"
     "ATS-CUDA-DISPLAY"
     "FUDI"
@@ -141,12 +141,19 @@
 
 * Overview
 ** Notation and Usage
-   The Clamps Dictionary has been inspired by the [[../cm-dict/index.html][CM Dictionary]], which
-   was an original part of Common Music 2. Rather than interfering
-   with the original, the additions of the Clamps package have been
-   separated into this [[./index.html][Clamps Dictionary]]. Both dictionaries are
-   accessed by the same keyboard shortcut /<C-c C-d c>/, automatically
-   integrated into the Clamps system using the standard [[overview:Installation][Installation]].
+
+   The Clamps Dictionary has been inspired by the
+   [[../cm-dict/index.html][CM Dictionary]], which was an original
+   part of Common Music 2. Rather than interfering with the original,
+   the additions of the Clamps package have been separated into this
+   [[./index.html][Clamps Dictionary]].
+
+   Both dictionaries are accessed by the same Emacs keyboard shortcut
+   /<C-c C-d c>/, issued from any lisp buffer with the cursor at the
+   end of any Dictionary symbol after starting Clamps (see
+   [[overview:Online Help System][Online Help System]]; it is
+   integrated into the Clamps system when using the standard
+   [[overview:Installation][Installation]]).
 
    The Notation of the Clamps Dictionary is simpler than the Notation
    used in the CM Dictionary. Function and Macro definitions use the
@@ -313,9 +320,22 @@ set-tempo
 
   (defparameter *clamps-extra-symbols*
     (append (mapcar #'first *clamps-extra-doc*)
-            '(cl-user:*sfz-preset-path*
+            '(
+              cl-user:clamps
+
+
+              clamps:reset-logger-stream clamps:idump
+              clamps:clamps clamps:clamps-restart-gui
+              clamps:clamps-gui-root clamps:clamps-base-url
+              clamps:set-standard-pitch clamps:*standard-pitch*
+              clamps:svg-gui-path clamps:set-tempo
+              clamps:set-bpm clamps:start-doc-acceptor
+              clamps:clamps-start clamps:gui clamps:meters
+
+              cl-user:*sfz-preset-path*
               cl-user:*sfile-path*
               cm:svg->browser cm:rts-hush incudine:node-free-unprotected
+              cm:tempo->svg-timescale
               cm:rts cm::rts? ;; cl-midictl::midi-controller
               clog-midi-controller::clog-midi-controller
               clog-midi-controller::m-controller))))
@@ -438,7 +458,7 @@ set-tempo
     cl-midictl:nk2-fader-last-cc cl-midictl:nk2-fader-modes
     cl-midictl:nk2-fader-update-fns cl-midictl:nk2-faders cl-midictl:nk2-last-cc
     cl-midictl:note-fns cl-midictl:note-state cl-poolplayer:npreset-play
-    clog-dsp-widgets:num-channels clog-dsp-widgets:num-meters cl-plot:o
+    clog-dsp-widgets:num-meters cl-plot:o
     svg-import-export:opacity clog-dsp-widgets:opt-format-attr
     cl-poolplayer:*outseq13* cl-poolplayer:*outseq8* cl-poolplayer:*outseq9*
     cl-poolplayer:p-song-afterfn cl-poolplayer:p-song-beforefn
@@ -882,11 +902,12 @@ file."
         (format out *org-mode-dict-file-header*)
         (dolist (letter-entry
                  (get-clamps-dict-parts
-                  (append
-                   *clamps-extra-symbols*
-                   (remove-if
-                    #'ignore-clamps-symbol-p
-                    (all-clamps-symbols)))))
+                  (remove-duplicates
+                   (append
+                    *clamps-extra-symbols*
+                    (remove-if
+                     #'ignore-clamps-symbol-p
+                     (all-clamps-symbols))))))
           (format out "~a~%" (first letter-entry))
           (dolist (symbol (second letter-entry))
             (write-clamps-entry symbol #'format-entry out)))

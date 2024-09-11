@@ -30,6 +30,16 @@
 
 (defparameter *sfz-tables* (make-hash-table))
 
+(defparameter *keynum-offset* 0
+  "Keynum offset related to the ratio of *standard-pitch* in relation to
+440 Hz. Gets readjusted by set-standard-pitch.
+
+@See-also
+set-standard-pitch")
+
+(defun adjust-keynum (keynum)
+  (+ keynum *keynum-offset*))
+
 (defparameter keynames '("C" "C#" "D" "D#" "E" "F" "F#" "G" "G#" "A" "A#" "B"))
 
 (defun current-date ()
@@ -468,13 +478,16 @@ loaded it will get loaded before playback starts.
 @See-also
 play-sfz-loop
 play-sfz-one-shot
+
+@Note
+The setting of <<*standard-pitch*>> is taken into account!
 "
   (let ((map (get-sfz-preset preset)))
     (if map 
         (let* ((out2 (or out2 (mod (1+ out1) 8)))
                (sample (random-elem (aref map (round pitch))))
                (buffer (of-incudine-dsps:lsample-buffer sample))
-               (rate (incudine::sample (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample)))))
+               (rate (incudine::sample (ct->fv (+ *keynum-offset* (- pitch (of-incudine-dsps:lsample-keynum sample))))))
                (play-fn (of-incudine-dsps:lsample-play-fn sample))
                (amp (of-incudine-dsps:lsample-amp sample)))
           (cond
@@ -508,7 +521,6 @@ sample in the sfz file or loop the whole sound if not present. This
 function always uses loop playback regardless of the setting of
 /play-fn/ in the sample to be played.
 
-
 @Arguments
 pitch - Pitch in Midicent.
 
@@ -532,13 +544,16 @@ loaded it will get loaded before playback starts.
 @See-also
 play-sfz
 play-sfz-one-shot
+
+@Note
+The setting of <<*standard-pitch*>> is taken into account!
 "
   (let ((map (get-sfz-preset preset)))
     (if map
         (let* ((sample (random-elem (aref map (round pitch))))
                (out2 (or out2 (mod (1+ out1) 8)))
                (buffer (of-incudine-dsps:lsample-buffer sample))
-               (rate (incudine::sample (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample)))))
+               (rate (incudine::sample (+ *keynum-offset* (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample))))))
                (amp (of-incudine-dsps:lsample-amp sample))
                (loopstart (of-incudine-dsps:lsample-loopstart sample))
                (loopend (of-incudine-dsps:lsample-loopend sample)))
@@ -573,17 +588,18 @@ loaded it will get loaded before playback starts.
 @See-also
 play-sfz
 play-sfz-loop
+
+@Note
+The setting of <<*standard-pitch*>> is taken into account!
 "
   (let ((map (get-sfz-preset preset)))
     (if map
         (let* ((sample (random-elem (aref map (round pitch))))
                (out2 (or out2 (mod (1+ out1) 8)))
                (buffer (of-incudine-dsps:lsample-buffer sample))
-               (rate (incudine::sample (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample)))))
+               (rate (incudine::sample (ct->fv (+ *keynum-offset* (- pitch (of-incudine-dsps:lsample-keynum sample))))))
                (amp (of-incudine-dsps:lsample-amp sample)))
 ;;;    (break "rate: ~a" rate)
           (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan startpos out1 out2
                                           :head 200))
-        (error "preset ~S not found!" preset))))
-
-;;; (play-sfz-one-shot 60 0 0.5)
+        (error "preset ~S not found!" preset)))) y

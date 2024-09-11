@@ -195,9 +195,11 @@ freq - Frequency of A4 in Hz.
 
 @See-also
 *standard-pitch*
+*keynum-offset*
 "
   (setf *standard-pitch* (float freq 1.0))
-  (setf oid::*standard-pitch* (float freq 1.0)))
+  (setf oid::*standard-pitch* (float freq 1.0))
+  (setf *keynum-offset* (fr->ct (/ *standard-pitch* 440))))
 
 #|
 
