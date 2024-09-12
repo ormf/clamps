@@ -343,7 +343,7 @@ set-tempo
 (defun all-clamps-symbols ()
   (let ((acc nil))
     (dolist (pkg *clamps-packages* (cons 'cl-user:clamps (nreverse acc)))
-      (format t "~a~%" (find-package pkg))
+;;;      (format t "~a~%" (find-package pkg))
       (do-external-symbols (sym (find-package pkg))
         (push sym acc)))))
 
@@ -373,7 +373,9 @@ set-tempo
   (let ((syms (all-clamps-symbols)))
     (mapcar #'cons (strip-package-names syms) syms)))
 
+#|
 (format t "~{~{~(~a~):~(~a~)~}~^ ~}" (mapcar (lambda (sym) (list (package-name (symbol-package sym)) (symbol-name sym))) (all-clamps-symbols)))
+|#
 
 (defparameter *clamps-symbols-to-ignore*
   '(orm-utils:param-exp-func

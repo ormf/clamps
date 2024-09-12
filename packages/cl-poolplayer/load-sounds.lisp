@@ -34,7 +34,7 @@ of the number of files and return the array."
              (make-instance 'lsample
                             :filename filename
                             :buffer (incudine-bufs:of-buffer-load filename)
-                            :play-fn #'play-sample*))
+                            :play-fn #'play-buffer*))
     finally (return buffers)))
 
 ;;; (cl-plot:plot (aref *buffers* 2))

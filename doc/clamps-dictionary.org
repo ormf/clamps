@@ -1199,6 +1199,8 @@
     - [[sfz][sfz]]
     - [[sfz-get-range][sfz-get-range]]
     - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-lsamples][sfz-preset-lsamples]]
+    - [[sfz-preset-buffers][sfz-preset-buffers]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** *​env1​*
    :PROPERTIES:
@@ -1607,6 +1609,8 @@
     - [[sfz][sfz]]
     - [[sfz-get-range][sfz-get-range]]
     - [[sfz-preset-file][sfz-preset-file]]
+    - [[sfz-preset-lsamples][sfz-preset-lsamples]]
+    - [[sfz-preset-buffers][sfz-preset-buffers]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
 ** get-sndfile-path
    Function
@@ -1983,7 +1987,7 @@
     
     =buffer= -- Buffer of the sample data.
     
-    =play-fn= -- Function for playing the lsample, defaults to /#'play-lsample-oneshot/.
+    =play-fn= -- Function for playing the lsample, defaults to /#'play-buffer-loop*/.
     
     =keynum= -- Double Float denoting original keynum of the recorded sample.
     
@@ -2207,7 +2211,7 @@
 ** make-lsample
    Function
    #+BEGIN_SRC lisp
-     (make-lsample &key ((:filename #:filename) nil) ((:buffer #:buffer) nil) ((:play-fn #:play-fn) #'play-lsample-oneshot*) ((:keynum #:keynum) +sample-zero+) ((:loopstart #:loopstart) +sample-zero+) ((:amp #:amp) (sample 0)) ((:loopend #:loopend) +sample-zero+) ((:id #:id) nil))
+     (make-lsample &key ((:filename #:filename) nil) ((:buffer #:buffer) nil) ((:play-fn #:play-fn) #'play-buffer-loop*) ((:keynum #:keynum) +sample-zero+) ((:loopstart #:loopstart) +sample-zero+) ((:amp #:amp) (sample 0)) ((:loopend #:loopend) +sample-zero+) ((:id #:id) nil))
    #+END_SRC
 ** make-oasr
    Function
@@ -3088,17 +3092,79 @@
 ** play-buffer*
    Function
    #+BEGIN_SRC lisp
-     (play-buffer* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (ampdb 0) (rate 1) (start 0) (end 0) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+   Play /buffer/ with /env/ for /dur/ seconds and /amp/ in dB at /rate/,
+   with /pan/ from /start/ seconds into the sample. Output will be panned
+   between /out1/ and /out2/. All other keywords of incudine dsps also
+   apply. Works with any block size.
+*** Arguments
+    =buffer= -- Incudine Buffer.
+
+    =env= -- Incudine Envelope.
+
+    =dur= -- Positive Number denoting duration.
+
+    =amp= -- Positive Number denoting amplitude in dB.
+
+    =rate= -- Positive Number denoting playback rate, adjusted for the
+    sample rate of buffer.
+
+    =pan= -- Number in the range [0..1] denoting panorama between out1
+    and out2.
+
+    =out1= -- Non Negative Integer denoting first output channel.
+
+    =out2= -- Non Negative Integer denoting second output channel.
+
+
+*** See also
+    - [[play-buffer-loop*][play-buffer-loop*]]
+** play-buffer-loop*
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-loop* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (loopstart 0) (loopend 0) (start 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
+   Play /buffer/ with /env/ for /dur/ seconds and /amp/ in dB at /rate/,
+   with /pan/ from /start/ seconds into the sample. Loop the playback
+   between /loopstart/ and /loopend/. /loopend/ of 0 denotes end of
+   buffer. Output will be panned between /out1/ and /out2/. All other
+   keywords of incudine dsps also apply. Works with any block size.
+*** Arguments
+    =buffer= -- Incudine Buffer.
+
+    =env= -- Incudine Envelope.
+
+    =dur= -- Positive Number denoting duration.
+
+    =amp= -- Positive Number denoting amplitude in dB.
+
+    =rate= -- Positive Number denoting playback rate, adjusted for the
+    sample rate of buffer.
+
+    =pan= -- Number in the range [0..1] denoting panorama between out1
+    and out2.
+
+    =loopstart= -- Positive Number denoting start of loop.
+
+    =loopstart= -- Positive Number denoting end of loop.
+
+    =out1= -- Non Negative Integer denoting first output channel.
+
+    =out2= -- Non Negative Integer denoting second output channel.
+
+
+*** See also
+    - [[play-buffer*][play-buffer*]]
+** play-buffer-stretch*
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-stretch* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch
    Function
    #+BEGIN_SRC lisp
      (play-buffer-stretch &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
-   #+END_SRC
-** play-buffer-stretch*
-   Function
-   #+BEGIN_SRC lisp
-     (play-buffer-stretch* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch-env-out
    Function
@@ -3125,12 +3191,8 @@
    #+BEGIN_SRC lisp
      (play-lsample lsample pitch db dur &key (pan 0.5) (startpos 0))
    #+END_SRC
-   play lsample with given pitch, amp and duration with loop.
-** play-lsample*
-   Function
-   #+BEGIN_SRC lisp
-     (play-lsample* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (loopstart 0) (loopend 0) (start 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
-   #+END_SRC
+   play lsample with given pitch, amp and duration using its play-fn slot
+   or play-buffer-loop* if not set.
 ** play-sample*
    Function
    #+BEGIN_SRC lisp
@@ -3211,6 +3273,8 @@
 *** See also
     - [[play-sfz][play-sfz]]
     - [[play-sfz-one-shot][play-sfz-one-shot]]
+*** Note
+    The setting of [[#standard-pitch][*​​standard-pitch​​*]] is taken into account!
 ** play-sfz-one-shot
    Function
    #+BEGIN_SRC lisp
@@ -4034,12 +4098,22 @@
     - [[sfz][sfz]]
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
-** sfz-preset-buffer
+** sfz-preset-buffers
    Function
    #+BEGIN_SRC lisp
-     (sfz-preset-buffer preset pitch)
+     (sfz-preset-buffers preset pitch)
    #+END_SRC
-   return the buffer(s) of preset for pitch in a list.
+   Return all buffers of sfz /preset/ for /pitch/ in a list.
+*** Arguments
+    =preset= -- Symbol or Keynum denoting id of a registered preset.
+
+    =pitch= -- Integer in the range [0..127] denoting keynum of sfz
+    definition.
+
+
+*** See also
+    - [[sfz-preset-lsamples][sfz-preset-lsamples]]
+    - [[get-sfz-preset][get-sfz-preset]]
 ** sfz-preset-file
    Function
    #+BEGIN_SRC lisp
@@ -4092,6 +4166,21 @@
     - [[sfz][sfz]]
     - [[sfz-get-range][sfz-get-range]]
     - [[sfz-preset-file][sfz-preset-file]]
+** sfz-preset-lsamples
+   Function
+   #+BEGIN_SRC lisp
+     (sfz-preset-lsamples preset pitch)
+   #+END_SRC
+   Return all lsamples of sfz /preset/ for /pitch/ in a list.
+*** Arguments
+    =preset= -- Symbol or Keynum denoting id of a registered preset.
+
+    =pitch= -- Non Negative Number in the range [0..127].
+
+
+*** See also
+    - [[get-sfz-preset][get-sfz-preset]]
+    - [[sfz-preset-buffers][sfz-preset-buffers]]
 ** *​sfz-preset-path​*
    :PROPERTIES:
    :CUSTOM_ID: sfz-preset-path

@@ -23,6 +23,8 @@
 (defpackage :clamps
   (:export cl-user:clamps
            incudine-bufs:find-buffer
+           cl-sfz:sfz-preset-lsamples
+           cl-sfz:sfz-preset-buffers
            cl-sfz:get-sfz-preset orm-utils:get-props-list orm-utils:m-exp
            output-stream cl-midictl:midi-output cl-midictl:get-ref
            orm-utils:delete-props cl-midictl:buchla-scale
@@ -75,7 +77,9 @@
            lines->svg orm-utils:m-exp-rev-fn clog-dsp-widgets:list-dsps
            common-lisp:input-stream-p list->svg-points
            orm-utils:str-concat orm-utils:m-exp-zero
-           of-incudine-dsps:buffer-stretch-play of-incudine-dsps:play-lsample*
+           of-incudine-dsps:buffer-stretch-play
+           of-incudine-dsps:play-buffer-loop*
+           of-incudine-dsps:play-buffer*
            *gnuplot-options* orm-utils:ct2fv svg-rect
            cl-midictl:*midi-note-fns* clog-dsp-widgets:bus-name orm-utils:ntom
            cl-midictl:stop-osc-midi-receive clog-dsp-widgets:db-slider->db
@@ -173,8 +177,7 @@
            cl-midictl:remove-midi-controller orm-utils:rotate
            orm-utils:make-adjustable-string of-incudine-dsps:get-keynum
            ;; cm:group
-           cl-midictl:remove-all-channel-midi-cc-fns cl-sfz:sfz-preset-buffer
-           cm::repeat
+           cl-midictl:remove-all-channel-midi-cc-fns cm::repeat
            cm:cd orm-utils:fibonacci orm-utils:file-string
            orm-utils:exp-n orm-utils:defparameter* orm-utils:permute
            cl-midictl:update-state orm-utils:copy-instance orm-utils:get-time
@@ -301,7 +304,7 @@
            of-incudine-dsps:play-buffer-stretch-env-out
            of-incudine-dsps:play-buffer-stretch of-incudine-dsps:line*
            of-incudine-dsps:phasor* of-incudine-dsps:restore-envs
-           of-incudine-dsps:phasor-loop* of-incudine-dsps:play-lsample*
+           of-incudine-dsps:phasor-loop*
            of-incudine-dsps:abs-path of-incudine-dsps:lsample
            of-incudine-dsps:*env1* of-incudine-dsps:envelope*
            of-incudine-dsps:sfz->lsample of-incudine-dsps:osc~
@@ -369,7 +372,7 @@
            cl-sfz:sf-table-get-range cl-sfz:ensure-sfz-preset
            cl-sfz:list-sfz-presets cl-sfz:play-sfz-one-shot
            cl-sfz:sfz-preset-loaded? cl-sfz:get-sfz-preset
-           cl-sfz:sfz-preset-buffer cl-sfz:play-sfz-loop cl-sfz:play-sfz
+           cl-sfz:play-sfz-loop cl-sfz:play-sfz
            cl-sfz:sfz-preset-file cl-sfz:add-sfz-preset cl-sfz:sfz-get-range
            cl-sfz:remove-sfz-preset cl-poolplayer:p1 cl-poolplayer:p-song-afterfn
            cl-poolplayer:*pool-hash* cl-poolplayer:init-poolplayer

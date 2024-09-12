@@ -9,6 +9,7 @@
            #:BUFFER-RECORD
            #:PLAY-BUFFER*
            #:PLAY-BUFFER-STRETCH*
+           #:PLAY-BUFFER-LOOP*
            #:PLAY-BUFFER-STRETCH
            #:PLAY-BUFFER-STRETCH-OUT
            #:PLAY-BUFFER-STRETCH-ENV-OUT
@@ -21,7 +22,6 @@
            #:*ENV1*
            #:MAKE-LSAMPLE
            #:LSAMPLE
-           #:PLAY-LSAMPLE*
            #:PLAY-SAMPLE*
            #:ENVELOPE*
            #:COUNTER

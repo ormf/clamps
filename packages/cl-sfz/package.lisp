@@ -12,7 +12,8 @@
    #:remove-sfz-preset
    #:ensure-sfz-preset
    #:get-sfz-preset
-   #:sfz-preset-buffer
+   #:sfz-preset-buffers
+   #:sfz-preset-lsamples
    #:sfz-preset-file
    #:sfz-get-range
    #:sfz-preset-loaded?

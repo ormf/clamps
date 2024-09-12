@@ -269,11 +269,34 @@ names are returned.
   (if loaded (sort (loop for k being each hash-key of *sfz-tables* collect k) #'string<)
       (sort (loop for k being each hash-key of cl-user::*sfz-preset-lookup* collect k) #'string<)))
 
-(defun sfz-preset-buffer (preset pitch)
-  "return the buffer(s) of preset for pitch in a list."
+(defun sfz-preset-buffers (preset pitch)
+  "Return all buffers of sfz /preset/ for /pitch/ in a list.
+
+@Arguments
+preset - Symbol or Keynum denoting id of a registered preset.
+pitch - Integer in the range [0..127] denoting keynum of sfz definition.
+
+@See-also
+sfz-preset-lsamples
+get-sfz-preset
+"
   (mapcar
    #'of-incudine-dsps:lsample-buffer
    (aref (get-sfz-preset preset) (round pitch))))
+
+(defun sfz-preset-lsamples (preset pitch)
+  "Return all lsamples of sfz /preset/ for /pitch/ in a list.
+
+@Arguments
+preset - Symbol or Keynum denoting id of a registered preset.
+pitch - Non Negative Number in the range [0..127].
+
+@See-also
+get-sfz-preset
+sfz-preset-buffers
+"
+  (aref (get-sfz-preset preset) (round pitch)))
+
 
 (defun sfz-preset-loaded? (preset)
   "Predicate to test if sfz preset is loaded.
@@ -442,6 +465,8 @@ remove-sfz-preset
 sfz
 sfz-get-range
 sfz-preset-file
+sfz-preset-lsamples
+sfz-preset-buffers
 sfz-preset-loaded?
 "
   (or
@@ -490,15 +515,16 @@ The setting of <<*standard-pitch*>> is taken into account!
                (rate (incudine::sample (ct->fv (+ *keynum-offset* (- pitch (of-incudine-dsps:lsample-keynum sample))))))
                (play-fn (of-incudine-dsps:lsample-play-fn sample))
                (amp (of-incudine-dsps:lsample-amp sample)))
+          (incudine.util:msg :warn "~a" play-fn)
           (cond
             ((eql play-fn #'play-sfz-loop)
-             (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan
+             (of-incudine-dsps:play-buffer-loop* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan
                                              (of-incudine-dsps:lsample-loopstart sample)
                                              (of-incudine-dsps:lsample-loopend sample) startpos out1 out2
                                              :head 200)
              )
             (t
-             (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan startpos out1 out2
+             (of-incudine-dsps:play-buffer* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan startpos out1 out2
                                              :head 200) ;;
              )))
         (error "preset ~S not found!" preset))))
@@ -553,13 +579,13 @@ The setting of <<*standard-pitch*>> is taken into account!
         (let* ((sample (random-elem (aref map (round pitch))))
                (out2 (or out2 (mod (1+ out1) 8)))
                (buffer (of-incudine-dsps:lsample-buffer sample))
-               (rate (incudine::sample (+ *keynum-offset* (ct->fv (- pitch (of-incudine-dsps:lsample-keynum sample))))))
+               (rate (incudine::sample (ct->fv (+ *keynum-offset* (- pitch (of-incudine-dsps:lsample-keynum sample))))))
                (amp (of-incudine-dsps:lsample-amp sample))
                (loopstart (of-incudine-dsps:lsample-loopstart sample))
                (loopend (of-incudine-dsps:lsample-loopend sample)))
-          (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan loopstart loopend startpos out1 out2
-                                          :head 200)
-          (error "preset ~S not found!" preset)))))
+          (of-incudine-dsps:play-buffer-loop* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan loopstart loopend startpos out1 out2
+                                          :head 200))
+        (error "preset ~S not found!" preset))))
 
 ;;; (play-sfz-loop 60 0 10 :pan 0 :out1 1)
 
@@ -600,6 +626,5 @@ The setting of <<*standard-pitch*>> is taken into account!
                (rate (incudine::sample (ct->fv (+ *keynum-offset* (- pitch (of-incudine-dsps:lsample-keynum sample))))))
                (amp (of-incudine-dsps:lsample-amp sample)))
 ;;;    (break "rate: ~a" rate)
-          (of-incudine-dsps:play-lsample* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan startpos out1 out2
-                                          :head 200))
-        (error "preset ~S not found!" preset)))) y
+          (of-incudine-dsps:play-buffer* buffer of-incudine-dsps:*env1* dur (+ amp db) rate pan startpos out1 out2 :head 200))
+        (error "preset ~S not found!" preset))))

@@ -38,7 +38,7 @@ A lsample contains the following slots, accessible using the functions
 
 =buffer= -- Buffer of the sample data.
 
-=play-fn= -- Function for playing the lsample, defaults to /#'play-lsample-oneshot/.
+=play-fn= -- Function for playing the lsample, defaults to /#'play-buffer-loop*/.
 
 =keynum= -- Double Float denoting original keynum of the recorded sample.
 
@@ -55,7 +55,7 @@ sfz
 "
   filename
   buffer
-  (play-fn #'play-lsample-oneshot*)
+  (play-fn #'play-buffer-loop*)
   (keynum +sample-zero+ :type sample)
   (loopstart +sample-zero+ :type sample)
   (amp (sample 0) :type sample)
@@ -72,16 +72,11 @@ sfz
   (* (sample *standard-pitch*) (expt 2 (/ (- keynum 69.0d0) 12.0d0))))
 
 (defun play-lsample (lsample pitch db dur &key (pan 0.5) (startpos 0))
-  "play lsample with given pitch, amp and duration with loop."
+  "play lsample with given pitch, amp and duration using its play-fn slot
+or play-buffer-loop* if not set."
   (with-slots (buffer amp keynum loopstart loopend play-fn) lsample
     (let ((rate (if pitch (incudine::sample (ou:ct->fr (- pitch keynum))) 1)))
-      (funcall (or play-fn #'play-lsample-oneshot*) buffer dur (+ amp db) rate pan loopstart loopend startpos))))
-
-(defun play-sample (lsample pitch db dur &key (pan 0.5) (startpos 0))
-  "play lsample once with given pitch, amp and duration."
-  (with-slots (buffer amp keynum) lsample
-    (let ((rate (incudine::sample (ou:ct->fr (- pitch keynum)))))
-      (play-sample* buffer dur (ou:db->amp (+ amp db)) rate pan startpos))))
+      (funcall (or play-fn #'play-buffer-loop*) buffer dur (+ amp db) rate pan loopstart loopend startpos))))
 
 (define-vug phasor-loop (rate start-pos loopstart loopend)
   (with-samples ((pos start-pos)
@@ -147,18 +142,38 @@ sfz
         (setf (frame-ref frm current-frame) (buffer-read buffer p1 :interpolation :cubic))))
     frm))
 
-(dsp! play-lsample* ((buffer buffer) (env incudine.vug:envelope) dur amp rate pan loopstart loopend start (out1 fixnum) (out2 fixnum))
+(dsp! play-buffer-loop* ((buffer buffer) (env incudine.vug:envelope) dur amp rate pan loopstart loopend start (out1 fixnum) (out2 fixnum))
+  "Play /buffer/ with /env/ for /dur/ seconds and /amp/ in dB at /rate/,
+with /pan/ from /start/ seconds into the sample. Loop the playback
+between /loopstart/ and /loopend/. /loopend/ of 0 denotes end of
+buffer. Output will be panned between /out1/ and /out2/. All other
+keywords of incudine dsps also apply. Works with any block size.
+
+@Arguments
+buffer - Incudine Buffer.
+env - Incudine Envelope.
+dur - Positive Number denoting duration.
+amp - Positive Number denoting amplitude in dB.
+rate - Positive Number denoting playback rate, adjusted for the sample rate of buffer.
+pan - Number in the range [0..1] denoting panorama between out1 and out2.
+loopstart - Positive Number denoting start of loop.
+loopstart - Positive Number denoting end of loop.
+out1 - Non Negative Integer denoting first output channel.
+out2 - Non Negative Integer denoting second output channel.
+
+@See-also
+play-buffer*
+"
   (:defaults (incudine:incudine-missing-arg "BUFFER")
              (incudine:incudine-missing-arg "ENV")
              1 0 1 0.5 0 0 0 0 1)
   (with-samples ((startframe (* start (buffer-sample-rate buffer)))
                  (ampl (db->linear amp))
                  (loopend (if (zerop loopend) (incudine::sample (buffer-frames buffer)) (incudine::sample loopend)))
-                 (ende (min dur (/ (buffer-frames buffer) (buffer-sample-rate buffer))))
                  (alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha)))
-    (with ((frm1 (envelope* env 1 ende #'free))
+    (with ((frm1 (envelope* env 1 dur #'free))
            (frm2 (buffer-loop-play* buffer rate startframe loopstart loopend)))
       (maybe-expand frm1)
       (maybe-expand frm2)
@@ -169,21 +184,39 @@ sfz
           (incf (audio-out out2) (* sig right))
           (incf (audio-out out1) (* sig left)))))))
 
-(dsp! play-lsample-oneshot* ((buffer buffer) (env incudine.vug:envelope)
-                             dur amp rate pan loopstart loopend startpos (out1 fixnum) (out2 fixnum))
+(dsp! play-buffer* ((buffer buffer) (env incudine.vug:envelope)
+                             dur amp rate pan startpos (out1 fixnum) (out2 fixnum))
+  "Play /buffer/ with /env/ for /dur/ seconds and /amp/ in dB at /rate/,
+with /pan/ from /start/ seconds into the sample. Output will be panned
+between /out1/ and /out2/. All other keywords of incudine dsps also
+apply. Works with any block size.
+
+@Arguments
+buffer - Incudine Buffer.
+env - Incudine Envelope.
+dur - Positive Number denoting duration.
+amp - Positive Number denoting amplitude in dB.
+rate - Positive Number denoting playback rate, adjusted for the sample rate of buffer.
+pan - Number in the range [0..1] denoting panorama between out1 and out2.
+out1 - Non Negative Integer denoting first output channel.
+out2 - Non Negative Integer denoting second output channel.
+
+@See-also
+play-buffer-loop*
+"
   (:defaults (incudine:incudine-missing-arg "BUFFER")
              (incudine:incudine-missing-arg "ENV")
-             1 0 1 0.5 0 0 0 0 1)
-  (with-samples ((rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
+             1 0 1 0.5 0 0 1)
+  (with-samples (;;; (rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
                  (start (* startpos (buffer-sample-rate buffer)))
                  (ampl (db->linear amp))
-                 (loopend (if (zerop loopend) (incudine::sample (buffer-frames buffer)) (incudine::sample loopend)))
+                 
                  (ende (min dur (/ (buffer-frames buffer) (buffer-sample-rate buffer))))
                  (alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha)))
     (with ((frm1 (envelope* env 1 ende #'free))
-           (frm2 (buffer-loop-play* buffer rate start loopstart loopend)))
+           (frm2 (buffer-play* buffer rate start)))
         (maybe-expand frm1)
         (maybe-expand frm2)
         (foreach-frame
@@ -195,7 +228,7 @@ sfz
 
 (define-ugen buffer-play* frame ((buffer buffer) rate startframe endframe)
   (with ((frm (make-frame (block-size)))
-         (dur (/ (- endframe startframe) (* rate *sample-rate*)))
+         (dur (/ (- endframe startframe) (* rate (/ (buffer-sample-rate buffer) *sample-rate*))))
          (ph1 (line* startframe endframe dur #'free)))
     (maybe-expand ph1)
     (foreach-frame
