@@ -9,7 +9,7 @@
 (shadowing-import '(rescale-envelope
                     init stop group tempo
                     control-value timestamp
-                    responder
+                    responder bpm
 ;;; play-sample
                     )
                   'incudine)

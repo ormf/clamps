@@ -540,7 +540,8 @@
            clog-midi-controller:nanoktl2-preset-gui
            clog-midi-controller:midicontroller clog-midi-controller:gui-r-buttons
            clog-midi-controller:gui-track-right clog-midi-controller:gui-fader
-           clog-midi-controller:gui-parent clog-midi-controller:ctl-panel-vis)
+           clog-midi-controller:gui-parent clog-midi-controller:ctl-panel-vis
+           cm:tempo->svg-timescale)
   (:shadowing-import-from #:incudine
                           #:rescale-envelope #:init #:stop
                           #:group #:*tempo* #:control-value
@@ -568,6 +569,7 @@
                           #:*midi-in1* #:*midi-out1*
                           #:chan #:id)
   (:shadowing-import-from #:cm #:args #:cycle
+                          #:tempo->svg-timescale
                           #:with #:initially #:finally #:repeat #:for
                           #:do #:each #:output #:sprout #:while #:until #:when #:unless #:if
                           #:and #:= #:then #:from #:to #:downto #:below #:in #:on #:by #:over #:of #:set #:wait

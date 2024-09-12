@@ -145,14 +145,14 @@
    The Clamps Dictionary has been inspired by the
    [[../cm-dict/index.html][CM Dictionary]], which was an original
    part of Common Music 2. Rather than interfering with the original,
-   the additions of the Clamps package have been separated into this
-   [[./index.html][Clamps Dictionary]].
+   the additions of the Clamps package have been separated into their
+   own pages here.
 
    Both dictionaries are accessed by the same Emacs keyboard shortcut
    /<C-c C-d c>/, issued from any lisp buffer with the cursor at the
    end of any Dictionary symbol after starting Clamps (see
-   [[overview:Online Help System][Online Help System]]; it is
-   integrated into the Clamps system when using the standard
+   [[overview:Online Help System][Online Help System]]; the mechanism
+   is integrated into the Clamps system when using the standard
    [[overview:Installation][Installation]]).
 
    The Notation of the Clamps Dictionary is simpler than the Notation
@@ -442,7 +442,7 @@ set-tempo
     svg-import-export:header svg-import-export:height cl-midictl:hide-fader
     svg-import-export:href cl-midictl:init-nk2 cl-poolplayer:init-poolplayer
     cuda-usocket-osc:input-stream svg-import-export:insensitive orm-utils:insert
-    orm-utils:integrate svg-import-export:inverse svg-import-export:label
+    svg-import-export:inverse svg-import-export:label
     svg-import-export:last-id orm-utils:last-n cl-midictl:last-note-on
     cl-poolplayer:load-poolplayer-presets cl-poolplayer:load-poolplayer-sounds
     cl-midictl:load-presets of-incudine-dsps:lsample-amp

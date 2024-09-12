@@ -107,7 +107,7 @@ function svg(elem){
         svg.shiftXVal = parseFloat(translate);
 //        console.log('svg.width: ' + svg.width);
         svg.svgContent.style.transform =
-            'translate(' + (svg.baseShift + -1 * svgEmWidth * 0.9969y
+            'translate(' + (svg.baseShift + -1 * svgEmWidth * 0.9969
                             * (svg.shiftXVal/svg.width)) + 'em)';
     }
 

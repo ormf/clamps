@@ -72,14 +72,14 @@
    The Clamps Dictionary has been inspired by the
    [[../cm-dict/index.html][CM Dictionary]], which was an original
    part of Common Music 2. Rather than interfering with the original,
-   the additions of the Clamps package have been separated into this
-   [[./index.html][Clamps Dictionary]].
+   the additions of the Clamps package have been separated into their
+   own pages here.
 
    Both dictionaries are accessed by the same Emacs keyboard shortcut
    /<C-c C-d c>/, issued from any lisp buffer with the cursor at the
    end of any Dictionary symbol after starting Clamps (see
-   [[overview:Online Help System][Online Help System]]; it is
-   integrated into the Clamps system when using the standard
+   [[overview:Online Help System][Online Help System]]; the mechanism
+   is integrated into the Clamps system when using the standard
    [[overview:Installation][Installation]]).
 
    The Notation of the Clamps Dictionary is simpler than the Notation
@@ -962,7 +962,8 @@
    #+BEGIN_SRC lisp
      (differentiate list &key (modifier #'-) (start (first list)))
    #+END_SRC
-   Return differences between subsequent elements of list.
+   Return differences or the results of applying /modifier/ to subsequent
+   elements of /list/.
 *** Arguments
     =list= -- List to integrate
 
@@ -976,10 +977,14 @@
     #+BEGIN_SRC lisp
       (differentiate '(0 2 3 7 12)) ; => (0 2 1 4 5)
       
+      (differentiate '(0 2 3 7 12) :start 3) ; => (3 2 1 4 5)
+      
       (differentiate '(1 2 6 12 48) :modifier #'/) ; => (1 2 3 2 4)
       
       (differentiate (integrate '(17 2 4))) ; => (17 2 4)
     #+END_SRC
+*** See also
+    - [[integrate][integrate]]
 ** do-proplist
    Macro
    #+BEGIN_SRC lisp
@@ -1786,6 +1791,33 @@
    #+BEGIN_SRC lisp
      (input-stream-p object)
    #+END_SRC
+** integrate
+   Function
+   #+BEGIN_SRC lisp
+     (integrate list &key (modifier #'+) (start (first list)))
+   #+END_SRC
+   Return a running sum (or any other /modifier/ function) of /list/.
+*** Arguments
+    =list= -- List to integrate
+
+    =:modifier= -- Function to apply to all elements accumulationg the
+    results.
+
+    =:start= -- Number denoting the start value.
+
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (integrate '(0 2 1 4 5)) ; => (0 2 3 7 12)
+      
+      (integrate '(0 2 1 4 5) :start 10) ; => (10 12 13 17 22)
+      
+      (integrate '(1 2 3 2 4) :modifier #'*) ; => (1 2 6 12 48)
+      
+      (integrate '(1 2 3 2 4) :modifier #'*) ; => (1 2 6 12 48)
+    #+END_SRC
+*** See also
+    - [[differentiate][differentiate]]
 * K
 ** keynum->hz
    Function

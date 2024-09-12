@@ -135,6 +135,7 @@
    ("index-list" "clamps-dict/index-list.html")
    ("input-stream" "clamps-dict/input-stream.html")
    ("input-stream-p" "clamps-dict/input-stream-p.html")
+   ("integrate" "clamps-dict/integrate.html")
    ("keynum->hz" "clamps-dict/k.html")
    ("#keynum-offset" "clamps-dict/​keynum-offset​.html")
    ("let-default" "clamps-dict/l.html")

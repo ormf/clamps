@@ -399,12 +399,21 @@ count - positive Integer denoting the ength of partitions.
 
 @Arguments
 list - List to integrate
-modifier - Function to apply to all elements accumulationg the results.
+:modifier - Function to apply to all elements accumulationg the results.
+:start - Number denoting the start value.
 
 @Examples
 (integrate '(0 2 1 4 5)) ; => (0 2 3 7 12)
 
+(integrate '(0 2 1 4 5) :start 10) ; => (10 12 13 17 22)
+
 (integrate '(1 2 3 2 4) :modifier #'*) ; => (1 2 6 12 48)
+
+(integrate '(1 2 3 2 4) :modifier #'*) ; => (1 2 6 12 48)
+
+
+@See-also
+differentiate
 "
   (loop
      for i in list
@@ -420,7 +429,8 @@ modifier - Function to apply to all elements accumulationg the results.
 ;;            collect (- j i))))
 
 (defun differentiate (list &key (modifier #'-) (start (first list)))
-  "Return differences between subsequent elements of list.
+  "Return differences or the results of applying /modifier/ to subsequent
+elements of /list/.
 
 @Arguments
 list - List to integrate
@@ -430,9 +440,14 @@ list - List to integrate
 @Examples
 (differentiate '(0 2 3 7 12)) ; => (0 2 1 4 5)
 
+(differentiate '(0 2 3 7 12) :start 3) ; => (3 2 1 4 5)
+
 (differentiate '(1 2 6 12 48) :modifier #'/) ; => (1 2 3 2 4)
 
 (differentiate (integrate '(17 2 4))) ; => (17 2 4)
+
+@See-also
+integrate
 "
   (cons start
 	(mapcar (lambda (x y) (funcall modifier x y)) (cdr list) list)))
