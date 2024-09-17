@@ -114,7 +114,7 @@ an external package, a leading <package-name>: has to be provided."
       (let* ((buffer (if (consp buf) (first buf) buf))
              (new-lsample (of-incudine-dsps::make-lsample
                            :buffer buffer
-                           :filename lsample
+                           :name (file-namestring (pathname lsample))
                            :keynum (float lsample-keynum 1.0d0)
                            :amp lsample-amp
                            :loopstart loopstart

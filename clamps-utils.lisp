@@ -199,7 +199,22 @@ freq - Frequency of A4 in Hz.
 "
   (setf *standard-pitch* (float freq 1.0))
   (setf oid::*standard-pitch* (float freq 1.0))
-  (setf *keynum-offset* (fr->ct (/ *standard-pitch* 440))))
+  (setf *keynum-offset* (fr->ct (/ *standard-pitch* 440)))
+  freq)
+
+(defun standard-pitch ()
+  "Return the tuning reference of A4 in Hz. Setfable.
+
+@Examples
+(standard-pitch) ; => 440
+
+(setf (standard-pitch) 415) ; => 415
+
+(standard-pitch) ; => 415
+"
+  *standard-pitch*)
+
+(defsetf standard-pitch set-standard-pitch)
 
 #|
 

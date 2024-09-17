@@ -20,8 +20,6 @@
            #:*SINE1024*
            #:MAKE-OASR
            #:*ENV1*
-           #:MAKE-LSAMPLE
-           #:LSAMPLE
            #:PLAY-SAMPLE*
            #:ENVELOPE*
            #:COUNTER
@@ -30,17 +28,21 @@
            #:OSC~
            #:PHASOR-LOOP*
            #:BUFFER-LOOP-PLAY*
-           #:LSAMPLE-FILENAME
+           #:LSAMPLE
+           #:MAKE-LSAMPLE
+           #:LSAMPLE-NAME
            #:LSAMPLE-BUFFER
-           #:LSAMPLE-PLAY-FN
+           #:LSAMPLE-ONESHOT
            #:LSAMPLE-KEYNUM
            #:LSAMPLE-LOOPSTART
            #:LSAMPLE-AMP
            #:LSAMPLE-LOOPEND
+           #:LSAMPLE-PATHNAME
            #:PLAY-LSAMPLE
            #:PLAY-SAMPLE
            #:RESTORE-ENVS
            #:KEYNUM->HZ
+           #:*KEYNUM-OFFSET*
            ;; #:METERS
            ;; #:INPUT-BUS
            ;; #:NODE-FREE-UNPROTECTED

@@ -61,15 +61,15 @@ svg-file."
                     :opacity opacity
                     :stroke-color color 
                     ;; :fill-color color
-                    :attributes (format nil ":type sampleevt :lsample ~A :transposable ~a :start ~a :lsample-amp ~a :lsample-keynum ~a :loopstart ~a :loopend ~a :play-fn ~a :out ~a"
-                                        (of-incudine-dsps:lsample-filename lsample)
+                    :attributes (format nil ":type sampleevt :lsample ~A :transposable ~a :start ~a :lsample-amp ~a :lsample-keynum ~a :loopstart ~a :loopend ~a :oneshot ~a :out ~a"
+                                        (of-incudine-dsps:lsample-pathname lsample)
                                         transposable
                                         start
                                         (of-incudine-dsps:lsample-amp lsample)
                                         (of-incudine-dsps:lsample-keynum lsample)
                                         (of-incudine-dsps:lsample-loopstart lsample)
                                         (of-incudine-dsps:lsample-loopend lsample)
-                                        (cm::function-name (of-incudine-dsps:lsample-play-fn lsample))
+                                        (of-incudine-dsps:lsample-oneshot lsample)
                                         out)
                     :id (new-id fil 'line-ids)))))
       (svg-file-insert-line line (if (numberp id) id 2) fil))))
@@ -90,33 +90,32 @@ svg-file."
 
 (defmethod write-event ((obj of-incudine-dsps:lsample) (to incudine-stream) scoretime)
   "play an lsample."
-  (let* ((buffer (of-incudine-dsps:lsample-buffer obj))
-         (time (+ (rts-now) (if scoretime (* *rt-scale* scoretime) 0)))
-         (amp (of-incudine-dsps:lsample-amp obj))
+  (let* ((time (+ (rts-now) (if scoretime (* *rt-scale* scoretime) 0)))
+         (buffer (oid:lsample-buffer obj))
          (dur (/ (incudine:buffer-size buffer) (incudine:buffer-sample-rate buffer))))
-    (at time #'of-incudine-dsps::play-lsample-oneshot* buffer dur amp)))
+    (at time #'oid:play-lsample obj (oid:lsample-keynum obj) 0 dur)))
 
 (svg-ie:add-svg-attr-props-to-quote :lsample)
 ;;;(svg-ie:add-svg-attr-props-to-quote :play-fn)
 
 (defun svg->sampleevt (&rest args)
   "recreate a sampleevt from the :attributes property of the svg element."
-  (if *debug* (format t "~&svg->poolevent: ~a~%" args))
 ;;;  (break "svg->poolevt: args: ~S" args)
-  (ou:with-props (lsample lsample-keynum lsample-amp play-fn keynum
-                       amplitude duration start loopstart loopend transposable)
+  (ou:with-props (lsample lsample-keynum lsample-amp oneshot keynum
+                          amplitude duration start loopstart loopend transposable
+                          pan out1 out2)
       args
     (declare (ignorable start duration keynum transposable))
     (let* ((buf (incudine-bufs:find-buffer lsample))
            (buffer (if (consp buf) (first buf) buf))
            (new-lsample (of-incudine-dsps::make-lsample
                          :buffer buffer
-                         :filename lsample
+                         :name (file-namestring (pathname lsample))
                          :keynum (float lsample-keynum 1.0d0)
                          :amp lsample-amp
                          :loopstart loopstart
                          :loopend loopend
-                         :play-fn (svg-symbol->fn play-fn))))
+                         :oneshot oneshot)))
       (apply #'make-instance 'sampleevt
              (list* :lsample new-lsample
                     :amp (opacity->db amplitude)

@@ -192,7 +192,7 @@
 ** add-sfz-preset
    Function
    #+BEGIN_SRC lisp
-     (add-sfz-preset preset file)
+     (add-sfz-preset preset file &key force)
    #+END_SRC
    Register the association between a sfz preset name /key/ and the
    /filename/ of its /.sfz/ file. The filename can be absolute or
@@ -296,6 +296,12 @@
 
 *** See also
     - [[clamps-base-url][clamps-base-url]]
+** ats->svg
+   Function
+   #+BEGIN_SRC lisp
+     (ats->svg ats-sound &key (brightness 20) x-scale (width 960) (height 540) fname)
+   #+END_SRC
+   Generate a SVG file of the <ats-sound> and save it at "/tmp/www/ats.svg"
 ** audio-bus
    Generic Function
    #+BEGIN_SRC lisp
@@ -348,6 +354,9 @@
    #+END_SRC
    get index of buffer from registry.
 ** buffer-loop-play*
+   :PROPERTIES:
+   :CUSTOM_ID: buffer-loop-play
+   :END:
    Function
    #+BEGIN_SRC lisp
      (buffer-loop-play* buffer rate start-pos loopstart loopend &optional ugen-node)
@@ -886,6 +895,9 @@
      (define-watch refvar attr new)
    #+END_SRC
 ** defparameter*
+   :PROPERTIES:
+   :CUSTOM_ID: defparameter
+   :END:
    Macro
    #+BEGIN_SRC lisp
      (defparameter* &rest pairs)
@@ -910,8 +922,11 @@
         (defparameter *d* "parameter d"))
     #+END_SRC
 *** See also
-    - [[defvar*][defvar*]]
+    - [[#defvar][defvar​*]]
 ** defvar*
+   :PROPERTIES:
+   :CUSTOM_ID: defvar
+   :END:
    Macro
    #+BEGIN_SRC lisp
      (defvar* &rest pairs)
@@ -936,7 +951,7 @@
         (defvar *d* "variable d"))
     #+END_SRC
 *** See also
-    - [[defparameter*][defparameter*]]
+    - [[#defparameter][defparameter​*]]
 ** delete-props
    Function
    #+BEGIN_SRC lisp
@@ -1169,11 +1184,11 @@
 ** ensure-sfz-preset
    Function
    #+BEGIN_SRC lisp
-     (ensure-sfz-preset preset &key force (play-fn #'play-sfz-loop))
+     (ensure-sfz-preset preset &key force oneshot)
    #+END_SRC
    Load the sfz definition of /preset/ and all its samples into the
    system if it hasn't been loaded previously. If force is /t/, force
-   reload. Optionally set a play function.
+   reload. Optionally disable loop playback with /oneshot/.
    
    The association between the preset name and its sfz file has to be
    established before using [[add-sfz-preset][add-sfz-preset]], otherwise a warning is
@@ -1185,10 +1200,8 @@
     =:force= -- A boolean indicating to force a reload even if the
     preset has been loaded before.
 
-    =:play-fn= -- The play function to be used. Possible options are:
+    =:oneshot= -- Boolean denoting whether not to loop the playback.
 
-    - [[play-sfz-loop][#'play-sfz-loop]]
-    - [[play-sfz-one-shot][#'play-sfz-one-shot]]
 
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
@@ -1219,6 +1232,9 @@
       #+CAPTION: *​env1​* envelope
       [[./img/env1-plot.svg]]
 ** envelope*
+   :PROPERTIES:
+   :CUSTOM_ID: envelope
+   :END:
    Function
    #+BEGIN_SRC lisp
      (envelope* env gate time-scale done-action &optional ugen-node)
@@ -1579,11 +1595,11 @@
 ** get-sfz-preset
    Function
    #+BEGIN_SRC lisp
-     (get-sfz-preset preset &key force (play-fn #'play-sfz-loop))
+     (get-sfz-preset preset &key force oneshot)
    #+END_SRC
    Load the sfz definition of /preset/ and all its samples into the
    system if it hasn't been loaded previously. If force is /t/, force
-   reload. Optionally set a play function.
+   reload. Optionally disable loop playback with /oneshot/.
    
    The association between the preset name and its sfz file has to be
    established before using [[add-sfz-preset][add-sfz-preset]], otherwise a warning is
@@ -1595,10 +1611,8 @@
     =:force= -- A boolean indicating to force a reload even if the
     preset has been loaded before.
 
-    =:play-fn= -- The play function to be used. Possible options are:
+    =:oneshot= -- Boolean denoting whether not to loop the playback.
 
-    - [[play-sfz-loop][#'play-sfz-loop]]
-    - [[play-sfz-one-shot][#'play-sfz-one-shot]]
 
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
@@ -1829,16 +1843,6 @@
      (keynum->hz keynum)
    #+END_SRC
    Convert VALUE dB to linear value.
-** *​keynum-offset​*
-   :PROPERTIES:
-   :CUSTOM_ID: keynum-offset
-   :END:
-   Variable
-
-   Keynum offset related to the ratio of *​standard-pitch​* in relation to
-   440 Hz. Gets readjusted by set-standard-pitch.
-*** See also
-    - [[set-standard-pitch][set-standard-pitch]]
 * L
 ** let-default
    Macro
@@ -1890,6 +1894,9 @@
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
 ** line*
+   :PROPERTIES:
+   :CUSTOM_ID: line
+   :END:
    Function
    #+BEGIN_SRC lisp
      (line* start end duration done-action &optional ugen-node)
@@ -1937,7 +1944,7 @@
 ** load-sfz-preset
    Function
    #+BEGIN_SRC lisp
-     (load-sfz-preset file name &key force (play-fn #'play-sfz-loop))
+     (load-sfz-preset file name &key force oneshot)
    #+END_SRC
    Load a sfz file into a preset with the id name. In case this preset
    already exists, the old one will only be overwritten if force is
@@ -1952,11 +1959,8 @@
 
     =:force= -- Force loading of the preset even if it already exists.
 
-    =:play-fn= -- The play-fn to use when playing a sound. Possible
-    choices are:
+    =:oneshot= -- Boolean denoting whether not to loop the playback.
 
-    - [[play-sfz-loop][#'play-sfz-loop]]
-    - [[play-sfz-one-shot][#'play-sfz-one-shot]]
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1983,24 +1987,34 @@
     A lsample contains the following slots, accessible using the functions
     /lsample-<slot-name>/:
     
-    =filename= -- Filename of the sample source.
+    =name= -- Filename of the sample source.
     
     =buffer= -- Buffer of the sample data.
     
-    =play-fn= -- Function for playing the lsample, defaults to /#'play-buffer-loop*/.
+    =oneshot= -- Boolean indicating whether not to loop the sample on playback.
     
     =keynum= -- Double Float denoting original keynum of the recorded sample.
     
-    =loopstart= -- Double Float denoting the loop start for loop playback, dafaulting to /+​sample-zero​+/.
+    =loopstart= -- Double Float denoting the loop start for loop playback, defaulting to /+​sample-zero​+/.
     
-    =loopend= -- Double Float denoting the loop start for loop playback, dafaulting to /+​sample-zero​+/.
+    =loopend= -- Double Float denoting the loop start for loop playback, defaulting to /+​sample-zero​+/.
     
-    =amp= -- Amplitude of recorded sample in dB, defaulting to /+​sample-Zero​+/.
-    
-    =id= -- Buffer ID of sample-buffer, defaulting to /nil/.
+    =amp= -- Amplitude of recorded sample in dB, defaulting to /+​sample-zero​+/.
     
 *** See also
     - [[sfz][sfz]]
+** lsample-pathname
+   Function
+   #+BEGIN_SRC lisp
+     (lsample-pathname lsample)
+   #+END_SRC
+   Return the full pathname of /lsample/.
+*** Arguments
+    =lsample= -- Instance of type lsample.
+
+
+*** See also
+    - [[lsample][lsample]]
 * M
 ** m-controller
    Generic Function
@@ -2211,7 +2225,7 @@
 ** make-lsample
    Function
    #+BEGIN_SRC lisp
-     (make-lsample &key ((:filename #:filename) nil) ((:buffer #:buffer) nil) ((:play-fn #:play-fn) #'play-buffer-loop*) ((:keynum #:keynum) +sample-zero+) ((:loopstart #:loopstart) +sample-zero+) ((:amp #:amp) (sample 0)) ((:loopend #:loopend) +sample-zero+) ((:id #:id) nil))
+     (make-lsample &key ((:name #:name) nil) ((:buffer #:buffer) nil) ((:oneshot #:oneshot) nil) ((:keynum #:keynum) +sample-zero+) ((:loopstart #:loopstart) +sample-zero+) ((:amp #:amp) (sample 0)) ((:loopend #:loopend) +sample-zero+))
    #+END_SRC
 ** make-oasr
    Function
@@ -3080,22 +3094,31 @@
     an error occurs, if it is longer, not all elements of /list/ are
     returned.
 ** phasor*
+   :PROPERTIES:
+   :CUSTOM_ID: phasor
+   :END:
    Function
    #+BEGIN_SRC lisp
      (phasor* freq #:init &optional ugen-node)
    #+END_SRC
 ** phasor-loop*
+   :PROPERTIES:
+   :CUSTOM_ID: phasor-loop
+   :END:
    Function
    #+BEGIN_SRC lisp
      (phasor-loop* rate start-pos loopstart loopend &optional ugen-node)
    #+END_SRC
 ** play-buffer*
+   :PROPERTIES:
+   :CUSTOM_ID: play-buffer
+   :END:
    Function
    #+BEGIN_SRC lisp
      (play-buffer* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
    Play /buffer/ with /env/ for /dur/ seconds and /amp/ in dB at /rate/,
-   with /pan/ from /start/ seconds into the sample. Output will be panned
+   with /pan/ from /startpos/ seconds into the sample. Output will be panned
    between /out1/ and /out2/. All other keywords of incudine dsps also
    apply. Works with any block size.
 *** Arguments
@@ -3113,14 +3136,22 @@
     =pan= -- Number in the range [0..1] denoting panorama between out1
     and out2.
 
+    =startpos= -- Positive Number denoting in seconds into the buffer.
+
     =out1= -- Non Negative Integer denoting first output channel.
 
     =out2= -- Non Negative Integer denoting second output channel.
 
 
 *** See also
-    - [[play-buffer-loop*][play-buffer-loop*]]
+    - [[lsample][lsample]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
+    - [[play-lsample][play-lsample]]
 ** play-buffer-loop*
+   :PROPERTIES:
+   :CUSTOM_ID: play-buffer-loop
+   :END:
    Function
    #+BEGIN_SRC lisp
      (play-buffer-loop* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (loopstart 0) (loopend 0) (start 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
@@ -3155,8 +3186,13 @@
 
 
 *** See also
-    - [[play-buffer*][play-buffer*]]
+    - [[lsample][lsample]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[play-lsample][play-lsample]]
 ** play-buffer-stretch*
+   :PROPERTIES:
+   :CUSTOM_ID: play-buffer-stretch
+   :END:
    Function
    #+BEGIN_SRC lisp
      (play-buffer-stretch* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
@@ -3177,6 +3213,9 @@
      (play-buffer-stretch-env-pan-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
 ** play-buffer-stretch-env-pan-out*
+   :PROPERTIES:
+   :CUSTOM_ID: play-buffer-stretch-env-pan-out
+   :END:
    Function
    #+BEGIN_SRC lisp
      (play-buffer-stretch-env-pan-out* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
@@ -3189,33 +3228,44 @@
 ** play-lsample
    Function
    #+BEGIN_SRC lisp
-     (play-lsample lsample pitch db dur &key (pan 0.5) (startpos 0))
+     (play-lsample lsample pitch ampdb duration &key (pan 0.5) (startpos 0) (oneshot nil osp) out1 out2)
    #+END_SRC
-   play lsample with given pitch, amp and duration using its play-fn slot
-   or play-buffer-loop* if not set.
-** play-sample*
-   Function
-   #+BEGIN_SRC lisp
-     (play-sample* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (start 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
-   #+END_SRC
-** play-sample
-   Function
-   #+BEGIN_SRC lisp
-     (play-sample lsample pitch db dur &key (pan 0.5) (startpos 0))
-   #+END_SRC
-   play lsample once with given pitch, amp and duration.
+   Play lsample with given /pitch/, /ampdb/ and /duration/, /pan/ and
+   /startpos/ with or without looping.
+*** Arguments
+    =lsample= -- Instance of type lsample
+
+    =pitch= -- Positive Number denoting pitch in Midicents.
+
+    =ampdb= -- Positive number denoting amp in dB, mapping range
+    [-100..0] to linear amp [0..1].
+
+    =duration= -- Positive number denoting duration in seconds.
+
+    =:pan= -- Number denoting equal power panorama in the range [0..1].
+
+    =:startpos= -- Positive number denoting start position into the
+    sample in seconds.
+
+    =:oneshot= -- Boolean indicating whether not to loop the sample on
+    playback.
+
+
+*** See also
+    - [[lsample][lsample]]
 ** play-sfz
    Function
    #+BEGIN_SRC lisp
-     (play-sfz pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
+     (play-sfz pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2 (oneshot nil osp))
    #+END_SRC
    Play a sfz preset with stereo panning to incudine's audio outputs
-   or a bus using the /play-fn/ of the sample to be played.
+   with index /out1/ and /out2/, not looping if /oneshot/ is non-nil or
+   set in the lsample.
 *** Arguments
     =pitch= -- Pitch in Midicent.
 
-    =db= -- Amplitude in dB. /0/ corresponds to a scaling factor
-    of /1/, /-100/ to a scaling factor of /0/.
+    =db= -- Amplitude in dB, the range [-100..0] corresponding to linear
+    values [0..1].
 
     =dur= -- Duration in seconds.
 
@@ -3232,85 +3282,11 @@
     =:out2= -- Zero based index of the second outlet. If not specified, /
     (mod (1+ out1) 8)/ will be used.
 
+    =:oneshot= -- Boolean denoting whether not to loop the playback.
 
-*** See also
-    - [[play-sfz-loop][play-sfz-loop]]
-    - [[play-sfz-one-shot][play-sfz-one-shot]]
+
 *** Note
-    The setting of [[#standard-pitch][*​​standard-pitch​​*]] is taken into account!
-** play-sfz-loop
-   Function
-   #+BEGIN_SRC lisp
-     (play-sfz-loop pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
-   #+END_SRC
-   Play a sfz preset with stereo panning to incudine's audio outputs
-   or a bus. Loop the sound according to the loop settings of the
-   sample in the sfz file or loop the whole sound if not present. This
-   function always uses loop playback regardless of the setting of
-   /play-fn/ in the sample to be played.
-*** Arguments
-    =pitch= -- Pitch in Midicent.
-
-    =db= -- Amplitude in dB. /0/ corresponds to a scaling factor
-    of /1/, /-100/ to a scaling factor of /0/.
-
-    =dur= -- Duration in seconds.
-
-    =:pan= -- Number in the range /[0..1]/ defining equal power panning
-    between /out0/ and /out1/.
-
-    =:preset= -- The name of a registered preset. If the preset hasn't
-    been loaded it will get loaded before playback starts.
-
-    =:startpos= -- The startposition in the sample in seconds.
-
-    =:out1= -- Zero based index of the first outlet.
-
-    =:out2= -- Zero based index of the second outlet. If not specified, /
-    (mod (1+ out1) 8)/ will be used.
-
-
-*** See also
-    - [[play-sfz][play-sfz]]
-    - [[play-sfz-one-shot][play-sfz-one-shot]]
-*** Note
-    The setting of [[#standard-pitch][*​​standard-pitch​​*]] is taken into account!
-** play-sfz-one-shot
-   Function
-   #+BEGIN_SRC lisp
-     (play-sfz-one-shot pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2)
-   #+END_SRC
-   Play a sfz preset with stereo panning to incudine's audio outputs
-   or a bus once (regardless of the setting of /play-fn/ in the sample to
-   be played). Playback stops after /dur/ seconds or at the end of the
-   sample, if /dur/ is longer than the length of the sample.
-*** Arguments
-    =pitch= -- Pitch in Midicent.
-
-    =db= -- Amplitude in dB. /0/ corresponds to a scaling factor
-    of /1/, /-100/ to a scaling factor of /0/.
-
-    =dur= -- Duration in seconds.
-
-    =:pan= -- Number in the range /[0..1]/ defining equal power panning
-    between /out0/ and /out1/.
-
-    =:preset= -- The name of a registered preset. If the preset hasn't
-    been loaded it will get loaded before playback starts.
-
-    =:startpos= -- The startposition in the sample in seconds.
-
-    =:out1= -- Zero based index of the first outlet.
-
-    =:out2= -- Zero based index of the second outlet. If not specified, /
-    (mod (1+ out1) 8)/ will be used.
-
-
-*** See also
-    - [[play-sfz][play-sfz]]
-    - [[play-sfz-loop][play-sfz-loop]]
-*** Note
-    The setting of [[#standard-pitch][*​​standard-pitch​​*]] is taken into account!
+    The setting of [[standard-pitch][standard-pitch]] is taken into account!
 ** plot
    Generic Function
    #+BEGIN_SRC lisp
@@ -3327,6 +3303,57 @@
    #+BEGIN_SRC lisp
      (points->svg list svg-file &key color opacity radius)
    #+END_SRC
+** poolevt
+   Common Music Class
+   #+BEGIN_SRC lisp
+     (new poolevt &key time (lsample nil) (keynum 60) (amp 0) (start 0) (end 0) (stretch 1) (wwidth 123) (attack 0) (release 0.01) (pan 0.5) (adjust-stretch nil) (out1 0) out2)
+   #+END_SRC
+   Create a poolevt Event.
+   
+   poolevt accepts the following slot initializations:
+   
+   =:time= -- The output time in seconds, initially unbound.
+   
+   =:lsample= -- lsample struct to use for playback.
+   
+   =:keynum= -- Keynum in Midicents.
+   
+   =:amp= -- Amplitude in dB, the range [-100..0] corresponding to linear values [0..1].
+   
+   =:dy= -- Number denoting transposition in Midicents at end of playpack in relation to the beginning.
+   
+   =:start= -- Start offset into the sample in seconds.
+   
+   =:end= -- End time of sample sample in seconds. 0 denotes end of sample
+   
+   =:stretch= -- Non zero Number denoting stretch ratio. Negative indicates reverse playback.
+   
+   =:wwidth= -- Positive number denoting window size in ms for granular stretching.
+   
+   =:attack= -- Number in the range [0..1] indicating attack time ratio in relation to full length.
+   
+   =:release= -- Number in the range [0..1] indicating release time ratio in relation to full length.
+   
+   =:pan= -- Number in the range /[0..1]/ defining equal power panning
+   between the two outputs of the dsp on playback.
+   
+   =:adjust-stretch= -- Boolean indicationg whether to adjust the stretch factor in relation to the transposition.
+   
+   =:out1= -- Non negative Integer denoting the left output channel index.
+   
+   =:out2= -- Non negative Integer denoting the right output channel index. Defaults to (1+ out1)
+*** Examples
+    #+BEGIN_SRC lisp
+        (new poolevt)
+        ;; => #i(poolevt lsample nil keynum nil amp 0.0 dy 0.0 start 0 end 0
+        ;; stretch 1.0 wwidth 123 attack 0 release 0.01 pan 0.5 snd-id nil
+        ;; adjust-stretch nil out1 0 out2 1)
+      
+        (output (new poolevt :lsample ...)) ; => ; No value
+        ;; ; No values
+    #+END_SRC
+*** See also
+    - [[[[dict:midi][midi]]][[[dict:midi][midi]]]]
 ** port-available-p
    Function
    #+BEGIN_SRC lisp
@@ -3944,19 +3971,6 @@
    #+BEGIN_SRC lisp
      (set-on-data obj handler)
    #+END_SRC
-** set-standard-pitch
-   Function
-   #+BEGIN_SRC lisp
-     (set-standard-pitch freq)
-   #+END_SRC
-   Set the ∗​standard-pitch​∗ reference of Clamps to freq in Hz.
-*** Arguments
-    =freq= -- Frequency of A4 in Hz.
-
-
-*** See also
-    - [[#standard-pitch][*​​standard-pitch​​*]]
-    - [[#keynum-offset][*​​keynum-offset​​*]]
 ** set-tempo
    Function
    #+BEGIN_SRC lisp
@@ -4006,7 +4020,7 @@
 ** sfz
    Common Music Class
    #+BEGIN_SRC lisp
-     (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
+     (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn #'play-sfz-loop) (pan 0.5) (startpos 0) (chan 100))
    #+END_SRC
    Create a sfz Event.
    
@@ -4016,13 +4030,13 @@
    
    =:keynum= -- Keynum in Midicents.
    
-   =:amplitude= -- Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
+   =:amplitude= -- Amplitude in dB, the range [-100..0] corresponding to linear values [0..1].
    
    =:duration= -- Duration in seconds.
    
    =:preset= -- Keyword or symbol of a registered preset name.
    
-   =:play-fn= -- The play function to be used for sample playback.
+   =:oneshot= -- Boolean denoting not to use loop playback.
    
    =:pan= -- Number in the range /[0..1]/ defining equal power panning
    between the two outputs of the dsp on playback.
@@ -4062,7 +4076,7 @@
 ** sfz->lsample
    Function
    #+BEGIN_SRC lisp
-     (sfz->lsample sfz-entry dir &key (play-fn #'play-sfz-loop))
+     (sfz->lsample sfz-entry dir &key oneshot)
    #+END_SRC
    Convert an entry of a sfz file into a lsample.
 *** Arguments
@@ -4070,11 +4084,8 @@
 
     =dir= -- Pathname or String denoting the directory of the sfz file.
 
-    =:play-fn= -- The play function to play the lsample. Possible
-    options are:
+    =:oneshot= -- Boolean denoting whether not to loop the playback.
 
-    - #'play-sfz-loop
-    - #'play-sfz-one-shot
 
 *** See also
     - [[sfz][sfz]]
@@ -4274,23 +4285,20 @@
       (splice '((0 1) (4 7) (7 2) (0 3) (4 5) (1 7)) :key #'second)
        ; => (((0 1)) ((4 7) (1 7)) ((7 2)) ((0 3)) ((4 5)))
     #+END_SRC
-** *​standard-pitch​*
-   :PROPERTIES:
-   :CUSTOM_ID: standard-pitch
-   :END:
-   Variable
-
-   Tuning reference for /ftom/ and /mtof/ in Hz. Defaults to 440.
-*** Important Note
-    
-    Don't set this value directly! Rather use the [[set-standard-pitch][set-standard-pitch]]
-    function which changes the standard pitch reference for the entire
-    /Clamps/ system.
-    
-*** See also
-    - [[ftom][ftom]]
-    - [[mtof][mtof]]
-    - [[set-standard-pitch][set-standard-pitch]]
+** standard-pitch
+   Function
+   #+BEGIN_SRC lisp
+     (standard-pitch)
+   #+END_SRC
+   Return the tuning reference of A4 in Hz. Setfable.
+*** Examples
+    #+BEGIN_SRC lisp
+      (standard-pitch) ; => 440
+      
+      (setf (standard-pitch) 415) ; => 415
+      
+      (standard-pitch) ; => 415
+    #+END_SRC
 ** start-doc-acceptor
    Function
    #+BEGIN_SRC lisp

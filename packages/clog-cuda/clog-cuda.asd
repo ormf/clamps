@@ -23,7 +23,9 @@
 
 (asdf:defsystem #:clog-cuda
   :description "clog widgets for use with incudine"
-  :depends-on (:yason :clog :of-incudine-dsps :clog-dsp-widgets :cl-refs)
+  :depends-on (:yason
+               :of-incudine-dsps
+               :clog-dsp-widgets)
   :author "Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>"
   :license  "gpl 2.0 or later"
   :version "0.0.1"

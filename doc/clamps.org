@@ -105,23 +105,16 @@
     example, the [[cm-sfz]] part can only be understood, when the concept
     of the [[cl-sfz]] package is known.
 
-    Below is a graph of "dependencies" of the package
-    explanations. The entries at the end of an arrow indicate that
-    they can only be fully understood, when the documentation of the
-    entry at the start of the array is understood. The reader may
-    construct her or his individual reading path from these
-    dependencies:
-
-    [[clamps]] -> [[cl-refs]] -> [[cl-midictl]]
-
-    [[cl-refs]] -> [[clog-dsp-widgets]]
-
-    [[of-incudine-dsps]] -> [[incudine-bufs]] -> [[cl-sfz]] -> [[cm-sfz]]
-
-    [[cm-svg]] -> [[cm-svg.rts]]
-
-    [[General Incudine Setup]] -> [[of-incudine-dsps]]
-        
+    Below is a graph of dependencies of the clamps packages. Altough
+    not strictly required it might be advisable or sometimes even
+    necessary to follow the arrows when reading through the clamps
+    documentation. The reader may construct her or his individual
+    reading path from this graph according to personal preferences and
+    interests.
+    #+attr_html: :width 100%
+    #+CAPTION: Dependencies between clamps packages
+    [[./img/clamps-dependencies.svg]]  
+    
 ** clamps
 *** Symbols
    The clamps package imports most common music and incudine symbols.
@@ -1001,7 +994,7 @@
 
     Closures are such a powerful construct that they have become
     increasingly common in many programming languages and many books
-    have been dedicated to their exploration[fn:0]. But as in real
+    have been dedicated to their exploration[fn:6]. But as in real
     life: With power comes responsibility and it should be mentioned
     that this power can come at the price of an overwhelming
     complexity, so it should be handled with care.
@@ -1013,17 +1006,82 @@
    it is necessary to study how Gui programming in Clamps works in
    general using [[clog-dsp-widgets]].
 * CM Extensions
+** General
+   Common Music's infrastructure uses the [[dict:events][events]] method to output
+   events[fn:-1]. It
+   uses multimethods (also called /multiple dispatch/), dispatching
+   different event classes to different output backends.
+
+   The event classes defined by CM 2.12 for output were mainly MIDI
+   events of all types and OSC events for SuperCollider.
+
+   Clamps extends these event classes by the following event classes:
+   
+   - [[dict:sfz][sfz]] (see [[cm-sfz]])
+   - [[dict:poolevt][poolevt]]
+
+** cm-sfz
+   cm-sfz implements the [[dict:sfz][sfz]] class for Common Music derived from its
+   /event/ class. Like any other event class in CM an instance is
+   created with the [[dict:new][new]] macro.
+   #+BEGIN_SRC lisp
+     (new sfz)
+     ;; => #i(sfz keynum 60 amplitude 1 duration 1
+     ;;           preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100
+   #+END_SRC
+   Playback of a sfz instance can be achieved with the usual methods
+   of Common Music:
+   #+BEGIN_SRC lisp
+     (output (new sfz))
+     ;; => ; No value
+
+     (sprout (new sfz :time 0))
+     ;; => nil
+
+     (events (new sfz :time 0) *rts-out*)
+     ;; => #<incudine-stream "midi-out1">
+   #+END_SRC
+   Apart from realtime output, backends for /LilyPond/ (see [[cm-fomus]])
+   and /SVG/ output (see [[cm-svg]]) are defined:
+   #+BEGIN_SRC lisp
+     (events
+      (loop
+        repeat 10
+        for time from 0 by 0.1
+        collect (new sfz :time time :keynum (between 60.0 83.0)
+                  :duration 0.1))
+      "/tmp/test.svg")
+     ;; => "/tmp/test.svg"
+   #+END_SRC
+   Note that there are no limitations concerning microtonal output for
+   SVG files and for realtime playback. For lilypond output, the
+   keynums are rounded to the closest quartertone, if the
+   /:quartertones/ option of FOMUS is set:
+   #+BEGIN_SRC lisp
+     (events
+           (loop
+             repeat 8
+             for time from 0 by 0.125
+             collect (new sfz :time time :keynum (between 60.0 83.0)
+                       :duration 0.125))
+           "/tmp/test.ly"
+           :quartertones t)
+   #+END_SRC
+** cm-fomus
+   cm-fomus is a [[https://fomus.common-lisp.dev/][FOMUS]] backend for Common Music written by Rick
+   Taube. Clamps mainly supports the LilyPond backend of FOMUS.
+
+
+
+   For an explanation of the implementation details see the
+   [[../fomus/index.html][fomus]] documentation included on ths website.
 ** cm-svg
    TBA
 ** cm-svg.rts
    TBA
-** cm-sfz
-   TBA
 ** cm-poolevt
    TBA
 # ** cm-poolplayer
-** cm-fomus
-   TBA
 ** cm-incudine
    TBA
 # ** cm-all
@@ -1084,7 +1142,7 @@
    /defparameter/ or /defconstant/. During the course of running an
    application, the value bound to a symbol may change frequently as
    a consequence of user interaction or programmatic behaviour in
-   certain situations, like reacting to external events, etc.[fn:6]
+   certain situations, like reacting to external events, etc.[fn:7]
     
    Tracking those changes can be a challenging task, especially if
    the complexity of a program increases and values of different
@@ -1197,7 +1255,7 @@
     definition of the variables and the application logic into
     distinct parts, automating the updating of variables behind the
     scenes. This makes the maintenance of the program much
-    easier[fn:7].
+    easier[fn:8].
 
     For a variable with possible relations to other variables,
     /cl-ref/ uses a special class called /ref-object/. Three main
@@ -1312,7 +1370,7 @@
      argument. This function is called, whenever one or more
      ref-objects referenced in its body using /get-val/ are
      changed. In that way actions can be triggered and associated
-     with the change of ref-objects[fn:8]. Since actions can also
+     with the change of ref-objects[fn:9]. Since actions can also
      involve changing other ref-objects, /watch/ can be used in a
      similar fashion as /make-computed/.
 
@@ -1325,7 +1383,7 @@
      /watch/ returns a function to remove the action defined by the
      supplied function. It is crucial to capture this result in order
      to be able to later remove the established connections between
-     variables and associated actions[fn:9].
+     variables and associated actions[fn:10].
 
      IMPORTANT NOTE: Calling the same watch expression twice will
      establish two independent functions which will always be called
@@ -1388,7 +1446,113 @@
 
      #+END_SRC
 ** cl-sfz
-   TBA
+   cl-sfz implements the basic infrastructure to deal with [[https://en.wikipedia.org/wiki/SFZ_(file_format)][SFZ]]
+   definitions. The SFZ format was developed in the context of
+   software samplers. Like the sf2 format it defines a mapping of
+   pitched samples to the keynums of a software synthesizer. If a
+   sample is mapped to more than one keynum, the desired pitch is
+   achieved by changing the playback speed of the sample.
+
+   The SFZ format uses a plain text file to define keynum regions and
+   their samples in addition to the base keynum, a pitch offset and an
+   amplitude of the recording and other playback information[fn:11].
+
+   #+Caption: Example of an entry for a keynum region in a SFZ file.
+   #+BEGIN_SRC bash
+     <region>
+     sample=samples/p200-piano-d3-l-.wav
+     lokey=35 hikey=38
+     pitch_keycenter=38
+     pan=-100
+     ampeg_hold=2.80079
+     ampeg_decay=44.9941
+     ampeg_sustain=0.001
+     offset=0
+     end=193115
+     loop_start=158947
+     loop_end=193110
+   #+END_SRC
+
+   When loading a sfz file, Clamps parses this information from the
+   file and creates an array of 128 lists containing [[dict:lsample][lsample]] structs
+   as a lookup table for the 128 keynums. A lsample struct holds the
+   /name/ of the sample, its loaded /buffer/, a /oneshot/ flag
+   indicating whether to play back the lsample once or using the loop
+   points, the /keynum/ of the buffer adjusted to the pitch-offset of
+   the sfz entry, the /amplitude/ in dB of the sample and its /start-/
+   and /endpoints/ for looping. Clamps keeps a list of lsample structs
+   for each keynum, as the sfz format allows the mapping of more than
+   one sample to the same keynum. When playing back an sfz entry,
+   Clamps will randomly select the sample to use from this list.
+
+   #+BEGIN_SRC lisp
+     (first (aref (get-sfz-preset :yamaha-grand-piano) 35))
+     ;;  => #S(lsample
+     ;;        :name "p200-piano-d3-r-.wav"
+     ;;        :buffer #<incudine:buffer :FRAMES 193116 :CHANNELS 1 :SR 32000.0>
+     ;;        :oneshot nil
+     ;;        :keynum 38.0d0
+     ;;        :loopstart 158947.0d0
+     ;;        :amp 0.0d0
+     ;;        :loopend 193110.0d0)
+
+   #+END_SRC
+
+   Note that other features of the SFZ format like defining
+   modulations, envelopes, etc. are currently ignored by the clamps
+   importer.
+*** Loading sfz files
+    Clamps maintains an internal registry for sfz files, loading their
+    samples into the system automatically when needed. The registry
+    stores associations between a sfz preset name and the corresponding
+    sfz file. Adding an association is done with the command
+    [[dict:add-sfz-preset][add-sfz-preset]]:
+    #+BEGIN_SRC lisp
+      (add-sfz-preset :flute-nv "000_Flute_nv.sfz")
+    #+END_SRC
+    Loading a registered sfz-file will happen automatically when
+    playing an sfz sound if its sfz file hasn't been loaded already:
+    #+BEGIN_SRC lisp
+      (play-sfz 60 0 3 :preset :fulte-nv) ;; => nil
+      ;; output in the REPL:
+      ;; loading :flute-nv from ~/quicklisp/local-projects/clamps/extra/snd/sfz/Flute-nv/000_Flute-nv.sfz
+    #+END_SRC
+    Loading an sfz file can also be issued directly using
+    [[dict:get-sfz-preset][get-sfz-preset]], [[dict:ensure-sfz-preset][ensure-sfz-preset]] and
+    [[dict:load-sfz-preset][load-sfz-preset]].
+
+    get-sfz-preset and ensure-sfz-preset take the preset name as
+    argument and require that the association between preset name and
+    sfz file has already been made. load-sfz-preset takes the preset
+    name and the sfz file as arguments and will register the preset
+    and load the sfz file. If the preset is already registered it will
+    behave exactly like get-sfz-preset or ensure-sfz-preset.
+
+    sfz files will be searched recursively in all directories in the
+    *​sfz-preset-path​* list.
+
+    If a preset has already been loaded, it will not get reloaded
+    unless the :force flag is set to non nil.
+
+*** Playing sfz events
+
+    The function [[dict:play-sfz][play-sfz]][fn:12] plays a sound from a sfz preset. It takes
+    the a pitch, amplitude in dB and duration in seconds as
+    arguments. The default preset is /:flute-nv/.  In addition it
+    takes the keywords /:preset/, /:oneshot/, /:pan/, /:out1/ and
+    /:out2/.
+    #+BEGIN_SRC lisp
+      (play-sfz 60 0 3) ;; => nil
+
+      ;; play without looping
+      (play-sfz 60 0 30 :preset :yamaha-grand-piano :oneshot t) ;; => nil
+
+
+      ;; 30 seconds, left channel only
+
+      #+END_SRC
+
+       [[dict:play-sfz][play-sfz]] is a wrapper around  [[dict:play-lsample][play-lsample]].    
 # ** cl-poolplayer
 ** plot
    TBA
@@ -1400,9 +1564,6 @@
 
 * Footnotes
 
-[fn:0] For examples see Dan Graham's famous book "On Lisp" or Doug
-Hoyte's "Let over Lambda".
-  
 [fn:1] Starting and stopping realtime processing can be achieved withqn
 the Keyboard shortcuts /<C-c M-.>/ or /<C-c C-.>/
 
@@ -1421,21 +1582,33 @@ debug. Therefore it is extremely important to be aware of the reasons
 for such behaviour and to be alert when defining functions referencing
 variables outside of their scope, expecially in iterations.
 
-[fn:6] With the notable exception of a value bound by /defconstant/,
+[fn:6] DEFINITION NOT FOUND.
+
+[fn:-1] events are instances of objects derived from the /event/ class.
+
+[fn:7] With the notable exception of a value bound by /defconstant/,
 as a constant is an /immutable/ value, which never changes.
 
-[fn:7] The implementation ideas are similar to javascript frameworks
+[fn:8] The implementation ideas are similar to javascript frameworks
 which became increasingly popular in the 2010s like [[https://en.wikipedia.org/wiki/React_(JavaScript_library)][React]] or [[https://en.wikipedia.org/wiki/Vue.js][Vue.js]],
 although they are rooted in much older concepts from the 1970s and
 80s.
 
-[fn:8] In Lisp parlance this is the classic example of a
+[fn:9] In Lisp parlance this is the classic example of a
 /side-effect/.
 
-[fn:9] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
+[fn:10] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
 [[https://en.wikipedia.org/wiki/Max_(software)][Max/MSP]], /watch/ serves a similar purpose as patch cords in these
 systems. Calling the function returned by /watch/ in that context is
 similar to removing a patch cord, although the analogy shouldn't be
 overstressed considering the significant differences between a
 graph-based message-passing paradigm in these systems and the
 structural layout of cl-ref/clamps.
+
+[fn:11] For an example see the file /"000_​Flute​_nv.sfz"/ located in
+the /extra/snd/sfz/Flute-nv// folder of the clamps repository.
+
+[fn:12](play-sfz 60 0 20 :preset :yamaha-grand-piano :pan 0) ;; => nil
+
+[fn:13] For examples see Dan Graham's famous book "On Lisp" or Doug
+Hoyte's "Let over Lambda".

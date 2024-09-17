@@ -31,8 +31,7 @@
    #:ats-sound-window-size #:ats-sound-partials #:ats-sound-frames #:ats-sound-bands
    #:ats-sound-optimized #:ats-sound-ampmax #:ats-sound-frqmax #:ats-sound-frq-av
    #:ats-sound-amp-av #:ats-sound-dur #:ats-sound-time #:ats-sound-frq #:ats-sound-amp
-   #:ats-sound-pha #:ats-sound-energy #:ats-sound-band-energy
-   #:ats->svg)
+   #:ats-sound-pha #:ats-sound-energy #:ats-sound-band-energy)
   (:shadowing-import-from :incudine
    :play :scale-envelope :normalize-envelope)
   (:shadowing-import-from :incudine.util
@@ -40,6 +39,7 @@
   (:shadowing-import-from :cudere-clm
    :*debug*)
   (:export
+   #:ats->svg
    #:ats-player-node-id #:ats-sound #:ats-fmod #:ats-amod #:ats-bw #:ats-x
    #:ats-shift-x #:ats-width #:ats-idx #:ats-data #:ats-crosshairs #:ats-res-balance
    #:ats-mousepos #:ats-scale #:ats-play #:data-watch #:play-watch #:pos-watch

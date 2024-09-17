@@ -3,7 +3,7 @@
 (in-package :cl-user)
 
 (defpackage #:cl-sfz
-  (:use #:cl #:cl-ppcre #:incudine #:incudine-bufs)
+  (:use #:cl #:cl-ppcre #:incudine #:incudine-bufs #:of-incudine-dsps)
 ;;;  (:shadowing-import-from #:incudine :sample-play :lsample-play)
   (:export
    #:add-sfz-preset
@@ -20,8 +20,7 @@
    #:sf-table-get-range
    #:play-sfz
    #:play-sfz-loop
-   #:play-sfz-one-shot
-   #:*keynum-offset*))
+   #:play-sfz-one-shot))
 
 (in-package :of-incudine-dsps)
 

@@ -236,7 +236,7 @@ msg
         ))
 
       (cm:sfz (cm-class
-               (&key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn nil) (pan 0.5) (startpos 0) (chan 100))
+               (&key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn #'play-sfz-loop) (pan 0.5) (startpos 0) (chan 100))
 
                "Create a sfz Event.
 
@@ -246,13 +246,13 @@ sfz accepts the following slot initializations:
 
 =:keynum= -- Keynum in Midicents.
 
-=:amplitude= -- Amplitude in dB. /0/ corresponds to a scaling factor of /1/, /-100/ to a scaling factor of /0/.
+=:amplitude= -- Amplitude in dB, the range [-100..0] corresponding to linear values [0..1].
 
 =:duration= -- Duration in seconds.
 
 =:preset= -- Keyword or symbol of a registered preset name.
 
-=:play-fn= -- The play function to be used for sample playback.
+=:oneshot= -- Boolean denoting not to use loop playback.
 
 =:pan= -- Number in the range /[0..1]/ defining equal power panning
 between the two outputs of the dsp on playback.
@@ -289,6 +289,58 @@ between the two outputs of the dsp on playback.
 @See-also
 dict:midi
 "))
+      (cm:poolevt
+       (cm-class
+        (&key time (lsample nil) (keynum 60) (amp 0) (start 0) (end 0) (stretch 1)
+         (wwidth 123) (attack 0) (release 0.01) (pan 0.5) (adjust-stretch nil) (out1 0) out2)
+
+        "Create a poolevt Event.
+
+poolevt accepts the following slot initializations:
+
+=:time= -- The output time in seconds, initially unbound.
+
+=:lsample= -- lsample struct to use for playback.
+
+=:keynum= -- Keynum in Midicents.
+
+=:amp= -- Amplitude in dB, the range [-100..0] corresponding to linear values [0..1].
+
+=:dy= -- Number denoting transposition in Midicents at end of playpack in relation to the beginning.
+
+=:start= -- Start offset into the sample in seconds.
+
+=:end= -- End time of sample sample in seconds. 0 denotes end of sample
+
+=:stretch= -- Non zero Number denoting stretch ratio. Negative indicates reverse playback.
+
+=:wwidth= -- Positive number denoting window size in ms for granular stretching.
+
+=:attack= -- Number in the range [0..1] indicating attack time ratio in relation to full length.
+
+=:release= -- Number in the range [0..1] indicating release time ratio in relation to full length.
+
+=:pan= -- Number in the range /[0..1]/ defining equal power panning
+between the two outputs of the dsp on playback.
+
+=:adjust-stretch= -- Boolean indicationg whether to adjust the stretch factor in relation to the transposition.
+
+=:out1= -- Non negative Integer denoting the left output channel index.
+
+=:out2= -- Non negative Integer denoting the right output channel index. Defaults to (1+ out1)
+
+   
+@Examples
+  (new poolevt)
+  ;; => #i(poolevt lsample nil keynum nil amp 0.0 dy 0.0 start 0 end 0
+  ;; stretch 1.0 wwidth 123 attack 0 release 0.01 pan 0.5 snd-id nil
+  ;; adjust-stretch nil out1 0 out2 1)
+
+  (output (new poolevt :lsample ...)) ; => ; No value
+  ;; ; No values
+@See-also
+[[dict:midi][midi]]
+"))
       (cl-refs:ref-object
        (standard-class
         nil
@@ -322,12 +374,10 @@ set-tempo
     (append (mapcar #'first *clamps-extra-doc*)
             '(
               cl-user:clamps
-
-
               clamps:reset-logger-stream clamps:idump
               clamps:clamps clamps:clamps-restart-gui
               clamps:clamps-gui-root clamps:clamps-base-url
-              clamps:set-standard-pitch clamps:*standard-pitch*
+              clamps:standard-pitch
               clamps:svg-gui-path clamps:set-tempo
               clamps:set-bpm clamps:start-doc-acceptor
               clamps:clamps-start clamps:gui clamps:meters
@@ -380,6 +430,7 @@ set-tempo
 (defparameter *clamps-symbols-to-ignore*
   '(orm-utils:param-exp-func
     of-incudine-dsps:abs-path
+    of-incudine-dsps:*keynum-offset*
     orm-utils:defconst
     orm-utils::while
     cm:pwd
@@ -448,9 +499,9 @@ set-tempo
     svg-import-export:last-id orm-utils:last-n cl-midictl:last-note-on
     cl-poolplayer:load-poolplayer-presets cl-poolplayer:load-poolplayer-sounds
     cl-midictl:load-presets of-incudine-dsps:lsample-amp
-    of-incudine-dsps:lsample-buffer of-incudine-dsps:lsample-filename
+    of-incudine-dsps:lsample-buffer of-incudine-dsps:lsample-name
     of-incudine-dsps:lsample-keynum of-incudine-dsps:lsample-loopend
-    of-incudine-dsps:lsample-loopstart of-incudine-dsps:lsample-play-fn
+    of-incudine-dsps:lsample-loopstart of-incudine-dsps:lsample-oneshot
     cl-midictl:m-buttons cl-poolplayer:make-p-song
     svg-import-export:make-piano-roll svg-import-export:make-staff-system
     svg-import-export:make-svg-cm-line svg-import-export:marker-end
@@ -512,7 +563,8 @@ set-tempo
    (mapcar #'cdr *all-clamps-syms*)))
 
 (defparameter *link-regexps*
-  '(("<<\\*(.+?)\\*>>" "[[#\\1][*​\\1​*]]")
+  '(("<<([^\\*]+)\\*(.*)>>" "[[#\\1][\\1​*\\2]]")
+    ("<<\\*(.+?)\\*>>" "[[#\\1][*​\\1​*]]")
     ("\\*([^* ]+)\\*" "*​\\1​*")
     ("#'<<(.+?)>>" "[[\\1][#'\\1]]")
     ("<<#'(.+?)>>" "[[\\1][#'\\1]]")
@@ -722,17 +774,21 @@ result."
 
 (defun format-function-entry (name args docstring stream type)
   "Format a function/macro, etc. entry for org-mode file."
-  (format stream "** ~(~a~)~%   ~a~%   #+BEGIN_SRC lisp~%     ~(~a~)~%   #+END_SRC~%~a"
+  (format stream "** ~(~a~)~%~a   ~a~%   #+BEGIN_SRC lisp~%     ~(~a~)~%   #+END_SRC~%~a"
           (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "*​\\1​*")
+          (if (position #\* name :test #'char=)
+              (format nil "   :PROPERTIES:~%   :CUSTOM_ID: ~(~a~)~%   :END:~%"
+                      (cl-ppcre:regex-replace-all "\\*" name ""))
+              "")
           type args docstring))
 
 (defun format-variable-entry (name docstring stream type)
   "Format a Variable entry for org-mode file."
   (format stream "** ~(~a~)~%~a   ~a~%~%~a"
           (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "*​\\1​*")
-          (if (char= (aref name 0) #\*)
+          (if (position #\* name :test #'char=)
               (format nil "   :PROPERTIES:~%   :CUSTOM_ID: ~(~a~)~%   :END:~%"
-                      (cl-ppcre:regex-replace "^\\*​*([^​]+)​*\\*$" name "\\1"))
+                      (cl-ppcre:regex-replace-all "\\*" name ""))
               "")
           type docstring))
 
@@ -790,8 +846,25 @@ result."
                      (case type
                        ('cm-class
                         (format nil "~a"
-                                (list* "new" (string-downcase name)
-                                       (strip-package-names lambda-list))))
+                                (cl-ppcre:regex-replace-all
+                                 "asdf/system:"
+                                 (cl-ppcre:regex-replace-all
+                                  "\\(function ([^)]+)\\)"
+                                  (cl-ppcre:regex-replace-all
+                                   "\\(quote ([^)]+)\\)"
+                                   (cl-ppcre:regex-replace-all
+                                    "\\(quote nil\\)"
+                                    (cl-ppcre:regex-replace-all
+                                     "asdf/system:"
+                                     (format nil "~s"
+                                             (list* (intern "NEW")
+                                                    (intern (string-upcase name))
+                                                    (strip-package-names lambda-list)))
+                                     "asdf:")
+                                    "'()")
+                                   "'\\1")
+                                  "#'\\1")
+                                 "asdf:")))
                        (otherwise (format nil "~a"
                                           (cons (string-downcase name)
                                                 (strip-package-names lambda-list)))))
@@ -920,4 +993,5 @@ file."
 (write-dict "/home/orm/work/programmieren/lisp/clamps/doc/clamps-dictionary.org")
 
 ;;(sb-ext:quit)
+
 

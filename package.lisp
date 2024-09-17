@@ -22,6 +22,7 @@
 
 (defpackage :clamps
   (:export cl-user:clamps
+           ats-cuda-display:ats->svg
            incudine-bufs:find-buffer
            cl-sfz:sfz-preset-lsamples
            cl-sfz:sfz-preset-buffers
@@ -70,7 +71,6 @@
            cm:reset-logger-stream meters clamps-gui-root
            incudine-bufs:buffer-id clog-dsp-widgets:pulse-off
            clog-dsp-widgets:*out-refs* orm-utils:rmprop orm-utils:multf
-           of-incudine-dsps:play-buffer*
            of-incudine-dsps:play-buffer-stretch* orm-utils:r-lin idump
            mtof orm-utils:range clog-dsp-widgets:create-o-svg
            clog-midi-controller:nanoktl2-gui ats-cuda-display:ats->browser
@@ -95,7 +95,7 @@
            clog-dsp-widgets:num-channels of-incudine-dsps:envelope*
            cl-sfz:list-sfz-presets orm-utils:every-nth orm-utils:v-collect
            clog-midi-controller:midicontroller clog-dsp-widgets:create-o-radio
-           lsample of-incudine-dsps:play-buffer-stretch-out
+           of-incudine-dsps:play-buffer-stretch-out
            common-lisp:stream orm-utils:r-exp orm-utils:all-permutations
            common-lisp:close of-incudine-dsps:phasor*
            clog-dsp-widgets:remove-all-dsps orm-utils:system-version
@@ -162,7 +162,7 @@
            cl-midictl:find-controller clog-dsp-widgets:named-bus
            cl-midictl:midi-input cl-midictl:toggle-slot of-incudine-dsps:osc~
            orm-utils:spit clog-dsp-widgets:levelmeter-gui orm-utils:n-exp-fn
-           set-standard-pitch make-cm-line
+           standard-pitch make-cm-line
            cl-midictl:*midi-note-state* of-incudine-dsps:make-lsample
            orm-utils:m-exp-rd-fn of-incudine-dsps:keynum->hz
            orm-utils:group-by-key new-id
@@ -187,7 +187,7 @@
            cm:play-midi cm:cm-store cm:midi-text-event cm:drunk
            cm:midi-chan-event cm:*midi-rcv-type-dummy*
            cm:*stream-recv-responders* cm:ctl-out cm:fold-objects cm:input
-           cm:incudine-ensure-microtuning cm:sfz-play-fn cm:fudi-open
+           cm:incudine-ensure-microtuning cm:sfz-oneshot cm:fudi-open
            cm:note-accidental cm:poolevt-amp cm:object-name cm:poolevt-lsample
            cm:poolevt-stretch cm:object-parameters cm:note-on cm:harmonics
            cm:weighting cm:invert cm:rescale-envelope cm:cm-version-number
@@ -290,17 +290,18 @@
            incudine.fudi:stream-p incudine.fudi:close incudine.fudi:open
            of-incudine-dsps:play-buffer-stretch-env-pan-out
            of-incudine-dsps:play-buffer-stretch-env-pan-out*
-           of-incudine-dsps:lsample-filename of-incudine-dsps:lsample-loopstart
+           of-incudine-dsps:lsample-pathname
+           of-incudine-dsps:lsample-name of-incudine-dsps:lsample-loopstart
            of-incudine-dsps:play-buffer-stretch*
            of-incudine-dsps:buffer-stretch-play of-incudine-dsps:make-lsample
            of-incudine-dsps:get-keynum of-incudine-dsps:lsample-amp
            of-incudine-dsps:lsample-buffer incudine.vug:counter
            of-incudine-dsps:play-buffer-stretch-out of-incudine-dsps:make-oasr
-           of-incudine-dsps:lsample-loopend of-incudine-dsps:play-buffer*
+           of-incudine-dsps:lsample-loopend
            of-incudine-dsps:*sine1024* of-incudine-dsps:play-sample*
            of-incudine-dsps:play-sample of-incudine-dsps:keynum->hz
            of-incudine-dsps:play-lsample of-incudine-dsps:*hanning1024*
-           of-incudine-dsps:buffer-loop-play* of-incudine-dsps:lsample-play-fn
+           of-incudine-dsps:buffer-loop-play* of-incudine-dsps:lsample-oneshot
            of-incudine-dsps:play-buffer-stretch-env-out
            of-incudine-dsps:play-buffer-stretch of-incudine-dsps:line*
            of-incudine-dsps:phasor* of-incudine-dsps:restore-envs
@@ -562,9 +563,8 @@
            #:buffer #:buffer-frames
            #:buffer-sample-rate
            #:node #:bus
-           #:lsample #:envelope
-           #:lsample-keynum #:lsample-play-fn #:lsample-amp #:lsample-buffer
-           #:lsample-buffer #:remove-all-responders #:recv-stop
+           #:envelope
+           #:remove-all-responders #:recv-stop
            #:without-interrupts
            #:play)
 

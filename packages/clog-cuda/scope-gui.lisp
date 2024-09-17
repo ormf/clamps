@@ -1,5 +1,5 @@
 ;;; 
-;;; levelmeter-gui.lisp
+;;; scope-gui.lisp
 ;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
