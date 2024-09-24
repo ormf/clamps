@@ -2517,6 +2517,15 @@
    :END:
    Variable
 
+** *​midi-in1​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-in1
+   :END:
+   Variable
+
+   Default clamps MIDI input stream of type /<jackmidi:input-stream>/.
+*** See also
+    - [[#midi-out1][*​​midi-out1​​*]]
 ** midi-input
    Generic Function
    #+BEGIN_SRC lisp
@@ -2550,6 +2559,16 @@
     - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[#midi-cc-state][*​​midi-cc-state​​*]]
     - [[#midi-note-fns][*​​midi-note-fns​​*]]
+** *​midi-out1​*
+   :PROPERTIES:
+   :CUSTOM_ID: midi-out1
+   :END:
+   Variable
+
+   Default clamps MIDI output stream of type
+   /<jackmidi:output-stream>/.
+*** See also
+    - [[#midi-in1][*​​midi-in1​​*]]
 ** midi-output
    Generic Function
    #+BEGIN_SRC lisp
@@ -3353,7 +3372,7 @@
         ;; ; No values
     #+END_SRC
 *** See also
-    - [[[[dict:midi][midi]]][[[dict:midi][midi]]]]
+    - [[dict:midi][midi]]
 ** port-available-p
    Function
    #+BEGIN_SRC lisp
@@ -3897,11 +3916,11 @@
    Start the real-time system of Clamps. This functions sets the
    following special variables:
    
-   *​midi-in1​* -- The default Midi Input
+   [[#midi-in1][*​​midi-in1​​*]] -- The default Midi Input
    
-   *​midi-out1​* -- The default Midi Output
+   [[#midi-out1][*​​midi-out1​​*]] -- The default Midi Output
    
-   *​rts-out​* -- The default output for realtime events from Clamps/CM.
+   [[#rts-out][*​​rts-out​​*]] -- The default output for realtime events from Clamps/CM.
    
    It also starts the rt engine of incudine calling
    /incudine:rt-start/ and the midi receivers.
@@ -3929,6 +3948,18 @@
    Flush pending events from incudine's event queue, send out an all
    notes off message to all 16 channels of *​​midi-out1​​* and call
    [[node-free-unprotected][node-free-unprotected]].
+** *​rts-out​*
+   :PROPERTIES:
+   :CUSTOM_ID: rts-out
+   :END:
+   Variable
+
+   Default clamps Realtime output stream of class
+   /<incudine-stream>/.
+*** See also
+    - [[#midi-out1][*​​midi-out1​​*]]
+    - [[rts][rts]]
+    - [[rts?][rts?]]
 ** rts?
    Function
    #+BEGIN_SRC lisp

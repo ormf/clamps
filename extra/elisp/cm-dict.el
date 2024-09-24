@@ -12,6 +12,9 @@
 ; warning: /Lisp/cm/doc/cm-dict/index.html#osc-stream-cls.html has no <title> tag.
 ; warning: /Lisp/cm/doc/cm-dict/index.html#sc-file-cls.html has no <title> tag.
 ; warning: /Lisp/cm/doc/cm-dict/index.html#sc-stream-cls.html has no <title> tag.
+   ("sc-file" "cm-dict/index.html#sc-file-cls.html")
+   ("sc-stream" "cm-dict/index.html#sc-stream-cls.html")
+   ("osc-stream" "cm-dict/index.html#osc-stream-cls.html")
    ("*beat*" "cm-dict/index.html#beat-var.html")
    ("*chromatic-scale*" "cm-dict/index.html#chromatic-scale-var.html")
    ("*loudest*" "cm-dict/index.html#loudest-var.html")

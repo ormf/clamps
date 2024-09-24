@@ -71,11 +71,11 @@ to be supplied. The sym of the stream gets interned as a parameter."
   "Start the real-time system of Clamps. This functions sets the
 following special variables:
 
-*midi-in1* -- The default Midi Input
+<<*midi-in1*>> -- The default Midi Input
 
-*midi-out1* -- The default Midi Output
+<<*midi-out1*>> -- The default Midi Output
 
-*rts-out* -- The default output for realtime events from Clamps/CM.
+<<*rts-out*>> -- The default output for realtime events from Clamps/CM.
 
 It also starts the rt engine of incudine calling
 /incudine:rt-start/ and the midi receivers.

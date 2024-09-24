@@ -41,6 +41,13 @@ body {
     content: "\f039";
 }
 
+table {
+    text-align: center;
+    border-spacing: 1em; 
+    border: solid 1px;
+    color: var(--text-color);
+}
+
 #theme-button {
     color:  var(--h2-color);
     background-color: var(--text-background);

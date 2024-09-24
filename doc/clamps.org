@@ -1001,29 +1001,110 @@
     
 # *** Debugging MIDI IO
 ** clog-midi-controller
-   clog-midi-controller define the GUI parts of midi controllers
+   clog-midi-controller defines the GUI parts of midi controllers
    defined in the framework of [[cl-midictl]]. To understand how they work
    it is necessary to study how Gui programming in Clamps works in
    general using [[clog-dsp-widgets]].
 * CM Extensions
 ** General
    Common Music's infrastructure uses the [[dict:events][events]] method to output
-   events[fn:-1]. It
-   uses multimethods (also called /multiple dispatch/), dispatching
-   different event classes to different output backends.
+   events[fn:7]. events is a [[https://en.wikipedia.org/wiki/Multiple_dispatch][multiple dispatch]] method, dispatching
+   different event classes to different output backends. The first
+   argument of events is an instance of an event class, the second
+   argument is either an instance of class /<incudine-stream>/
+   indicating realtime output, or a string denoting a filename. The
+   filename extension is used for the dispatch of the output backend.
 
-   The event classes defined by CM 2.12 for output were mainly MIDI
-   events of all types and OSC events for SuperCollider.
+   The event classes defined by CM 2.12 for output are[fn:8]:
 
-   Clamps extends these event classes by the following event classes:
+   - MIDI events of all types
+   - OSC events for SuperCollider
+
+   The supported output types in CM 2.12 and their class/filename
+   extensions are:
+
+   - [[dict:rts][Realtime]] /<incudine-stream>/
+   - [[dict:midi-file][MIDI file]] /".midi"/, /".mid"/
+   - [[dict:sc-file][SuperCollider file]] /".osc"/
+   - [[dict:cmn-file][SCO file]] /".sco"/
+   - [[dict:cmn-file][CMN file]] /".cmn"/
+   - [[dict:cmn-file][CLM file]] /".clm"/
+   - [[dict:cmn-file][EPS file]] /".eps"/
+   - [[dict:fomus-file][FOMUS file]] /".ly"/, /".xml"/, /".dat"/
+
+
+   The SCO file format in Common Music seems to have been only
+   partially implemented.
+
+   Below is an overview of the implemented output methods for the
+   different event types and output backends in Common Music:
+
+   |------+-----------+---------+----------+----------+------------+----------|
+   |      | MIDI file | SC file | CMN file | EPS file | FOMUS file | Realtime |
+   |------+-----------+---------+----------+----------+------------+----------|
+   | MIDI | x         |         | x        |          | x          | x        |
+   | CMN  | x         |         | x        | x        |            |          |
+   | OSC  |           | x       |          |          |            | x        |
+   |------+-----------+---------+----------+----------+------------+----------|
+   
+   Clamps extends the event classes of CM by the following event
+   classes:
    
    - [[dict:sfz][sfz]] (see [[cm-sfz]])
-   - [[dict:poolevt][poolevt]]
+   - [[dict:poolevt][poolevt]] (see [[cm-poolevt]])
+   - [[FUDI][cm-fudi]]
 
+   In addition Clamps extends the available output backends of Common
+   Music by a [[cm-svg][SVG]] backend, using the filename extension /".svg"/.
+
+   The realtime backend in Clamps uses the special variable
+   [[dict:#rts-out][*​rts-out​*]]. Its value is an /<incudine-stream>/. When a MIDI event
+   is sent to this stream, clamps automatically dispatches it to the
+   midi-output of *​rts-out​* (by default this is *​midi-out1​*). If
+   instead the output is realized using incudine dsps, as in the case
+   of [[dict:sfz][sfz]] output, the dsps are automatically scheduled and
+   instantiated.
+
+   The CMN type and output file types (".cmn" and ".eps") and the CLM
+   types are currently not actively supported in clamps, as CMN is
+   replaced in favor of FOMUS and CLM is emulated in cuda-clm and its
+   functionality provided by incudine. Both systems should
+   nevertheless continue to work to the extent they worked for CM
+   2.12.
+   
+   Below is an overview of the implemented output methods for the
+   different event types and output backends in Clamps:
+   
+   |---------+-----------+---------+------------+----------+----------|
+   |         | MIDI file | SC file | FOMUS file | SVG file | Realtime |
+   |---------+-----------+---------+------------+----------+----------|
+   | MIDI    | x         |         | x          | x        | x        |
+   | OSC     |           | x       |            | x        | x        |
+   | SFZ     |           |         | x          | x        | x        |
+   | Poolevt |           |         |            | x        | x        |
+   | FUDI    |           |         |            |          | x        |
+   |---------+-----------+---------+------------+----------+----------|
+
+** cm-incudine
+   cm-incudine a compatibility layer between Common Music and
+   incudine, mainly concerning realtime input and output. The
+   /<incudine-stream>/ class is defined here, jackmidi input/output,
+   the FUDI event class[fn:9], etc.
+# ** cm-all
+** cm-fomus
+   cm-fomus is a [[https://fomus.common-lisp.dev/][FOMUS]] backend for Common Music written by Rick Taube
+   and is included in Clamps for convenience. Clamps mainly supports
+   the LilyPond backend of FOMUS.
+
+   For an explanation of the implementation details see the [[../fomus/index.html][fomus]]
+   documentation included on this website, which contains a part on
+   Common Music. In addition there are examples in the Common Music
+   distribution at
+   /~/quicklisp/cm/doc/404B-SoundSynth-AlgoComp/www-camil.music.uiuc.edu_16080/classes/404B/fomus/examples.lisp/.
 ** cm-sfz
-   cm-sfz implements the [[dict:sfz][sfz]] class for Common Music derived from its
-   /event/ class. Like any other event class in CM an instance is
-   created with the [[dict:new][new]] macro.
+   cm-sfz extends [[cl-sfz]] by implemenings the [[dict:sfz][sfz]] class for Common
+   Music, derived from its /event/ class. Like any other event class
+   in CM an instance is created with the [[dict:new][new]] macro.
    #+BEGIN_SRC lisp
      (new sfz)
      ;; => #i(sfz keynum 60 amplitude 1 duration 1
@@ -1067,24 +1148,18 @@
            "/tmp/test.ly"
            :quartertones t)
    #+END_SRC
-** cm-fomus
-   cm-fomus is a [[https://fomus.common-lisp.dev/][FOMUS]] backend for Common Music written by Rick
-   Taube. Clamps mainly supports the LilyPond backend of FOMUS.
-
-
-
-   For an explanation of the implementation details see the
-   [[../fomus/index.html][fomus]] documentation included on ths website.
 ** cm-svg
-   TBA
+   The SVG output backend for Common Music is a central part of the
+   Clamps architecture. It conceptionalizes a single output format for
+   any type of timed event. All events of any supproted type can be
+   integrated in a single document, visualized and edited with
+   graphics programs, viewed in any browser, styled with CSS and
+   reimported into Clamps.
 ** cm-svg.rts
    TBA
 ** cm-poolevt
    TBA
 # ** cm-poolplayer
-** cm-incudine
-   TBA
-# ** cm-all
 * Incudine Extensions
 ** General Incudine Setup
    :PROPERTIES:
@@ -1126,7 +1201,26 @@
    TBA
 * Networking
 ** cuda-usocket-osc
-   TBA
+   cuda-usocket-osc is a replacement for incudine's OSC architecture
+   as that currently can't be used on OSX. It is a thin compatibility
+   layer, reimplementing the most important functions of incudine
+   using the Common Lisp /usocket/ library.
+
+   cuda-usocket-osc gets automatically enabled when loading Clamps on
+   OSX and can be enabled on Linux by pushing :cuda-usocket-osc to
+   *​features​* before loading incudine. This can be achieved by putting
+   the line below in the file /$HOME​/.clampsinit.lisp/:
+   #+BEGIN_SRC lisp
+   (pushnew :cuda-usocket-osc *features*)
+   #+END_SRC
+   If :cuda-usocket-osc is enabled, a line with the following content
+   will be printed in the REPL when loading clamps:
+   #+BEGIN_SRC lisp
+     shadowing incudine.osc functions with cuda-usocket-osc
+   #+END_SRC
+
+   Note that this will not implement the full incudine osc framework!
+
 ** fudi
    TBA
 * Misc Packages
@@ -1142,7 +1236,7 @@
    /defparameter/ or /defconstant/. During the course of running an
    application, the value bound to a symbol may change frequently as
    a consequence of user interaction or programmatic behaviour in
-   certain situations, like reacting to external events, etc.[fn:7]
+   certain situations, like reacting to external events, etc.[fn:10]
     
    Tracking those changes can be a challenging task, especially if
    the complexity of a program increases and values of different
@@ -1255,7 +1349,7 @@
     definition of the variables and the application logic into
     distinct parts, automating the updating of variables behind the
     scenes. This makes the maintenance of the program much
-    easier[fn:8].
+    easier[fn:11].
 
     For a variable with possible relations to other variables,
     /cl-ref/ uses a special class called /ref-object/. Three main
@@ -1370,7 +1464,7 @@
      argument. This function is called, whenever one or more
      ref-objects referenced in its body using /get-val/ are
      changed. In that way actions can be triggered and associated
-     with the change of ref-objects[fn:9]. Since actions can also
+     with the change of ref-objects[fn:12]. Since actions can also
      involve changing other ref-objects, /watch/ can be used in a
      similar fashion as /make-computed/.
 
@@ -1383,7 +1477,7 @@
      /watch/ returns a function to remove the action defined by the
      supplied function. It is crucial to capture this result in order
      to be able to later remove the established connections between
-     variables and associated actions[fn:10].
+     variables and associated actions[fn:13].
 
      IMPORTANT NOTE: Calling the same watch expression twice will
      establish two independent functions which will always be called
@@ -1455,7 +1549,7 @@
 
    The SFZ format uses a plain text file to define keynum regions and
    their samples in addition to the base keynum, a pitch offset and an
-   amplitude of the recording and other playback information[fn:11].
+   amplitude of the recording and other playback information[fn:7].
 
    #+Caption: Example of an entry for a keynum region in a SFZ file.
    #+BEGIN_SRC bash
@@ -1536,7 +1630,7 @@
 
 *** Playing sfz events
 
-    The function [[dict:play-sfz][play-sfz]][fn:12] plays a sound from a sfz preset. It takes
+    The function [[dict:play-sfz][play-sfz]][fn:14] plays a sound from a sfz preset. It takes
     the a pitch, amplitude in dB and duration in seconds as
     arguments. The default preset is /:flute-nv/.  In addition it
     takes the keywords /:preset/, /:oneshot/, /:pan/, /:out1/ and
@@ -1582,22 +1676,30 @@ debug. Therefore it is extremely important to be aware of the reasons
 for such behaviour and to be alert when defining functions referencing
 variables outside of their scope, expecially in iterations.
 
-[fn:6] DEFINITION NOT FOUND.
+[fn:6] For examples see Dan Graham's famous book "On Lisp" or Doug
+Hoyte's "Let over Lambda".
 
-[fn:-1] events are instances of objects derived from the /event/ class.
+[fn:7] events are instances of objects derived from the /event/ class.
 
-[fn:7] With the notable exception of a value bound by /defconstant/,
+[fn:8]In the [[dict:events][events]] macro also lists or container classes like [[dict:seq][seq]] can
+be used as event classes for output but they need to contain MIDI or
+OSC events at some point in order to output anything.
+
+[fn:9]Since Pure Data now supports OSC natively, the FUDI event class
+is not required anymore and might be removed in the future.
+
+[fn:10] With the notable exception of a value bound by /defconstant/,
 as a constant is an /immutable/ value, which never changes.
 
-[fn:8] The implementation ideas are similar to javascript frameworks
+[fn:11] The implementation ideas are similar to javascript frameworks
 which became increasingly popular in the 2010s like [[https://en.wikipedia.org/wiki/React_(JavaScript_library)][React]] or [[https://en.wikipedia.org/wiki/Vue.js][Vue.js]],
 although they are rooted in much older concepts from the 1970s and
 80s.
 
-[fn:9] In Lisp parlance this is the classic example of a
+[fn:12] In Lisp parlance this is the classic example of a
 /side-effect/.
 
-[fn:10] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
+[fn:13] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
 [[https://en.wikipedia.org/wiki/Max_(software)][Max/MSP]], /watch/ serves a similar purpose as patch cords in these
 systems. Calling the function returned by /watch/ in that context is
 similar to removing a patch cord, although the analogy shouldn't be
@@ -1605,10 +1707,4 @@ overstressed considering the significant differences between a
 graph-based message-passing paradigm in these systems and the
 structural layout of cl-ref/clamps.
 
-[fn:11] For an example see the file /"000_​Flute​_nv.sfz"/ located in
-the /extra/snd/sfz/Flute-nv// folder of the clamps repository.
-
-[fn:12](play-sfz 60 0 20 :preset :yamaha-grand-piano :pan 0) ;; => nil
-
-[fn:13] For examples see Dan Graham's famous book "On Lisp" or Doug
-Hoyte's "Let over Lambda".
+[fn:14](play-sfz 60 0 20 :preset :yamaha-grand-piano :pan 0) ;; => nil

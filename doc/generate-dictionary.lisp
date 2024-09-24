@@ -339,7 +339,7 @@ between the two outputs of the dsp on playback.
   (output (new poolevt :lsample ...)) ; => ; No value
   ;; ; No values
 @See-also
-[[dict:midi][midi]]
+dict:midi
 "))
       (cl-refs:ref-object
        (standard-class
@@ -373,6 +373,9 @@ set-tempo
   (defparameter *clamps-extra-symbols*
     (append (mapcar #'first *clamps-extra-doc*)
             '(
+              cm:*rts-out*
+              cm:*midi-out1*
+              cm:*midi-in1*
               cl-user:clamps
               clamps:reset-logger-stream clamps:idump
               clamps:clamps clamps:clamps-restart-gui
@@ -993,5 +996,6 @@ file."
 (write-dict "/home/orm/work/programmieren/lisp/clamps/doc/clamps-dictionary.org")
 
 ;;(sb-ext:quit)
+
 
 
