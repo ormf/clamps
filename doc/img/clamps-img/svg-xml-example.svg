@@ -1,0 +1,1331 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="108.1"
+   height="70.003128"
+   viewBox="0 0 108.1 70.003128"
+   id="svg2392"
+   inkscape:document-unit="px"
+   sodipodi:version="0.32"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   sodipodi:docname="svg-xml-example.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.1"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs2394">
+    <marker
+       inkscape:stockid="DotS"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="DotS"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path6619"
+         d="m -2.5,-1 c 0,2.76 -2.24,5 -5,5 -2.76,0 -5,-2.24 -5,-5 0,-2.76 2.24,-5 5,-5 2.76,0 5,2.24 5,5 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         transform="matrix(0.2,0,0,0.2,1.48,0.2)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Mend"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path4186"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path3225"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 226.05037 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1052.3622 : 226.05037 : 1"
+       inkscape:persp3d-origin="526.1811 : 102.03462 : 1"
+       id="perspective2445" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.2959556"
+     inkscape:cx="54.071053"
+     inkscape:cy="52.631899"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:window-width="1409"
+     inkscape:window-height="1049"
+     inkscape:window-x="0"
+     inkscape:window-y="2"
+     showgrid="false"
+     gridtolerance="10000"
+     inkscape:window-maximized="0"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1">
+    <inkscape:grid
+       type="xygrid"
+       id="default-grid-4x4"
+       spacingy="1"
+       spacingx="1"
+       dotted="false"
+       empspacing="4"
+       enabled="true"
+       originx="0.050000001"
+       originy="-24.546875"
+       units="px"
+       visible="false" />
+    <inkscape:grid
+       type="xygrid"
+       id="grid-5x5"
+       spacingy="1"
+       spacingx="1"
+       dotted="false"
+       empspacing="5"
+       enabled="false"
+       originx="0.050000001"
+       originy="-24.546875"
+       units="px"
+       visible="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata2397">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Stafflines"
+     inkscape:groupmode="layer"
+     id="layer-1"
+     style="display:none"
+     transform="matrix(1,0,0,-1,0.05,125.45313)">
+    <g
+       id="1">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,19 H 108"
+         id="path1"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,23 H 108"
+         id="path2"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,26 H 108"
+         id="path3"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,29 H 108"
+         id="path4"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,33 H 108"
+         id="path5"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,43 H 108"
+         id="path6"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,47 H 108"
+         id="path7"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,50 H 108"
+         id="path8"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,53 H 108"
+         id="path9"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,57 H 108"
+         id="path10"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,64 H 108"
+         id="path11"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,67 H 108"
+         id="path12"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,71 H 108"
+         id="path13"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,74 H 108"
+         id="path14"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,77 H 108"
+         id="path15"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,88 H 108"
+         id="path16"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,91 H 108"
+         id="path17"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,95 H 108"
+         id="path18"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,98 H 108"
+         id="path19"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,101 H 108"
+         id="path20"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,112 H 108"
+         id="path21"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,115 H 108"
+         id="path22"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,119 H 108"
+         id="path23"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#eeeeee;stroke-width:0.4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,12 H 108"
+         id="path24"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#eeeeee;stroke-width:0.4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,16 H 108"
+         id="path25"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#eeeeee;stroke-width:0.4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,36 H 108"
+         id="path26"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#eeeeee;stroke-width:0.4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,40 H 108"
+         id="path27"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#eeeeee;stroke-width:0.4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,60 H 108"
+         id="path28"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#eeeeee;stroke-width:0.4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,81 H 108"
+         id="path29"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#eeeeee;stroke-width:0.4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,84 H 108"
+         id="path30"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#eeeeee;stroke-width:0.4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,105 H 108"
+         id="path31"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#eeeeee;stroke-width:0.4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,108 H 108"
+         id="path32"
+         attributes="none" />
+    </g>
+  </g>
+  <g
+     inkscape:label="PianoRoll"
+     inkscape:groupmode="layer"
+     id="layer-2"
+     transform="matrix(1,0,0,-1,0.05,125.45313)">
+    <rect
+       y="11.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect1"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="13.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect2"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="15.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect3"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="16.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect4"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="18.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect5"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="20.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect6"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="22.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect7"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="23.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect8"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="25.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect9"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="27.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect10"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="28.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect11"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="30.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect12"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="32.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect13"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="34.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect14"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="35.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect15"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="37.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect16"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="39.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect17"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="40.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect18"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="42.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect19"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="44.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect20"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="46.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect21"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="47.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect22"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="49.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect23"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="51.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect24"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="52.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect25"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="54.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect26"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="56.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect27"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="58.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect28"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="59.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect29"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="61.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect30"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="63.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect31"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="64.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect32"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="66.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect33"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="68.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect34"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="70.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect35"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="71.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect36"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="73.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect37"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="75.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect38"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="76.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect39"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="78.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect40"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="80.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect41"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="82.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect42"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="83.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect43"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="85.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect44"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="87.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect45"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="88.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect46"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="90.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect47"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="92.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect48"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="94.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect49"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="95.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect50"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="97.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect51"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="99.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect52"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="100.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect53"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="102.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect54"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="104.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect55"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="106.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect56"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="107.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect57"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="109.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect58"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="111.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect59"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="112.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect60"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="114.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect61"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="116.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect62"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="118.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect63"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="119.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect64"
+       style="fill:none;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="12.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect65"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="14.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect66"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="17.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect67"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="19.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect68"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="21.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect69"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="24.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect70"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="26.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect71"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="29.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect72"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="31.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect73"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="33.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect74"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="36.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect75"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="38.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect76"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="41.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect77"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="43.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect78"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="45.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect79"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="48.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect80"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="50.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect81"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="53.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect82"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="55.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect83"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="57.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect84"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="60.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect85"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="62.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect86"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="65.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect87"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="67.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect88"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="69.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect89"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="72.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect90"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="74.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect91"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="77.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect92"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="79.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect93"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="81.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect94"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="84.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect95"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="86.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect96"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="89.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect97"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="91.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect98"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="93.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect99"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="96.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect100"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="98.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect101"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="101.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect102"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="103.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect103"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="105.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect104"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="108.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect105"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="110.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect106"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="113.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect107"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="115.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect108"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <rect
+       y="117.5"
+       x="0"
+       height="1"
+       width="108"
+       id="rect109"
+       style="fill:#dddddd;fill-rule:evenodd;stroke:#aaaaaa;stroke-width:0.1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+  </g>
+  <g
+     inkscape:label="Barlines"
+     inkscape:groupmode="layer"
+     id="layer3"
+     transform="translate(0.05,-24.546875)">
+    <g
+       id="3">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.25px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 0,29.5 v 109"
+         id="path33"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.25px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 32,29.5 v 109"
+         id="path34"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.25px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 64,29.5 v 109"
+         id="path35"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.25px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 96,29.5 v 109"
+         id="path36"
+         attributes="none" />
+    </g>
+    <g
+       id="4">
+      <text
+         id="text1"
+         y="29"
+         x="0"
+         style="font-style:normal;font-weight:normal;font-size:6px;font-family:'Bitstream Vera Sans';opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         text-anchor="start"><tspan
+           y="29"
+           x="0"
+           font-size="6px"
+           id="tspan1"
+           sodipodi:role="line">1</tspan></text>
+      <text
+         id="text2"
+         y="29"
+         x="32"
+         style="font-style:normal;font-weight:normal;font-size:6px;font-family:'Bitstream Vera Sans';opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         text-anchor="start"><tspan
+           y="29"
+           x="32"
+           font-size="6px"
+           id="tspan2"
+           sodipodi:role="line">5</tspan></text>
+      <text
+         id="text3"
+         y="29"
+         x="64"
+         style="font-style:normal;font-weight:normal;font-size:6px;font-family:'Bitstream Vera Sans';opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         text-anchor="start"><tspan
+           y="29"
+           x="64"
+           font-size="6px"
+           id="tspan3"
+           sodipodi:role="line">9</tspan></text>
+      <text
+         id="text4"
+         y="29"
+         x="96"
+         style="font-style:normal;font-weight:normal;font-size:6px;font-family:'Bitstream Vera Sans';opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"
+         text-anchor="start"><tspan
+           y="29"
+           x="96"
+           font-size="6px"
+           id="tspan4"
+           sodipodi:role="line">13</tspan></text>
+    </g>
+  </g>
+  <g
+     inkscape:label="Events"
+     inkscape:groupmode="layer"
+     id="layer-ebenen-id"
+     transform="matrix(1,0,0,-1,0.05,125.45313)">
+    <g
+       inkscape:label="ch16"
+       inkscape:groupmode="layer"
+       id="layer6">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#808000;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 52,60 H 68"
+         id="path37"
+         attributes="none" />
+    </g>
+    <g
+       inkscape:label="ch15"
+       inkscape:groupmode="layer"
+       id="layer2">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#800000;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 4,63 H 20"
+         id="path38"
+         attributes="none" />
+    </g>
+    <g
+       inkscape:label="ch11"
+       inkscape:groupmode="layer"
+       id="layer4">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 28,64 H 44"
+         id="path39"
+         attributes="none" />
+    </g>
+    <g
+       inkscape:label="ch101"
+       inkscape:groupmode="layer"
+       id="layer1">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 0,63.42938 H 16"
+         id="path40"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 8,80.86092 H 24"
+         id="path41"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 16,61.039192 H 32"
+         id="path42"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 24,68.02148 H 40"
+         id="path43"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 32,64.643036 H 48"
+         id="path44"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 40,73.90509 H 56"
+         id="path45"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 48,75.27113 H 64"
+         id="path46"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 56,63.145172 H 72"
+         id="path47"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 64,69.082828 H 80"
+         id="path48"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 72,71.13065 H 88"
+         id="path49"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#008000;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 80,70.6771 H 96"
+         id="path50"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#502d1f;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 88,69.82674 h 16"
+         id="path51"
+         attributes=":type sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100" />
+    </g>
+    <g
+       inkscape:label="ch10"
+       inkscape:groupmode="layer"
+       id="g54">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000080;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 12,79 H 28"
+         id="path52"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000080;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 20,61 H 36"
+         id="path53"
+         attributes="none" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000080;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 36,82 H 52"
+         id="path54"
+         attributes="none" />
+    </g>
+    <g
+       inkscape:label="ch09"
+       inkscape:groupmode="layer"
+       id="layer9">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#f00000;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 76,67 H 92"
+         id="path55"
+         attributes="none" />
+    </g>
+    <g
+       inkscape:label="ch08"
+       inkscape:groupmode="layer"
+       id="layer5">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#008080;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 44,77 H 60"
+         id="path56"
+         attributes="none" />
+    </g>
+    <g
+       inkscape:label="ch07"
+       inkscape:groupmode="layer"
+       id="layer10">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00aad4;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 84,80 h 16"
+         id="path57"
+         attributes="none" />
+    </g>
+    <g
+       inkscape:label="ch05"
+       inkscape:groupmode="layer"
+       id="layer7">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#d4aa00;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 60,79 H 76"
+         id="path58"
+         attributes="none" />
+    </g>
+    <g
+       inkscape:label="ch04"
+       inkscape:groupmode="layer"
+       id="layer11">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff6600;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 92,62 h 16"
+         id="path59"
+         attributes="none" />
+    </g>
+    <g
+       inkscape:label="ch02"
+       inkscape:groupmode="layer"
+       id="layer8">
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#800000;stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 68,65 H 84"
+         id="path60"
+         attributes="none" />
+    </g>
+  </g>
+</svg>

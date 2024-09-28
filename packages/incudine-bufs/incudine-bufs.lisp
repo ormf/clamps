@@ -92,7 +92,7 @@ name - String or Pathname denoting the buffer's filename.
 
 @See-also
 add-buffer
-of-buffer-load
+clamps-buffer-load
 remove-buffer
 remove-all-buffers
 "
@@ -114,7 +114,7 @@ buf - Incudine:buffer
 
 @See-also
 find-buffer
-of-buffer-load
+clamps-buffer-load
 remove-buffer
 remove-all-buffers
 "
@@ -134,7 +134,7 @@ buf - Incudine:buffer
 @See-also
 add-buffer
 find-buffer
-of-buffer-load
+clamps-buffer-load
 remove-all-buffers
 "
   (let ((id (buffer-id buf)))
@@ -152,7 +152,7 @@ remove-all-buffers
 @See-also
 add-buffer
 find-buffer
-of-buffer-load
+clamps-buffer-load
 remove-buffer
 "
   (setf *buffer-ids* (make-hash-table :test #'equal))
@@ -175,7 +175,7 @@ file - String denoting the file.
 @See-also
 add-buffer
 find-buffer
-of-buffer-load
+clamps-buffer-load
 remove-buffer
 remove-all-buffers
 "
@@ -184,7 +184,7 @@ remove-all-buffers
        ((consp buf) (or (bufname= (first buf) file) (bufname= (rest buf) file)))
        (t (and (string= (format nil "~a" (buffer-file buf)) (format nil "~a" file)) buf))))
 
-(defun of-buffer-load (file &key (path cl-user:*sfile-path*))
+(defun clamps-buffer-load (file &key (path cl-user:*sfile-path*))
   "Load and register buffer from /file/ if not loaded already. Return
 buffer.
 
@@ -195,7 +195,6 @@ file - Pathname or String denoting a soundfile.
 @See-also
 add-buffer
 find-buffer
-of-buffer-load
 remove-buffer
 remove-all-buffers
 *sfile-path*
@@ -207,7 +206,7 @@ remove-all-buffers
           (add-buffer (buffer-load fname))
           (warn "couldn't find soundfile in sfile-path: ~A" file)))))
 
-(setf (fdefinition 'ensure-buffer) #'of-buffer-load)
+(setf (fdefinition 'ensure-buffer) #'clamps-buffer-load)
 
-;;; (of-buffer-load "/home/orm/work/kompositionen/letzte-worte/snd/fl-s01-line01.wav")
+;;; (clamps-buffer-load "/home/orm/work/kompositionen/letzte-worte/snd/fl-s01-line01.wav")
 

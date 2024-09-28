@@ -5,9 +5,14 @@
   (:nicknames #:oid)
   (:shadowing-import-from #:incudine #:GROUP)
   (:shadow #:clip)
-  (:export #:BUFFER-STRETCH-PLAY
-           #:BUFFER-RECORD
-           #:PLAY-BUFFER*
+  (:export #:BUFFER-RECORD
+           #:ENVELOPE*
+           #:LINE*
+           #:PHASOR*
+           #:PHASOR-LOOP*
+           #:BUFFER-PLAY*
+           #:BUFFER-LOOP-PLAY*
+           #:BUFFER-STRETCH-PLAY*
            #:PLAY-BUFFER-STRETCH*
            #:PLAY-BUFFER-LOOP*
            #:PLAY-BUFFER-STRETCH
@@ -20,14 +25,8 @@
            #:*SINE1024*
            #:MAKE-OASR
            #:*ENV1*
-           #:PLAY-SAMPLE*
-           #:ENVELOPE*
            #:COUNTER
-           #:PHASOR*
-           #:LINE*
            #:OSC~
-           #:PHASOR-LOOP*
-           #:BUFFER-LOOP-PLAY*
            #:LSAMPLE
            #:MAKE-LSAMPLE
            #:LSAMPLE-NAME

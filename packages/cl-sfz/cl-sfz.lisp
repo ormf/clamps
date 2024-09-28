@@ -372,7 +372,7 @@ recursively searched when the preset gets loaded.
 preset - A keyword or symbol to name the preset
 file - A string or path to the associated sfz file. If the file
 path is relative, it will be searched recursively in all paths of
-/cl-user::*sfz-file-path*/.
+<<*sfz-preset-path*>>.
 
 @Note
 This function only stores the association between the preset

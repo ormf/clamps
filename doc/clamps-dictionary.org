@@ -97,8 +97,7 @@
    #+END_SRC
    Add buffer to registry.
 *** Arguments
-    =buf= -- Incudine:buffer
-
+    | =buf= | Incudine:buffer |
 
 *** See also
     - [[find-buffer][find-buffer]]
@@ -113,13 +112,9 @@
    Add a new instance of /dsp/ with id /id/ to the registry, optionally
    supplying the dsp creation with initialization arguments /args/.
 *** Arguments
-    =dsp= -- The dsp type to add
-
-    =id= -- Keyword or Symbol to identify the registered dsp.
-
-    =args= -- Optional initialization arguments accepted by the used dsp
-    class.
-
+    | =dsp= | The dsp type to add |
+    | =id= | Keyword or Symbol to identify the registered dsp. |
+    | =args= | Optional initialization arguments accepted by the used dsp class. |
 
 *** See also
     - [[find-dsp][find-dsp]]
@@ -132,11 +127,8 @@
    #+END_SRC
    Add elements supplied either as svg-objects or as list(s) of svg-objects to /container-obj/.
 *** Arguments
-    =container-obj= -- Instance of an svg container.
-
-    =elems= -- One or more Instances of svg objects or lists of
-    Instances to add.
-
+    | =container-obj= | Instance of an svg container. |
+    | =elems= | One or more Instances of svg objects or lists of Instances to add. |
 
 ** add-midi-cc-fn
    Function
@@ -147,13 +139,9 @@
    /fn/ will be called with the controller value as argument when MIDI
    input at /channel/ and /ccnum/ is received.
 *** Arguments
-    =fn= -- Function of one Argument to call on MIDI input
-
-    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
-
-    =ccnum= -- Integer in the range [1..128] denoting the MIDI
-    Controller number.
-
+    | =fn= | Function of one Argument to call on MIDI input |
+    | =channel= | Integer in the range [1..16] denoting the MIDI channel. |
+    | =ccnum= | Integer in the range [1..128] denoting the MIDI Controller number. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -176,12 +164,9 @@
    Register a MIDI controller of class /class/ with ID /id/ and optional
    initialization argumens /args/.
 *** Arguments
-    =class= -- The class of the midi controller to add.
-
-    =id= -- Keyword or Symbol used as ID of the instance.
-
-    =args= -- Initialization arguments appropriate for the class.
-
+    | =class= | The class of the midi controller to add. |
+    | =id= | Keyword or Symbol used as ID of the instance. |
+    | =args= | Initialization arguments appropriate for the class. |
 
 *** See also
     - [[list-midi-controllers][list-midi-controllers]]
@@ -199,12 +184,8 @@
    relative. If relative, all folders in [[#sfz-preset-path][*​​sfz-preset-path​​*]] will get
    recursively searched when the preset gets loaded.
 *** Arguments
-    =preset= -- A keyword or symbol to name the preset
-
-    =file= -- A string or path to the associated sfz file. If the file
-    path is relative, it will be searched recursively in all paths of /
-    cl-user::*​​sfz-file-path​​*/.
-
+    | =preset= | A keyword or symbol to name the preset |
+    | =file= | A string or path to the associated sfz file. If the file path is relative, it will be searched recursively in all paths of [[#sfz-preset-path][*​​​sfz-preset-path​​​*]]. |
 
 *** Note
     This function only stores the association between the preset
@@ -235,12 +216,9 @@
    the lisp process unresponsive due to an excessive number of
    permutations.
 *** Arguments
-    =list= -- List of elements to be permuted.
-
-    =:test= -- Function to test for equality of elements in list.
-
-    =:max-length= -- maximum length of list accepted.
-
+    | =list= | List of elements to be permuted. |
+    | =:test= | Function to test for equality of elements in list. |
+    | =:max-length= | Positive Integer denoting maximum length of list accepted. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -262,8 +240,7 @@
    Return dB value of linear amplitude /amp/. An amplitude of 0 returns a
    dB value of -100.
 *** Arguments
-    =amp= -- Positive Integer denoting amplitude.
-
+    | =amp= | Positive Integer denoting linear amplitude. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -283,6 +260,10 @@
    Return the row with index /row-idx/ of a 2-dimensional array as
    1-dimensional array, sharing the same data structure by utilizing
    Common Lisp's displaced array functionality.
+*** Arguments
+    | =arr= | 2-dimensional Array. |
+    | =rox-idx= | Non Negative Integer denoting the Index of the row to return. |
+
 ** ats->browser
    Function
    #+BEGIN_SRC lisp
@@ -291,8 +272,7 @@
    Display the ats struct /ats-snd/ graphically in the interactive ATS
    Player located at /<clamps-base-url>/ats-display/ in the Gui.
 *** Arguments
-    =ats-snd= -- The ats struct to display.
-
+    | =ats-snd= | The ats struct to display. |
 
 *** See also
     - [[clamps-base-url][clamps-base-url]]
@@ -357,15 +337,89 @@
    :PROPERTIES:
    :CUSTOM_ID: buffer-loop-play
    :END:
-   Function
+   Incudine VUG
    #+BEGIN_SRC lisp
-     (buffer-loop-play* buffer rate start-pos loopstart loopend &optional ugen-node)
+     (buffer-loop-play* (buffer buffer) (rate sample) (start-pos sample) (loopstart sample) (loopend sample))
    #+END_SRC
+   Buffer loop play Ugen working with any blocksize.
+*** Arguments
+    | =buffer= | Incudine buffer. |
+    | =rate= | Positive Number denoting playback rate (will get adjusted to buffer-sample-rate). |
+    | =start-pos= | Non Negative Integer denoting start position in samples. |
+    | =loopstart= | Non Negative Integer denoting start of loop in samples. |
+    | =loopend= | Non Negative Integer denoting end of loop in samples. |
+
+*** See also
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
+** buffer-play*
+   :PROPERTIES:
+   :CUSTOM_ID: buffer-play
+   :END:
+   Incudine VUG
+   #+BEGIN_SRC lisp
+     (buffer-play* (buffer buffer) (rate sample) (startframe sample) (endframe sample))
+   #+END_SRC
+   Buffer play Ugen working with any blocksize.
+*** Arguments
+    | =buffer= | Incudine buffer. |
+    | =rate= | Positive Number denoting playback rate (will get adjusted to buffer-sample-rate). |
+    | =start-frame= | Non Negative Integer denoting start position of playback in samples. |
+    | =endframe= | Non Negative Integer denoting end position of playback in samples. |
+
+*** See also
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
 ** buffer-stretch-play
    Function
    #+BEGIN_SRC lisp
      (buffer-stretch-play buffer rate wwidth start end stretch)
    #+END_SRC
+** buffer-stretch-play*
+   :PROPERTIES:
+   :CUSTOM_ID: buffer-stretch-play
+   :END:
+   Incudine VUG
+   #+BEGIN_SRC lisp
+     (buffer-stretch-play* (buffer buffer) (rate sample) (wwidth sample) (start sample) (end sample) (stretch sample))
+   #+END_SRC
+   Buffer play Ugen with granular stretching working with any blocksize.
+*** Arguments
+    | =buffer= | Incudine buffer. |
+    | =rate= | Positive Number denoting playback rate (will get adjusted to buffer-sample-rate). |
+    | =wwidth= | Non Negative Integer denoting granular window size in msecs. |
+    | =start= | Non Negative Integer denoting start of playback into the buffer in samples. |
+    | =end= | Non Negative Integer denoting end of playback into the buffer in samples. |
+    | =stretch= | Positive Integer denoting stretching factor. |
+
+*** See also
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
 ** bus-name
    Generic Function
    #+BEGIN_SRC lisp
@@ -382,16 +436,11 @@
    /sec/. Samplerate and the number of bytes per sample can be supplied
    using the /samplerate/ and /bytes-per-sample/ keywords..
 *** Arguments
-    =hr= -- Number of hours.
-
-    =min= -- Number of minutes.
-
-    =hr= -- Number of seconds.
-
-    =samplerate= -- Number of samples per second.
-
-    =bytes-per-sample= -- Number of bytes per sample.
-
+    | =hr= | Number of hours. |
+    | =min= | Number of minutes. |
+    | =hr= | Number of seconds. |
+    | =samplerate= | Number of samples per second. |
+    | =bytes-per-sample= | Number of bytes per sample. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -405,12 +454,9 @@
    Call function /f/ /n/ times, with idx [0..n-1] as argument,
    collecting its results. Return results with tail appended.
 *** Arguments
-    =f= -- Function of one argument (an integer in the range [0..n])
-
-    =n= -- Positive integer
-
-    =tail= -- A list collected into by prepending to it
-
+    | =f= | Function of one argument (an integer in the range [0..n]) |
+    | =n= | Positive integer |
+    | =tail= | A list collected into by prepending to it |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -434,12 +480,8 @@
    Return the last received MIDI CC value of controller number /ccnum/
    at MIDI channel /channel/. Setfable.
 *** Arguments
-    =ccnum= -- Integer in the range [1..128] indicating the Controller
-    Number.
-
-    =channel= -- Integer in the range [1..16] indicating the MIDI
-    channel.
-
+    | =ccnum= | Integer in the range [1..128] indicating the Controller Number. |
+    | =channel= | Integer in the range [1..16] indicating the MIDI channel. |
 
 *** See also
     - [[#midi-cc-state][*​​midi-cc-state​​*]]
@@ -451,8 +493,7 @@
    Change the current working directory to /dirarg/ or to $HOME if dirarg
    is not supplied.
 *** Arguments
-    =dirarg= -- String or Pathname.
-
+    | =dirarg= | String or Pathname. |
 
 *** See also
     - [[pwd][pwd]]
@@ -490,16 +531,9 @@
    into the /<clamps-gui-root>/www// subdirectory with their filenames
    relative to this directory.
 *** Arguments
-    =:gui-root= -- String or Pathname indicating where to put the /www/
-    subfolder for files accessible by the gui (nicknamed /<clamps-gui-
-    root>/).
-
-    =:open-gui= -- Boolean indicating whether to open the /<clamps-base-
-    url>/ in a browser window after starting the gui.
-
-    =:qsynth= -- Boolean indicating whether to start the Qsynth
-    softsynth (Linux only).
-
+    | =:gui-root= | String or Pathname indicating where to put the /www/ subfolder for files accessible by the gui (nicknamed /<clamps-gui-root>/).  |
+    | =:open-gui= | Boolean indicating whether to open the /<clamps-base-url>/ in a browser window after starting the gui.  |
+    | =:qsynth= | Boolean indicating whether to start the Qsynth softsynth (Linux only). |
 
 *** See also
     - [[clamps-base-url][clamps-base-url]]
@@ -556,19 +590,10 @@
    Reset the root directory of the Gui to /gui-root/www/, optionally
    opening the Gui in a browser window.
 *** Arguments
-    =gui-root= -- ist the path where to put the /www/ subfolder for
-    files accessible by the gui (nicknamed /<clamps-gui-root>/
-    throughout this dictionary).
-
-    =:open= -- is a flag indicating whether to open [[clamps-base-url]
-    [clamps-base-url]] in a browser window after starting the gui.  In
-    the given path the following directories will be created:
-
-    - /<clamps-gui-root>/www//
-    - /<clamps-gui-root>/www/svg//  file path for svg files used in the /
-    svg-display/ page of the Gui.  Any files which need to be accessible
-    by the Gui have to be put into the /<clamps-gui-root>/www//
-    subdirectory with their filenames relative to this directory.
+    | =gui-root= | ist the path where to put the /www/ subfolder for files accessible by the gui (nicknamed /<clamps-gui-root>/ throughout this dictionary).  |
+    | =:open= | is a flag indicating whether to open [[clamps-base-url][clamps-base-url]] in a browser window after starting the gui.  In the given path the following directories will be created:  |
+    || /<clamps-gui-root>/www// |
+    || /<clamps-gui-root>/www/svg//  file path for svg files used in the /svg-display/ page of the Gui.  Any files which need to be accessible by the Gui have to be put into the /<clamps-gui-root>/www// subdirectory with their filenames relative to this directory. |
 
 *** See also
     - [[clamps][clamps]]
@@ -584,14 +609,9 @@
    Incudine, optionally start qsynth (Linux only) and open the gui in a
    browser. This function should normally not be called by the user.
 *** Arguments
-    =gui-root= -- The root path of the gui
-
-    =qsynth= -- Boolean indicating whether to start the qsynth softsynth
-    (Linux only).
-
-    =open-gui= -- Boolean indicating whether to open the gui in a
-    Browser window.
-
+    | =gui-root= | The root path of the gui |
+    | =qsynth= | Boolean indicating whether to start the qsynth softsynth (Linux only). |
+    | =open-gui= | Boolean indicating whether to open the gui in a Browser window. |
 
 *** See also
     - [[clamps][clamps]]
@@ -613,6 +633,20 @@
    #+BEGIN_SRC lisp
      (clip val min max)
    #+END_SRC
+   Clip val into the range [min..max].
+*** Arguments
+    | =val= | Number to be clipped. |
+    | =min= | Number denoting minimum bound. |
+    | =min= | Number denoting maximum bound. |
+
+*** Example
+    #+BEGIN_SRC lisp
+      (clip -10 0 3) ; => 0
+      
+      (clip 10 0 3) ; => 3
+      
+      (clip 1.73 0 3) ; => 1.73
+    #+END_SRC
 ** clog-midi-controller
    Class
 
@@ -680,18 +714,13 @@
    list with sublists of the form (elem count) for each elem, optionally
    sorted according to the setting of /sort/.
 *** Arguments
-    =seq= -- A Common Lisp Sequence.
-
-    =:test= -- Function accepted as test function by #'make-hash-table.
-
-    =:key= -- Function to extract the key to compare from each element.
-
-    =:sort= -- Boolean indicationg whether and how to sort the results.
-    Possible Values are:
-
-    - /:from-end/
-    - /t/
-    - /nil/
+    | =seq= | A Common Lisp Sequence. |
+    | =:test= | Function accepted as test function by #'make-hash-table. |
+    | =:key= | Function to extract the key to compare from each element. |
+    | =:sort= | Boolean indicationg whether and how to sort the results. Possible Values are: |
+    || /:from-end/ |
+    || /t/ |
+    || /nil/ |
 
    If /:sort/ is /nil/, result returns the items in the order of their
    first occurence, if /:sort/ is /:from-end/, they are returned in
@@ -797,8 +826,7 @@
    #+END_SRC
    Return the frequency ratio of the Midicents interval /ct/.
 *** Arguments
-    =ct= -- The interval in Midicents.
-
+    | =ct= | The interval in Midicents. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -860,8 +888,7 @@
    Return amp value of dB value /db/. The dB value is clipped below -100
    and returns the amplitude 0.
 *** Arguments
-    =amp= -- Positive Integer denoting amplitude.
-
+    | =amp= | Positive Integer denoting amplitude. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -905,9 +932,7 @@
    Form for the definition of multiple parameters. /Pairs/ are one or
    more elements, being the arguments of a single defparameter form.
 *** Arguments
-    =pairs= -- one or more elements, either a Symbol or a list of 1-3
-    elements with a Symbol as first and a String as third element.
-
+    | =pairs= | one or more elements, either a Symbol or a list of 1-3 elements with a Symbol as first and a String as third element. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -934,9 +959,7 @@
    Form for the definition of multiple variable. /Pairs/ are one or
    more elements, being the arguments of a single defparameter form.
 *** Arguments
-    =pairs= -- one or more elements, either a Symbol or a list of 1-3
-    elements with a Symbol as first and a String as third element.
-
+    | =pairs= | one or more elements, either a Symbol or a list of 1-3 elements with a Symbol as first and a String as third element. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -960,10 +983,8 @@
    Destructively remove props from property list /proplist/ and return
    it.
 *** Arguments
-    =proplist= -- Property list.
-
-    =props= -- One or more properties to delete.
-
+    | =proplist= | Property list. |
+    | =props= | One or more properties to delete. |
 
 *** See also
     - [[do-proplist][do-proplist]]
@@ -980,13 +1001,9 @@
    Return differences or the results of applying /modifier/ to subsequent
    elements of /list/.
 *** Arguments
-    =list= -- List to integrate
-
-    =:modifier= -- Function to apply to all elements accumulationg the
-    results.
-
-    =:start= -- Number denoting the start value.
-
+    | =list= | List to integrate |
+    | =:modifier= | Function to apply to all elements accumulationg the results. |
+    | =:start= | Number denoting the start value. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1009,12 +1026,9 @@
    /proplist/ are bound to the symbols /keysym/ and /valuesym/ in the
    lexical scope of /body/.
 *** Arguments
-    =keysym= -- Symbol bound to all keys of the property list.
-
-    =valuesym= -- Symbol bound to all values of the property list.
-
-    =proplist= -- Property list to be traversed.
-
+    | =keysym= | Symbol bound to all keys of the property list. |
+    | =valuesym= | Symbol bound to all values of the property list. |
+    | =proplist= | Property list to be traversed. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1050,12 +1064,9 @@
    /proplist/ are bound to the symbols /keysym/ and /valuesym/ in the
    lexical scope of /body/.
 *** Arguments
-    =keysym= -- Symbol bound to all keys of the property list.
-
-    =valuesym= -- Symbol bound to all values of the property list.
-
-    =proplist= -- Property list to be traversed.
-
+    | =keysym= | Symbol bound to all keys of the property list. |
+    | =valuesym= | Symbol bound to all values of the property list. |
+    | =proplist= | Property list to be traversed. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1077,10 +1088,8 @@
    #+END_SRC
    Recursively apply /fn/ to /args/ /n/ times.
 *** Arguments
-    =n= -- Integer number of repetitions.
-
-    =fn= -- Function to apply.
-
+    | =n= | Integer number of repetitions. |
+    | =fn= | Function to apply. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1099,10 +1108,8 @@
    #+END_SRC
    Return a float of /num/ rounded to /prec/ decimal places.
 *** Arguments
-    =num= -- The number to round.
-
-    =prec= -- Non Negative Integer denoting the number of decimal places.
-
+    | =num= | The number to round. |
+    | =prec= | Non Negative Integer denoting the number of decimal places. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1137,10 +1144,8 @@
    Load and register buffer from /file/ if not loaded already. Return
    buffer.
 *** Arguments
-    =file= -- Pathname or String denoting a soundfile.
-
-    =:path= -- List of Pathnames or Strings to search for file.
-
+    | =file= | Pathname or String denoting a soundfile. |
+    | =:path= | List of Pathnames or Strings to search for file. |
 
 *** See also
     - [[add-buffer][add-buffer]]
@@ -1157,12 +1162,9 @@
    Ensure that the property /prop/ exists in /proplist/, otherwise set it
    to /default/. Return the value of prop.
 *** Arguments
-    =proplist= -- Property list.
-
-    =prop= -- Property key to ensure.
-
-    =default= -- The value property should get assigned to if not set.
-
+    | =proplist= | Property list. |
+    | =prop= | Keyword or Symbol denoting the property key to ensure. |
+    | =default= | The value the property should get assigned to if not set. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1194,14 +1196,9 @@
    established before using [[add-sfz-preset][add-sfz-preset]], otherwise a warning is
    issued and no file is loaded.
 *** Arguments
-    =preset= -- A keynum or symbol to serve as the name/id of the
-    preset.
-
-    =:force= -- A boolean indicating to force a reload even if the
-    preset has been loaded before.
-
-    =:oneshot= -- Boolean denoting whether not to loop the playback.
-
+    | =preset= | A keynum or symbol to serve as the name/id of the preset.  |
+    | =:force= | A boolean indicating to force a reload even if the preset has been loaded before.  |
+    | =:oneshot= | Boolean denoting whether not to loop the playback. |
 
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
@@ -1235,10 +1232,35 @@
    :PROPERTIES:
    :CUSTOM_ID: envelope
    :END:
-   Function
+   Incudine VUG
    #+BEGIN_SRC lisp
-     (envelope* env gate time-scale done-action &optional ugen-node)
+     (envelope* (env envelope) (gate sample) (time-scale sample) (done-action function))
    #+END_SRC
+   Envelope Ugen working with any blocksize. The product of /time-scale/
+   and the total duration of /env/ is the total duration of the envelope
+   in seconds. /done-action/ is called when the total-duration has been
+   reached or when /gate/ is zero and the release phase of the envelope
+   has ended.
+   
+   envelope* returns an array of block-size samples.
+*** Arguments
+    | =env= | incudine.vug:envelope |
+    | =gate= | Number functioning as a gate: If zero, start the release phase. |
+    | =time-scale= | Number scaling the envelope x-values. |
+    | =done-action= | Function to call on the dsp-node at end of release. |
+
+*** See also
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
 ** every-nth
    Function
    #+BEGIN_SRC lisp
@@ -1247,13 +1269,9 @@
    Return a sublist of /list/ containing every element with an index
    being a multiple of /n/.
 *** Arguments
-    =list= -- Input list.
-
-    =n= -- Positive integer indicating the index distance between
-    elements.
-
-    =:offset= -- Positive integer indicating offset into the input list.
-
+    | =list= | Input list. |
+    | =n= | Positive integer denoting the index distance between elements. |
+    | =:offset= | Positive integer denoting offset into the input list. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -1269,12 +1287,9 @@
    /[min..max]/ as a normalized float value. /Min/ and /max/ have to be
    positive numbers.
 *** Arguments
-    =x= -- An input value in the range /[min..max]/ to be interpolated.
-
-    =min= -- The minimum value.
-
-    =max= -- The maximum value.
-
+    | =x= | An input value in the range /[min..max]/ to be interpolated. |
+    | =min= | The minimum value. |
+    | =max= | The maximum value. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1320,9 +1335,7 @@
    not recursive, but calculates the value directly, running in constant
    time.
 *** Arguments
-    =n= -- Non Negative Integer denoting the index of the Fibonacci
-    series.
-
+    | =n= | Non Negative Integer denoting the index of the Fibonacci series. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -1340,10 +1353,8 @@
    #+END_SRC
    Return a list of all elements of /seq/ satisfying /pred/.
 *** Arguments
-    =seq= -- A Common Lisp sequence
-
-    =pred= -- Function of one element for filtering elements.
-
+    | =seq= | A Common Lisp sequence |
+    | =pred= | Function of one element for filtering elements. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -1357,8 +1368,7 @@
    Find all buffers with a name being a full pathname or the
    pathname-name of /name/.
 *** Arguments
-    =name= -- String or Pathname denoting the buffer's filename.
-
+    | =name= | String or Pathname denoting the buffer's filename. |
 
 *** See also
     - [[add-buffer][add-buffer]]
@@ -1373,8 +1383,7 @@
    Return MIDI controller instance with ID /id/ or /nil/ if not
    registered.
 *** Arguments
-    =id= -- Keyword or Symbol used as ID of a midicontroller instance .
-
+    | =id= | Keyword or Symbol used as ID of a midicontroller instance . |
 
 *** See also
     - [[add-midi-controller][add-midi-controller]]
@@ -1389,8 +1398,7 @@
    #+END_SRC
    Find a running Incudine dsp registered with [[add-dsp][add-dsp]].
 *** Arguments
-    =id= -- Keyword or Symbol identifying the dsp.
-
+    | =id= | Keyword or Symbol identifying the dsp. |
 
 *** See also
     - [[add-dsp][add-dsp]]
@@ -1409,8 +1417,7 @@
    Remove all brackets except the outmost from /form/. Non-recursive,
    non-stack version from Rosetta Code.
 *** Arguments
-    =form= -- A Common Lisp form.
-
+    | =form= | A Common Lisp form. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1422,10 +1429,15 @@
 ** flatten-fn
    Function
    #+BEGIN_SRC lisp
-     (flatten-fn seq &key (test #'atom) (key #'identity))
+     (flatten-fn list &key (test #'atom) (key #'identity))
    #+END_SRC
-   Remove all brackets except the outmost in seq. Use test and key to
-      determine where to stop removing brackets.
+   Remove all brackets except the outmost in /list/. Use /test/ and /key/
+   to determine where to stop removing brackets.
+*** Arguments
+    | =list= | input List. |
+    | =test= | Function applied to each element of list to test for the end of flattening. |
+    | =key= | Function applied to each element of list before testing. |
+
 *** Examples
     #+BEGIN_SRC lisp
       (flatten-fn '((a b) (((c d) (e f)) (g h)) (i k)))
@@ -1450,8 +1462,7 @@
    #+END_SRC
    Return the Midicents interval of the frequency ratio /fr/.
 *** Arguments
-    =fr= -- The frequency ratio of the interval.
-
+    | =fr= | Positive Number denoting the frequency ratio of the interval. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1510,13 +1521,9 @@
    to the /test/ predicate. If /once/ is non-nil, return each duplicate
    element only once.
 *** Arguments
-    =list= -- List being examined.
-
-    =test= -- Function to determine equality of elements.
-
-    =once= -- Boolean to determine if only one of the duplicate elements
-    is returned.
-
+    | =list= | List being examined. |
+    | =test= | Function to determine equality of elements. |
+    | =once= | Boolean to determine if only one of the duplicate elements is returned. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1536,10 +1543,8 @@
    #+END_SRC
    Like getf but using #'equal for testing of the property key.
 *** Arguments
-    =proplist= -- Property list
-
-    =key= -- Lisp Object ervong as key in property list.
-
+    | =proplist= | Property list |
+    | =key= | Lisp Object ervong as key in property list. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -1562,13 +1567,9 @@
    ignored. If /force-all/ is non-nil, also return properties not present
    in proplist with nil as value.
 *** Arguments
-    =proplist= -- Property list.
-
-    =props= -- Properties to extract from proplist.
-
-    =:force-all= -- Boolean to indicate if non-present props should get
-    included in result.
-
+    | =proplist= | Property list. |
+    | =props= | Properties to extract from proplist. |
+    | =:force-all= | Boolean to indicate if non-present props should get included in result. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1605,14 +1606,9 @@
    established before using [[add-sfz-preset][add-sfz-preset]], otherwise a warning is
    issued and no file is loaded.
 *** Arguments
-    =preset= -- A keynum or symbol to serve as the name/id of the
-    preset.
-
-    =:force= -- A boolean indicating to force a reload even if the
-    preset has been loaded before.
-
-    =:oneshot= -- Boolean denoting whether not to loop the playback.
-
+    | =preset= | A keynum or symbol to serve as the name/id of the preset.  |
+    | =:force= | A boolean indicating to force a reload even if the preset has been loaded before.  |
+    | =:oneshot= | Boolean denoting whether not to loop the playback. |
 
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
@@ -1639,10 +1635,8 @@
    Convert a /secs/ representing seconds into a list of the form /(hr min
    secs)/.
 *** Arguments
-    =secs= -- Number representing time in seconds.
-
-    =prec= -- Number of digits after the comma of seconds
-
+    | =secs= | Number representing time in seconds. |
+    | =prec= | Number of digits after the comma of seconds |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -1655,8 +1649,7 @@
    #+END_SRC
    Return the value of /ref-object/.
 *** Arguments
-    =ref-object= -- An instance of [[ref-object][ref-object]].
-
+    | =ref-object= | An instance of [[ref-object][ref-object]]. |
 
 *** See also
     - [[make-computed][make-computed]]
@@ -1706,11 +1699,8 @@
    Partition /list/ into sublists of lengths given by /group-lenghts/
    cyclically.
 *** Arguments
-    =list= -- The list to partition.
-
-    =group-lenghts= -- A list of Positive Integers denoting the sequence
-    of lengths of the partitions.
-
+    | =list= | The list to partition. |
+    | =group-lenghts= | List of Positive Integers denoting the sequence of lengths of the partitions. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -1771,9 +1761,7 @@
    Dump all active dsps of /node/ to the /incudine:*​​logger-stream​​*/
    output.
 *** Arguments
-    =node= -- Either a Non Negative Integer denoting the id of the node
-    or an /incudine:node/ Instance.
-
+    | =node= | Either a Non Negative Integer denoting the id of the node or an /incudine:node/ Instance. |
 
 *** Note
     If calling idump doesn't produce any output although dsps are running,
@@ -1792,10 +1780,8 @@
    Return /list/ with increasing indexes consed to the front of each
    element of list starting from /n/.
 *** Arguments
-    =list= -- List containing elements which get prepended indices.
-
-    =n= -- Integer denoting starting index
-
+    | =list= | List containing elements which get prepended indices. |
+    | =n= | Integer denoting starting index |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -1816,13 +1802,9 @@
    #+END_SRC
    Return a running sum (or any other /modifier/ function) of /list/.
 *** Arguments
-    =list= -- List to integrate
-
-    =:modifier= -- Function to apply to all elements accumulationg the
-    results.
-
-    =:start= -- Number denoting the start value.
-
+    | =list= | List to integrate |
+    | =:modifier= | Function to apply to all elements accumulationg the results. |
+    | =:start= | Number denoting the start value. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1842,7 +1824,13 @@
    #+BEGIN_SRC lisp
      (keynum->hz keynum)
    #+END_SRC
-   Convert VALUE dB to linear value.
+   Convert Midicent /keynum/ to Hz, taking *​​standard-pitch​​* into
+   account. Returns Hz value as double float.
+*** Arguments
+    | =keynum= | Number in Micents. |
+
+*** See also
+    - [[standard-pitch][standard-pitch]]
 * L
 ** let-default
    Macro
@@ -1870,12 +1858,9 @@
    Return the reverse linear interpolation for a value in the range
    /[min..max]/ as a normalized float value.
 *** Arguments
-    =x= -- An input value in the range /[min..max]/ to be interpolated.
-
-    =min= -- The minimum value.
-
-    =max= -- The maximum value.
-
+    | =x= | An input value in the range /[min..max]/ to be interpolated. |
+    | =min= | The minimum value. |
+    | =max= | The maximum value. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -1897,10 +1882,27 @@
    :PROPERTIES:
    :CUSTOM_ID: line
    :END:
-   Function
+   Incudine VUG
    #+BEGIN_SRC lisp
-     (line* start end duration done-action &optional ugen-node)
+     (line* (start sample) (end sample) (duration sample) (done-action function))
    #+END_SRC
+   Ugen of a line working with any block size.
+*** Arguments
+    | =start= | Number denoting start value. |
+    | =end= | Number denoting end value- |
+    | =duration= | Number denoting duration in seconds. |
+
+*** See also
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
 ** lines->svg
    Function
    #+BEGIN_SRC lisp
@@ -1936,10 +1938,7 @@
    #+END_SRC
    Return a sorted list of all sfz preset names.
 *** Arguments
-    =:loaded= -- Boolean to indicate whether only the preset names of
-    loaded presets should be returned. If /nil/ all registered preset
-    names are returned.
-
+    | =:loaded= | Boolean to indicate whether only the preset names of loaded presets should be returned. If /nil/ all registered preset names are returned. |
 
 ** load-sfz-preset
    Function
@@ -1952,15 +1951,10 @@
    explicitely. The preferred mechanism to deal with sfz presets is by
    using a combination of [[add-sfz-preset][add-sfz-preset]] and [[ensure-sfz-preset][ensure-sfz-preset]].
 *** Arguments
-    =file= -- Path or filename of the sfz file to load
-
-    =name= -- symbol to identify the preset (preferably a keyword, but
-    any symbol works)
-
-    =:force= -- Force loading of the preset even if it already exists.
-
-    =:oneshot= -- Boolean denoting whether not to loop the playback.
-
+    | =file= | Path or filename of the sfz file to load  |
+    | =name= | symbol to identify the preset (preferably a keyword, but any symbol works)  |
+    | =:force= | Force loading of the preset even if it already exists.  |
+    | =:oneshot= | Boolean denoting whether not to loop the playback. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2010,8 +2004,7 @@
    #+END_SRC
    Return the full pathname of /lsample/.
 *** Arguments
-    =lsample= -- Instance of type lsample.
-
+    | =lsample= | Instance of type lsample. |
 
 *** See also
     - [[lsample][lsample]]
@@ -2033,12 +2026,9 @@
    /[min..max]/ as a float value. The min and max values have to be
    positive.
 *** Arguments
-    =x= -- An input value in the range /[0..127]/ to be interpolated.
-
-    =min= -- The output value for /x = 0/.
-
-    =max= -- The output value for /x = 127/.
-
+    | =x= | An input value in the range /[0..127]/ to be interpolated. |
+    | =min= | The output value for /x = 0/. |
+    | =max= | The output value for /x = 127/. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2114,12 +2104,9 @@
    Return the linear interpolation for a MIDI value in the range
    /[min..max]/ as a float value.
 *** Arguments
-    =x= -- An input value in the range /[0..127]/ to be interpolated.
-
-    =min= -- The output value for /x = 0/.
-
-    =max= -- The output value for /x = 127/.
-
+    | =x= | An input value in the range /[0..127]/ to be interpolated. |
+    | =min= | The output value for /x = 0/. |
+    | =max= | The output value for /x = 127/. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2196,12 +2183,8 @@
    Refer to [[clamps:Defining relations][Defining relations]] in the Clamps documentation for
    examples.
 *** Arguments
-    =fn= -- Function of no arguments to call whenever a value accessed
-    using [[get-val][get-val]] in the body of the function is changed.
-
-    =setter= -- Function of one argument called with the value of the
-    ref-object returned by /make-computed/ whenever it changes.
-
+    | =fn= | Function of no arguments to call whenever a value accessed using [[get-val][get-val]] in the body of the function is changed.  |
+    | =setter= | Function of one argument called with the value of the ref-object returned by /make-computed/ whenever it changes. |
 
 *** See also
     - [[get-val][get-val]]
@@ -2215,8 +2198,7 @@
    #+END_SRC
    Return a keyword from /name/.
 *** Arguments
-    =name= -- String to intern
-
+    | =name= | String to intern |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -2245,8 +2227,7 @@
    [0..1] for a list of the beat division numbers to be considered,
    supplied in /vals/.
 *** Arguments
-    =vals= -- List of integer beat-divisions to be collected.
-
+    | =vals= | List of integer beat-divisions to be collected. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2265,13 +2246,8 @@
    #+END_SRC
    Return an instance of [[ref-object][ref-object]] with initial value /val/.
 *** Arguments
-    =val= -- Initial value of the created instance. It can be of any
-    type.
-
-    =args= -- Optional args supplied to make-instance. They are used
-    internally and are not intended to be used directly when working
-    with /cl-refs/.
-
+    | =val= | Initial value of the created instance. It can be of any type.  |
+    | =args= | Optional args supplied to make-instance. They are used internally and are not intended to be used directly when working with /cl-refs/. |
 
 *** See also
     - [[get-val][get-val]]
@@ -2287,13 +2263,9 @@
    /list/. The pairs are given to fn in the order of appearance in the
    list. /return-type/ serves the same purpose as in #'map.
 *** Arguments
-    =return-type= -- A Sequence type or nil.
-
-    =fn= -- Function of two arguments called on all pairs.
-
-    =list= -- List containing all elements to which fn gets applied
-    pairwise.
-
+    | =return-type= | A Sequence type or nil. |
+    | =fn= | Function of two arguments called on all pairs. |
+    | =list= | List containing all elements to which fn gets applied pairwise. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -2309,15 +2281,9 @@
    get supplied as first arg to /fn/. /result-type/ serves the same
    purpose as in #'map.
 *** Arguments
-    =result-type= -- Result type to return. If nil, don't return a
-    result.
-
-    =fn= -- Function to map over sequences. Needs to accept /(+ 1
-    (length seqs))/ arguments.
-
-    =seqs= -- One or more sequences where mapping gets applied, similar
-    to map.
-
+    | =result-type= | Result type to return. If nil, don't return a result. |
+    | =fn= | Function to map over sequences. Needs to accept /(+ 1 (length seqs))/ arguments. |
+    | =seqs= | One or more sequences where mapping gets applied, similar to map. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -2337,10 +2303,8 @@
    Like mapcar but traversing a property list. /fn/ has to accept two
    values, the key and the value of each property in the proplist.
 *** Arguments
-    =fn= -- Function to apply to all entries of the property list.
-
-    =proplist= -- Property list to traverse.
-
+    | =fn= | Function to apply to all entries of the property list. |
+    | =proplist= | Property list to traverse. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -2364,10 +2328,8 @@
    the node is considered to be a leaf node. Return the modified tree as
    a new structure.
 *** Arguments
-    =fn= -- Function to call on the leaf nodes.
-
-    =tree= -- List to traverse, possibly nested
-
+    | =fn= | Function to call on the leaf nodes. |
+    | =tree= | List to traverse, possibly nested |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2586,18 +2548,13 @@
    
    /type/ should be one of :error, :warn, :info or :debug.
 *** Arguments
-    =type= -- Keynum or Symbol from the following list:
-
-    - /:error/
-    - /:warn/
-    - /:info/
-    - /:debug/
-    =format-control= -- A format control string like in Common Lisp's
-    #'format function.
-
-    =format-arguments= -- Zero or more format arguments like in Common
-    Lisp's #'format function.
-
+    | =type= | Keynum or Symbol from the following list:  |
+    || /:error/ |
+    || /:warn/ |
+    || /:info/ |
+    || /:debug/  |
+    | =format-control= | A format control string like in Common Lisp's #'format function.  |
+    | =format-arguments= | Zero or more format arguments like in Common Lisp's #'format function. |
 
 *** See also
     - [[nrt-msg][nrt-msg]]
@@ -2608,10 +2565,8 @@
    #+END_SRC
    Convert pitch in Midicts to frequency in Hz.
 *** Arguments
-    =midi-value= -- Pitch in Midicents.
-
-    =:tuning-base= -- Frequency of A4 in Hz.
-
+    | =midi-value= | Positive Number denoting Pitch in Midicents. |
+    | =:tuning-base= | Frequency of A4 in Hz. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2631,8 +2586,7 @@
    Return normalized value mapped from MIDI value m in the range
    [0..127] as a single float.
 *** Arguments
-    =m= -- Number in the range [0..127]
-
+    | =m= | Number in the range [0..127] |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2653,10 +2607,8 @@
    #+END_SRC
    Like incf but multiplying instead of adding.
 *** Arguments
-    =place= -- A setfable place.
-
-    =number= -- Number indicating the multiplication factor.
-
+    | =place= | A setfable place. |
+    | =number= | Number indicating the multiplication factor. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2683,12 +2635,9 @@
    Return the exponential interpolation for a normalized value in the
    range /[min..max]/ as a float value.
 *** Arguments
-    =x= -- An input value in the range /[0..1]/ to be interpolated.
-
-    =min= -- The output value for /x = 0/.
-
-    =max= -- The output value for /x = 1/.
-
+    | =x= | An input value in the range /[0..1]/ to be interpolated. |
+    | =min= | The output value for /x = 0/. |
+    | =max= | The output value for /x = 1/. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2716,10 +2665,8 @@
    Return a random deviation factor, the deviation being exponentially
    interpolated between /1/ for /x = 0/ and /[1/max..max]/ for /x = 1/.
 *** Arguments
-    =x= -- An input value in the range /[0..1]/ to be interpolated.
-
-    =max= -- The maximum deviation factor for /x = 1/;
-
+    | =x= | An input value in the range /[0..1]/ to be interpolated. |
+    | =max= | The maximum deviation factor for /x = 1/; |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2765,12 +2712,9 @@
    Return the linear interpolation for a normalized value in the range
    /[min..max]/ as a float value.
 *** Arguments
-    =x= -- An input value in the range /[0..1]/ to be interpolated.
-
-    =min= -- The output value for /x = 0/.
-
-    =max= -- The output value for /x = 1/.
-
+    | =x= | An input value in the range /[0..1]/ to be interpolated. |
+    | =min= | The output value for /x = 0/. |
+    | =max= | The output value for /x = 1/. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2798,10 +2742,8 @@
    Return a random deviation value, the deviation being linearly
    interpolated between /0/ for /x = 0/ and /[-max..max]/ for /x = 1/.
 *** Arguments
-    =x= -- An input value in the range /[0..1]/ to be interpolated.
-
-    =max= -- The maximum deviation value for /x = 1/;
-
+    | =x= | An input value in the range /[0..1]/ to be interpolated. |
+    | =max= | The maximum deviation value for /x = 1/; |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -2952,18 +2894,13 @@
    
    /type/ should be one of :error, :warn, :info or :debug.
 *** Arguments
-    =type= -- Keynum or Symbol from the following list:
-
-    - /:error/
-    - /:warn/
-    - /:info/
-    - /:debug/
-    =format-control= -- A format control string like in Common Lisp's
-    #'format function.
-
-    =format-arguments= -- Zero or more format arguments like in Common
-    Lisp's #'format function.
-
+    | =type= | Keynum or Symbol from the following list:  |
+    || /:error/ |
+    || /:warn/ |
+    || /:info/ |
+    || /:debug/  |
+    | =format-control= | A format control string like in Common Lisp's #'format function.  |
+    | =format-arguments= | Zero or more format arguments like in Common Lisp's #'format function. |
 
 *** See also
     - [[msg][msg]]
@@ -2975,8 +2912,7 @@
    Return rounded MIDI value mapped from normalized n in the range
    [0..1].
 *** Arguments
-    =n= -- Number in the range [0..1]
-
+    | =n= | Number in the range [0..1] |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3005,10 +2941,8 @@
    Load and register buffer from /file/ if not loaded already. Return
    buffer.
 *** Arguments
-    =file= -- Pathname or String denoting a soundfile.
-
-    =:path= -- List of Pathnames or Strings to search for file.
-
+    | =file= | Pathname or String denoting a soundfile. |
+    | =:path= | List of Pathnames or Strings to search for file. |
 
 *** See also
     - [[add-buffer][add-buffer]]
@@ -3097,10 +3031,8 @@
    Return a permutation of /list/ according to the indexes in
    /permutation/.
 *** Arguments
-    =list= -- List of elements to be permuted.
-
-    =permutation= -- List of permutation indexes.
-
+    | =list= | List of elements to be permuted. |
+    | =permutation= | List of permutation indexes. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3116,23 +3048,57 @@
    :PROPERTIES:
    :CUSTOM_ID: phasor
    :END:
-   Function
+   Incudine VUG
    #+BEGIN_SRC lisp
-     (phasor* freq #:init &optional ugen-node)
+     (phasor* (freq sample) (init sample))
    #+END_SRC
+   Ugen of a phasor working with any block size.
+*** Arguments
+    | =freq= | Number denoting frequency in Hz. |
+    | =init= | Number denoting initial phase. |
+
+*** See also
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
+    - [[#phasor-loop][phasor-loop​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
 ** phasor-loop*
    :PROPERTIES:
    :CUSTOM_ID: phasor-loop
    :END:
-   Function
+   Incudine VUG
    #+BEGIN_SRC lisp
-     (phasor-loop* rate start-pos loopstart loopend &optional ugen-node)
+     (phasor-loop* (rate sample) (start-pos sample) (loopstart sample) (loopend sample))
    #+END_SRC
+   Ugen of a looping phasor working with any block size.
+*** Arguments
+    | =rate= | Number denoting sample increment. |
+    | =start-pos= | Number denoting initial position. |
+    | =loopstart= | Non Negative Integer denoting start of loop. |
+    | =loopend= | Non Negative Integer denoting end of loop. |
+
+*** See also
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
+    - [[#phasor][phasor​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
 ** play-buffer*
    :PROPERTIES:
    :CUSTOM_ID: play-buffer
    :END:
-   Function
+   Incudine DSP Function
    #+BEGIN_SRC lisp
      (play-buffer* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (startpos 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
@@ -3141,37 +3107,34 @@
    between /out1/ and /out2/. All other keywords of incudine dsps also
    apply. Works with any block size.
 *** Arguments
-    =buffer= -- Incudine Buffer.
-
-    =env= -- Incudine Envelope.
-
-    =dur= -- Positive Number denoting duration.
-
-    =amp= -- Positive Number denoting amplitude in dB.
-
-    =rate= -- Positive Number denoting playback rate, adjusted for the
-    sample rate of buffer.
-
-    =pan= -- Number in the range [0..1] denoting panorama between out1
-    and out2.
-
-    =startpos= -- Positive Number denoting in seconds into the buffer.
-
-    =out1= -- Non Negative Integer denoting first output channel.
-
-    =out2= -- Non Negative Integer denoting second output channel.
-
+    | =buffer= | Incudine Buffer. |
+    | =env= | Incudine Envelope. |
+    | =dur= | Positive Number denoting duration. |
+    | =amp= | Positive Number denoting amplitude in dB. The dB range [-100..0] is mapped to the linear range [0..1]. |
+    | =rate= | Positive Number denoting playback rate, adjusted for the sample rate of buffer. |
+    | =pan= | Number in the range [0..1] denoting panorama between out1 and out2. |
+    | =startpos= | Positive Number denoting in seconds into the buffer. |
+    | =out1= | Non Negative Integer denoting first output channel. |
+    | =out2= | Non Negative Integer denoting second output channel. |
 
 *** See also
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
     - [[lsample][lsample]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
     - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
     - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
     - [[play-lsample][play-lsample]]
 ** play-buffer-loop*
    :PROPERTIES:
    :CUSTOM_ID: play-buffer-loop
    :END:
-   Function
+   Incudine DSP Function
    #+BEGIN_SRC lisp
      (play-buffer-loop* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (dur 1) (amp 0) (rate 1) (pan 0.5) (loopstart 0) (loopend 0) (start 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
@@ -3181,94 +3144,123 @@
    buffer. Output will be panned between /out1/ and /out2/. All other
    keywords of incudine dsps also apply. Works with any block size.
 *** Arguments
-    =buffer= -- Incudine Buffer.
-
-    =env= -- Incudine Envelope.
-
-    =dur= -- Positive Number denoting duration.
-
-    =amp= -- Positive Number denoting amplitude in dB.
-
-    =rate= -- Positive Number denoting playback rate, adjusted for the
-    sample rate of buffer.
-
-    =pan= -- Number in the range [0..1] denoting panorama between out1
-    and out2.
-
-    =loopstart= -- Positive Number denoting start of loop.
-
-    =loopstart= -- Positive Number denoting end of loop.
-
-    =out1= -- Non Negative Integer denoting first output channel.
-
-    =out2= -- Non Negative Integer denoting second output channel.
-
+    | =buffer= | Incudine Buffer. |
+    | =env= | Incudine Envelope. |
+    | =dur= | Positive Number denoting duration. |
+    | =amp= | Positive Number denoting amplitude in dB. The dB range [-100..0] is mapped to the linear range [0..1]. |
+    | =rate= | Positive Number denoting playback rate, adjusted for the sample rate of buffer. |
+    | =pan= | Number in the range [0..1] denoting panorama between out1 and out2. |
+    | =loopstart= | Positive Number denoting start of loop. |
+    | =loopstart= | Positive Number denoting end of loop. |
+    | =out1= | Non Negative Integer denoting first output channel. |
+    | =out2= | Non Negative Integer denoting second output channel. |
 
 *** See also
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
     - [[lsample][lsample]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
     - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
     - [[play-lsample][play-lsample]]
 ** play-buffer-stretch*
    :PROPERTIES:
    :CUSTOM_ID: play-buffer-stretch
    :END:
-   Function
+   Incudine DSP Function
    #+BEGIN_SRC lisp
      (play-buffer-stretch* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
-** play-buffer-stretch
-   Function
-   #+BEGIN_SRC lisp
-     (play-buffer-stretch &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
-   #+END_SRC
-** play-buffer-stretch-env-out
-   Function
-   #+BEGIN_SRC lisp
-     (play-buffer-stretch-env-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
-   #+END_SRC
-** play-buffer-stretch-env-pan-out
-   Function
-   #+BEGIN_SRC lisp
-     (play-buffer-stretch-env-pan-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
-   #+END_SRC
+   Play /buffer/ using 2 window overlap add granular
+   stretching/transposition with /env/ between /start/ and /end/, /amp/
+   in dB, transposition /transp/, /stretch/ and grain window size
+   /wwidth/ to output 0. All other keywords of incudine dsps also
+   apply. Works with any block size.
+*** Arguments
+    | =buffer= | Incudine Buffer. |
+    | =env= | Incudine Envelope. |
+    | =amp= | Positive Number denoting amplitude in dB. The dB range [-100..0] is mapped to the linear range [0..1]. |
+    | =transp= | Number denoting transposition in Midicents. |
+    | =start= | Number denoting the start in seconds into the buffer (at buffer rate). |
+    | =end= | Number denoting the end in seconds into the buffer (at buffer rate). Zero denotes end of buffer. |
+    | =stretch= | Positive Number denoting time stretching factor of playback. |
+    | =wwidth= | Positive Number denoting granular window width in msecs. |
+
+*** See also
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
+    - [[lsample][lsample]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
+    - [[play-lsample][play-lsample]]
 ** play-buffer-stretch-env-pan-out*
    :PROPERTIES:
    :CUSTOM_ID: play-buffer-stretch-env-pan-out
    :END:
-   Function
+   Incudine DSP Function
    #+BEGIN_SRC lisp
      (play-buffer-stretch-env-pan-out* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
-** play-buffer-stretch-out
-   Function
-   #+BEGIN_SRC lisp
-     (play-buffer-stretch-out &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (out 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
-   #+END_SRC
+   Play /buffer/ using 2 window overlap add granular
+   stretching/transposition with /env/ between /start/ and /end/, /amp/
+   in dB, transposition /transp/, /stretch/ and grain window size
+   /wwidth/, /attack/ and /release/. Output will be panned between /out1/
+   and /out2/. All other keywords of incudine dsps also apply. Works with
+   any block size.
+*** Arguments
+    | =buffer= | Incudine Buffer. |
+    | =env= | Incudine Envelope. |
+    | =amp= | Positive Number denoting amplitude in dB. The dB range [-100..0] is mapped to the linear range [0..1]. |
+    | =transp= | Number denoting transposition in Midicents. |
+    | =start= | Number denoting the start in seconds into the buffer (at buffer rate). |
+    | =end= | Number denoting the end in seconds into the buffer (at buffer rate). Zero denotes end of buffer. |
+    | =stretch= | Positive Number denoting time stretching factor of playback. |
+    | =wwidth= | Positive Number denoting granular window width in msecs. |
+    | =attack= | Positive Number in the range [0..1] denoting attack time as a fraction of the duration. |
+    | =release= | Positive Number in the range [0..1] denoting release time as a fraction of the duration. |
+    | =pan= | Number in the range [0..1] denoting panorama between out1 and out2. |
+    | =out1= | Non Negative Integer denoting first output channel. Defaults to 0. |
+    | =out2= | Non Negative Integer denoting second output channel. Defaults to (1+ out1). |
+
+*** See also
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
+    - [[lsample][lsample]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[play-lsample][play-lsample]]
 ** play-lsample
    Function
    #+BEGIN_SRC lisp
      (play-lsample lsample pitch ampdb duration &key (pan 0.5) (startpos 0) (oneshot nil osp) out1 out2)
    #+END_SRC
-   Play lsample with given /pitch/, /ampdb/ and /duration/, /pan/ and
+   Play /lsample/ with given /pitch/, /ampdb/ and /duration/, /pan/ and
    /startpos/ with or without looping.
 *** Arguments
-    =lsample= -- Instance of type lsample
-
-    =pitch= -- Positive Number denoting pitch in Midicents.
-
-    =ampdb= -- Positive number denoting amp in dB, mapping range
-    [-100..0] to linear amp [0..1].
-
-    =duration= -- Positive number denoting duration in seconds.
-
-    =:pan= -- Number denoting equal power panorama in the range [0..1].
-
-    =:startpos= -- Positive number denoting start position into the
-    sample in seconds.
-
-    =:oneshot= -- Boolean indicating whether not to loop the sample on
-    playback.
-
+    | =lsample= | Instance of type lsample |
+    | =pitch= | Positive Number denoting pitch in Midicents. |
+    | =ampdb= | Positive number denoting amp in dB, mapping range [-100..0] to linear amp [0..1]. |
+    | =duration= | Positive number denoting duration in seconds. |
+    | =:pan= | Number denoting equal power panorama in the range [0..1]. |
+    | =:startpos= | Positive number denoting start position into the sample in seconds. |
+    | =:oneshot= | Boolean indicating whether not to loop the sample on playback. |
 
 *** See also
     - [[lsample][lsample]]
@@ -3281,28 +3273,15 @@
    with index /out1/ and /out2/, not looping if /oneshot/ is non-nil or
    set in the lsample.
 *** Arguments
-    =pitch= -- Pitch in Midicent.
-
-    =db= -- Amplitude in dB, the range [-100..0] corresponding to linear
-    values [0..1].
-
-    =dur= -- Duration in seconds.
-
-    =:pan= -- Number in the range /[0..1]/ defining equal power panning
-    between /out0/ and /out1/.
-
-    =:preset= -- The name of a registered preset. If the preset hasn't
-    been loaded it will get loaded before playback starts.
-
-    =:startpos= -- The startposition in the sample in seconds.
-
-    =:out1= -- Zero based index of the first outlet.
-
-    =:out2= -- Zero based index of the second outlet. If not specified, /
-    (mod (1+ out1) 8)/ will be used.
-
-    =:oneshot= -- Boolean denoting whether not to loop the playback.
-
+    | =pitch= | Pitch in Midicent. |
+    | =db= | Amplitude in dB, the range [-100..0] corresponding to linear values [0..1]. |
+    | =dur= | Duration in seconds. |
+    | =:pan= | Number in the range /[0..1]/ defining equal power panning between /out0/ and /out1/.  |
+    | =:preset= | The name of a registered preset. If the preset hasn't been loaded it will get loaded before playback starts.  |
+    | =:startpos= | The startposition in the sample in seconds. |
+    | =:out1= | Zero based index of the first outlet. |
+    | =:out2= | Zero based index of the second outlet. If not specified, /(mod (1+ out1) 8)/ will be used. |
+    | =:oneshot= | Boolean denoting whether not to loop the playback. |
 
 *** Note
     The setting of [[standard-pitch][standard-pitch]] is taken into account!
@@ -3381,8 +3360,7 @@
    Check if IP port is available on /localhost/ by issuing shell
    command. Only works on Unix with the /lsof/ program installed.
 *** Arguments
-    =portno= -- Integer in the range [0..65535]
-
+    | =portno= | Integer in the range [0..65535] |
 
 ** pulse
    Function
@@ -3410,10 +3388,8 @@
    Push form to list if form evaluates to non-nil. Return the modified
    list or nil if form evaluates to nil.
 *** Arguments
-    =form= -- Form to be pushed to list.
-
-    =list= -- List pushed into.
-
+    | =form= | Form to be pushed to list. |
+    | =list= | List pushed into. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3442,11 +3418,8 @@
    Quantize the fractional part of /val/ to a quantization list
    /quantlist/ of possible quantization points in the range [0..1].
 *** Arguments
-    =val= -- The value to be quantized.
-
-    =quantlist= -- Sorted list of possible quantization points in the
-    range [0..1].
-
+    | =val= | The value to be quantized. |
+    | =quantlist= | Sorted list of possible quantization points in the range [0..1]. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3468,9 +3441,7 @@
    #+END_SRC
    Return a random element of seq.
 *** Arguments
-    =seq= -- a sequence fulfilling the predicate /(typep seq 'sequence)/
-    like a list or a vector.
-
+    | =seq= | a sequence fulfilling the predicate /(typep seq 'sequence)/ like a list or a vector. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3485,10 +3456,8 @@
    #+END_SRC
    Random value between [min..max] with exponential distribution.
 *** Arguments
-    =min= -- Number indicationg the minimum value.
-
-    =max= -- Number indicationg the maximum value.
-
+    | =min= | Number indicationg the minimum value. |
+    | =max= | Number indicationg the maximum value. |
 
 *** See also
     - [[r-lin][r-lin]]
@@ -3508,11 +3477,8 @@
    props can be either keywords/symbols (using #'getf) or numbers (using
    #'elt).
 *** Arguments
-    =list= -- a nested List to search.
-
-    =props= -- one or more Keywords/Symbols, or Numbers interpreted as
-    idx.
-
+    | =list= | a nested List to search. |
+    | =props= | one or more Keywords/Symbols, or Numbers interpreted as idx. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3549,10 +3515,8 @@
    #+END_SRC
    Random value between [min..max] with linear distribution.
 *** Arguments
-    =min= -- Number indicationg the minimum value.
-
-    =max= -- Number indicationg the maximum value.
-
+    | =min= | Number indicationg the minimum value. |
+    | =max= | Number indicationg the maximum value. |
 
 *** See also
     - [[r-exp][r-exp]]
@@ -3632,8 +3596,7 @@
    #+END_SRC
    Remove all functions from *​midi-cc-fns​* for all ccnums of /channel/. 
 *** Arguments
-    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
-
+    | =channel= | Integer in the range [1..16] denoting the MIDI channel. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -3685,8 +3648,7 @@
    #+END_SRC
    Remove buffer from registry.
 *** Arguments
-    =buf= -- Incudine:buffer
-
+    | =buf= | Incudine:buffer |
 
 *** See also
     - [[add-buffer][add-buffer]]
@@ -3700,8 +3662,7 @@
    #+END_SRC
    Remove a running Incudine dsp registered with [[add-dsp][add-dsp]].
 *** Arguments
-    =id= -- Keyword or Symbol identifying the dsp.
-
+    | =id= | Keyword or Symbol identifying the dsp. |
 
 *** See also
     - [[add-dsp][add-dsp]]
@@ -3714,11 +3675,8 @@
    #+END_SRC
    Remove all functions from *​midi-cc-fns​* for /channel/ and /ccnum/.
 *** Arguments
-    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
-
-    =ccnum= -- Integer in the range [1..128] denoting the MIDI
-    Controller number.
-
+    | =channel= | Integer in the range [1..16] denoting the MIDI channel. |
+    | =ccnum= | Integer in the range [1..128] denoting the MIDI Controller number. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -3737,8 +3695,7 @@
    #+END_SRC
    Unregister and delete the instance of a midi controller with ID /id/.
 *** Arguments
-    =id= -- Keyword or Symbol used as ID of the instance.
-
+    | =id= | Keyword or Symbol used as ID of the instance. |
 
 *** See also
     - [[add-midi-controller][add-midi-controller]]
@@ -3753,8 +3710,7 @@
    #+END_SRC
    Remove the soundfile map associated with name. This is the opposite of [[load-sfz-preset][load-sfz-preset]].
 *** Arguments
-    =name= -- Keyword or symbol of the registered preset.
-
+    | =name= | Keyword or symbol of the registered preset. |
 
 *** Note
     The soundfile buffers of the samples used in the sfz description
@@ -3780,10 +3736,8 @@
    return a list with n occurences of elem. All occurences of elem are
    #'eq to each other.
 *** Arguments
-    =n= -- Integer indicationg the number of iterations
-
-    =elem= -- Any Lisp Object to be repeated.
-
+    | =n= | Integer indicationg the number of iterations |
+    | =elem= | Any Lisp Object to be repeated. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3796,12 +3750,9 @@
    #+END_SRC
    format /expr/ /num/ times to /stream/
 *** Arguments
-    =stream= -- Output stream as in format.
-
-    =expr= -- Expression to format repeatedly.
-
-    =num= -- Integer number of repetitions.
-
+    | =stream= | Output stream as in Common Lisp's #'format function. |
+    | =expr= | Expression to format repeatedly. |
+    | =num= | Integer number of repetitions. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3818,10 +3769,8 @@
    argument in the next recursive call, leaving all other arguments as
    they were.
 *** Arguments
-    =n= -- Integer number of repetitions.
-
-    =fn= -- Function to be applied to itself.
-
+    | =n= | Integer number of repetitions. |
+    | =fn= | Function to be applied to itself. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3859,8 +3808,7 @@
    #+END_SRC
    Recursively reverse list and all its sublists.
 *** Arguments
-    =list= -- The list to recursively reverse.
-
+    | =list= | The list to recursively reverse. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -3875,13 +3823,9 @@
    /item/ and a tree element returns non-nil. Return item or nil if item
    is not found.
 *** Arguments
-    =item= -- Any Common Lisp Object.
-
-    =tree= -- A list possibly nested.
-
-    =:test= -- Function to test for equality between item and a tree
-    element.
-
+    | =item= | Any Common Lisp Object. |
+    | =tree= | A list possibly nested. |
+    | =:test= | Function to test for equality between item and a tree element. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -3896,10 +3840,8 @@
    /num/ is larger than the list size it will wrap around as if the
    rotation was called recursively num times.
 *** Arguments
-    =list= -- List to rotate
-
-    =num= -- Integer number of rotations.
-
+    | =list= | List to rotate |
+    | =num= | Integer number of rotations. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -3925,8 +3867,7 @@
    It also starts the rt engine of incudine calling
    /incudine:rt-start/ and the midi receivers.
 *** Arguments
-    =rt-wait= -- Time in seconds to wait before starting.
-
+    | =rt-wait= | Time in seconds to wait before starting. |
 
 *** Note
     
@@ -3986,8 +3927,7 @@
    #+END_SRC
    Set the tempo in beats per minute for both, CM and Incudine.
 *** Arguments
-    =bpm= -- Number of beats per minute.
-
+    | =bpm= | Number of beats per minute. |
 
 *** See also
     - [[set-tempo][set-tempo]]
@@ -4009,8 +3949,7 @@
    #+END_SRC
    Set the tempo in beats per minute for both, CM and Incudine.
 *** Arguments
-    =bpm= -- Number of beats per minute.
-
+    | =bpm= | Number of beats per minute. |
 
 *** See also
     - [[set-bpm][set-bpm]]
@@ -4023,13 +3962,9 @@
    previous value. If /force/ is non-nil, set in any case. Return
    value.
 *** Arguments
-    =ref= -- An instance of [[ref-object][ref-object]]
-
-    =value= -- Any value of any type to be set.
-
-    =force= -- A boolean indicating to set the value even if it is eql
-    to the previous value of the ref-object.
-
+    | =ref= | An instance of [[ref-object][ref-object]] |
+    | =value= | Any value of any type to be set. |
+    | =force= | A boolean indicating to set the value even if it is eql to the previous value of the ref-object. |
 
 *** See also
     - [[get-val][get-val]]
@@ -4048,6 +3983,8 @@
    Variable
 
    List of directories to search recursively for soundfiles.
+*** See also
+    - [[of-buffer-load][of-buffer-load]]
 ** sfz
    Common Music Class
    #+BEGIN_SRC lisp
@@ -4057,24 +3994,15 @@
    
    sfz accepts the following slot initializations:
    
-   =:time= -- The output time in seconds, initially unbound.
-   
-   =:keynum= -- Keynum in Midicents.
-   
-   =:amplitude= -- Amplitude in dB, the range [-100..0] corresponding to linear values [0..1].
-   
-   =:duration= -- Duration in seconds.
-   
-   =:preset= -- Keyword or symbol of a registered preset name.
-   
-   =:oneshot= -- Boolean denoting not to use loop playback.
-   
-   =:pan= -- Number in the range /[0..1]/ defining equal power panning
-   between the two outputs of the dsp on playback.
-   
-   =:startpos= -- The startposition in the sample in seconds.
-   
-   =:chan= -- The channel (layer) used in svg output.
+   | =:time= | The output time in seconds, initially unbound. |
+   | =:keynum= | Keynum in Midicents. |
+   | =:amplitude= | Amplitude in dB, the range [-100..0] corresponding to linear values [0..1]. |
+   | =:duration= | Duration in seconds. |
+   | =:preset= | Keyword or symbol of a registered preset name. |
+   | =:oneshot= | Boolean denoting not to use loop playback. |
+   | =:pan= | Number in the range /[0..1]/ defining equal power panning between the two outputs of the dsp on playback. |
+   | =:startpos= | The startposition in the sample in seconds. |
+   | =:chan= | The channel (layer) used in svg output. |
 *** Examples
     #+BEGIN_SRC lisp
         (new sfz)
@@ -4111,12 +4039,9 @@
    #+END_SRC
    Convert an entry of a sfz file into a lsample.
 *** Arguments
-    =sfz-entry= -- Instance of sfz class.
-
-    =dir= -- Pathname or String denoting the directory of the sfz file.
-
-    =:oneshot= -- Boolean denoting whether not to loop the playback.
-
+    | =sfz-entry= | Instance of sfz class. |
+    | =dir= | Pathname or String denoting the directory of the sfz file. |
+    | =:oneshot= | Boolean denoting whether not to loop the playback. |
 
 *** See also
     - [[sfz][sfz]]
@@ -4128,8 +4053,7 @@
    #+END_SRC
    Get the keynum range of a sfz preset or a sfz file denoted by /ref/.
 *** Arguments
-    =ref= -- String, Keynum or Symbol reference the sfz preset.
-
+    | =ref= | String, Keynum or Symbol reference the sfz preset. |
 
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
@@ -4147,11 +4071,8 @@
    #+END_SRC
    Return all buffers of sfz /preset/ for /pitch/ in a list.
 *** Arguments
-    =preset= -- Symbol or Keynum denoting id of a registered preset.
-
-    =pitch= -- Integer in the range [0..127] denoting keynum of sfz
-    definition.
-
+    | =preset= | Symbol or Keynum denoting id of a registered preset. |
+    | =pitch= | Integer in the range [0..127] denoting keynum of sfz definition. |
 
 *** See also
     - [[sfz-preset-lsamples][sfz-preset-lsamples]]
@@ -4163,8 +4084,7 @@
    #+END_SRC
    Return the full path of /preset/.
 *** Arguments
-    =preset= -- Keyword or symbol of a registered sfz preset.
-
+    | =preset= | Keyword or symbol of a registered sfz preset. |
 
 *** See also
     - [[add-sfz-preset][add-sfz-preset]]
@@ -4182,8 +4102,7 @@
    #+END_SRC
    Predicate to test if sfz preset is loaded.
 *** Arguments
-    =preset= -- Keyword or symbol of registered preset.
-
+    | =preset= | Keyword or symbol of registered preset. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -4215,10 +4134,8 @@
    #+END_SRC
    Return all lsamples of sfz /preset/ for /pitch/ in a list.
 *** Arguments
-    =preset= -- Symbol or Keynum denoting id of a registered preset.
-
-    =pitch= -- Non Negative Number in the range [0..127].
-
+    | =preset= | Symbol or Keynum denoting id of a registered preset. |
+    | =pitch= | Non Negative Number in the range [0..127]. |
 
 *** See also
     - [[get-sfz-preset][get-sfz-preset]]
@@ -4230,6 +4147,9 @@
    Variable
 
    List of directories to search recursively for /.sfz/ files.
+*** See also
+    - [[add-sfz-preset][add-sfz-preset]]
+    - [[load-sfz-preset][load-sfz-preset]]
 ** show-midi-cc-fns
    Function
    #+BEGIN_SRC lisp
@@ -4237,11 +4157,8 @@
    #+END_SRC
    Show all functions stored in *​midi-cc-fns​* for /channel/ and /ccnum/.
 *** Arguments
-    =channel= -- Integer in the range [1..16] denoting the MIDI channel.
-
-    =ccnum= -- Integer in the range [1..128] denoting the MIDI
-    Controller number.
-
+    | =channel= | Integer in the range [1..16] denoting the MIDI channel. |
+    | =ccnum= | Integer in the range [1..128] denoting the MIDI Controller number. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -4301,12 +4218,9 @@
    Return a list of all sublists containing elements mutually satisfying
    the /test/ predicate.
 *** Arguments
-    =list= -- List to splice
-
-    =key= -- Function applied to each element of list before testing.
-
-    =test= -- Function to determine equality between two elements.
-
+    | =list= | List to splice |
+    | =key= | Function applied to each element of list before testing. |
+    | =test= | Function to determine equality between two elements. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -4357,8 +4271,7 @@
    Start the clamps generic midi handler and all registered MIDI responders
    of input stream /input/.
 *** Arguments
-    =input= -- Input MIDI stream of type /<jackmidi:input-stream>/.
-
+    | =input= | Input MIDI stream of type /<jackmidi:input-stream>/. |
 
 *** See also
     - [[stop-midi-receive][stop-midi-receive]]
@@ -4376,8 +4289,7 @@
    Stop the clamps generic midi handler and remove all registered MIDI
    responders of input stream /input/.
 *** Arguments
-    =input= -- Input MIDI stream of type /<jackmidi:input-stream>/.
-
+    | =input= | Input MIDI stream of type /<jackmidi:input-stream>/. |
 
 *** See also
     - [[start-midi-receive][start-midi-receive]]
@@ -4393,8 +4305,7 @@
    #+END_SRC
    concatenate strings.
 *** Arguments
-    =args= -- one or more strings to concatenate
-
+    | =args= | one or more strings to concatenate |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -4421,15 +4332,9 @@
    Like #'subseq, but allowing negative values for /end/, indicating the
    number of elems at the end of /seq/ to be omitted.
 *** Arguments
-    =seq= -- A Common Lisp Sequence.
-
-    =start= -- Non Negative Integer denoting starting index of seq.
-
-    =end= -- Integer denoting last element's position in seq. If
-    positive, the last element is /(elt seq (1- end))/. If end is
-    negative, /(abs end)/ denotes the number of elements to be omitted
-    from the end of seq.
-
+    | =seq= | A Common Lisp Sequence. |
+    | =start= | Non Negative Integer denoting starting index of seq. |
+    | =end= | Integer denoting last element's position in seq. If positive, the last element is /(elt seq (1- end))/. If end is negative, /(abs end)/ denotes the number of elements to be omitted from the end of seq. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -4445,23 +4350,13 @@
    Display =svg-file= in the SVG Player Gui, located at
    /<clamps-base-url>/svg-display/.
 *** Arguments
-    =svg-file= -- String naming the svg-file to display/play. The
-    filename is interpreted relative to the /<clamps-gui-root>/svg/
-    directory.
-
-    =:bar-lines= -- Boolean indicating whether to display barlines.
-
-    =:staff-systems= -- Boolean indicating whether to display staff
-    systems.
-
-    =:piano-roll= -- Boolean indicating whether to display a piano roll.
-
-    =:scale= -- Positive Number denoting the zoom factor of the graphic.
-
-    =:timescale= -- Positive number denoting The timescale for playback.
-
-    =:inverse= -- 0 or 1 indicating inverse colors.
-
+    | =svg-file= | String naming the svg-file to display/play. The filename is interpreted relative to the /<clamps-gui-root>/svg/ directory.  |
+    | =:bar-lines= | Boolean indicating whether to display barlines.  |
+    | =:staff-systems= | Boolean indicating whether to display staff systems.  |
+    | =:piano-roll= | Boolean indicating whether to display a piano roll.  |
+    | =:scale= | Positive Number denoting the zoom factor of the graphic.  |
+    | =:timescale= | Positive number denoting The timescale for playback.  |
+    | =:inverse= | 0 or 1 indicating inverse colors. |
 
 ** svg->lines
    Function
@@ -4492,11 +4387,122 @@
      (svg-collect-lines layer parse-state &key (timescale 1) (x-offset 0) (xquantize nil) (yquantize nil) layer?)
    #+END_SRC
    return a list of svg-cm-line instances of layer with a given parse-state.
+** svg-file
+   Common Music Output Class
+
+   Output to a SVG file.
+   
+   svg-file accepts the following keys:
+   
+   | =:global= | global parameters supplied to the svg-export backend. |
+   | =:piano-roll-vis= | Boolean denoting whether Piano Roll display is initially visible. Defaults to /t/. |
+   | =:staff-system-vis= | Boolean denoting whether Staff Systems are initially visible. Defaults to /t/. |
+   | =:bar-lines-vis= | Boolean denoting whether Barlines are initially visible. Defaults to /t/. |
+   | =:showgrid= | Boolean denoting whether a grid is initially visible. Defaults to /t/. |
+   | =:x-scale= | Number denoting a x scaling factor. Default is 1. |
+   | =:barstepsize= | Positive Integer denoting the number increment for a drawn barline. |
+   | =:startbar= | Integer denoting the number of the first bar. |
+   | =:barmultiplier= | Integer denoting a scaling factor for the bar numbers. |
+   | =:width= | Positive Integer denoting the width of the SVG file. Default is the minimum width needed to display all events. |
+*** Examples
+    #+BEGIN_SRC lisp
+      (events
+       (loop
+         for time from 0 by 1/16
+         for keynum in (integrate '(60 2 2 1 2 2 2 1))
+         collect (new sfz :time time :keynum keynum :duration 1/16))
+              "/tmp/test.svg"
+              :piano-roll-vis nil
+              :showgrid t
+              :x-scale 16)
+      ;; => "/tmp/test.svg"
+    #+END_SRC
+   #+attr_html: :width 30%
+   #+CAPTION: Detail of svg-file generated with the Lisp code above
+   [[./img/svg-file-example-01.png]]
+   
+   #+BEGIN_SRC lisp
+   (events
+    (loop
+      for time from 0 by 1/16
+      for keynum in (integrate '(60 2 2 1 2 2 2 1))
+      collect (new sfz :time time :keynum keynum :duration 1/16))
+           "/tmp/test.svg"
+           :piano-roll-vis t
+           :staff-system-vis nil
+           :bar-lines-vis nil
+           :showgrid nil
+           :x-scale 16)
+   ;; => "/tmp/test.svg"
+   #+END_SRC
+   
+   #+attr_html: :width 30%
+   #+CAPTION: Detail of svg-file generated with the Lisp code above
+   [[./img/svg-file-example-02.png]]
+   
+   #+BEGIN_SRC lisp
+   (events
+    (loop
+      for time from 0 below 4 by 1/4
+      with keynum = (new cycle :of (integrate '(60 2 2 1 2 2 2 1)))
+      collect (new sfz :time time :keynum (next keynum) :duration 1/4))
+           "/tmp/test.svg"
+           :piano-roll-vis t
+           :staff-system-vis nil
+           :barmultiplier 1
+           :barstepsize 1
+           :bar-lines-vis t
+           :startbar 1
+           :showgrid nil
+           :x-scale 16)
+   ;; => "/tmp/test.svg"
+   #+END_SRC
+   
+   #+attr_html: :width 100%
+   #+CAPTION: Detail of svg-file generated with the Lisp code above
+   [[./img/svg-file-example-04.png]]
+   
+   #+BEGIN_SRC lisp
+   (events
+    (loop
+      for time from 0 below 16 by 1/4
+      with keynum = (new cycle :of (integrate '(60 2 2 1 2 2 2 1)))
+      collect (new sfz :time time :keynum (next keynum) :duration 1/4))
+           "/tmp/test.svg"
+           :piano-roll-vis t
+           :staff-system-vis nil
+           :barstepsize 5
+           :barmultiplier 5
+           :bar-lines-vis t
+           :startbar 0
+           :showgrid nil
+           :x-scale 16)
+   #+END_SRC
+   #+attr_html: :width 100%
+   #+CAPTION: Detail of svg-file generated with the Lisp code above
+   [[./img/svg-file-example-05.png]]
+*** See also
+    - [[dict:midi][midi]]
 ** svg-gui-path
    Function
    #+BEGIN_SRC lisp
-     (svg-gui-path str)
+     (svg-gui-path &optional file)
    #+END_SRC
+   Return the full path of SVG file /file/ in the current GUI or the
+   base-gui-path of svg files if /file/ is not supplied.
+*** Arguments
+    | =file= | A String designating the filename of the SVG file. |
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (svg-gui-path)
+      ;; => #P"/tmp/www/svg/"
+      
+      (svg-gui-path "test.svg")
+      ;; => #P"/tmp/www/svg/test.svg"
+    #+END_SRC
+*** See also
+    - [[clamps-gui-root][clamps-gui-root]]
 ** svg-rect
    Class
 
@@ -4508,8 +4514,7 @@
    Return the version of an installed /asdf/ system or nil if not
    bound/existent.
 *** Arguments
-    =system-designator= -- A designator acceptable to /asdf:find-system/
-
+    | =system-designator= | A designator acceptable to /asdf:find-system/ |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -4524,11 +4529,8 @@
    Convert tempo setting into the duration of one 16th note
    (in seconds) for svg playback in the clamps Gui.
 *** Arguments
-    =arg1= -- Number denoting either a rhythm value (1/4 for a quarter
-    note), or a bpm value if arg2 isn't supplied.
-
-    =arg2= -- Number denoting the beats per minute (bpm).
-
+    | =arg1= | Number denoting either a rhythm value (1/4 for a quarter note), or a bpm value if arg2 isn't supplied. |
+    | =arg2= | Number denoting the beats per minute (bpm). |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -4598,12 +4600,9 @@
    times with the symbol /v/ bound to the iteration index in the lexical
    scope of form.
 *** Arguments
-    =v= -- Symbol used as variable name.
-
-    =n= -- Integer indicating the number of iterations.
-
-    =body= -- Function body being evaluated n times.
-
+    | =v= | Symbol used as variable name. |
+    | =n= | Integer indicating the number of iterations. |
+    | =body= | Function body being evaluated n times. |
 
 *** Examples
     #+BEGIN_SRC lisp
@@ -4624,8 +4623,7 @@
    established. Refer to the chapter [[clamps:cl-refs][cl-refs]] in the Clamps
    Packages documentation for examples.
 *** Arguments
-    =fn= -- Function of no arguments to call
-
+    | =fn= | Function of no arguments to call |
 
 *** See also
     - [[get-val][get-val]]
@@ -4686,13 +4684,9 @@
    binding symbol itself or a keyword, derived by prepending a colon to
    the binding symbol.
 *** Arguments
-    =vars= -- List of symbols of the Properties to use in the lexical
-    scope of body.
-
-    =proplist= -- Property list containing bound properties.
-
-    =body= -- The body in which the vars are bound.
-
+    | =vars= | List of symbols of the Properties to use in the lexical scope of body. |
+    | =proplist= | Property list containing bound properties. |
+    | =body= | The body in which the vars are bound. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -4715,10 +4709,8 @@
    Shadow /var/ in the local scope of /body/. /var/ should be bound
    before entering /with-shadowed-variable/.
 *** Arguments
-    =var= -- Symbol of variable to shadow
-
-    =body= -- Body for the scope of the shadowing.
-
+    | =var= | Symbol of variable to shadow |
+    | =body= | Body for the scope of the shadowing. |
 
 *** Example
     #+BEGIN_SRC lisp

@@ -42,10 +42,15 @@ body {
 }
 
 table {
-    text-align: center;
-    border-spacing: 1em; 
-    border: solid 1px;
     color: var(--text-color);
+}
+
+tr {
+    vertical-align: baseline;
+}
+
+td, th {
+    padding: 0 1rem;
 }
 
 #theme-button {
@@ -99,14 +104,14 @@ header {
     padding: 0;
     display: grid; /* direct childs haben normalen Seitenfluss */
     grid-template-rows: 1fr;
-    grid-template-columns: auto 100%;
+    grid-template-columns: 1fr 4fr;
     grid-template-areas: "nav content";
     / *transition: all 500ms; */
 }
 
 #/*TODO: */able-of-contents {
     grid-area: nav;
-    / *transition: all 500ms; */
+    /* transition: all 500ms; */
     /* background: #181a21; */
     /* background: #1b1e25; */
     background: var(--toc-background);
@@ -126,8 +131,8 @@ header {
 }
 
 .toc-open {
-    width: var(--clamps-toc-width);
-    / *transition: all 500ms; */
+    /* width: var(--clamps-toc-width); */
+    /* transition: all 500ms; */
 }
 
     
@@ -160,7 +165,7 @@ header {
 
 #page-text-body {
     display: inline-block;
-    width: 60em;
+    /* width: 60%; */
     overflow: unset;
 }
 

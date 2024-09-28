@@ -33,7 +33,7 @@ of the number of files and return the array."
     do (setf (aref buffers idx)
              (make-instance 'lsample
                             :filename filename
-                            :buffer (incudine-bufs:of-buffer-load filename)
+                            :buffer (incudine-bufs:clamps-buffer-load filename)
                             :play-fn #'play-buffer*))
     finally (return buffers)))
 

@@ -159,7 +159,7 @@ header {
 
 #page-text-body {
     display: inline-block;
-    width: 60em;
+    width: calc(80% - var(--clamps-dict-toc-width));
     overflow: unset;
 }
 
@@ -200,15 +200,16 @@ header {
 
     #nav-left {
         height: 1em;
-        width: 50%;
+        width: (50%);
         margin: 0;
         order: 2;
         position: relative;
+        text-align: left;
     }
 
     #nav-right {
         height: 1em;
-        width: 50%;
+        width: 50%
         margin: 0;
         order: 3;
         position: relative;
@@ -217,7 +218,8 @@ header {
 
     #page-text-body{
         order: 1;
-        width: 100%;
+        /* width: calc(100% - var(--clamps-dict-toc-width)); */
+        width: 80%;
     }
 }
 
@@ -406,6 +408,20 @@ code {
     height: 5em;
     color: var(--menu-color);
 }
+
+table {
+    color: var(--text-color);
+}
+
+tr {
+    vertical-align: baseline;
+}
+
+td, th {
+    padding-right: 1rem;
+    text-align: left;
+}
+
 
 #header::before, #header::after, #content::before, #content::after, #footnotes::before, #footnotes::after, #footer::before, #footer::after {
   content: " ";

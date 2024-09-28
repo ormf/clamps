@@ -49,7 +49,7 @@ sfz
 lsample
 "
   (let* ((abs-filepath (abs-path (getf sfz-entry :sample) (pathname dir)))
-         (buffer (incudine-bufs:of-buffer-load abs-filepath)))
+         (buffer (incudine-bufs:clamps-buffer-load abs-filepath)))
     (of-incudine-dsps:make-lsample
      :name (file-namestring abs-filepath)
      :buffer buffer

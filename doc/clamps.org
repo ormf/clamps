@@ -57,6 +57,7 @@
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-clamps-syms)
 #+BIND: org-html-htmlize-output-type css
+#+BIND: org-html-table-use-header-tags-for-first-column nil
 #  #:\([^ ]+\) →    - [[dict:\1][\1]]
 
 
@@ -82,7 +83,7 @@
    for the integration into Common Music.
 *** Reading the Documentation
     The Clamps Packages Documentation aims to explain the concepts of
-    the different parts of Clamps with some examples. For that reason
+    the different parts of Clamps with some examples. For that reason,
     the table of contents is ordered systematically.
 
     Although each of the chapters can be considered an introduction to
@@ -96,18 +97,19 @@
     Documentation provide links to the dictionary in many places.
 
     The reader is encouraged to go back and forth between these
-    documentation sources, use the cross references in the dictionary
+    documentation sources, use the cross-references in the dictionary,
     or even consult the source code.
 
     Due to this open concept there is no preferred sequence to read
-    the Clamps Packages Documentation. Nevertheless some parts depend
+    the Clamps Packages Documentation. Nevertheless, some parts depend
     on the knowledge of other parts of the documentation. As an
     example, the [[cm-sfz]] part can only be understood, when the concept
     of the [[cl-sfz]] package is known.
 
-    Below is a graph of dependencies of the clamps packages. Altough
-    not strictly required it might be advisable or sometimes even
-    necessary to follow the arrows when reading through the clamps
+    Below is a graph of dependencies of the clamps packages. External
+    packages are colored with a light red background. Although not
+    strictly required, it might be advisable or sometimes even
+    necessary to follow the arrows when reading through the
     documentation. The reader may construct her or his individual
     reading path from this graph according to personal preferences and
     interests.
@@ -152,11 +154,14 @@
    #+END_SRC
    
 *** Startup
-   The clamps package is loaded from the REPL using quicklisp:
-   #+BEGIN_SRC lisp
-     CL-USER> (ql:quickload :clamps)
-   #+END_SRC
-   To startup MIDI, Networking, DSP and the GUI, use the [[dict:clamps][clamps]]
+    :PROPERTIES:
+    :CUSTOM_ID: clamps-startup
+    :END:
+    The clamps package is loaded from the REPL using quicklisp:
+    #+BEGIN_SRC lisp
+      CL-USER> (ql:quickload :clamps)
+    #+END_SRC
+    To startup MIDI, Networking, DSP and the GUI, use the [[dict:clamps][clamps]]
    function:
    #+BEGIN_SRC lisp
      CL-USER> (clamps)
@@ -1019,18 +1024,24 @@
 
    - MIDI events of all types
    - OSC events for SuperCollider
+   - CLM events for CLM
 
    The supported output types in CM 2.12 and their class/filename
    extensions are:
 
-   - [[dict:rts][Realtime]] /<incudine-stream>/
-   - [[dict:midi-file][MIDI file]] /".midi"/, /".mid"/
-   - [[dict:sc-file][SuperCollider file]] /".osc"/
-   - [[dict:cmn-file][SCO file]] /".sco"/
-   - [[dict:cmn-file][CMN file]] /".cmn"/
-   - [[dict:cmn-file][CLM file]] /".clm"/
-   - [[dict:cmn-file][EPS file]] /".eps"/
-   - [[dict:fomus-file][FOMUS file]] /".ly"/, /".xml"/, /".dat"/
+   #+ATTR_HTML: :style text-align: left;
+   |--------------------+-----------------------------|
+   | Output type        | Class or Filename extension |
+   |--------------------+-----------------------------|
+   | [[dict:rts][Realtime]]           | /<incudine-stream>/         |
+   | [[dict:midi-file][MIDI file]]          | /".midi"/, /".mid"/         |
+   | [[dict:sc-file][SuperCollider file]] | /".osc"/                    |
+   | [[dict:cmn-file][SCO file]]           | /".sco"/                    |
+   | [[dict:cmn-file][CMN file]]           | /".cmn"/                    |
+   | [[dict:cmn-file][CLM file]]           | /".clm"/                    |
+   | Soundfile          | /".aiff"/, /".wav"/         |
+   | [[dict:cmn-file][EPS file]]           | /".eps"/                    |
+   | [[dict:fomus-file][FOMUS file]]         | /".ly"/, /".xml"/, /".dat"/ |
 
 
    The SCO file format in Common Music seems to have been only
@@ -1039,14 +1050,22 @@
    Below is an overview of the implemented output methods for the
    different event types and output backends in Common Music:
 
-   |------+-----------+---------+----------+----------+------------+----------|
-   |      | MIDI file | SC file | CMN file | EPS file | FOMUS file | Realtime |
-   |------+-----------+---------+----------+----------+------------+----------|
-   | MIDI | x         |         | x        |          | x          | x        |
-   | CMN  | x         |         | x        | x        |            |          |
-   | OSC  |           | x       |          |          |            | x        |
-   |------+-----------+---------+----------+----------+------------+----------|
+   #+ATTR_HTML: :border 1px :rules all :frame border :style text-align: center; cell-padding: 1em; border-spacing: 1em;
+   |------+-----------+---------+----------+----------+------------+-----------+----------+----------|
+   |      | MIDI file | SC file | CMN file | EPS file | FOMUS file | Soundfile | CLM file | Realtime |
+   |------+-----------+---------+----------+----------+------------+-----------+----------+----------|
+   | MIDI | x         |         | x        |          | x          |           |          | x        |
+   | OSC  |           | x       |          |          |            |           |          | x        |
+   | CMN  | x         |         | x        | x        |            |           |          |          |
+   | CLM  |           | x       |          |          |            | x         | x        |          |
+   |------+-----------+---------+----------+----------+------------+-----------+----------+----------|
    
+   The CMN type and output file types (".cmn" and ".eps") and the CLM
+   types are currently not actively supported in Clamps, as CMN is
+   replaced in favor of FOMUS and CLM is emulated in cuda-clm and its
+   functionality provided by Incudine. Both systems should
+   nevertheless continue to work to the extent they worked in CM 2.12.
+
    Clamps extends the event classes of CM by the following event
    classes:
    
@@ -1060,21 +1079,15 @@
    The realtime backend in Clamps uses the special variable
    [[dict:#rts-out][*​rts-out​*]]. Its value is an /<incudine-stream>/. When a MIDI event
    is sent to this stream, clamps automatically dispatches it to the
-   midi-output of *​rts-out​* (by default this is *​midi-out1​*). If
+   midi-output of ~*​rts-out​*~ (by default this is ~*​midi-out1​*~). If
    instead the output is realized using incudine dsps, as in the case
    of [[dict:sfz][sfz]] output, the dsps are automatically scheduled and
    instantiated.
-
-   The CMN type and output file types (".cmn" and ".eps") and the CLM
-   types are currently not actively supported in clamps, as CMN is
-   replaced in favor of FOMUS and CLM is emulated in cuda-clm and its
-   functionality provided by incudine. Both systems should
-   nevertheless continue to work to the extent they worked for CM
-   2.12.
    
    Below is an overview of the implemented output methods for the
    different event types and output backends in Clamps:
    
+   #+ATTR_HTML: :border 1px :rules all :frame border :style text-align: center; cell-padding: 1em; border-spacing: 1em;
    |---------+-----------+---------+------------+----------+----------|
    |         | MIDI file | SC file | FOMUS file | SVG file | Realtime |
    |---------+-----------+---------+------------+----------+----------|
@@ -1088,8 +1101,13 @@
 ** cm-incudine
    cm-incudine a compatibility layer between Common Music and
    incudine, mainly concerning realtime input and output. The
-   /<incudine-stream>/ class is defined here, jackmidi input/output,
-   the FUDI event class[fn:9], etc.
+   /<incudine-stream>/ class is defined here, input/output to
+   jackmidi, the FUDI event class[fn:9], etc.
+
+   The user normally doesn't need to deal with cm-incudine directly.
+   Starting and stopping MIDI and initializing incudine streams is
+   done with highlevel functions from clamps, explained in their
+   respective chapters (see [[Opening MIDI Ports]] or [[#clamps-startup][Startup]].
 # ** cm-all
 ** cm-fomus
    cm-fomus is a [[https://fomus.common-lisp.dev/][FOMUS]] backend for Common Music written by Rick Taube
@@ -1149,15 +1167,188 @@
            :quartertones t)
    #+END_SRC
 ** cm-svg
-   The SVG output backend for Common Music is a central part of the
-   Clamps architecture. It conceptionalizes a single output format for
-   any type of timed event. All events of any supproted type can be
-   integrated in a single document, visualized and edited with
-   graphics programs, viewed in any browser, styled with CSS and
-   reimported into Clamps.
+   The SVG in/output backend for Common Music is a central part of the
+   Clamps architecture. Its main objective is to provide a single
+   unified output format for any type of timed event in combination
+   with a graphical representation of the data.
+
+   Once exported, the graphical representation can be inspected or
+   edited using any graphical editor for SVG files and reimported into
+   clamps. An extension for the Inkscape Editor is included in Clamps
+   for playback of selected objects directly from Inkscape.
+*** Export to SVG
+    Exporting to SVG is done with the [[dict:events][events]] function. As different
+    event types are supported by Clamps, any combination of MIDI, SFZ,
+    Poolevt or custom declared event types can be integrated into a
+    single sequence and exported to SVG with a single call to
+    [[dict:events][events]].
+
+    The exported SVG elements are displayed in a 2-dimensional grid
+    with the x-axis denoting musical time, although any other mapping
+    can easily be applied to the im/exported data if deemed
+    appropriate. The exported graphical objects can be considered as
+    /typed/ output[fn:10], with their type and additional custom
+    properties defined in an /attributes/ tag of each SVG element (see
+    [[fig:svg-xml-example]]).
+
+#+HTML: <h4>Example</h4>
+   #+BEGIN_SRC lisp
+     (events
+       (append
+        (loop
+          for time below 3 by 2/8
+          collect (new sfz :time time :keynum (between 60.0 84.0) :duration 1/2))
+        (loop
+          for time from 1/8 below 3 by 2/8
+          collect (new midi :time time :keynum (between 60 84)
+                    :amplitude 1.0 :channel (between 1 16) :duration 1/2)))
+      (svg-gui-path "svg-xml-example.svg")
+      :showgrid nil
+      :staff-system-vis nil)
+   #+END_SRC
+
+    #+attr_html: :width 50%
+    #+CAPTION: Attributes of a selected event in SVG file generated with the Lisp Code above
+    #+NAME:   fig:svg-xml-example
+    [[./img/svg-xml-example.png]]  
+*** Import from SVG
+    Importing objects from SVG are done using Common Musics
+    [[dict:import-events][import-events]] function with the filename as argument.
+
+    Like for export, objects of any supported type can be imported and
+    will be included in the same sequence object. below is an example
+    for importing into Clamps using the exported svg file from the
+    previous section.
+
+    #+attr_html: :width 50%
+    #+CAPTION: Example of a SVG file with mixed event types to import
+    #+NAME:   fig:svg-import-example
+    [[./img/svg-xml-example.svg]]  
+    
+    #+BEGIN_SRC lisp
+      (sort
+       (subobjects
+        (import-events (svg-gui-path "svg-xml-example.svg")))
+       #'< :key #'object-time)
+      ;; => (#i(sfz time 0.0 keynum 63.42938 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 0.125 keynum 63.0 duration 0.5 amplitude 0.5 channel 1)
+      ;;     #i(sfz time 0.25 keynum 80.86092 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 0.375 keynum 79.0 duration 0.5 amplitude 0.5 channel 9)
+      ;;     #i(sfz time 0.5 keynum 61.039192 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 0.625 keynum 61.0 duration 0.5 amplitude 0.5 channel 9)
+      ;;     #i(sfz time 0.75 keynum 68.02148 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 0.875 keynum 64.0 duration 0.5 amplitude 0.5 channel 10)
+      ;;     #i(sfz time 1.0 keynum 64.643036 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 1.125 keynum 82.0 duration 0.5 amplitude 0.5 channel 9)
+      ;;     #i(sfz time 1.25 keynum 73.90509 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 1.375 keynum 77.0 duration 0.5 amplitude 0.5 channel 7)
+      ;;     #i(sfz time 1.5 keynum 75.27113 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 1.625 keynum 60.0 duration 0.5 amplitude 0.5 channel 3)
+      ;;     #i(sfz time 1.75 keynum 63.145172 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 1.875 keynum 79.0 duration 0.5 amplitude 0.5 channel 38)
+      ;;     #i(sfz time 2.0 keynum 69.082825 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 2.125 keynum 65.0 duration 0.5 amplitude 0.5 channel 1)
+      ;;     #i(sfz time 2.25 keynum 71.13065 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 2.375 keynum 67.0 duration 0.5 amplitude 0.5 channel 2)
+      ;;     #i(sfz time 2.5 keynum 70.6771 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 2.625 keynum 80.0 duration 0.5 amplitude 0.5 channel 6)
+      ;;     #i(sfz time 2.75 keynum 69.82674 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(midi time 2.875 keynum 62.0 duration 0.5 amplitude 0.5 channel 24))
+    #+END_SRC
+    Any of Common Music's filtering options defined for [[dict:map-objects][map-objects]] can be applied:
+    #+BEGIN_SRC lisp
+      (subobjects
+       (import-events (svg-gui-path "svg-xml-example.svg"))
+       :class 'sfz)
+      ;; => (#i(sfz time 0.0 keynum 63.42938 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 0.25 keynum 80.86092 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 0.5 keynum 61.039192 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 0.75 keynum 68.02148 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 1.0 keynum 64.643036 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 1.25 keynum 73.90509 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 1.5 keynum 75.27113 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 1.75 keynum 63.145172 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 2.0 keynum 69.082825 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 2.25 keynum 71.13065 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 2.5 keynum 70.6771 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100)
+      ;;     #i(sfz time 2.75 keynum 69.82674 amplitude 0.0 duration 0.5 preset :flute-nv oneshot nil pan 0.5 startpos 0 chan 100))
+
+      (subobjects
+       (import-events (svg-gui-path "svg-xml-example.svg"))
+       :class 'midi)
+      ;; => (#i(midi time 1.625 keynum 60.0 duration 0.5 amplitude 0.5 channel 3)
+      ;;     #i(midi time 0.125 keynum 63.0 duration 0.5 amplitude 0.5 channel 1)
+      ;;     #i(midi time 0.875 keynum 64.0 duration 0.5 amplitude 0.5 channel 10)
+      ;;     #i(midi time 0.375 keynum 79.0 duration 0.5 amplitude 0.5 channel 9)
+      ;;     #i(midi time 0.625 keynum 61.0 duration 0.5 amplitude 0.5 channel 9)
+      ;;     #i(midi time 1.125 keynum 82.0 duration 0.5 amplitude 0.5 channel 9)
+      ;;     #i(midi time 2.375 keynum 67.0 duration 0.5 amplitude 0.5 channel 2)
+      ;;     #i(midi time 1.375 keynum 77.0 duration 0.5 amplitude 0.5 channel 7)
+      ;;     #i(midi time 2.625 keynum 80.0 duration 0.5 amplitude 0.5 channel 6)
+      ;;     #i(midi time 1.875 keynum 79.0 duration 0.5 amplitude 0.5 channel 38)
+      ;;     #i(midi time 2.875 keynum 62.0 duration 0.5 amplitude 0.5 channel 24)
+      ;;     #i(midi time 2.125 keynum 65.0 duration 0.5 amplitude 0.5 channel 1))
+
+      #+END_SRC
+
+    
+*** Inkscape Playback
+    When the /Play Selection/ extension of Inkscape is installed,
+    selected objects in an Inkscape document can be played back
+    directly from Inkscape, after Clamps has been started.
+
+    Simply select the objects to play back and issue /Play Selection/
+    from the extensions menu. The selected objects will get saved as
+    lisp code into the file /"/tmp/incudine-export.lisp"/ and an OSC
+    message is sent to the clamps process triggering loading of the
+    file which will result in its immediate playback.
+
+    #+attr_html: :width 100%
+    #+CAPTION: Using the Inkscape Play Selection extension
+    #+NAME:   fig:play-selection
+    [[./img/play-selection.png]]  
 ** cm-svg.rts
-   TBA
+   cm-svg.rts implements a SVG file player using the Gui interface of
+   Clamps. To load a SVG file into it, put the svg file to load into
+   the svg subfolder of [[dict:clamps-gui-root][clamps-gui-root]] and call the function
+   [[dict:svg->browser][svg->browser]] with the filename as argument:
+   #+BEGIN_SRC lisp
+     (svg->browser "svg-xml-example.svg")
+   #+END_SRC
+   When the browser is opened with the URL
+   /"localhost:54619/svg-display"/ and using the example from the
+   previous section, the following Gui should be displayed:
+   #+attr_html: :width 100%
+   #+CAPTION: svg-display browser window
+   #+NAME:   fig:svg-display
+   [[./img/svg-display.png]]  
+
+   Use the horizontal slider underneath the graphics to locate the
+   cursor.
+
+   There are five toggle buttons on the bottom left of the display:
+
+   | ~play~ | Play the events starting at the cursor position or stop playback. Pressing the space bar on the keyboard is equivalent to clicking in the button.     |
+   | ~rtn~  | Mark/Unmark the current cursor position. If playback is stopped, the cursor will immediatly jump back to this position.                           |
+   | ~pno~  | Display/Hide a Piano Roll background.                                                                                                             |
+   | ~stf~  | Display/Hide s Staff System background: The black horizontal lines denote staff lines, the grey lines denote ledger lines.                        |
+   | ~bar~  | Display/Hide Bar lines.                                                                                                                           |
+
+   Note that like with any Clamps GUI, multiple browser windows with
+   the same address can be opened simultaneously with synced
+   graphics.
+
 ** cm-poolevt
+   A [[dict:poolevt][poolevt]] is a sample event type like sfz. Contrasting to a sfz, a
+   poolevt implements granular transposition and stretching for
+   playback. In addition, a poolevt uses a /dy/ slot to enable a
+   pitch-linear glissando of the sample from start to end. It also
+   uses lsamples, ignoring their loop points. The sample to be played
+   doesn't need to have a defined pitch. Nevertheless, it uses a
+   keynum slot for SVG export. The transposition is determined by
+   comparing the keynum of a poolevt instance with the keynum of its
+   lsample[fn:11].
+** cm-utils
    TBA
 # ** cm-poolplayer
 * Incudine Extensions
@@ -1184,7 +1375,39 @@
    shortcut have to be put into group 200 using the /:before/ or
    /:after/ keywords when starting the dsp.
 ** of-incudine-dsps
-   TBA
+   of-incudine-dsps is a collection of Ugens and Dsps mainly concerned
+   with buffer/sample playback. All Ugens and Dsps are implemented to
+   work with any blocksize.
+
+   The following Buffers, Envelopes, Ugens and Dsps are
+   implemented. Click on the links in the left column to get further
+   information.
+
+
+   | Buffers                          |                                                                      |
+   | [[dict:#hanning1024][*​hanning1024​*]]                    | 1024 point Hanning window                                            |
+   | [[dict:#sine1024][*​sine1024​*]]                       | 1024 point Sine wave of one period                                   |
+   |                                  |                                                                      |
+   | Envelopes                        |                                                                      |
+   | [[dict:#env1][*​env1​*]]                           | Simple ASR Envelope                                                  |
+   |                                  |                                                                      |
+   | Ugens                            |                                                                      |
+   | [[dict:buffer-play*][buffer-play*]]                     | Ugen to play a buffer                                                |
+   | [[dict:buffer-stretch-play*][buffer-stretch-play*]]             | Ugen to play a buffer with granular stretching applied               |
+   | [[dict:envelope*][envelope*]]                        | Envelope Ugen                                                        |
+   | [[dict:line*][line*]]                            | Line Ugen                                                            |
+   | [[dict:phasor*][phasor*]]                          | Phasor Ugen                                                          |
+   |                                  |                                                                      |
+   | Dsps                             |                                                                      |
+   | [[dict:play-buffer*][play-buffer*]]                     | Dsp to play a buffer                                                 |
+   | [[dict:play-buffer-loop*][play-buffer-loop*]]                | Dsp to play a buffer with looping                                    |
+   | [[dict:play-buffer-stretch*][play-buffer-stretch*]]             | Dsp to play a buffer with granular stretching                        |
+   | [[dict:play-buffer-stretch-env-pan-out*][play-buffer-stretch-env-pan-out*]] | Dsp to play a buffer with granular stretching, attack, decay and pan |
+
+
+
+
+   
 ** incudine-bufs
    TBA
 * Gui
@@ -1236,7 +1459,7 @@
    /defparameter/ or /defconstant/. During the course of running an
    application, the value bound to a symbol may change frequently as
    a consequence of user interaction or programmatic behaviour in
-   certain situations, like reacting to external events, etc.[fn:10]
+   certain situations, like reacting to external events, etc.[fn:12]
     
    Tracking those changes can be a challenging task, especially if
    the complexity of a program increases and values of different
@@ -1349,7 +1572,7 @@
     definition of the variables and the application logic into
     distinct parts, automating the updating of variables behind the
     scenes. This makes the maintenance of the program much
-    easier[fn:11].
+    easier[fn:13].
 
     For a variable with possible relations to other variables,
     /cl-ref/ uses a special class called /ref-object/. Three main
@@ -1464,7 +1687,7 @@
      argument. This function is called, whenever one or more
      ref-objects referenced in its body using /get-val/ are
      changed. In that way actions can be triggered and associated
-     with the change of ref-objects[fn:12]. Since actions can also
+     with the change of ref-objects[fn:14]. Since actions can also
      involve changing other ref-objects, /watch/ can be used in a
      similar fashion as /make-computed/.
 
@@ -1477,7 +1700,7 @@
      /watch/ returns a function to remove the action defined by the
      supplied function. It is crucial to capture this result in order
      to be able to later remove the established connections between
-     variables and associated actions[fn:13].
+     variables and associated actions[fn:15].
 
      IMPORTANT NOTE: Calling the same watch expression twice will
      establish two independent functions which will always be called
@@ -1630,7 +1853,7 @@
 
 *** Playing sfz events
 
-    The function [[dict:play-sfz][play-sfz]][fn:14] plays a sound from a sfz preset. It takes
+    The function [[dict:play-sfz][play-sfz]][fn:16] plays a sound from a sfz preset. It takes
     the a pitch, amplitude in dB and duration in seconds as
     arguments. The default preset is /:flute-nv/.  In addition it
     takes the keywords /:preset/, /:oneshot/, /:pan/, /:out1/ and
@@ -1648,9 +1871,9 @@
 
        [[dict:play-sfz][play-sfz]] is a wrapper around  [[dict:play-lsample][play-lsample]].    
 # ** cl-poolplayer
-** plot
+** cl-poolplayer
    TBA
-** cm-utils
+** cl-plot
    TBA
 ** orm-utils
    orm-utils is a collection of utilities developed for general
@@ -1682,24 +1905,31 @@ Hoyte's "Let over Lambda".
 [fn:7] events are instances of objects derived from the /event/ class.
 
 [fn:8]In the [[dict:events][events]] macro also lists or container classes like [[dict:seq][seq]] can
-be used as event classes for output but they need to contain MIDI or
-OSC events at some point in order to output anything.
+be used as event classes for output but they need to contain MIDI,
+CLM, CMN or OSC events at some point in order to output anything.
 
 [fn:9]Since Pure Data now supports OSC natively, the FUDI event class
 is not required anymore and might be removed in the future.
 
-[fn:10] With the notable exception of a value bound by /defconstant/,
+[fn:10]The idea of typed output is inspired by [[https://en.wikipedia.org/wiki/Common_Lisp_Interface_Manager][CLIM]], the Common Lisp
+Interface Manager, a central part of the Gui implementation of Lisp
+Machines.
+
+[fn:11] It is important to note that in SVG export the original keynum
+   will be contained in the attributes field of every exported poolevt.
+
+[fn:12] With the notable exception of a value bound by /defconstant/,
 as a constant is an /immutable/ value, which never changes.
 
-[fn:11] The implementation ideas are similar to javascript frameworks
+[fn:13] The implementation ideas are similar to javascript frameworks
 which became increasingly popular in the 2010s like [[https://en.wikipedia.org/wiki/React_(JavaScript_library)][React]] or [[https://en.wikipedia.org/wiki/Vue.js][Vue.js]],
 although they are rooted in much older concepts from the 1970s and
 80s.
 
-[fn:12] In Lisp parlance this is the classic example of a
+[fn:14] In Lisp parlance this is the classic example of a
 /side-effect/.
 
-[fn:13] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
+[fn:15] For people used to patcher based systems like [[https://en.wikipedia.org/wiki/Pure_Data][Pure Data]] or
 [[https://en.wikipedia.org/wiki/Max_(software)][Max/MSP]], /watch/ serves a similar purpose as patch cords in these
 systems. Calling the function returned by /watch/ in that context is
 similar to removing a patch cord, although the analogy shouldn't be
@@ -1707,4 +1937,4 @@ overstressed considering the significant differences between a
 graph-based message-passing paradigm in these systems and the
 structural layout of cl-ref/clamps.
 
-[fn:14](play-sfz 60 0 20 :preset :yamaha-grand-piano :pan 0) ;; => nil
+[fn:16](play-sfz 60 0 20 :preset :yamaha-grand-piano :pan 0) ;; => nil

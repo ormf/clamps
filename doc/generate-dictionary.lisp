@@ -242,25 +242,16 @@ msg
 
 sfz accepts the following slot initializations:
 
-=:time= -- The output time in seconds, initially unbound.
+| =:time= | The output time in seconds, initially unbound. |
+| =:keynum= | Keynum in Midicents. |
+| =:amplitude= | Amplitude in dB, the range [-100..0] corresponding to linear values [0..1]. |
+| =:duration= | Duration in seconds. |
+| =:preset= | Keyword or symbol of a registered preset name. |
+| =:oneshot= | Boolean denoting not to use loop playback. |
+| =:pan= | Number in the range /[0..1]/ defining equal power panning between the two outputs of the dsp on playback. |
+| =:startpos= | The startposition in the sample in seconds. |
+| =:chan= | The channel (layer) used in svg output. |
 
-=:keynum= -- Keynum in Midicents.
-
-=:amplitude= -- Amplitude in dB, the range [-100..0] corresponding to linear values [0..1].
-
-=:duration= -- Duration in seconds.
-
-=:preset= -- Keyword or symbol of a registered preset name.
-
-=:oneshot= -- Boolean denoting not to use loop playback.
-
-=:pan= -- Number in the range /[0..1]/ defining equal power panning
-between the two outputs of the dsp on playback.
-
-=:startpos= -- The startposition in the sample in seconds.
-
-=:chan= -- The channel (layer) used in svg output.
-   
 @Examples
   (new sfz)
   ;; => #i(sfz keynum 60 amplitude 1 duration 1 preset :flute-nv
@@ -286,6 +277,106 @@ between the two outputs of the dsp on playback.
           :amplitude (n-lin (interp x 0 0 0.8 0 1 1) -12 -24))))
 
   ;; => nil
+@See-also
+dict:midi
+"))
+      (cm::svg-file
+       (cm-output-class
+        nil
+        "Output to a SVG file.
+
+svg-file accepts the following keys:
+
+| =:global= | global parameters supplied to the svg-export backend. |
+| =:piano-roll-vis= | Boolean denoting whether Piano Roll display is initially visible. Defaults to /t/. |
+| =:staff-system-vis= | Boolean denoting whether Staff Systems are initially visible. Defaults to /t/. |
+| =:bar-lines-vis= | Boolean denoting whether Barlines are initially visible. Defaults to /t/. |
+| =:showgrid= | Boolean denoting whether a grid is initially visible. Defaults to /t/. |
+| =:x-scale= | Number denoting a x scaling factor. Default is 1. |
+| =:barstepsize= | Positive Integer denoting the number increment for a drawn barline. |
+| =:startbar= | Integer denoting the number of the first bar. |
+| =:barmultiplier= | Integer denoting a scaling factor for the bar numbers. |
+| =:width= | Positive Integer denoting the width of the SVG file. Default is the minimum width needed to display all events. |
+   
+@Examples
+(events
+ (loop
+   for time from 0 by 1/16
+   for keynum in (integrate '(60 2 2 1 2 2 2 1))
+   collect (new sfz :time time :keynum keynum :duration 1/16))
+        \"/tmp/test.svg\"
+        :piano-roll-vis nil
+        :showgrid t
+        :x-scale 16)
+;; => \"/tmp/test.svg\"
+
+@General
+#+attr_html: :width 30%
+#+CAPTION: Detail of svg-file generated with the Lisp code above
+[[./img/svg-file-example-01.png]]
+
+#+BEGIN_SRC lisp
+(events
+ (loop
+   for time from 0 by 1/16
+   for keynum in (integrate '(60 2 2 1 2 2 2 1))
+   collect (new sfz :time time :keynum keynum :duration 1/16))
+        \"/tmp/test.svg\"
+        :piano-roll-vis t
+        :staff-system-vis nil
+        :bar-lines-vis nil
+        :showgrid nil
+        :x-scale 16)
+;; => \"/tmp/test.svg\"
+#+END_SRC
+
+#+attr_html: :width 30%
+#+CAPTION: Detail of svg-file generated with the Lisp code above
+[[./img/svg-file-example-02.png]]
+
+#+BEGIN_SRC lisp
+(events
+ (loop
+   for time from 0 below 4 by 1/4
+   with keynum = (new cycle :of (integrate '(60 2 2 1 2 2 2 1)))
+   collect (new sfz :time time :keynum (next keynum) :duration 1/4))
+        \"/tmp/test.svg\"
+        :piano-roll-vis t
+        :staff-system-vis nil
+        :barmultiplier 1
+        :barstepsize 1
+        :bar-lines-vis t
+        :startbar 1
+        :showgrid nil
+        :x-scale 16)
+;; => \"/tmp/test.svg\"
+#+END_SRC
+
+#+attr_html: :width 100%
+#+CAPTION: Detail of svg-file generated with the Lisp code above
+[[./img/svg-file-example-04.png]]
+
+#+BEGIN_SRC lisp
+(events
+ (loop
+   for time from 0 below 16 by 1/4
+   with keynum = (new cycle :of (integrate '(60 2 2 1 2 2 2 1)))
+   collect (new sfz :time time :keynum (next keynum) :duration 1/4))
+        \"/tmp/test.svg\"
+        :piano-roll-vis t
+        :staff-system-vis nil
+        :barstepsize 5
+        :barmultiplier 5
+        :bar-lines-vis t
+        :startbar 0
+        :showgrid nil
+        :x-scale 16)
+#+END_SRC
+#+attr_html: :width 100%
+#+CAPTION: Detail of svg-file generated with the Lisp code above
+[[./img/svg-file-example-05.png]]
+
+
 @See-also
 dict:midi
 "))
@@ -391,7 +482,24 @@ set-tempo
               cm:tempo->svg-timescale
               cm:rts cm::rts? ;; cl-midictl::midi-controller
               clog-midi-controller::clog-midi-controller
-              clog-midi-controller::m-controller))))
+              clog-midi-controller::m-controller)))
+  "Symbols to add from packages not included in dictionary.")
+
+(defparameter *vug-symbols*
+  '(of-incudine-dsps:buffer-loop-play*
+    of-incudine-dsps:buffer-play*
+    of-incudine-dsps:buffer-stretch-play*
+    of-incudine-dsps:envelope*
+    of-incudine-dsps:line*
+    of-incudine-dsps:phasor*
+    of-incudine-dsps:phasor-loop*))
+
+(defparameter *dsp-symbols*
+  '(of-incudine-dsps:play-buffer*
+    of-incudine-dsps:play-buffer-loop*
+    of-incudine-dsps:play-buffer-stretch*
+    of-incudine-dsps:play-buffer-stretch-env-pan-out*
+    ))
 
 (defun all-clamps-symbols ()
   (let ((acc nil))
@@ -432,6 +540,13 @@ set-tempo
 
 (defparameter *clamps-symbols-to-ignore*
   '(orm-utils:param-exp-func
+    of-incudine-dsps:abs-path
+;;    of-incudine-dsps:buffer-loop-play*
+;;    of-incudine-dsps:buffer-play*
+    of-incudine-dsps:play-buffer-stretch
+    of-incudine-dsps:play-buffer-stretch-out
+    of-incudine-dsps:play-buffer-stretch-env-out
+    of-incudine-dsps:play-buffer-stretch-env-pan-out
     of-incudine-dsps:abs-path
     of-incudine-dsps:*keynum-offset*
     orm-utils:defconst
@@ -627,7 +742,7 @@ set-tempo
   "Reformat a line of the first section of docstring for org-mode file."
   (format nil "~&~{   ~a~%~}" (mapcar #'reformat-links (trim-list strings))))
 
-(defun fill-string (string &key (margin 72) (left 0))
+(defun fill-string (string &key margin (left 0))
   "Wrap a long line at margin characters with optional left-margin of
 /left/ #\Space characters inserted before all lines. Return wrapped
 result."
@@ -636,24 +751,24 @@ result."
    (if (zerop left)
        "~{~a~^~%~}"
        (format nil "~~{~va~~a~~^~~%~~}" left " "))
-   (sb-unicode:lines string :margin margin)))
+   (sb-unicode:lines string :margin (or margin 10000))))
 
 (defun reformat-arg-line (string)
   "reformat a line of an @Arguments entry."
   (if (cl-ppcre:scan "^ *- " string)
       (fill-string
        (cl-ppcre:regex-replace
-	"^ *- +([^ ]+)"
+	"^ *- +(.+) *$"
 	(reformat-links string)
-	"- \\1")
-       :left 4 :margin 69)
-      (format nil "~a~%"
+	"|| \\1 |")
+       :left 4)
+      (format nil "~a"
               (fill-string
                (cl-ppcre:regex-replace
-		"^ *([^ ]+) - "
+		"^ *([^ ]*) - +(.+) *$"
 		(reformat-links string)
-		"=\\1= -- ")
-               :left 4 :margin 69))))
+		"| =\\1= | \\2 |")
+               :left 4))))
 
 (defun get-arg-entries (arglist)
   (unless (cl-ppcre:scan "^[^ ]+ +- " (first arglist))
@@ -810,17 +925,22 @@ result."
     (case type
       ((compiled-function function)
        (format-function-entry name args docstring stream "Function"))
+      (dsp
+       (format-function-entry name args docstring stream "Incudine DSP Function"))
+      (vug
+       (format-function-entry name args docstring stream "Incudine VUG"))
       ((standard-generic-function macro)
        (format-function-entry
         name args docstring stream
         (cdr (assoc type
                     '((macro . "Macro")
                       (standard-generic-function . "Generic Function"))))))
-      ((structure-class standard-class cm-class)
+      ((structure-class standard-class cm-class cm-output-class)
        (format-class-entry name args docstring stream
                            (case type
                              (standard-class "Class")
                              (cm-class "Common Music Class")
+                             (cm-output-class "Common Music Output Class")
                              (otherwise "Structure"))))
       ((condition type variable constant)
        (format-variable-entry name docstring stream
@@ -847,7 +967,7 @@ result."
           (destructuring-bind (type lambda-list docstring) extra-doc
             (funcall format-entry-function name
                      (case type
-                       ('cm-class
+                       (cm-class
                         (format nil "~a"
                                 (cl-ppcre:regex-replace-all
                                  "asdf/system:"
@@ -868,6 +988,8 @@ result."
                                    "'\\1")
                                   "#'\\1")
                                  "asdf:")))
+                       (cm-output-class
+                        nil)
                        (otherwise (format nil "~a"
                                           (cons (string-downcase name)
                                                 (strip-package-names lambda-list)))))
@@ -899,7 +1021,10 @@ result."
           (when (and (fboundp symbol)
                      (check-symbol-package symbol package 'function))
             (let ((doc (get-fn-documentation symbol))
-                  (lambda-list (function-lambda-list symbol)))
+                  (lambda-list (cond
+                            ((member symbol *vug-symbols*)
+                             (incudine::ugen-lambda-list symbol))
+                            (t (function-lambda-list symbol)))))
               (funcall format-entry-function name
                        (cl-ppcre:regex-replace-all
                         "asdf/system:"
@@ -921,6 +1046,8 @@ result."
                         "asdf:")
                        (cond
                          ((macro-function symbol) 'macro)
+                         ((member symbol *vug-symbols*) 'vug)
+                         ((member symbol *dsp-symbols*) 'dsp)
                          (t (type-of (symbol-function symbol))))
                        (and doc (transcode-docstring doc))
                        stream)))))))
@@ -998,4 +1125,33 @@ file."
 ;;(sb-ext:quit)
 
 
+#|
 
+(let ((arglist  '("dsp - The dsp type to add" "id - Keyword or Symbol to identify the registered dsp." "args - Optional initialization arguments accepted by the used dsp class." "")))
+  (get-arg-entries (trim-white-spaces (trim-list arglist))))
+
+(let ((arglist  '("dsp - The dsp type to add" "id - Keyword or Symbol to identify the registered dsp." "args - Optional initialization arguments accepted by the used dsp class." "")))
+  (trim-white-spaces (trim-list arglist)))
+
+(reformat-arg-line "args - Optional initialization arguments accepted by the used dsp class.")
+
+(clampsdoc-transcode-arguments
+)
+
+
+(format t
+(transcode-docstring
+   "Add a new instance of /dsp/ with id /id/ to the registry, optionally
+supplying the dsp creation with initialization arguments /args/.
+
+@Arguments
+dsp - The dsp type to add
+id - Keyword or Symbol to identify the registered dsp.
+args - Optional initialization arguments accepted by the used dsp class.
+
+@See-also
+find-dsp
+list-dsps
+remove-dsp
+"))
+|#

@@ -94,18 +94,24 @@ clamps-restart-gui
 "
   *clamps-gui-root*)
 
-(defun svg-gui-path (str)
-  "#+Begin_src lisp
-(svg-gui-path file)
-#+End_src
-Return the full path of SVG file /file/ in the current GUI.
+(defun svg-gui-path (&optional file)
+  "Return the full path of SVG file /file/ in the current GUI or the
+base-gui-path of svg files if /file/ is not supplied.
 
 @Arguments
 file - A String designating the filename of the SVG file.
 
+@Examples
+(svg-gui-path)
+;; => #P\"/tmp/www/svg/\"
+
+(svg-gui-path \"test.svg\")
+;; => #P\"/tmp/www/svg/test.svg\"
+
 @See-also
 clamps-gui-root
-")
+"
+  (merge-pathnames (format nil "svg/~a" file) (ensure-directory (clamps-gui-root))))
 
 (defun clamps-restart-gui (gui-root &key (open t) (port 54619))
   "Reset the root directory of the Gui to /gui-root/www/, optionally

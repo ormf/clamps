@@ -42,7 +42,7 @@ exit.
 
 @Arguments
 test - Function to test for exiting the while loop.
-body - body to be evaluated repeatedly while /test/ evaluates to non-nil.
+body - Body to be evaluated repeatedly while /test/ evaluates to non-nil.
 
 @Example
 (let ((i 0))
@@ -88,8 +88,8 @@ to /default/. Return the value of prop.
 
 @Arguments
 proplist - Property list.
-prop - Property key to ensure.
-default - The value property should get assigned to if not set.
+prop - Keyword or Symbol denoting the property key to ensure.
+default - The value the property should get assigned to if not set.
 
 @Examples
 (defvar *proplist* '(:a 10 :b hello :c \"world\"))
@@ -117,8 +117,8 @@ being a multiple of /n/.
 
 @Arguments
 list - Input list.
-n - Positive integer indicating the index distance between elements.
-:offset - Positive integer indicating offset into the input list.
+n - Positive integer denoting the index distance between elements.
+:offset - Positive integer denoting offset into the input list.
 
 @Example
 (every-nth '(9 10 11 12 13 14 15 16 17 18 19 20) 3 :offset 1)
@@ -144,7 +144,7 @@ args - one or more strings to concatenate
   "format /expr/ /num/ times to /stream/
 
 @Arguments
-stream - Output stream as in format.
+stream - Output stream as in Common Lisp's #'format function.
 expr - Expression to format repeatedly.
 num - Integer number of repetitions.
 
@@ -206,7 +206,7 @@ tree - A list possibly nested.
 @Arguments
 stream - Symbol bound to the stream outputting to file.
 fname - String or Pathname of output file.
-:if-exists - Keyword mapping the /:if-exists/ keyword of /with-open-file/
+:if-exists - Keyword mapping the /:if-exists/ keyword of /with-open-file/.
 "
   `(with-open-file (,stream ,fname :direction :output :if-exists ,if-exists)
      ,@body))
@@ -220,7 +220,7 @@ fname - String or Pathname of output file.
 list when applied.
 
 @Arguments
-n - length of sublist to retrieve
+n - Positive Integer denoting the length of the sublist to return.
 
 @Example
 (funcall (last-n 5) '(1 2 3 4 5 6 7 8)) -> (4 5 6 7 8)
@@ -489,9 +489,14 @@ integrate
 (defun not-consp (elem)
   (not (consp elem)))
 
-(defun flatten-fn (seq &key (test #'atom) (key #'identity))
-  "Remove all brackets except the outmost in seq. Use test and key to
-   determine where to stop removing brackets.
+(defun flatten-fn (list &key (test #'atom) (key #'identity))
+  "Remove all brackets except the outmost in /list/. Use /test/ and /key/
+to determine where to stop removing brackets.
+
+@Arguments
+list - input List.
+test - Function applied to each element of list to test for the end of flattening.
+key - Function applied to each element of list before testing. 
 
 @Examples
 
@@ -506,16 +511,16 @@ integrate
 @See-also
 flatten
 "
-  (cond ((null seq) nil)
-        ((funcall test (funcall key seq)) seq)
-        ((funcall test (funcall key (first seq)))
-         (cons (first seq)
-               (flatten-fn (rest seq) :test test :key key)))
-        ((consp (first seq))
-         (append (flatten-fn (first seq) :test test :key key)
-                 (flatten-fn (rest seq) :test test :key key)))
-        (t (append (flatten-fn (first seq) :test test :key key)
-                   (flatten-fn (rest seq) :test test :key key)))))
+  (cond ((null list) nil)
+        ((funcall test (funcall key list)) list)
+        ((funcall test (funcall key (first list)))
+         (cons (first list)
+               (flatten-fn (rest list) :test test :key key)))
+        ((consp (first list))
+         (append (flatten-fn (first list) :test test :key key)
+                 (flatten-fn (rest list) :test test :key key)))
+        (t (append (flatten-fn (first list) :test test :key key)
+                   (flatten-fn (rest list) :test test :key key)))))
 
 
 
@@ -639,7 +644,7 @@ n - Non Negative Integer denoting the index of the Fibonacci series.
   "Return the Midicents interval of the frequency ratio /fr/.
 
 @Arguments
-fr - The frequency ratio of the interval.
+fr - Positive Number denoting the frequency ratio of the interval.
 
 @Examples
 (fr->ct 2) ;; => 12.0
@@ -686,7 +691,7 @@ fr->ct
     "Convert pitch in Midicts to frequency in Hz.
 
 @Arguments
-midi-value - Pitch in Midicents.
+midi-value - Positive Number denoting Pitch in Midicents.
 :tuning-base - Frequency of A4 in Hz.
 
 @Examples
@@ -779,7 +784,7 @@ cyclically.
 
 @Arguments
 list - The list to partition.
-group-lenghts - A list of Positive Integers denoting the sequence of lengths of the partitions.
+group-lenghts - List of Positive Integers denoting the sequence of lengths of the partitions.
 
 @Example
 (group-by '(1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9 1 2 3 4 5 6) '(2 3 5))
@@ -1040,7 +1045,7 @@ calls. If collect is t return all results in a list."
 dB value of -100.
 
 @Arguments
-amp - Positive Integer denoting amplitude.
+amp - Positive Integer denoting linear amplitude.
 
 @Example
 
@@ -1299,7 +1304,7 @@ permutations.
 @Arguments
 list - List of elements to be permuted.
 :test - Function to test for equality of elements in list.
-:max-length - maximum length of list accepted.
+:max-length - Positive Integer denoting maximum length of list accepted.
 
 @Examples
 (all-permutations (range 4))
@@ -2611,7 +2616,12 @@ number - Number indicating the multiplication factor.
 (defun array-slice (arr row-idx)
   "Return the row with index /row-idx/ of a 2-dimensional array as
 1-dimensional array, sharing the same data structure by utilizing
-Common Lisp's displaced array functionality."
+Common Lisp's displaced array functionality.
+
+@Arguments
+arr - 2-dimensional Array.
+rox-idx - Non Negative Integer denoting the Index of the row to return.
+"
     (make-array (array-dimension arr 1) 
       :displaced-to arr 
       :displaced-index-offset (* row-idx (array-dimension arr 1))))

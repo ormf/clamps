@@ -42,7 +42,7 @@
            set-basedir clamps-base-url orm-utils:slurp
            orm-utils:parse-proplist orm-utils:m-exp-fn incudine-bufs:get-buffer
            orm-utils:r-exp-dev clog-dsp-widgets:clog-dsp-widgets-initialize
-           clog-dsp-widgets:new-gui-window incudine-bufs:of-buffer-load
+           clog-dsp-widgets:new-gui-window
            clog-dsp-widgets:create-o-numbox orm-utils:amp->db
            cl-midictl:handle-midi-in
            ;; cm:clip
@@ -138,7 +138,8 @@
            of-incudine-dsps:sfz->lsample orm-utils:do-repeated cl-midictl:pulse
            orm-utils:n-exp-dev make-osc-receiver svg-gui-path
            orm-utils:mapply clog-dsp-widgets:create-o-toggle
-           incudine-bufs:remove-buffer orm-utils:flatten-fn
+           incudine-bufs:remove-buffer incudine-bufs:clamps-buffer-load
+           orm-utils:flatten-fn
            clog-dsp-widgets:set-on-data orm-utils:m-exp-zero-rev-fn send
            clog-dsp-widgets:dsp-id orm-utils:n-exp-rev-fn orm-utils:n-lin-rev-fn
            orm-utils:repeat-format cl-plot:plot orm-utils:defvar*
@@ -314,7 +315,7 @@
            incudine-bufs:remove-all-buffers incudine-bufs:remove-buffer
            incudine-bufs:path-find-file incudine-bufs:get-buffer
            incudine-bufs:ensure-buffer incudine-bufs:buffer-id
-           incudine-bufs:find-buffer incudine-bufs:of-buffer-load
+           incudine-bufs:find-buffer
            orm-utils:copy-instance orm-utils:ftom orm-utils:get-duplicates
            orm-utils:fibonacci orm-utils:port-available-p orm-utils:r-exp
            orm-utils:make-quantlist orm-utils:fr->ct orm-utils:sum_x

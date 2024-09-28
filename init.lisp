@@ -21,9 +21,18 @@
 (in-package :cl-user)
 
 (defparameter *sfz-preset-path* (list (pathname "~/work/snd/sfz/"))
-  "List of directories to search recursively for /.sfz/ files.")
+  "List of directories to search recursively for /.sfz/ files.
+
+@See-also
+add-sfz-preset
+load-sfz-preset
+")
 (defparameter *sfile-path* (list (pathname "~/work/snd/"))
-  "List of directories to search recursively for soundfiles.")
+  "List of directories to search recursively for soundfiles.
+
+@See-also
+of-buffer-load
+")
 (defparameter *sfz-preset-lookup* (make-hash-table))
 
 (load (merge-pathnames ".clampsinit.lisp" (user-homedir-pathname))
