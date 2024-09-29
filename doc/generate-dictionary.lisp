@@ -498,8 +498,7 @@ set-tempo
   '(of-incudine-dsps:play-buffer*
     of-incudine-dsps:play-buffer-loop*
     of-incudine-dsps:play-buffer-stretch*
-    of-incudine-dsps:play-buffer-stretch-env-pan-out*
-    ))
+    of-incudine-dsps:play-buffer-stretch-env-pan-out*))
 
 (defun all-clamps-symbols ()
   (let ((acc nil))

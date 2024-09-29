@@ -1339,15 +1339,20 @@
    graphics.
 
 ** cm-poolevt
-   A [[dict:poolevt][poolevt]] is a sample event type like sfz. Contrasting to a sfz, a
+   A [[dict:poolevt][poolevt]] is a sample event type like [[dict:sfz][sfz]]. In contrast to sfz, a
    poolevt implements granular transposition and stretching for
    playback. In addition, a poolevt uses a /dy/ slot to enable a
-   pitch-linear glissando of the sample from start to end. It also
-   uses lsamples, ignoring their loop points. The sample to be played
-   doesn't need to have a defined pitch. Nevertheless, it uses a
-   keynum slot for SVG export. The transposition is determined by
+   pitch-linear glissando of the sample from start to end. A poolevt
+   also uses lsamples, ignoring their loop points. The sample to be
+   played doesn't need to have a defined pitch. Nevertheless, it uses
+   a keynum slot for SVG export. The transposition is determined by
    comparing the keynum of a poolevt instance with the keynum of its
    lsample[fn:11].
+
+   #+BEGIN_SRC lisp
+
+   #+END_SRC
+
 ** cm-utils
    TBA
 # ** cm-poolplayer

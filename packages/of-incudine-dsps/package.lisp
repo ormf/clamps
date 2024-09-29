@@ -29,6 +29,7 @@
            #:OSC~
            #:LSAMPLE
            #:MAKE-LSAMPLE
+           #:CREATE-LSAMPLE
            #:LSAMPLE-NAME
            #:LSAMPLE-BUFFER
            #:LSAMPLE-ONESHOT

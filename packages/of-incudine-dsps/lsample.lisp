@@ -20,6 +20,9 @@
 
 (in-package :of-incudine-dsps)
 
+(unless (boundp 'cl-user:*sfile-path*)
+  (defparameter cl-user:*sfile-path* nil))
+
 (defvar *standard-pitch* 440.0
   "Reference tuning frequency for middle A, setfable.")
 
@@ -65,6 +68,32 @@ sfz
   (loopstart +sample-zero+ :type sample)
   (amp (sample 0) :type sample)
   (loopend +sample-zero+ :type sample))
+
+(defun create-lsample (file &rest args)
+  "Return a lsample instance from /file/ and /args/
+
+@Arguments
+file - Pathname or String denoting filename.
+:path - List of Pathnames to search for file. Defaults to [[#sfile-path][*​sfile-path​*]].
+:oneshot - Boolean indicationg whether not to loop the sample. Defaults to t.
+:loopstart - Positive Integer denoting start of loop. Defaults to 0.
+:loopend - Positive Integer denoting end of loop. Defaults to 0.
+:amp - Number denoting amplitude in dB. The range [-100..0] is mapped to linear amplitude [0..1]. Defaults to 0.
+
+@See-also
+make-lsample
+"
+  (let* ((path (or (getf args :path) cl-user:*sfile-path*))
+         (name (if (pathnamep file) (file-namestring file) file))
+         (filename (if (pathnamep file) (namestring file) file))
+         (oneshot (or (getf args :oneshot) t)))
+    (remf args :path)
+    (remf args :oneshot)
+    (apply #'make-lsample
+           :name name
+           :buffer (incudine-bufs:clamps-buffer-load filename :path path)
+           :oneshot oneshot
+           args)))
 
 (defun lsample-pathname (lsample)
   "Return the full pathname of /lsample/.

@@ -77,7 +77,6 @@
            lines->svg orm-utils:m-exp-rev-fn clog-dsp-widgets:list-dsps
            common-lisp:input-stream-p list->svg-points
            orm-utils:str-concat orm-utils:m-exp-zero
-           of-incudine-dsps:buffer-stretch-play
            of-incudine-dsps:play-buffer-loop*
            of-incudine-dsps:play-buffer*
            *gnuplot-options* orm-utils:ct2fv svg-rect
@@ -115,7 +114,7 @@
            cl-midictl:remove-all-midi-cc-fns orm-utils:group-by
            regenerate-points with-svg-file cl-midictl:unwatch
            clog-dsp-widgets:define-watch orm-utils:port-available-p
-           svg->lines orm-utils:m-lin-rd-fn of-incudine-dsps:play-sample
+           svg->lines orm-utils:m-lin-rd-fn
            cl-midictl:nanoktl2-preset-midi svg->points
            clog-dsp-widgets:remove-bus set-bpm orm-utils:case-ext
            orm-utils:push-if svg-cm-line orm-utils:splice
@@ -123,7 +122,7 @@
            clog-dsp-widgets:add-bus clamps-start
            of-incudine-dsps:*hanning1024* orm-utils:lin-n orm-utils:def-params
            cl-midictl:start-osc-midi-receive clog-dsp-widgets:find-bus
-           orm-utils:fr->ct of-incudine-dsps:play-sample*
+           orm-utils:fr->ct
            of-incudine-dsps:play-buffer-stretch-env-pan-out*
            clog-midi-controller:nanoktl2-preset-gui orm-utils:db->amp
            orm-utils:do-proplist/collecting clog-dsp-widgets:levelmeter-full-gui
@@ -289,17 +288,18 @@
            incudine.fudi:output-stream-p incudine.fudi:stream-open?
            incudine.fudi:send incudine.fudi:stream incudine.fudi:input-stream-p
            incudine.fudi:stream-p incudine.fudi:close incudine.fudi:open
+           of-incudine-dsps:create-lsample
            of-incudine-dsps:play-buffer-stretch-env-pan-out
            of-incudine-dsps:play-buffer-stretch-env-pan-out*
            of-incudine-dsps:lsample-pathname
            of-incudine-dsps:lsample-name of-incudine-dsps:lsample-loopstart
            of-incudine-dsps:play-buffer-stretch*
-           of-incudine-dsps:buffer-stretch-play of-incudine-dsps:make-lsample
+           of-incudine-dsps:make-lsample
            of-incudine-dsps:get-keynum of-incudine-dsps:lsample-amp
            of-incudine-dsps:lsample-buffer incudine.vug:counter
            of-incudine-dsps:play-buffer-stretch-out of-incudine-dsps:make-oasr
            of-incudine-dsps:lsample-loopend
-           of-incudine-dsps:*sine1024* of-incudine-dsps:play-sample*
+           of-incudine-dsps:*sine1024*
            of-incudine-dsps:play-sample of-incudine-dsps:keynum->hz
            of-incudine-dsps:play-lsample of-incudine-dsps:*hanning1024*
            of-incudine-dsps:buffer-loop-play* of-incudine-dsps:lsample-oneshot

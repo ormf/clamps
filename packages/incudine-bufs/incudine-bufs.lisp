@@ -40,7 +40,6 @@
                             path)
             (warn "couldn't find file ~S in path" fname)))))
 
-#+linux
 (defun path-find-file (fname path)
   (let ((fname (pathname fname)))
     (if (uiop:file-exists-p fname)
@@ -50,11 +49,14 @@
           for result = (string-trim
                         '(#\NEWLINE)
                         (with-output-to-string (str)
-                          (uiop:run-program (format nil "find ~a -name ~a" dir fname) :output str)))
+                          #-darwin
+                          (uiop:run-program (format nil "find ~a -name ~a -quit" dir fname) :output str)
+                          #+darwin
+                          (uiop:run-program (format nil "find ~a -name ~a -exit" dir fname) :output str)))
           while (string= result "")
           finally (return (unless (string= result "") result))))))
 
-#-linux
+#|
 (defun path-find-file (fname path)
   (let ((fname (pathname fname)))
     (if (uiop:file-exists-p fname)
@@ -64,6 +66,7 @@
           for result = (first (directory (format nil "~a/**/~a" dir fname)))
           until result
           finally (return result)))))
+|#
 
 (defun buffer-id (buffer)
   "get index of buffer from registry."
@@ -209,4 +212,3 @@ remove-all-buffers
 (setf (fdefinition 'ensure-buffer) #'clamps-buffer-load)
 
 ;;; (clamps-buffer-load "/home/orm/work/kompositionen/letzte-worte/snd/fl-s01-line01.wav")
-
