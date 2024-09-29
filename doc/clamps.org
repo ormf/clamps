@@ -1411,10 +1411,28 @@
 
 
 
-
    
 ** incudine-bufs
-   TBA
+   incudine-bufs implements a registry for buffers. Buffers get added
+   with the command [[dict:add-buffer][add-buffer]]. The command takes a relative or
+   absolute filename and a /:path/ key as arguments. The /:path/ is a
+   list of pathnames of directories to search. Its default value is
+   [[dict:#sfile-path][*​sfile-path​*]]. The user can push pathnames to that variable.
+
+   If a buffer of that name has already been loaded, add-buffer simply
+   returns that buffer. Otherwise it loads the file into an
+   incudine:buffer struct, assigns an unused integer /id/ to it
+   buffer, updates the registry and returns the loaded buffer:
+
+   #+HTML: <h4>Example</h4>
+   #+BEGIN_SRC lisp
+     (clamps-buffer-load
+      "69-Flute.nv.ff.1A4.wav"
+      :path (list (asdf:system-relative-pathname :clamps "extra/snd/")))
+   #+END_SRC
+
+
+   
 * Gui
 ** General GUI Setup
    The gui is realized in a browser using the [[https://github.com/rabbibotton/clog][CLOG]] package available

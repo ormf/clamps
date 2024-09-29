@@ -4,7 +4,7 @@
 
 (defpackage :incudine-bufs
   (:use #:cl #:incudine)
-  (:export #:clamps-buffer-load #:ensure-buffer #:buffer-id #:get-buffer #:find-buffer
-           #:add-buffer #:remove-buffer #:remove-all-buffers
+  (:export #:clamps-buffer-load #:ensure-buffer #:buffer-id #:get-buffer-file
+           #:find-buffer #:add-buffer #:list-buffers #:remove-buffer #:remove-all-buffers
            #:path-find-file #:get-sndfile-path))
 
