@@ -18,8 +18,6 @@
 ;;;
 ;;; **********************************************************************
 
-
-
 (defpackage :clamps
   (:export cl-user:clamps
            ats-cuda-display:ats->svg
@@ -68,7 +66,7 @@
            cl-midictl:update-preset-buttons clog-dsp-widgets:pulse-on
            ats-cuda-display:restore-tables orm-utils:make-keyword
            orm-utils:m-exp-dev orm-utils:fv2ct cl-midictl:*midi-cc-fns*
-           clamps:reset-logger-stream meters clamps-gui-root
+           reset-logger-stream meters clamps-gui-root
            incudine-bufs:buffer-id clog-dsp-widgets:pulse-off
            clog-dsp-widgets:*out-refs* orm-utils:rmprop orm-utils:multf
            of-incudine-dsps:play-buffer-stretch* orm-utils:r-lin idump

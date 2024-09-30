@@ -1893,7 +1893,7 @@
 
       (set-val e1 17) ;; => 17
 
-      qn;; No further output in the REPL.
+      ;; No further output in the REPL.
 
     #+END_SRC
 ** cl-sfz

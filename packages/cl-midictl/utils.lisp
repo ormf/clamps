@@ -35,14 +35,23 @@ channel - Integer in the range [1..16] indicating the MIDI channel.
 
 (defsetf ccin (ccnum &optional (channel *global-midi-channel*)) (value)
   "Set the last received MIDI CC value of controller number <ccnum> at
-MIDI channel <channel>."
+MIDI channel <channel>.
+
+@Arguments
+ccnum - Integer in the range [1..128] indicating the Controller Number.
+channel - Integer in the range [1..16] indicating the MIDI channel.
+"
   `(progn
      (set-val (aref (aref *midi-cc-state* ,(1- channel)) ,(1- ccnum)) ,value)
      ,value))
 
 (defun get-ref (controller ref-idx)
-  "return the ref-object of the midi-controller <controller> given the
-<ref-idx> indexing into the cc-nums slot of the controller."
+  "Return the ref-object of the midi-controller /controller/ given the
+/ref-idx/ indexing into the cc-nums slot of the controller.
+
+@Arguments
+controller - Instance of type midi-controller.
+ref-idx - Non Negative Integer denoting the index of the cc-nums array of the controller."
   (with-slots (cc-nums cc-state) controller
     (aref cc-state (aref cc-nums ref-idx))))
 
@@ -52,8 +61,8 @@ MIDI channel <channel>."
                 127 0)))
 
 (defun buchla-scale (curr old target &key (max 127))
-  "Set the <target> fader by interpolating between 0 and <max>, using
-the <curr> and <old> values of a source fader.
+  "Set /target/ fader by interpolating between 0 and /max/, using
+the /curr/ and /old/ values of a source fader.
 
 The function serves the purpose of avoiding jumps when working with
 non motorized hardware faders: If the value of the software target
@@ -77,7 +86,15 @@ value and 0 using the remaining space below the hardware fader.
    1.0))
 
 (defmacro with-gui-update-off ((instance) &body body)
-  `(progn
-     (setf (gui-update-off ,instance) t)
+  "Evaluate code of /body/ in the context of the gui-update-off slot of
+/instance/ set to t. After the body has evaluated, the gui-update-off
+slot is set to its previous value before entering body.
+
+@Arguments
+instance - Instance of type [[midi-controller]].
+body - Zero or more lisp forms.
+"
+  `(let ((tmp (gui-update-off ,instance))
+         (setf (gui-update-off ,instance) t))
      (unwind-protect ,@body
-       (setf (gui-update-off ,instance) nil))))
+       (setf (gui-update-off ,instance) tmp))))
