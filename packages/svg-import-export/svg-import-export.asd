@@ -10,8 +10,8 @@
 
 (asdf:defsystem #:svg-import-export
   :serial t
-  :depends-on (#:xpath
-               #:cxml-stp
+  :depends-on (#:cxml-stp
+               #:xpath
                #:cl-ppcre
                #:cl-FAD
                #:orm-utils)
