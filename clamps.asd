@@ -23,4 +23,5 @@
                (:file "package")
                (:file "clamps-utils")
                (:file "clamps")
+               (:file "make-doc")
                ))
