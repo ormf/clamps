@@ -162,8 +162,8 @@
       CL-USER> (ql:quickload :clamps)
     #+END_SRC
     To startup MIDI, Networking, DSP and the GUI, use the [[dict:clamps][clamps]]
-   function:
-   #+BEGIN_SRC lisp
+    function:
+    #+BEGIN_SRC lisp
      CL-USER> (clamps)
      warn: closing midi streams
 
@@ -200,7 +200,7 @@
 
      ; No values
      clamps> 
-   #+END_SRC
+    #+END_SRC
 *** Emacs Shortcuts
     The following emacs shorctus are defined when working with Clamps:
 
@@ -1413,23 +1413,122 @@
 
    
 ** incudine-bufs
-   incudine-bufs implements a registry for buffers. Buffers get added
-   with the command [[dict:add-buffer][add-buffer]]. The command takes a relative or
+
+   clamps-cuda-bufs
+   clamps-cuda-dsps
+   
+   incudine-bufs implements a registry for buffers in Clamps on top of
+   Incudine's infrastructure for buffers.
+
+   The standard way to add a buffer to the registry is using the
+   command [[dict:clamps-buffer-load][clamps-buffer-load]]. The command takes a relative or
    absolute filename and a /:path/ key as arguments. The /:path/ is a
    list of pathnames of directories to search. Its default value is
-   [[dict:#sfile-path][*​sfile-path​*]]. The user can push pathnames to that variable.
+   [[dict:#sfile-path][*​sfile-path​*]]. The user can push pathnames to that variable to add
+   user- or application-specific locations to search for soundfiles.
 
-   If a buffer of that name has already been loaded, add-buffer simply
-   returns that buffer. Otherwise it loads the file into an
-   incudine:buffer struct, assigns an unused integer /id/ to it
-   buffer, updates the registry and returns the loaded buffer:
+   If a buffer of that name has already been loaded,
+   clamps-buffer-load simply returns that buffer. Otherwise it loads
+   the file into an incudine:buffer struct, assigns an unused integer
+   /id/ to it, updates the registry and returns the loaded buffer:
 
-   #+HTML: <h4>Example</h4>
+#   #+HTML: <h4>Example</h4>
    #+BEGIN_SRC lisp
      (clamps-buffer-load
       "69-Flute.nv.ff.1A4.wav"
       :path (list (asdf:system-relative-pathname :clamps "extra/snd/")))
+     ;; => #<incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0>
    #+END_SRC
+
+   The buffer gets registered under its filename, full pathname and
+   its id. A buffer can be retrieved from the registry using
+   [[dict:find-buffer][find-buffer]] with any of the registered values as argument.
+
+   In case a buffer has already been loaded (e.g. with Incudine's
+   /#'buffer-load/ function), the function [[dict:add-buffer][add-buffer]] takes a buffer
+   instead of a filename as argument and registers the buffer in the
+   same way as clamps-buffer-load. [[dict:list-buffers][list-buffers]] lists all buffers and
+   their ids, [[dict:buffer-id][buffer-id]] returns the id of a buffer, [[dict:remove-buffer][remove-buffer]]
+   removes a buffer from the registry using its id, filename or the
+   buffer itself as argument and [[dict:remove-all-buffers][remove-all-buffers]] removes all
+   buffers from the registry.
+
+   #+BEGIN_SRC lisp
+     (defvar *73-flute-nv*
+       (incudine:buffer-load
+        (asdf:system-relative-pathname
+         :clamps
+         "extra/snd/sfz/Flute-nv/samples/73-Flute.nv.ff.1Db5.wav")))
+     ;; => *73-flute-nv*
+
+     (add-buffer *73-flute-nv*)
+     ;; => #<incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0>
+
+     (list-buffers)
+     ;; => ((0 "69-Flute.nv.ff.1A4.wav" #<incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0>)
+     ;;     (1 "73-Flute.nv.ff.1Db5.wav" #<incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0>))
+
+
+     (find-buffer "69-Flute.nv.ff.1A4.wav")
+     ;; => #<incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0>, t
+
+     (buffer-id "69-Flute.nv.ff.1A4.wav")
+     ;; => 0
+
+     (find-buffer 0)
+     ;; => #<incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0>, t
+
+     (buffer-name (find-buffer "69-Flute.nv.ff.1A4.wav"))
+     ;; => "69-Flute.nv.ff.1A4.wav"
+
+     ;; compare to incudine's built-in function buffer-file:
+     (buffer-file (find-buffer "69-Flute.nv.ff.1A4.wav"))
+     ;; => #P"/home/orm/work/snd/sfz/transverse-flute/export/69-Flute.nv.ff.1A4.wav"
+
+     (mapcar #'third (list-buffers))
+     ;;  => (#<incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0>
+     ;;      #<incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0>)
+
+     (buffer-id #P"/home/orm/work/snd/sfz/transverse-flute/export/69-Flute.nv.ff.1A4.wav")
+     ;; => 0
+
+     (buffer-id (find-buffer "73-Flute.nv.ff.1Db5.wav"))
+     ;; => 1
+
+     (buffer-id "73-Flute.nv.ff.1Db5.wav")
+     ;; => 1
+
+     (buffer-id *73-flute-nv*)
+     ;; => 1
+
+     (remove-buffer 0)
+     ;; => t
+
+     (list-buffers)
+     ;; => ((1 "73-Flute.nv.ff.1Db5.wav" #<incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0>))
+
+     (remove-buffer *73-flute-nv*)
+     ;; => t
+
+     (list-buffers)
+     ;; => nil
+
+     ;; The buffer *73-flute-nv* is removed from the registry, but not
+     ;; removed from clamps/incudine:
+
+     (find-buffer *73-flute-nv*)
+     ;; => nil
+
+     *73-flute-nv*
+     ;; => #<incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0>
+   #+END_SRC
+
+   #+HTML:<h4>Note</h4>
+   The buffer containing "69-Flute.nv.ff.1A4.wav" also still exists
+   after evaluating the code above, but if nothing points to it
+   anymore, it will eventually get garbage collected. If the space of
+   the buffer should get explicitely freed, use Incudine's #'free
+   method with the buffer as argument.
 
 
    
@@ -1599,13 +1698,16 @@
 
     For a variable with possible relations to other variables,
     /cl-ref/ uses a special class called /ref-object/. Three main
-    functions are defined to create and access a ref-object: A
-    [[creation
+    functions are defined to create and access a ref-object:
+    A [[creation
      function][creation function]], a [[reader function][reader function]] and a [[setter function][setter function]]. These
     functions are always the same, regardless of the variable they
-    apply to, so there is no need to define a new function for
-    setting any of the variables as in the example above.
-**** creation function
+    apply to, so there is no need to define a new function for setting
+    any of the variables as in the example in the previous section.
+
+    #+HTML: <h5>creation function</h5>
+    <<creation function>>
+
      A ref-object gets created with the function
      /make-ref/:
      #+BEGIN_SRC lisp
@@ -1613,12 +1715,16 @@
 
       v1 ; => #<ref 1.0>
      #+END_SRC
-**** reader function
+
+     #+HTML: <h5>reader function</h5>
+     <<reader function>>
+
      To read the value of a ref-object, use the function /get-val/:
      #+BEGIN_SRC lisp
        (get-val v1)  ; => 1.0
      #+END_SRC
-**** setter function
+     #+HTML: <h5>setter function</h5>
+     <<setter function>>
      To set the value of a ref-object, use the function /set-val/:
      #+BEGIN_SRC lisp
       (set-val v1 2.3)  ; => 2.3
@@ -1629,15 +1735,17 @@
     /cl-refs/ provides two ways to define a relation between
     ref-objects, or between a ref-object and some program logic,
     [[make-computed][make-computed]] and [[watch][watch]].
-**** make-computed
-     This function combines creating a new ref-object with
-     establishing a relation between the created object and one or
-     more other ref-objects. It takes a function as argument. All
-     ref-objects referenced in the body of that function using
-     /get-val/ will cause the newly created ref-object to update its
-     value by calling the function whenever the value of any of these
-     ref-objects is changed. /make-computed/ returns the newly
-     created ref-object.
+
+    #+HTML: <h5>make-computed</h5>
+    <<make-computed>>
+
+    This function combines creating a new ref-object with establishing
+    a relation between the created object and one or more other
+    ref-objects. It takes a function as argument. All ref-objects
+    referenced in the body of that function using /get-val/ will cause
+    the newly created ref-object to update its value by calling the
+    function whenever the value of any of these ref-objects is
+    changed. /make-computed/ returns the newly created ref-object.
      #+BEGIN_SRC lisp
        (defvar c1 (make-ref 1.0)) ; => c1
 
@@ -1705,86 +1813,89 @@
 
              (get-val c1) ; => 15
      #+END_SRC      
-**** watch
-     Like /make-computed/ also /watch/ takes a function as
-     argument. This function is called, whenever one or more
-     ref-objects referenced in its body using /get-val/ are
-     changed. In that way actions can be triggered and associated
-     with the change of ref-objects[fn:14]. Since actions can also
-     involve changing other ref-objects, /watch/ can be used in a
-     similar fashion as /make-computed/.
+    #+HTML: <h5>watch</h5>
+    <<watch>>
+    
+    Like /make-computed/ also /watch/ takes a function as
+    argument. This function is called, whenever one or more
+    ref-objects referenced in its body using /get-val/ are changed. In
+    that way, actions can be triggered and associated with the change
+    of ref-objects[fn:14]. Since actions can also involve changing
+    other ref-objects, /watch/ can be used in a similar fashion as
+    /make-computed/.
 
-     Note that the call to /watch/ will trigger the execution of the
-     supplied function once. This is necessary to register the
-     function in the referenced ref-objects and to ensure the correct
-     state of the application in case relations between ref-objects
-     are defined within the function.
+    Note that the call to /watch/ will trigger the execution of the
+    supplied function once. This is necessary to register the function
+    in the referenced ref-objects and to ensure the correct state of
+    the application in case relations between ref-objects are defined
+    within the function.
 
-     /watch/ returns a function to remove the action defined by the
-     supplied function. It is crucial to capture this result in order
-     to be able to later remove the established connections between
-     variables and associated actions[fn:15].
+    /watch/ returns a function to remove the action defined by the
+    supplied function. It is crucial to capture this result in order
+    to be able to later remove the established connections between
+    variables and associated actions[fn:15].
 
-     IMPORTANT NOTE: Calling the same watch expression twice will
-     establish two independent functions which will always be called
-     on change of any contained ref-object. If the result of /watch/
-     wasn't captured, removing the defined function(s) is only
-     possible by redefining all referenced objects with the result
-     that any other relation previously established using
-     /make-computed/ or /watch/ is referencing outdated ref-objects
-     and will have to get redefined. Therefore it is not only
-     advisable to capture the return value of all calls to watch, but
-     also to put all definitions of ref-objects and their relations
-     into a function or a piece of code reloadable at runtime to be
-     able to reset all relations, preferably with additional code
-     reestablishing a defined application state of all used
-     ref-objects.
-     #+BEGIN_SRC lisp
-       (defvar e1 (make-ref 1)) ; => e1
+    #+HTML:<h5>Important Note</h5>
+     
+    Calling the same watch expression twice will establish two
+    independent functions which will always be called on change of any
+    contained ref-object. If the result of /watch/ wasn't captured,
+    removing the defined function(s) is only possible by redefining
+    all referenced objects with the result that any other relation
+    previously established using /make-computed/ or /watch/ is
+    referencing outdated ref-objects and will have to get
+    redefined. Therefore it is not only advisable to capture the
+    return value of all calls to watch, but also to put all
+    definitions of ref-objects and their relations into a function or
+    a piece of code reloadable at runtime to be able to reset all
+    relations, preferably with additional code reestablishing a
+    defined application state of all used ref-objects.
+    #+BEGIN_SRC lisp
+      (defvar e1 (make-ref 1)) ; => e1
 
-       ;; Variable to capture watch definitions:
-       (defvar unwatch nil) ; => unwatch
+      ;; Variable to capture watch definitions:
+      (defvar unwatch nil) ; => unwatch
 
-       (push (watch (lambda () (format t "e1 has changed to ~a~%" (get-val e1)))) unwatch)
+      (push (watch (lambda () (format t "e1 has changed to ~a~%" (get-val e1)))) unwatch)
 
-       (set-val e1 40) ;; => 40
+      (set-val e1 40) ;; => 40
 
-       ;; output in the REPL:
-       ;; e1 has changed to 40
+      ;; output in the REPL:
+      ;; e1 has changed to 40
 
-       unwatch ; => (#<function (lambda () :in watch) {1009EAD9DB}>)
+      unwatch ; => (#<function (lambda () :in watch) {1009EAD9DB}>)
 
-       ;; define another action to be taken:
+      ;; define another action to be taken:
 
-       (push
-        (watch
-         (lambda ()
-           (format t "another relation: e1 has changed to ~a~%" (get-val e1))))
-        unwatch)
-       ;;  => (#<function (lambda () :in watch) {100D3F59DB}>
-       ;;      #<function (lambda () :in watch) {1009EAD9DB}>)
+      (push
+       (watch
+        (lambda ()
+          (format t "another relation: e1 has changed to ~a~%" (get-val e1))))
+       unwatch)
+      ;;  => (#<function (lambda () :in watch) {100D3F59DB}>
+      ;;      #<function (lambda () :in watch) {1009EAD9DB}>)
 
-       ;; output in the REPL:
-       ;; another relation: e1 has changed to 40
+      ;; output in the REPL:
+      ;; another relation: e1 has changed to 40
 
-       (set-val e1 10) ;; => 10
+      (set-val e1 10) ;; => 10
 
-       ;; output in the REPL:
-       ;; another relation: e1 has changed to 10
-       ;; e1 has changed to 10
+      ;; output in the REPL:
+      ;; another relation: e1 has changed to 10
+      ;; e1 has changed to 10
 
-       ;; clear all connections by calling the functions returned by the call
-       ;; to #'watch:
+      ;; clear all connections by calling the functions returned by the call
+      ;; to #'watch:
 
-       (mapc #'funcall unwatch)
+      (mapc #'funcall unwatch)
 
-       (setf unwatch nil)
+      (setf unwatch nil)
 
-       (set-val e1 17) ;; => 17
+      (set-val e1 17) ;; => 17
 
-       ;; No further output in the REPL.
+      qn;; No further output in the REPL.
 
-     #+END_SRC
+    #+END_SRC
 ** cl-sfz
    cl-sfz implements the basic infrastructure to deal with [[https://en.wikipedia.org/wiki/SFZ_(file_format)][SFZ]]
    definitions. The SFZ format was developed in the context of

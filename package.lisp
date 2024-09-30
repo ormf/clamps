@@ -40,7 +40,7 @@
            orm-utils:m-exp-rd-rev-fn orm-utils:map-params
            of-incudine-dsps:play-buffer-stretch-env-out orm-utils:make-quantlist
            set-basedir clamps-base-url orm-utils:slurp
-           orm-utils:parse-proplist orm-utils:m-exp-fn incudine-bufs:get-buffer
+           orm-utils:parse-proplist orm-utils:m-exp-fn
            orm-utils:r-exp-dev clog-dsp-widgets:clog-dsp-widgets-initialize
            clog-dsp-widgets:new-gui-window
            clog-dsp-widgets:create-o-numbox orm-utils:amp->db
@@ -68,7 +68,7 @@
            cl-midictl:update-preset-buttons clog-dsp-widgets:pulse-on
            ats-cuda-display:restore-tables orm-utils:make-keyword
            orm-utils:m-exp-dev orm-utils:fv2ct cl-midictl:*midi-cc-fns*
-           cm:reset-logger-stream meters clamps-gui-root
+           clamps:reset-logger-stream meters clamps-gui-root
            incudine-bufs:buffer-id clog-dsp-widgets:pulse-off
            clog-dsp-widgets:*out-refs* orm-utils:rmprop orm-utils:multf
            of-incudine-dsps:play-buffer-stretch* orm-utils:r-lin idump
@@ -313,7 +313,7 @@
            of-incudine-dsps:buffer-record of-incudine-dsps:lsample-keynum
            incudine-bufs:get-sndfile-path incudine-bufs:add-buffer
            incudine-bufs:remove-all-buffers incudine-bufs:remove-buffer
-           incudine-bufs:path-find-file incudine-bufs:get-buffer
+           incudine-bufs:path-find-file
            incudine-bufs:ensure-buffer incudine-bufs:buffer-id
            incudine-bufs:find-buffer
            orm-utils:copy-instance orm-utils:ftom orm-utils:get-duplicates

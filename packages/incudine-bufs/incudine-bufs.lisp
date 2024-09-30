@@ -22,7 +22,7 @@
 
 (in-package :incudine-bufs)
 
-(defparameter *buffers* (make-hash-table))
+(defparameter *buffers* (make-hash-table :test #'equal))
 (defparameter *buffer-ids* (make-hash-table :test #'equal))
 (defparameter *buffer-max-id* -1)
 (defparameter *buffer-next-id* '())
@@ -73,22 +73,27 @@ path - List of paths to search.
           finally (return result)))))
 |#
 
-(defun buffer-id (buffer)
-  "Return index of /buffer/ from registry.
+(defun buffer-id (ref)
+  "Return index of buffer /ref/ from registry. ref can be the filename of
+a buffer or the buffer itself.
 
 @Arguments
-buffer - Incudine buffer.
+buffer - Incudine buffer, Pathname or String denoting the filename of the buffer.
 
 @See-also
+clamps:incudine-bufs
 add-buffer
+buffer-name
+bufname=
 clamps-buffer-load
 find-buffer
-get-buffer-file
 list-buffers
 remove-buffer
 remove-all-buffers
 "
-  (gethash buffer *buffer-ids*))
+  (typecase ref
+    (buffer (gethash ref *buffer-ids*))
+    (t (gethash (find-buffer ref) *buffer-ids*))))
 
 ;;; (namestring (pathname "/tmp/test.wav"))
 ;;; (file-namestring (pathname "/tmp/test.wav"))
@@ -99,15 +104,17 @@ remove-all-buffers
   (let ((path (pathname name)))
     (file-namestring path)))
 
-(defun get-buffer-file (buffer)
+(defun buffer-name (buffer)
   "Return the file-namestring of /buffer/.
 
 @Arguments
 buffer - Incudine buffer.
 
 @See-also
+clamps:incudine-bufs
 add-buffer
 buffer-id
+bufname=
 find-buffer
 list-buffers
 remove-buffer
@@ -117,21 +124,25 @@ remove-all-buffers
 
 (defun find-buffer (ref)
   "Return registered buffer with /ref/ either being a full pathname, the
-pathname-name or an integer id.
+pathname-name, an integer id or a buffer.
 
 @Arguments
-ref - Integer denoting id of buffer or String or Pathname denoting the buffer's filename.
+ref - Integer denoting id of buffer or String or Pathname denoting the buffer's filename or a buffer.
 
 @See-also
+clamps:incudine-bufs
 add-buffer
 buffer-id
+buffer-name
+bufname=
 clamps-buffer-load
-get-buffer-file
 list-buffers
 remove-buffer
 remove-all-buffers
 "
-  (gethash ref *buffers*))
+  (if (typep ref 'buffer)
+      (find-buffer (buffer-id ref))
+      (gethash ref *buffers*)))
 
 ;;; (loop for i below 10 if (evenp i) collect i into result finally (return result))
 
@@ -142,10 +153,12 @@ remove-all-buffers
 buf - Incudine buffer.
 
 @See-also
+clamps:incudine-bufs
 buffer-id
+buffer-name
+bufname=
 clamps-buffer-load
 find-buffer
-get-buffer-file
 list-buffers
 remove-buffer
 remove-all-buffers
@@ -155,21 +168,24 @@ remove-all-buffers
     (setf (gethash (or (pop *buffer-next-id*) (incf *buffer-max-id*)) *buffers*) buf)
     (setf (gethash buf *buffer-ids*) *buffer-max-id*)
     (setf (gethash (buffer-file buf) *buffers*) buf)
-    (setf (gethash (pathname-name (buffer-file buf)) *buffers*) buf)
+    (setf (gethash (file-namestring (buffer-file buf)) *buffers*) buf)
     buf))
 
 (defun remove-buffer (ref)
-  "Remove buffer from registry.
+  "Remove buffer from registry. Return t if buffer was found and
+removed, else return nil.
 
 @Arguments
 buf - Incudine:buffer, Integer denoting buffer id or filename of buffer.
 
 @See-also
+clamps:incudine-bufs
 add-buffer
 buffer-id
+buffer-name
+bufname=
 clamps-buffer-load
 find-buffer
-get-buffer-file
 list-buffers
 remove-all-buffers
 "
@@ -179,24 +195,28 @@ remove-all-buffers
              id
              (remhash buf *buffer-ids*)
              (remhash (buffer-file buf) *buffers*)
+             (remhash (buffer-name buf) *buffers*)
              (if (remhash id *buffers*)
                  (pushnew id *buffer-next-id*)))
-      (warn "Can't remove buffer ~a: buf or id not found in databases!" buf))))
+      (warn "Can't remove buffer ~a: buf or id not found in databases!" buf))
+    (if id t)))
 
 (defun remove-all-buffers ()
   "Remove all buffers from registry.
 
 @See-also
+clamps:incudine-bufs
 add-buffer
 buffer-id
+buffer-name
+bufname=
 clamps-buffer-load
 find-buffer
-get-buffer-file
 list-buffers
 remove-buffer
 "
   (setf *buffer-ids* (make-hash-table :test #'equal))
-  (setf *buffers* (make-hash-table))
+  (setf *buffers* (make-hash-table :test #'equal))
   (setf *buffer-next-id* '())
   (setf *buffer-max-id* -1)
   nil)
@@ -213,11 +233,12 @@ buf - Incudine:buffer
 file - String denoting the file.
 
 @See-also
+clamps:incudine-bufs
 add-buffer
 buffer-id
+buffer-name
 clamps-buffer-load
 find-buffer
-get-buffer-file
 list-buffers
 remove-buffer
 remove-all-buffers
@@ -236,10 +257,12 @@ file - Pathname or String denoting a soundfile.
 :path - List of Pathnames or Strings to search for file.
 
 @See-also
+clamps:incudine-bufs
 add-buffer
 buffer-id
 find-buffer
-get-buffer-file
+buffer-name
+bufname=
 list-buffers
 remove-buffer
 remove-all-buffers
@@ -253,23 +276,27 @@ remove-all-buffers
           (warn "couldn't find soundfile in sfile-path: ~A" file)))))
 
 (defun list-buffers ()
-  "Return a list (/buffer-id/ /buffer-name/) for each entry in buffer
-registry.
+  "Return a list /(buffer-id buffer-name buffer)/ for each entry in
+the clamps buffer registry.
 
 @See-also
+clamps:incudine-bufs
 add-buffer
 buffer-id
+buffer-name
+bufname=
+clamps-buffer-load
 find-buffer
-get-buffer-file
 remove-buffer
 remove-all-buffers
 "
-  (sort
-   (loop
-     for k being the hash-keys of *buffers*
-     if (stringp k)
-       collect (list (buffer-id (find-buffer k)) k))
-   #'< :key #'first))
+  (let ((result
+          (loop
+            for k being the hash-keys of *buffers*
+            if (stringp k)
+              collect (let ((buf (find-buffer k)))
+                        (list (buffer-id buf) k buf)))))
+    (if result (sort result #'< :key #'first))))
 
 (setf (fdefinition 'ensure-buffer) #'clamps-buffer-load)
 
