@@ -29,7 +29,8 @@ archive:
 	tar -C html -czvf clamps-doc.tgz clamps-doc
 
 html/clamps-doc/updated: clamps-doc.tgz
-	cd html && rm -rf clamps-doc && tar xvf ../clamps-doc.tgz
+
+	mkdir html && cd html && rm -rf clamps-doc && tar xvf ../clamps-doc.tgz
 	touch html/clamps-doc/updated
 
 clean-doc:
