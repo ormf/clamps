@@ -1457,7 +1457,7 @@ list - The list to recursively reverse.
 
 (defun call/collecting (f n &optional (tail '()))
   "Call function /f/ /n/ times, with idx [0..n-1] as argument,
-collecting its results. Return results with tail appended.
+collecting its results. Return results with /tail/ appended.
 
 @Arguments
 
@@ -1467,9 +1467,9 @@ tail - A list collected into by prepending to it
 
 @Examples
 
-(call/collecting (lambda (x) (* x x)) 4 '()) ; => (0 1 4 9)
+(call/collecting (lambda (x) (* x x)) 4) ; => (0 1 4 9)
 
-(call/collecting (lambda (x) (1+ x)) 4 '(hallo)) ; => (1 2 3 4 hallo)
+(call/collecting (lambda (x) (1+ x)) 4 '(hi)) ; => (1 2 3 4 hi)
 
 @See-also
 v-collect
@@ -2196,7 +2196,7 @@ n-lin-dev
   "Return the exponential interpolation for a normalized value in the
 range /[min..max]/ as a float value.
 
-@Arguments
+ @Arguments
 x - An input value in the range /[0..1]/ to be interpolated.
 min - The output value for /x = 0/.
 max - The output value for /x = 1/.
@@ -2837,3 +2837,4 @@ defparameter*
                         `(defvar ,(first entry) ,(second entry) ,(third entry)))
                        (t
                         `(defvar ,(first entry) ,(second entry)))))))
+

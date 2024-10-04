@@ -1328,7 +1328,7 @@
 
    There are five toggle buttons on the bottom left of the display:
 
-   | ~play~ | Play the events starting at the cursor position or stop playback. Pressing the space bar on the keyboard is equivalent to clicking in the button.     |
+   | ~play~ | Play the events starting at the cursor position or stop playback. Pressing the space bar on the keyboard is equivalent to clicking in the button. |
    | ~rtn~  | Mark/Unmark the current cursor position. If playback is stopped, the cursor will immediatly jump back to this position.                           |
    | ~pno~  | Display/Hide a Piano Roll background.                                                                                                             |
    | ~stf~  | Display/Hide s Staff System background: The black horizontal lines denote staff lines, the grey lines denote ledger lines.                        |
@@ -1341,17 +1341,56 @@
 ** cm-poolevt
    A [[dict:poolevt][poolevt]] is a sample event type like [[dict:sfz][sfz]]. In contrast to sfz, a
    poolevt implements granular transposition and stretching for
-   playback. In addition, a poolevt uses a /dy/ slot to enable a
-   pitch-linear glissando of the sample from start to end. A poolevt
-   also uses lsamples, ignoring their loop points. The sample to be
-   played doesn't need to have a defined pitch. Nevertheless, it uses
-   a keynum slot for SVG export. The transposition is determined by
-   comparing the keynum of a poolevt instance with the keynum of its
-   lsample[fn:11].
+   playback.
+
+#  TODO: In addition, a poolevt uses a /dy/ slot to enable a pitch-linear
+#  glissando of the sample from start to end.
+
+A poolevt also uses lsamples, but ignores their loop
+   points. The sample to be played doesn't need to have a defined
+   pitch. Nevertheless, it uses a keynum slot for SVG export. The
+   transposition is determined by comparing the keynum of a poolevt
+   instance with the keynum of its lsample[fn:11].
 
    #+BEGIN_SRC lisp
+     (setq *flute-lsample*
+       (create-lsample "69-Flute.nv.ff.1A4.wav" :keynum 69 :path (list (asdf:system-relative-pathname :clamps "extra/"))))
+     ;; => *flute-lsample*
 
-   #+END_SRC
+     (output
+      (new poolevt
+        :lsample *flute-lsample*
+        :keynum 69))
+
+     ;; => ; No value
+
+     (output
+      (new poolevt
+        :lsample *flute-lsample*
+        :keynum 69
+        :stretch 3
+        :wwidth 500))
+     ;; => ; No value
+
+     (output
+      (new poolevt
+        :lsample *flute-lsample*
+        :keynum 67
+        :stretch 3))
+     ;; => ; No value
+
+     (output
+      (new poolevt
+        :lsample *flute-lsample*
+        :keynum 67
+        :stretch 100
+        :wwidth 27
+        :amp -6))
+     ;; => ; No value
+
+
+
+     #+END_SRC
 
 ** cm-utils
    TBA
@@ -1365,7 +1404,7 @@
    created in Incudine. They are placed in the dsp chain in
    chronological order:
 
-   #+attr_html: :width 80%
+   #+attr_html: :width 60%
    #+CAPTION: dsp chain after Clamps startup
    [[./img/clamps-dsp-chain.png]]
 
@@ -1379,6 +1418,12 @@
    As a consequence, dsps which should be stoppable with that keyboard
    shortcut have to be put into group 200 using the /:before/ or
    /:after/ keywords when starting the dsp.
+
+   Dsps which should not be freed when pressing /<C-.>/ can be placed
+   in groups 100, 300 and 400. Group 400 is defined for terminal dsps,
+   e.g. endpoints of summing buses, which set the bus value to zero
+   after they have output its value, whereas group 300 can be used for
+   any persistent dsp which outputs to a bus or outlet.
 ** of-incudine-dsps
    of-incudine-dsps is a collection of Ugens and Dsps mainly concerned
    with buffer/sample playback. All Ugens and Dsps are implemented to
@@ -1414,8 +1459,9 @@
    
 ** incudine-bufs
 
-   clamps-cuda-bufs
-   clamps-cuda-dsps
+   clamps-bufs
+
+   clamps-dsps
    
    incudine-bufs implements a registry for buffers in Clamps on top of
    Incudine's infrastructure for buffers.

@@ -506,7 +506,7 @@
      (call/collecting f n &optional (tail '()))
    #+END_SRC
    Call function /f/ /n/ times, with idx [0..n-1] as argument,
-   collecting its results. Return results with tail appended.
+   collecting its results. Return results with /tail/ appended.
 *** Arguments
     | =f= | Function of one argument (an integer in the range [0..n]) |
     | =n= | Positive integer |
@@ -514,9 +514,9 @@
 
 *** Examples
     #+BEGIN_SRC lisp
-      (call/collecting (lambda (x) (* x x)) 4 '()) ; => (0 1 4 9)
+      (call/collecting (lambda (x) (* x x)) 4) ; => (0 1 4 9)
       
-      (call/collecting (lambda (x) (1+ x)) 4 '(hallo)) ; => (1 2 3 4 hallo)
+      (call/collecting (lambda (x) (1+ x)) 4 '(hi)) ; => (1 2 3 4 hi)
     #+END_SRC
 *** See also
     - [[v-collect][v-collect]]
@@ -840,6 +840,7 @@
 *** Arguments
     | =file= | Pathname or String denoting filename. |
     | =:path= | List of Pathnames to search for file. Defaults to [[#sfile-path][*​​​sfile-path​​​*]]. |
+    | =:keynum= | Number denoting keynum of sample. |
     | =:oneshot= | Boolean indicationg whether not to loop the sample. Defaults to t. |
     | =:loopstart= | Positive Integer denoting start of loop. Defaults to 0. |
     | =:loopend= | Positive Integer denoting end of loop. Defaults to 0. |
@@ -2725,11 +2726,11 @@
    #+END_SRC
    Return the exponential interpolation for a normalized value in the
    range /[min..max]/ as a float value.
-*** Arguments
-    | =x= | An input value in the range /[0..1]/ to be interpolated. |
-    | =min= | The output value for /x = 0/. |
-    | =max= | The output value for /x = 1/. |
-
+   
+    @Arguments
+   x - An input value in the range /[0..1]/ to be interpolated.
+   min - The output value for /x = 0/.
+   max - The output value for /x = 1/.
 *** Examples
     #+BEGIN_SRC lisp
       #+BEGIN_SRC lisp
@@ -3390,7 +3391,7 @@
    
    =:time= -- The output time in seconds, initially unbound.
    
-   =:lsample= -- lsample struct to use for playback.
+   =:lsample= -- [[lsample]] struct to use for playback.
    
    =:keynum= -- Keynum in Midicents.
    
@@ -4078,7 +4079,7 @@
 ** sfz
    Common Music Class
    #+BEGIN_SRC lisp
-     (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn #'play-sfz-loop) (pan 0.5) (startpos 0) (chan 100))
+     (new sfz &key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (oneshot nil) (pan 0.5) (startpos 0) (chan 100))
    #+END_SRC
    Create a sfz Event.
    
@@ -4121,6 +4122,7 @@
         ;; => nil
     #+END_SRC
 *** See also
+    - [[clamps:cm-sfz][cm-sfz]]
     - [[dict:midi][midi]]
 ** sfz->lsample
    Function
@@ -4448,6 +4450,8 @@
     | =:timescale= | Positive number denoting The timescale for playback.  |
     | =:inverse= | 0 or 1 indicating inverse colors. |
 
+*** See also
+    - [[clamps:cm-svg.rts][cm-svg.rts]]
 ** svg->lines
    Function
    #+BEGIN_SRC lisp

@@ -236,7 +236,7 @@ msg
         ))
 
       (cm:sfz (cm-class
-               (&key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (play-fn #'play-sfz-loop) (pan 0.5) (startpos 0) (chan 100))
+               (&key (keynum 60) (amplitude 0) (duration 1) (preset :flute-nv) (oneshot nil) (pan 0.5) (startpos 0) (chan 100))
 
                "Create a sfz Event.
 
@@ -278,6 +278,7 @@ sfz accepts the following slot initializations:
 
   ;; => nil
 @See-also
+clamps:cm-sfz
 dict:midi
 "))
       (cm::svg-file
@@ -391,7 +392,7 @@ poolevt accepts the following slot initializations:
 
 =:time= -- The output time in seconds, initially unbound.
 
-=:lsample= -- lsample struct to use for playback.
+=:lsample= -- [[lsample]] struct to use for playback.
 
 =:keynum= -- Keynum in Midicents.
 

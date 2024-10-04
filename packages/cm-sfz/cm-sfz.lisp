@@ -37,7 +37,7 @@
 (eval-when (:compile-toplevel :load-toplevel)
   (defobject sfz (event)
       ((keynum :initform 60 :accessor sfz-keynum)
-       (amplitude :initform 1 :accessor sfz-amplitude)
+       (amplitude :initform 0 :accessor sfz-amplitude)
        (duration :initform 1 :accessor sfz-duration)     
        (preset :initform :flute-nv :accessor sfz-preset)
        (oneshot :initform nil :accessor sfz-oneshot)
@@ -64,7 +64,12 @@
    "\\\1"))
 
 (defun svg->sfz (&rest args)
-  "recreate a sfz from the :attributes property and the coords of the svg element."
+  "Recreate a sfz from the :attributes property and the coords of the svg element.
+
+@See-also
+clamps:cm-svg
+sfz
+"
 ;;;  (if *debug* (format t "~&svg->sfz: ~a~%" args))
   (let* ((props-list (ou:get-props-list args '(:time :keynum :duration :preset :play-fn :oneshot :pan :startpos)))
          (play-fn (getf props-list :play-fn))

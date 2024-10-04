@@ -75,6 +75,7 @@ sfz
 @Arguments
 file - Pathname or String denoting filename.
 :path - List of Pathnames to search for file. Defaults to [[#sfile-path][*​sfile-path​*]].
+:keynum - Number denoting keynum of sample.
 :oneshot - Boolean indicationg whether not to loop the sample. Defaults to t.
 :loopstart - Positive Integer denoting start of loop. Defaults to 0.
 :loopend - Positive Integer denoting end of loop. Defaults to 0.
@@ -89,6 +90,7 @@ make-lsample
          (oneshot (or (getf args :oneshot) t)))
     (remf args :path)
     (remf args :oneshot)
+    (arglist-ansure-samples (:amp :keynum :loopstart :loopend) args)
     (apply #'make-lsample
            :name name
            :buffer (incudine-bufs:clamps-buffer-load filename :path path)

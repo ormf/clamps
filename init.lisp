@@ -38,6 +38,11 @@ create-lsample
 
 (defparameter *sfz-preset-lookup* (make-hash-table))
 
+(defun set-clamps-doc-root (url)
+  (slynk:eval-in-emacs `(setq *common-music-doc-root* ,url)))
+
+(set-clamps-doc-root (concatenate 'string "file://" (namestring (merge-pathnames (asdf:system-relative-pathname :clamps "doc/html/clamps-doc/")))))
+
 (load (merge-pathnames ".clampsinit.lisp" (user-homedir-pathname))
       :if-does-not-exist nil)
 

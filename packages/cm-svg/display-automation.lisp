@@ -291,6 +291,9 @@ directory.
 :timescale - Positive number denoting The timescale for playback.
 
 :inverse - 0 or 1 indicating inverse colors.
+
+@See-also
+clamps:cm-svg.rts
 "
   (set-val cm.svgd:svg-file svg-file)
   (set-val cm.svgd:piano-roll piano-roll)

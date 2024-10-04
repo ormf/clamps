@@ -24,7 +24,7 @@
   (defobject poolevt (event)
       ((lsample :initform nil :accessor poolevt-lsample)
        (keynum :initform nil :accessor poolevt-keynum)
-       (amp :initform 0.0 :accessor poolevt-amp)
+       (amp :initform 0 :accessor poolevt-amp)
 ;;;       (transp :initform 0.0 :accessor poolevt-transp);;; removed in favor of keynum (+ transp lsample-keynum)
        (dy :initform 0.0 :accessor poolevt-dy)
        (start :initform 0 :accessor poolevt-start)
@@ -206,7 +206,7 @@ svg-file."
     (let* ((buffer (of-incudine-dsps:lsample-buffer lsample))
            (time (+ (rts-now) (* *rt-scale* scoretime)))
            (transp (- keynum (of-incudine-dsps:lsample-keynum lsample)))
-           (amp (+ (ou:amp->db amp) (of-incudine-dsps:lsample-amp lsample)))
+           (ampdb (+ amp (of-incudine-dsps:lsample-amp lsample)))
 ;;;           (out (mod snd-id 8))
            )
       ;; (if *debug* (format t "~&liner: ~S~%" (list :lsample-amp (of-incudine-dsps:lsample-amp lsample) :buffer buffer :amp amp
@@ -214,7 +214,7 @@ svg-file."
       ;;                                                  :stretch stretch :wwidth wwidth :attack attack
       ;;                                                  :release release :pan pan :out1 out1 :out2 out2)))
       (at time #'of-incudine-dsps::play-buffer-stretch-env-pan-out*
-          :buffer buffer :env of-incudine-dsps:*env1* :amp amp
+          :buffer buffer :env of-incudine-dsps:*env1* :amp ampdb
           :transp transp :start start :end end
           :stretch stretch :wwidth wwidth :attack attack
           :release release :pan pan :out1 out1 :out2 out2
