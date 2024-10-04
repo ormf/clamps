@@ -1,4 +1,4 @@
-(load "~/quicklisüp/local-projects/clamps/extra/elisp/cm-dict.el")
+(load "~/quicklisp/local-projects/clamps/extra/elisp/cm-dict.el")
 (mapcar
  (lambda (entry)
    (let ((symbol (intern (car entry)
