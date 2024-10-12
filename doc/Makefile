@@ -30,7 +30,7 @@ archive:
 
 html/clamps-doc/updated: clamps-doc.tgz
 
-	mkdir html && cd html && rm -rf clamps-doc && tar xvf ../clamps-doc.tgz
+	mkdir -p html && cd html && rm -rf clamps-doc && tar xvf ../clamps-doc.tgz
 	touch html/clamps-doc/updated
 
 clean-doc:
