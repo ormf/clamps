@@ -19,7 +19,8 @@
 ;;; **********************************************************************
 
 (defpackage :clamps
-  (:export cl-user:clamps
+  (:export set-standard-pitch
+           cl-user:clamps
            ats-cuda-display:ats->svg
            incudine-bufs:find-buffer
            cl-sfz:sfz-preset-lsamples

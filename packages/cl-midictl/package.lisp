@@ -65,4 +65,5 @@
    #:PRESETS
    #:UNWATCH
    #:BUCHLA-SCALE
+   #:SHOW-MIDI-CC-FNS
    ))
