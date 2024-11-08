@@ -29,7 +29,7 @@
 
 (setf sb-ext:*init-hooks* (append sb-ext:*init-hooks* (list #'of-incudine-dsps:restore-envs
                                                             #'ats-cuda-display:restore-tables
-                                                            #'clamps-no-gui)))
+                                                            #'clamps)))
 
 (sb-ext:save-lisp-and-die
  (asdf:system-relative-pathname :clamps "clamps")

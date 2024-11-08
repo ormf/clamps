@@ -49,6 +49,7 @@
                   :clog-midi-controller
                   :cm-all
                   ))
+  (format t "~&loading ~a~%" system)
   (asdf:operate 'asdf:load-op system))
 
 (setf asdf:*central-registry*

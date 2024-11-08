@@ -247,6 +247,7 @@ messages. Intitalize with an open parenthesis."
            :reuse-address t
            :multi-threading t
            :element-type (stream-elt-type stream))
+        (usocket:socket-close server-socket)
         (if thread (progn
                      (setf (input-stream-server-running? stream) t)
                      (setf (input-stream-server-socket stream) server-socket)))
