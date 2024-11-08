@@ -41,7 +41,7 @@ create-lsample
 (defun set-clamps-doc-root (url)
   (slynk:eval-in-emacs `(setq *common-music-doc-root* ,url)))
 
-(set-clamps-doc-root (concatenate 'string "file://" (namestring (merge-pathnames (asdf:system-relative-pathname :clamps "doc/html/clamps-doc/")))))
+(defvar *clamps-doc-root* (concatenate 'string "file://" (namestring (merge-pathnames (asdf:system-relative-pathname :clamps "doc/html/clamps-doc/")))))
 
 (load (merge-pathnames ".clampsinit.lisp" (user-homedir-pathname))
       :if-does-not-exist nil)
@@ -90,6 +90,7 @@ rts
            (apply (find-symbol (string fn) :clamps) args))
          (cmvar (var)
            (symbol-value (find-symbol (string var) :cm))))
+    (set-clamps-doc-root *clamps-doc-root*)
     (setf *package* (find-package :clamps))
     (setf *readtable* (cmvar :*cm-readtable*))
     ;; add slime readtable mapping...
