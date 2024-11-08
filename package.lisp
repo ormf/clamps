@@ -25,7 +25,10 @@
            incudine-bufs:find-buffer
            cl-sfz:sfz-preset-lsamples
            cl-sfz:sfz-preset-buffers
-           cl-sfz:get-sfz-preset orm-utils:get-props-list orm-utils:m-exp
+           cl-sfz:get-sfz-preset
+           orm-utils:ftom orm-utils:mtof
+
+           orm-utils:get-props-list orm-utils:m-exp
            output-stream cl-midictl:midi-output cl-midictl:get-ref
            orm-utils:delete-props cl-midictl:buchla-scale
            incudine-bufs:ensure-buffer orm-utils:call/collecting
@@ -559,8 +562,7 @@
   (:shadowing-import-from #:cl-poolplayer #:args)
 
   (:use #:cl #:cl-user #:cm #:of-incudine-dsps #:ou)
-  (:shadow #:mtof #:ftom
-           #:buffer #:buffer-frames
+  (:shadow #:buffer #:buffer-frames
            #:buffer-sample-rate
            #:node #:bus
            #:envelope
@@ -594,4 +596,5 @@
         #:ats-cuda-display
         #:clog-midi-controller
         #:cm
+        :orm-utils
         ))
