@@ -371,7 +371,7 @@ clamps-gui-root
 rts
 "
   (setf *package* (find-package :clamps))
-  (restart-inkscape-osc)
+   (restart-inkscape-osc)
 ;;; rts also initializes midi
   (rts)
 ;;;  (unless (cm::rts?) (rts))
