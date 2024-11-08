@@ -596,5 +596,5 @@
         #:ats-cuda-display
         #:clog-midi-controller
         #:cm
-        :orm-utils
+        #:orm-utils
         ))
