@@ -512,7 +512,7 @@ controller instance using mouse interaction or presets and only
 updating the cc-state in the controller when the incoming midi values
 agree to the values to avoid jumps in the cc-state of the controller
 instance."
-  (incudine.util:msg :debug "~S ~a ~a ~a" opcode d1 d2 channel)
+  (incudine.util:msg :debug "~S ~a ~a ~a" opcode d1 d2 (1+ channel))
   (case opcode
     (:cc
      (set-val (aref (aref *midi-cc-state* channel) d1) d2)

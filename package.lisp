@@ -558,6 +558,10 @@
   (:shadowing-import-from #:incudine.util
                           #:msg)
 
+  (:shadowing-import-from #:clog
+                          #:title #:style #:html-document
+                          #:set-on-new-window)
+
   (:shadowing-import-from #:of-incudine-dsps #:clip)
   (:shadowing-import-from #:cl-poolplayer #:args)
 
@@ -597,4 +601,5 @@
         #:clog-midi-controller
         #:cm
         #:orm-utils
+        #:clog-dsp-widgets
         ))

@@ -31,7 +31,7 @@ channel - Integer in the range [1..16] indicating the MIDI channel.
 @See-also
 *midi-cc-state*
 "
-  (get-val (aref (aref *midi-cc-state* (1- channel)) (1- ccnum))))
+  (get-val (aref (aref *midi-cc-state* (1- channel)) ccnum)))
 
 (defsetf ccin (ccnum &optional (channel *global-midi-channel*)) (value)
   "Set the last received MIDI CC value of controller number <ccnum> at
@@ -42,7 +42,7 @@ ccnum - Integer in the range [1..128] indicating the Controller Number.
 channel - Integer in the range [1..16] indicating the MIDI channel.
 "
   `(progn
-     (set-val (aref (aref *midi-cc-state* ,(1- channel)) ,(1- ccnum)) ,value)
+     (set-val (aref (aref *midi-cc-state* ,(1- channel)) ,ccnum) ,value)
      ,value))
 
 (defun get-ref (controller ref-idx)

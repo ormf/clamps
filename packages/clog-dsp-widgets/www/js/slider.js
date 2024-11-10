@@ -311,7 +311,7 @@ function slider(elem) {
             if (thumb == 'true') {
                 thumbWidth = 1.5;
                 sliderBar.style.borderLeft = 'none';
-                sliderBar.style.borderRight = '0.15em solid ' + thumbColor;
+                sliderBar.style.borderRight = '0.3em solid ' + thumbColor;
                 sliderBar.style.borderTop = 'none';
                 sliderBar.style.borderBottom = 'none';
             }
@@ -327,7 +327,7 @@ function slider(elem) {
             sliderBar.style.bottom = '0px';
             if (thumb == 'true') {
                 thumbWidth = 1.5;
-                sliderBar.style.borderLeft = '0.15em solid ' + thumbColor;
+                sliderBar.style.borderLeft = '0.3em solid ' + thumbColor;
                 sliderBar.style.borderRight = 'none';
                 sliderBar.style.borderTop = 'none';
                 sliderBar.style.borderBottom = 'none';
@@ -347,7 +347,7 @@ function slider(elem) {
                 sliderBar.style.borderLeft = 'none';
                 sliderBar.style.borderRight = 'none';
                 sliderBar.style.borderTop = 'none';
-                sliderBar.style.borderBottom = '0.15em solid ' + thumbColor;
+                sliderBar.style.borderBottom = '0.3em solid ' + thumbColor;
             }
             calcBarSize = calcBarHeight;
             getFraction = getYFractionRev;
@@ -363,7 +363,7 @@ function slider(elem) {
                 thumbWidth = 1.5;
                 sliderBar.style.borderLeft = 'none';
                 sliderBar.style.borderRight = 'none';
-                sliderBar.style.borderTop =  '0.15em solid ' + thumbColor;
+                sliderBar.style.borderTop =  '0.3em solid ' + thumbColor;
                 sliderBar.style.borderBottom = 'none';
             }
             calcBarSize = calcBarHeight;
