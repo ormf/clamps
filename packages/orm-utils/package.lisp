@@ -97,6 +97,7 @@
 ;;   #:RAND
    #:N-EXP-DEV
    #:N-LIN-DEV
+   #:R-LIN-DEV
    #:R-EXP-DEV
    #:M-EXP-DEV
    #:M-LIN-DEV

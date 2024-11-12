@@ -2469,6 +2469,11 @@ n-lin
       0
       (float (* max (- x (random (* 2.0 x)))) 1.0)))
 
+(defun r-lin-dev (max)
+  "return a random deviation factor, the deviation being linearly
+interpolated between 0 for x=0 and [-max..max] for x=1."
+  (n-lin-dev (random 1.0) max))
+
 (defun n-lin-fn (min max)
   "linear interpolation for normalized x."
   (lambda (x) (n-lin x min max)))

@@ -43,7 +43,7 @@
            of-incudine-dsps:play-buffer-stretch-env-out orm-utils:make-quantlist
            set-basedir clamps-base-url orm-utils:slurp
            orm-utils:parse-proplist orm-utils:m-exp-fn
-           orm-utils:r-exp-dev clog-dsp-widgets:clog-dsp-widgets-initialize
+           orm-utils:r-lin-dev orm-utils:r-exp-dev clog-dsp-widgets:clog-dsp-widgets-initialize
            clog-dsp-widgets:new-gui-window
            clog-dsp-widgets:create-o-numbox orm-utils:amp->db
            cl-midictl:handle-midi-in
