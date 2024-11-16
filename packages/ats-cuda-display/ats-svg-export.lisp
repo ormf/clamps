@@ -34,7 +34,6 @@
 
 ;;; (defparameter *html-src-dir* (merge-pathnames (asdf:system-relative-pathname :ats-cuda "html/")))
 
-
 (defun ats->svg (ats-sound &key (brightness 20) x-scale (width 960) (height 540)
                              fname)
   "Generate a SVG file of the <ats-sound> and save it at \"/tmp/www/ats.svg\""
@@ -50,34 +49,40 @@
                                              (string-downcase (ats-sound-name ats-sound)))))
                                 (pathname "/tmp/www/ats-snd.svg"))
                                              :width width :height height)))
-    (with-slots (sampling-rate window-size frame-size frames partials frq amp frqmax)
-        ats-sound
-      (let* (
+    (let* ((sampling-rate (ats-sound-sampling-rate ats-sound))
+;;;           (window-size (ats-sound-window-size ats-sound))
+           (frame-size (ats-sound-frame-size ats-sound))
+           (frames (ats-sound-frames ats-sound))
+           (partials (ats-sound-partials ats-sound))
+           (amp (ats-sound-amp ats-sound))
+           (frq (ats-sound-frq ats-sound))
+
+           
 ;;;              (duration (/ (1- window-size) sampling-rate))
-             (dtime (/ frame-size sampling-rate))
-             (x-scale (or x-scale (/ width (* dtime frames))))
-             (maxfreq (+ 100 (get-max-freq frq (1- partials) frames))))
-        (svg-ie::add-elements
-         svg
-         (loop for frame-idx below frames
-               for time from 0 by dtime
-               append (loop
-                        for partial below partials
-                        if (not (zerop (aref frq partial frame-idx)))
-                          collect (let ((x1 (float (* x-scale time) 1.0))
-                                        (y1 (+ height (* -1 height (float (/ (aref frq partial frame-idx) maxfreq) 1.0))))
-                                        (y2 (+ height (* -1 height (float (/ (aref frq partial (min (1+ frame-idx) (1- frames))) maxfreq) 1.0))))
-                                        (width (float (* x-scale dtime) 1.0))
-                                        (color "#2255FF")
-                                        (opacity (calc-opacity (float (aref amp partial frame-idx) 1.0) :brightness brightness)))
+           (dtime (/ frame-size sampling-rate))
+           (x-scale (or x-scale (/ width (* dtime frames))))
+           (maxfreq (+ 100 (get-max-freq frq (1- partials) frames))))
+      (svg-ie::add-elements
+       svg
+       (loop for frame-idx below frames
+             for time from 0 by dtime
+             append (loop
+                      for partial below partials
+                      if (not (zerop (aref frq partial frame-idx)))
+                        collect (let ((x1 (float (* x-scale time) 1.0))
+                                      (y1 (+ height (* -1 height (float (/ (aref frq partial frame-idx) maxfreq) 1.0))))
+                                      (y2 (+ height (* -1 height (float (/ (aref frq partial (min (1+ frame-idx) (1- frames))) maxfreq) 1.0))))
+                                      (width (float (* x-scale dtime) 1.0))
+                                      (color "#2255FF")
+                                      (opacity (calc-opacity (float (aref amp partial frame-idx) 1.0) :brightness brightness)))
 ;;;                                    (format t "opacity: ~a, amp: ~a~%" opacity (float (amp sinoid) 1.0))
-                                    (make-instance 'svg-ie::svg-line :x1 x1 :y1 y1
-                                                                     :x2 (+ x1 width) :y2 y2
+                                  (make-instance 'svg-ie::svg-line :x1 x1 :y1 y1
+                                                                   :x2 (+ x1 width) :y2 y2
 ;;;                                                                    :stroke-width stroke-width
-                                                                     :opacity opacity
-                                                                     :stroke-color color 
-                                                                     ;; :fill-color color
-                                                                     :id (svg-ie:new-id svg 'line-ids))))))))
+                                                                   :opacity opacity
+                                                                   :stroke-color color 
+                                                                   ;; :fill-color color
+                                                                   :id (svg-ie:new-id svg 'line-ids)))))))
     (svg-ie:export-svg-file svg :showgrid nil)))
 
 ;;; (ats->svg cl :brightness 100)

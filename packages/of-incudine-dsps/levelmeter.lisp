@@ -67,7 +67,7 @@
 (declaim (inline env-inmeter))
 (define-vug env-inmeter ((in channel-number) (freq fixnum) (ref cl-refs:ref-object)
                                (periods channel-number))
-  (:defaults +sample-zero+ 10 nil 2)
+  (:defaults 0 10 nil 2)
   (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
          (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
          (sums (make-frame periods :zero-p t))
