@@ -98,6 +98,8 @@
   (load (format \"%s%s\" (file-name-directory (buffer-file-name))
                     \"../extra/elisp/clamps-lookup.el\"))
   (load (format \"%s%s\" (file-name-directory (buffer-file-name))
+                    \"../extra/elisp/clamps-links.el\"))
+  (load (format \"%s%s\" (file-name-directory (buffer-file-name))
                     \"../extra/elisp/clamps-overview-lookup.el\"))
   (defun extract-link (string)
   (if (= (aref (string-trim string) 0) 42)

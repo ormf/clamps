@@ -113,14 +113,16 @@ clamps-gui-root
 "
   (merge-pathnames (format nil "svg/~a" file) (ensure-directory (clamps-gui-root))))
 
-(defun clamps-restart-gui (gui-root &key (open t) (port 54619))
-  "Reset the root directory of the Gui to /gui-root/www/, optionally
-opening the Gui in a browser window.
+(defun clamps-restart-gui (&key (gui-root "/tmp") (open t) (port 54619))
+  "Reset the root directory of the Gui to /<gui-root>/www/, optionally
+opening the Gui in a browser window. The command will create the
+subdirectories /www/, /snd/ and /ats/ in the /gui-root/ directory, if
+they don't exist.
 
 @Arguments
-gui-root - ist the path where to put the /www/ subfolder for files
+:gui-root - String or Pathname where to put the /www/ subfolder for files
 accessible by the gui (nicknamed /<clamps-gui-root>/ throughout
-this dictionary).
+this dictionary). Defaults to //tmp/.
 
 :open - is a flag indicating whether to open <<clamps-base-url>> in a
 browser window after starting the gui.
@@ -382,7 +384,7 @@ rts
   (incudine:setup-io)
   (ats-cuda-display:ats-display-init)
   (start-doc-acceptor)
-  (clamps-restart-gui gui-root :open open-gui)
+  (clamps-restart-gui :gui-root gui-root :open open-gui)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (reset-logger-stream)
   (clamps-logo))

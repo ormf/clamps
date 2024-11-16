@@ -1,4 +1,4 @@
-(load "~/quicklisp/local-projects/clamps/extra/elisp/cm-dict.el")
+(load "/home/orm/work/programmieren/lisp/clamps/doc/../extra/elisp/cm-dict.el")
 (mapcar
  (lambda (entry)
    (let ((symbol (intern (car entry)
@@ -263,6 +263,7 @@
    ("r-exp-dev" "clamps-dict/r-exp-dev.html")
    ("r-getf" "clamps-dict/r-getf.html")
    ("r-lin" "clamps-dict/r-lin.html")
+   ("r-lin-dev" "clamps-dict/r-lin-dev.html")
    ("range" "clamps-dict/range.html")
    ("recall-random-state" "clamps-dict/recall-random-state.html")
    ("reducing" "clamps-dict/reducing.html")

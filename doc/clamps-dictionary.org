@@ -25,6 +25,8 @@
   (load (format "%s%s" (file-name-directory (buffer-file-name))
                     "../extra/elisp/clamps-lookup.el"))
   (load (format "%s%s" (file-name-directory (buffer-file-name))
+                    "../extra/elisp/clamps-links.el"))
+  (load (format "%s%s" (file-name-directory (buffer-file-name))
                     "../extra/elisp/clamps-overview-lookup.el"))
   (defun extract-link (string)
   (if (= (aref (string-trim string) 0) 42)
@@ -661,15 +663,17 @@
 ** clamps-restart-gui
    Function
    #+BEGIN_SRC lisp
-     (clamps-restart-gui gui-root &key (open t) (port 54619))
+     (clamps-restart-gui &key (gui-root "/tmp") (open t) (port 54619))
    #+END_SRC
-   Reset the root directory of the Gui to /gui-root/www/, optionally
-   opening the Gui in a browser window.
+   Reset the root directory of the Gui to /<gui-root>/www/, optionally
+   opening the Gui in a browser window. The command will create the
+   subdirectories /www/, /snd/ and /ats/ in the /gui-root/ directory, if
+   they don't exist.
 *** Arguments
-    | =gui-root= | ist the path where to put the /www/ subfolder for files accessible by the gui (nicknamed /<clamps-gui-root>/ throughout this dictionary).                                                                                                                         |
-    | =:open=    | is a flag indicating whether to open [[clamps-base-url][clamps-base-url]] in a browser window after starting the gui.  In the given path the following directories will be created:                                                                                                    |
-    |            | /<clamps-gui-root>/www//                                                                                                                                                                                                                                          |
-    |            | /<clamps-gui-root>/www/svg//  file path for svg files used in the /svg-display/ page of the Gui.  Any files which need to be accessible by the Gui have to be put into the /<clamps-gui-root>/www// subdirectory with their filenames relative to this directory. |
+    | =:gui-root= | String or Pathname where to put the /www/ subfolder for files accessible by the gui (nicknamed /<clamps-gui-root>/ throughout this dictionary). Defaults to //tmp/.                                                                                               |
+    | =:open=     | is a flag indicating whether to open [[clamps-base-url][clamps-base-url]] in a browser window after starting the gui.  In the given path the following directories will be created:                                                                                                    |
+    |             | /<clamps-gui-root>/www//                                                                                                                                                                                                                                          |
+    |             | /<clamps-gui-root>/www/svg//  file path for svg files used in the /svg-display/ page of the Gui.  Any files which need to be accessible by the Gui have to be put into the /<clamps-gui-root>/www// subdirectory with their filenames relative to this directory. |
 
 *** See also
     - [[clamps][clamps]]
@@ -975,7 +979,7 @@
       (db->amp -6) ; => 0.5011872
       (db->amp -100) ; => 0
     #+END_SRC
-** db->db-slider
+** db->db-slider
    Function
    #+BEGIN_SRC lisp
      (db->db-slider db &key (min -40) (max 12))
@@ -3599,6 +3603,13 @@
 
 *** See also
     - [[r-exp][r-exp]]
+** r-lin-dev
+   Function
+   #+BEGIN_SRC lisp
+     (r-lin-dev max)
+   #+END_SRC
+   return a random deviation factor, the deviation being linearly
+   interpolated between 0 for x=0 and [-max..max] for x=1.
 ** range
    Function
    #+BEGIN_SRC lisp
