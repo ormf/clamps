@@ -41,7 +41,9 @@
                             (or fname
                                 (if (and (find-package :cm.svgd) (find-symbol "SVG-DIR" :cm.svgd))
                                     (pathname (format nil "~a/~a.svg"
-                                                      (namestring (symbol-value (find-symbol "SVG-DIR" :cm.svgd)))
+                                                      (namestring (or
+                                                                   (symbol-value (find-symbol "SVG-DIR" :cm.svgd))
+                                                                   (pathname "/tmp/www/svg")))
                                                       (string-downcase (ats-sound-name ats-sound)))))
                                 (if (find-package :ats-cuda-display)
                                     (pathname
