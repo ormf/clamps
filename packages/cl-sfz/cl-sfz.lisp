@@ -417,7 +417,7 @@ sfz-preset-loaded?
    (boundp 'cl-user::*sfz-preset-path*)
    (let ((name (gethash preset cl-user::*sfz-preset-lookup*)))
      (and name
-          (incudine-bufs:path-find-file
+          (path-find-file
            name
            cl-user::*sfz-preset-path*)))))
 

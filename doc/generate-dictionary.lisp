@@ -471,7 +471,6 @@ set-tempo
               ats-cuda:ats-sound
               ats-cuda:save-ats
               ats-cuda:track-ats
-              ats-cuda:*ats-snd-dir*
               cm:*rts-out*
               cm:*midi-out1*
               cm:*midi-in1*

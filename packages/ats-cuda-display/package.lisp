@@ -20,10 +20,11 @@
 
 (defpackage #:ats-cuda-display
   (:use :cl :incudine :sb-loop :ieee-floats :alexandria
-;;;        :ats-cuda
+        :ats-cuda
    :clog-dsp-widgets :cl-refs :clog :clog-dsp-widgets
 ;;;        :de.finnendahl.binary-data :de.finnendahl.binary-data.common-datatypes
-        )
+   )
+  (:shadowing-import-from :orm-utils #:path-find-file)
   (:shadowing-import-from :clog
    :run :rotate)
   (:shadowing-import-from :ats-cuda
@@ -40,7 +41,9 @@
    :*debug*)
   (:export
    #:ats->svg
-   #:ats-player-node-id #:ats-sound #:ats-fmod #:ats-amod #:ats-bw #:ats-x
-   #:ats-shift-x #:ats-width #:ats-idx #:ats-data #:ats-crosshairs #:ats-res-balance
-   #:ats-mousepos #:ats-scale #:ats-play #:data-watch #:play-watch #:pos-watch
-   #:ats->browser #:ats-display #:ats-display-init #:restore-tables))
+   #:atsd.player-node-id #:atsd.sound #:atsd.fmod #:atsd.amod #:atsd.bw #:atsd.x
+   #:atsd.shift-x #:atsd.width #:atsd.idx #:atsd.data #:atsd.crosshairs #:atsd.res-balance
+   #:atsd.mousepos #:atsd.scale #:atsd.play #:data-watch #:play-watch #:pos-watch
+   #:ats->browser #:ats-display #:ats-display-init #:restore-tables
+   #:load-ats #:save-ats #:track-ats
+   ))

@@ -269,7 +269,7 @@
    Common Lisp's displaced array functionality.
 *** Arguments
     | =arr=     | 2-dimensional Array.                                          |
-    | =rox-idx= | Non Negative Integer denoting the Index of the row to return. |
+    | =row-idx= | Non Negative Integer denoting the Index of the row to return. |
 
 ** ats->browser
    Function
@@ -289,13 +289,9 @@
      (ats->svg ats-sound &key (brightness 20) x-scale (width 960) (height 540) fname)
    #+END_SRC
    Generate a SVG file of the <ats-sound> and save it at "/tmp/www/ats.svg"
-** *​ats-snd-dir​*
-   :PROPERTIES:
-   :CUSTOM_ID: ats-snd-dir
-   :END:
+** ats-sound
    Variable
 
-   default directory for soundfiles.
 ** ats-sound
    Structure
 
@@ -2089,6 +2085,7 @@
     - [[clamps:ats-cuda-display][ats-cuda-display]]
     - [[ats-sound][ats-sound]]
     - [[save-ats][save-ats]]
+    - [[track-ats][track-ats]]
 ** load-sfz-preset
    Function
    #+BEGIN_SRC lisp
@@ -4080,6 +4077,7 @@
 
 *** See also
     - [[clamps:ats-cuda-display][ats-cuda-display]]
+    - [[ats-sound][ats-sound]]
     - [[load-ats][load-ats]]
     - [[track-ats][track-ats]]
 ** send

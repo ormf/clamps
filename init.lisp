@@ -36,6 +36,16 @@ clamps-buffer-load
 create-lsample
 ")
 
+(defparameter *ats-file-path* (list (asdf:system-relative-pathname :ats-cuda "ats-data/"))
+  "List of directories to search recursively for ats files.
+
+@See-also
+clamps-buffer-load
+create-lsample
+")
+
+
+
 (defparameter *sfz-preset-lookup* (make-hash-table))
 
 (defun set-clamps-doc-root (url)
@@ -114,4 +124,4 @@ rts
     (funcall #'clampscall :clamps-start
              :gui-root gui-root :qsynth qsynth :open-gui open-gui)))
 
-(export '(*sfz-preset-lookup* *sfz-preset-path* *sfile-path* set-clamps-doc-root *clamps-doc-root* clamps clamps-no-gui clamps-image-start) 'cl-user)
+(export '(*sfz-preset-lookup* *sfz-preset-path* *sfile-path* *ats-file-path* set-clamps-doc-root *clamps-doc-root* clamps clamps-no-gui clamps-image-start) 'cl-user)

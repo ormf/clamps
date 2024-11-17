@@ -47,166 +47,166 @@ clamps-base-url
 "
   (let ((svg-file (format nil "~a.svg"
                           (string-downcase (ats-sound-name ats-snd))))
-        (play-state (get-val ats-play))
-        (bw (get-val ats-bw))
-        (play (get-val ats-play)))
-    (set-val ats-play 0)
-    (setf ats-sound ats-snd)
-    (unless (zerop play-state) (set-val ats-play 0))
-    (when reload (ats->svg ats-snd))
-    (set-val ats-data svg-file :force t)
-    (set-val ats-x 0)
-    (set-val ats-bw (- bw 0.001))
-    (set-val ats-shift-x (/ (get-val ats-width) 2))
-    (let ((num-partials (ats-sound-partials ats-snd)))
-      (setf ats-fmod (make-array num-partials
+        (play-state (get-val atsd.play))
+        (bw (get-val atsd.bw))
+        (play (get-val atsd.play)))
+    (set-val atsd.play 0)
+    (setf atsd.sound ats-snd)
+    (unless (zerop play-state) (set-val atsd.play 0))
+    (when reload (ats->svg atsd.sound))
+    (set-val atsd.data svg-file :force t)
+    (set-val atsd.x 0)
+    (set-val atsd.bw (- bw 0.001))
+    (set-val atsd.shift-x (/ (get-val atsd.width) 2))
+    (let ((num-partials (ats-sound-partials atsd.sound)))
+      (setf atsd.fmod (make-array num-partials
                                  :element-type 'incudine::sample
                                  :initial-element 1.0d0))
-      (setf ats-amod (make-array num-partials
+      (setf atsd.amod (make-array num-partials
                                  :element-type 'incudine::sample
                                  :initial-element 1.0d0)))
-    (set-val ats-play play)
-    (set-val ats-bw bw)
+    (set-val atsd.play play)
+    (set-val atsd.bw bw)
     nil))
 
 (defun start-browser-play ()
 ;;;  (format t "starting!~%")
-  (when (and ats-amod ats-fmod)
-    (setf ats-player-node-id (incudine:next-node-id))
-    (if (ats-sound-bands ats-sound)
-        (incudine::sin-noi-rtc-synth* (float (or (first (get-val ats-mousepos)) 0.0) 1.0d0) ats-sound
+  (when (and atsd.amod atsd.fmod)
+    (setf atsd.player-node-id (incudine:next-node-id))
+    (if (ats-sound-bands atsd.sound)
+        (incudine::sin-noi-rtc-synth* (float (or (first (get-val atsd.mousepos)) 0.0) 1.0d0) atsd.sound
                                       :amp-scale 0.1
-                                      :id ats-player-node-id
-                                      :res-bal (get-val ats-res-balance)
-                                      :amod ats-amod
-                                      :fmod ats-fmod
+                                      :id atsd.player-node-id
+                                      :res-bal (get-val atsd.res-balance)
+                                      :amod atsd.amod
+                                      :fmod atsd.fmod
                                       :head 200))))
 
 (defun stop-browser-play ()
 ;;;  (format t "stopping!~%")
-  (if ats-player-node-id
-      (incudine::free ats-player-node-id))
-  (setf ats-player-node-id nil))
+  (if atsd.player-node-id
+      (incudine::free atsd.player-node-id))
+  (setf atsd.player-node-id nil))
 
 (progn
-  (defparameter ats-player-node-id nil)
-  (defparameter ats-sound nil)
-  (defparameter ats-fmod nil)
-  (defparameter ats-amod nil)
-  (defparameter ats-bw nil)
-  (defparameter ats-x nil)
-  (defparameter ats-shift-x nil)
-  (defparameter ats-width nil)
-  (defparameter ats-idx nil)
-  (defparameter ats-data nil)
-  (defparameter ats-crosshairs nil)
-  (defparameter ats-mousepos nil)
-  (defparameter ats-scale nil)
-  (defparameter ats-play nil)
-  (defparameter ats-contrast nil)
-  (defparameter ats-time nil)
-  (defparameter ats-freq nil)
-  (defparameter ats-pitch nil)
-  (defparameter ats-res-balance nil)
+  (defparameter atsd.player-node-id nil)
+  (defparameter atsd.sound nil)
+  (defparameter atsd.fmod nil)
+  (defparameter atsd.amod nil)
+  (defparameter atsd.bw nil)
+  (defparameter atsd.x nil)
+  (defparameter atsd.shift-x nil)
+  (defparameter atsd.width nil)
+  (defparameter atsd.idx nil)
+  (defparameter atsd.data nil)
+  (defparameter atsd.crosshairs nil)
+  (defparameter atsd.mousepos nil)
+  (defparameter atsd.scale nil)
+  (defparameter atsd.play nil)
+  (defparameter atsd.contrast nil)
+  (defparameter atsd.time nil)
+  (defparameter atsd.freq nil)
+  (defparameter atsd.pitch nil)
+  (defparameter atsd.res-balance nil)
   (defparameter balance-watch nil)
   (defparameter data-watch nil)
   (defparameter play-watch nil)
   (defparameter pos-watch nil)
-  (defparameter ats-osc-node-id nil)
-  (defparameter ats-osc-amp nil)
-  (defparameter ats-osc-play nil)
+  (defparameter atsd.osc-node-id nil)
+  (defparameter atsd.osc-amp nil)
+  (defparameter atsd.osc-play nil)
   (defparameter osc-play-watch nil)
   (defparameter osc-freq-watch nil)
   (defparameter osc-amp-watch nil)
   )
 
-(defun start-ats-oscillator ()
-  (setf ats-osc-node-id (incudine:next-node-id))
-  (osc~ (get-val ats-freq) (get-val ats-osc-amp) :head 200 :id ats-osc-node-id))
+(defun start-atsd-oscillator ()
+  (setf atsd.osc-node-id (incudine:next-node-id))
+  (osc~ (get-val atsd.freq) (get-val atsd.osc-amp) :head 200 :id atsd.osc-node-id))
 
-(defun stop-ats-oscillator ()
-  (free ats-osc-node-id)
-  (setf ats-osc-node-id nil))
+(defun stop-atsd-oscillator ()
+  (free atsd.osc-node-id)
+  (setf atsd.osc-node-id nil))
 
 (defun ats-display-init ()
   (dolist (fn (list balance-watch data-watch play-watch pos-watch))
     (if fn (funcall fn)))
   (clear-bindings)
-  (setf ats-freq (make-ref 100))
-  (setf ats-pitch (make-computed
-                   (lambda () (ou:ftom (get-val ats-freq)))
-                   (lambda (m) (set-val ats-freq (ou:mtof m)))))
-  (setf ats-time (make-ref 0))
-  (setf ats-x (make-ref 0))
-  (setf ats-shift-x (make-ref 0))
-  (setf ats-width (make-ref 4))
-  (setf ats-idx (make-ref 0))
-  (setf ats-data (make-ref "ats-snd.svg"))
-  (setf ats-crosshairs (make-ref 1))
-  (setf ats-contrast (make-ref 0.1))
-  (setf ats-mousepos (make-ref '(0 0)))
-  (setf ats-scale (make-ref 0.3))
-  (setf ats-res-balance (make-ref 0.5))
-  (setf ats-play (make-ref 0))
-  (setf ats-bw (make-ref 1))
-  (setf ats-osc-amp (make-ref 0))
-  (setf ats-osc-play (make-ref 0))
-  (ats-cuda:ats-load (merge-pathnames "ats-data/cl.ats" (asdf:system-source-directory :ats-cuda)) 'ats-sound)
+  (setf atsd.freq (make-ref 100))
+  (setf atsd.pitch (make-computed
+                   (lambda () (ou:ftom (get-val atsd.freq)))
+                   (lambda (m) (set-val atsd.freq (ou:mtof m)))))
+  (setf atsd.time (make-ref 0))
+  (setf atsd.x (make-ref 0))
+  (setf atsd.shift-x (make-ref 0))
+  (setf atsd.width (make-ref 4))
+  (setf atsd.idx (make-ref 0))
+  (setf atsd.data (make-ref "atsd.snd.svg"))
+  (setf atsd.crosshairs (make-ref 1))
+  (setf atsd.contrast (make-ref 0.1))
+  (setf atsd.mousepos (make-ref '(0 0)))
+  (setf atsd.scale (make-ref 0.3))
+  (setf atsd.res-balance (make-ref 0.5))
+  (setf atsd.play (make-ref 0))
+  (setf atsd.bw (make-ref 1))
+  (setf atsd.osc-amp (make-ref 0))
+  (setf atsd.osc-play (make-ref 0))
+  (setf atsd.sound (ats-cuda:load-ats (merge-pathnames "ats-data/cl.ats" (asdf:system-source-directory :ats-cuda))))
   (setf balance-watch
         (watch (lambda ()
-                 (let ((res-bal (get-val ats-res-balance)))
-                   (when ats-player-node-id
-                     (set-control ats-player-node-id :res-bal res-bal))))))
+                 (let ((res-bal (get-val atsd.res-balance)))
+                   (when atsd.player-node-id
+                     (set-control atsd.player-node-id :res-bal res-bal))))))
   (setf data-watch
         (watch (lambda ()
-                 (set-val ats-shift-x (* (get-val ats-scale) (/ (get-val ats-width) 2)))
+                 (set-val atsd.shift-x (* (get-val atsd.scale) (/ (get-val atsd.width) 2)))
                  )))
   (setf play-watch
-        (watch (lambda () (if (zerop (get-val ats-play))
+        (watch (lambda () (if (zerop (get-val atsd.play))
                          (stop-browser-play)
                          (start-browser-play)))))
   (setf osc-play-watch
-        (watch (lambda () (if (zerop (get-val ats-osc-play))
-                         (stop-ats-oscillator)
-                         (start-ats-oscillator)))))
+        (watch (lambda () (if (zerop (get-val atsd.osc-play))
+                         (stop-atsd-oscillator)
+                         (start-atsd-oscillator)))))
   (setf osc-amp-watch
-        (watch (lambda () (let ((amp (get-val ats-osc-amp)))
-                       (when ats-osc-node-id
-                         (incudine:set-control ats-osc-node-id :amp amp))))))
+        (watch (lambda () (let ((amp (get-val atsd.osc-amp)))
+                       (when atsd.osc-node-id
+                         (incudine:set-control atsd.osc-node-id :amp amp))))))
   (setf osc-freq-watch
-        (watch (lambda () (let ((freq (get-val ats-freq)))
-                       (when ats-osc-node-id
-                         (incudine:set-control ats-osc-node-id :freq freq))))))
+        (watch (lambda () (let ((freq (get-val atsd.freq)))
+                       (when atsd.osc-node-id
+                         (incudine:set-control atsd.osc-node-id :freq freq))))))
   (setf pos-watch
         (watch (lambda ()
-                 (let* ((num-partials (ats-sound-partials ats-sound))
-                        (maxfreq (float (+ 100 (aref (ats-sound-frq-av ats-sound) (1- num-partials)))))
-                        (duration (float (ats-sound-dur ats-sound))))  
-                   (destructuring-bind (x y) (get-val ats-mousepos)
-                     (let ((bw (get-val ats-bw)))
-                       (when (and ats-sound ats-player-node-id)
-                         (set-control ats-player-node-id :soundpos (float x 1.0d0))
-                         (let* ((frames (ats-sound-frames ats-sound))
+                 (let* ((num-partials (ats-sound-partials atsd.sound))
+                        (maxfreq (float (+ 100 (aref (ats-sound-frq-av atsd.sound) (1- num-partials)))))
+                        (duration (float (ats-sound-dur atsd.sound))))  
+                   (destructuring-bind (x y) (get-val atsd.mousepos)
+                     (let ((bw (get-val atsd.bw)))
+                       (when (and atsd.sound atsd.player-node-id)
+                         (set-control atsd.player-node-id :soundpos (float x 1.0d0))
+                         (let* ((frames (ats-sound-frames atsd.sound))
                                 (soundpos x)
                                 (mousefreq (float (* (max 0.0 (min y 1.0)) maxfreq))))
-                           (set-val ats-freq mousefreq)
-                           (set-val ats-time (* x duration))
-                           (if (<= num-partials (length ats-amod))
+                           (set-val atsd.freq mousefreq)
+                           (set-val atsd.time (* x duration))
+                           (if (<= num-partials (length atsd.amod))
                                (loop for partial below num-partials
-                                     for freq = (aref (ats-sound-frq ats-sound)
+                                     for freq = (aref (ats-sound-frq atsd.sound)
                                                       partial
                                                       (min (1- frames)
                                                            (max 0
                                                                 (round (* soundpos
                                                                           (1- frames))))))
-                                     do (setf (aref ats-amod partial)
+                                     do (setf (aref atsd.amod partial)
                                               (float (ou:db->amp (* -18 (abs (/ (- freq mousefreq) (* 2 maxfreq bw))))) 1.0d0))))))))))))
-  (ats->browser ats-sound)
+  (ats->browser atsd.sound)
   nil)
 
 (ats-display-init)
 
-(defun ats-set-keyboard-mouse-shortcuts (container ats-svg ats-play ats-bw ats-contrast ats-res-balance)
+(defun atsd-set-keyboard-mouse-shortcuts (container atsd.svg atsd.play atsd.bw atsd.contrast atsd.res-balance)
   "set key and mouse wheel handlers in the ats-display gui."
   (clog:js-execute
    container
@@ -245,10 +245,10 @@ clamps-base-url
   }
 };
 "
-           (clog:html-id ats-play)
-           (clog:html-id ats-svg)
-           (clog:html-id ats-svg)
-           (clog:html-id ats-svg)))
+           (clog:html-id atsd.play)
+           (clog:html-id atsd.svg)
+           (clog:html-id atsd.svg)
+           (clog:html-id atsd.svg)))
   (clog:js-execute
    container
    (format nil "document.onkeyup = function (event) {
@@ -267,7 +267,7 @@ clamps-base-url
     }
 };
 "
-                         (clog:html-id ats-svg)))
+                         (clog:html-id atsd.svg)))
 
   (clog:js-execute
    container
@@ -300,52 +300,52 @@ clamps-base-url
      }
 };
 "
-           (clog:html-id ats-svg)
-           (clog:html-id ats-contrast)
-           (clog:html-id ats-res-balance)
-           (clog:html-id ats-bw))))
+           (clog:html-id atsd.svg)
+           (clog:html-id atsd.contrast)
+           (clog:html-id atsd.res-balance)
+           (clog:html-id atsd.bw))))
 
 (defun ats-display (body)
   "On-new-window handler."
-  (let (controls ats-svg ats-play-toggle ats-bw-slider ats-contrast-slider
-        ats-res-bal-slider ats-pitchbox ats-freqbox ats-timebox
-        ats-osc-play-toggle ats-osc-amp-slider)
+  (let (controls atsd.svg atsd.play-toggle atsd.bw-slider atsd.contrast-slider
+        atsd.res-bal-slider atsd.pitchbox atsd.freqbox atsd.timebox
+        atsd.osc-play-toggle atsd.osc-amp-slider)
     (setf (title (clog::html-document body)) "ATS Cuda display")
-    (setf ats-svg
+    (setf atsd.svg
           (create-o-svg
-           body (bind-refs-to-attrs ats-width "width" ats-x "cursor-pos" ats-shift-x "shift-x" ats-data "svg-file"
-                                    ats-scale "scale" ats-crosshairs "crosshairs" ats-mousepos "mousepos"
-                                    ats-bw "bandwidth" ats-contrast "ats-contrast")))
+           body (bind-refs-to-attrs atsd.width "width" atsd.x "cursor-pos" atsd.shift-x "shift-x" atsd.data "svg-file"
+                                    atsd.scale "scale" atsd.crosshairs "crosshairs" atsd.mousepos "mousepos"
+                                    atsd.bw "bandwidth" atsd.contrast "atsd.contrast")))
     ;; (create-o-radio body (bind-refs-to-attrs idx "value") :css '(:width "6em") :labels (list (loop for idx from 1 to 6 collect idx)) :num 6)
     (setf controls (create-div body :style "display: flex; height: 3em; margin-top: 0.5em"))
-    (setf ats-play-toggle
-          (create-o-toggle controls (bind-refs-to-attrs ats-play "value")
+    (setf atsd.play-toggle
+          (create-o-toggle controls (bind-refs-to-attrs atsd.play "value")
                            :css '(:font-size "2em" :width "3em" :display "block") :label '("off" "on") :background '("transparent" "#8f8")))
-    (setf ats-contrast-slider
-          (create-o-slider controls (bind-refs-to-attrs ats-contrast "value")
+    (setf atsd.contrast-slider
+          (create-o-slider controls (bind-refs-to-attrs atsd.contrast "value")
                            :width "4em" :css '(:margin-left "0.5em") :height "88%" :direction :right :min 0 :max 1))
-    (setf ats-bw-slider
-          (create-o-slider controls (bind-refs-to-attrs ats-bw "value")
+    (setf atsd.bw-slider
+          (create-o-slider controls (bind-refs-to-attrs atsd.bw "value")
                            :width "4em" :css '(:margin-left "0.5em") :height "88%" :direction :right :min 0.01 :max 1))
-    (setf ats-res-bal-slider
-          (create-o-slider controls (bind-refs-to-attrs ats-res-balance "value")
+    (setf atsd.res-bal-slider
+          (create-o-slider controls (bind-refs-to-attrs atsd.res-balance "value")
                            :width "4em" :css '(:margin-left "0.5em") :height "88%" :direction :right :min 0 :max 1))
-    (setf ats-timebox
-          (create-o-numbox controls (bind-refs-to-attrs ats-time "value") :min 0 :max 10
+    (setf atsd.timebox
+          (create-o-numbox controls (bind-refs-to-attrs atsd.time "value") :min 0 :max 10
                            :css '(:margin-left "0.5em")))
-    (setf ats-pitchbox
-          (create-o-numbox controls (bind-refs-to-attrs ats-pitch "value") :min 0 :max 127
+    (setf atsd.pitchbox
+          (create-o-numbox controls (bind-refs-to-attrs atsd.pitch "value") :min 0 :max 127
                            :css '(:margin-left "0.5em")))
-    (setf ats-freqbox
-          (create-o-numbox controls (bind-refs-to-attrs ats-freq "value") :min 0 :max 10000
+    (setf atsd.freqbox
+          (create-o-numbox controls (bind-refs-to-attrs atsd.freq "value") :min 0 :max 10000
                            :css '(:margin-left "0.5em")))
-    (setf ats-osc-play-toggle
-          (create-o-toggle controls (bind-refs-to-attrs ats-osc-play "value")
+    (setf atsd.osc-play-toggle
+          (create-o-toggle controls (bind-refs-to-attrs atsd.osc-play "value")
                            :css '(:font-size "2em" :margin-left "0.5em" :width "3em" :display "block") :label '("off" "on") :background '("transparent" "#8f8")))
-    (setf ats-osc-amp-slider
-          (create-o-slider controls (bind-refs-to-attrs ats-osc-amp "value")
+    (setf atsd.osc-amp-slider
+          (create-o-slider controls (bind-refs-to-attrs atsd.osc-amp "value")
                            :width "4em" :css '(:margin-left "0.5em") :height "88%" :direction :right :min 0 :max 0.01))
-    (ats-set-keyboard-mouse-shortcuts body ats-svg ats-play-toggle ats-bw-slider ats-contrast-slider ats-res-bal-slider)))
+    (atsd-set-keyboard-mouse-shortcuts body atsd.svg atsd.play-toggle atsd.bw-slider atsd.contrast-slider atsd.res-bal-slider)))
 
 (defun on-new-ats-window (body)
   (ats-display body))

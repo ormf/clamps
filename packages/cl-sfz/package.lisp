@@ -5,6 +5,7 @@
 (defpackage #:cl-sfz
   (:use #:cl #:cl-ppcre #:incudine #:incudine-bufs #:of-incudine-dsps)
 ;;;  (:shadowing-import-from #:incudine :sample-play :lsample-play)
+  (:shadowing-import-from :orm-utils #:path-find-file)
   (:export
    #:add-sfz-preset
    #:load-sfz-preset

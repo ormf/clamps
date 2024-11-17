@@ -25,12 +25,12 @@
 
 ;;; (push (asdf:system-relative-pathname :clamps "packages/fudi/") asdf:*central-registry*)
 
-(dolist (system '(:cuda-usocket-osc
+(dolist (system '(:orm-utils
+                  :cuda-usocket-osc
                   :ats-cuda-display
                   :fudi
                   :of-incudine-dsps
                   :incudine-bufs
-                  :orm-utils
                   :cl-plot
                   :incudine-plot
                   :cl-refs

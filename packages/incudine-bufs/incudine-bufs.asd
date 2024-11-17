@@ -6,6 +6,6 @@
   :license  "Specify license here"
   :version "0.0.1"
   :serial t
-  :depends-on (#:incudine #:cl-ppcre)
+  :depends-on (#:incudine #:orm-utils #:cl-ppcre)
   :components ((:file "package")
                (:file "incudine-bufs")))
