@@ -21,6 +21,10 @@
 (defpackage :clamps
   (:export set-standard-pitch
            cl-user:clamps
+           ats-cuda:load-ats
+           ats-cuda:save-ats
+           ats-cuda:track-ats
+           ats-cuda:*ats-snd-dir*
            ats-cuda-display:ats->svg
            incudine-bufs:find-buffer
            cl-sfz:sfz-preset-lsamples

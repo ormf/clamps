@@ -289,6 +289,44 @@
      (ats->svg ats-sound &key (brightness 20) x-scale (width 960) (height 540) fname)
    #+END_SRC
    Generate a SVG file of the <ats-sound> and save it at "/tmp/www/ats.svg"
+** *​ats-snd-dir​*
+   :PROPERTIES:
+   :CUSTOM_ID: ats-snd-dir
+   :END:
+   Variable
+
+   default directory for soundfiles.
+** ats-sound
+   Structure
+
+   Structure of an ATS sound. The access functions use the standard
+   scheme /ats-sound-<slot-name>/.
+*** Slots
+    | =name=            | String denoting the filename of the analyzed sound.                                                                                 |
+    | =sampling-rate=   | Positive Number denoting the sample rate of the analyzed sound.                                                                     |
+    | =frame-size=      | Number denoting the Frame Size in samples.                                                                                          |
+    | =window-size=     | Number denoting the Analysis Window Size in samples.                                                                                |
+    | =partials=        | Number of tracks in the analyzed sound.                                                                                             |
+    | =frames=          | number of frames in the analyzed sound (duration/window-size).                                                                      |
+    | =bands=           | List containing the indexes of noise bands of the residual outside of the noise energy contained in the tracks.                     |
+    | =optimized=       | Boolean indicating whether the sound was optimized in the analysis.                                                                 |
+    | =ampmax=          | Maximum overall amplitude.                                                                                                          |
+    | =frqmax=          | Maximum overall frequency.                                                                                                          |
+    | =frq-av=          | Array of size <partial> containing the average frequency for each track.                                                            |
+    | =amp-av=          | Array of size <partial> containing the average amplitude for each track.                                                            |
+    | =dur=             | Positive Number indicateing the duration of the analyzed sound in seconds.                                                          |
+    | =time=            | 2-dimensional Array of size <partial> <frames> containing the time into the analyzed sound in seconds for each frame in each track. |
+    | =frq=             | 2-dimensional Array of size <partial> <frames> containing the frequency for each frame in each track.                               |
+    | =amp=             | 2-dimensional Array of size <partial> <frames> containing the amplitude for each frame in each track.                               |
+    | =pha=             | 2-dimensional Array of size <partial> <frames> containing the phase for each frame in each track.                                   |
+    | =energy=          | Boolean indicating whether residual energy was analyzed and mapped to the tracks.                                                   |
+    | =band-energy=     | 2-dimensional Array of size <partial> <frames> containing the phase for each frame in each track.                                   |
+    | =analysis-params= | Property list with the parameters given to the track-ats function.                                                                  |
+
+*** See also
+    - [[track-ats][track-ats]]
+    - [[load-ats][load-ats]]
+    - [[save-ats][save-ats]]
 ** audio-bus
    Generic Function
    #+BEGIN_SRC lisp
@@ -2036,6 +2074,21 @@
 *** Arguments
     | =:loaded= | Boolean to indicate whether only the preset names of loaded presets should be returned. If /nil/ all registered preset names are returned. |
 
+** load-ats
+   Function
+   #+BEGIN_SRC lisp
+     (load-ats file &key (dist-energy t))
+   #+END_SRC
+   Load and return an ATS sound from /file/. Optionally move the energy
+   from the noise bands into the partials.
+*** Arguments
+    | =file=         | String denoting the filename of a soundfile.                                                                 |
+    | =:dist-energy= | Boolean indicating whether to to transfer the noise from the boise-bands to the dist-energy in the partials. |
+
+*** See also
+    - [[clamps:ats-cuda-display][ats-cuda-display]]
+    - [[ats-sound][ats-sound]]
+    - [[save-ats][save-ats]]
 ** load-sfz-preset
    Function
    #+BEGIN_SRC lisp
@@ -4011,6 +4064,24 @@
 *** See also
     - [[rts][rts]]
 * S
+** save-ats
+   Function
+   #+BEGIN_SRC lisp
+     (save-ats sound file &key (save-phase t) (save-noise t))
+   #+END_SRC
+   Save /sound/ into //*​ats-file-dir​*/<file>// in binary format. /file/
+   must be string with a file name. In case the file already exists it
+   gets overwritten
+*** Arguments
+    | =sound=       | ats-sound to save                                        |
+    | =file=        | filename                                                 |
+    | =:save-phase= | Boolean indicating whether to save the phase information |
+    | =:save-noise= | Boolean indicating whether to save the noise information |
+
+*** See also
+    - [[clamps:ats-cuda-display][ats-cuda-display]]
+    - [[load-ats][load-ats]]
+    - [[track-ats][track-ats]]
 ** send
    Function
    #+BEGIN_SRC lisp
@@ -4656,6 +4727,40 @@
    #+BEGIN_SRC lisp
      (toggle-slot slot)
    #+END_SRC
+** track-ats
+   Function
+   #+BEGIN_SRC lisp
+     (track-ats file &rest args &key (start 0.0) (duration nil) (lowest-frequency 20) (highest-frequency 20000.0) (frequency-deviation 0.1) (window-cycles 4) (window-type 'blackman-harris-4-1) (hop-size 1/4) (fft-size nil) (lowest-magnitude (db-amp -60)) (track-length 3) (min-segment-length 3) (last-peak-contribution 0.0) (smr-continuity 0.0) (amp-threshold nil) (residual nil) (par-energy t) (optimize t) (debug nil) (verbose nil) (force-m nil) (force-window nil))
+   #+END_SRC
+   Analyze a soundfile /file/ and return its ats-sound structure.
+*** Arguments
+    | =file=                    | String denoting filename of the soundfile within *​​ats-snd-dir​​* to analyze.                                                                                                             |
+    | =:start=                  | Number indicating time offset into the soundfile in seconds.                                                                                                                           |
+    | =:duration=               | Number indicating the duration to analyze or nil for end of soundfile.                                                                                                                 |
+    | =:lowest-frequency=       | Number indicating the lowest frequency to capture (determines Fourier Window width)                                                                                                    |
+    | =:highest-frequency=      | Number indicating the highest frequency to capture. :frequency deviation - Number indicating the maximum frequency deviation of successive frames to be considered for the same track. |
+    | =:window-cycles=          | Positive Integer denoting the overlap factor of successive analysis windows.                                                                                                           |
+    | =:window-type=            | The amplitude envelope type to use for each analysis window.                                                                                                                           |
+    | =:hop-size=               | Positive Integer denoting the hop-size of successive analysis windows.                                                                                                                 |
+    | =:fft-size=               | Positive Integer denoting the FFT size or nil, denoting to calculate the FFT size based on the lowest frequency.                                                                       |
+    | =:lowest-magnitude=       | Positive Integer in the range [0..1] setting the threshold for analysis peaks to be considered.                                                                                        |
+    | =:track-length=           | Positive Integer.                                                                                                                                                                      |
+    | =:min-segment-length=     | Positive Integer indicating the minimum number of successive segments within the frequency deviation to qualify for a track.                                                           |
+    | =:last-peak-contribution= | Number.                                                                                                                                                                                |
+    | =:SMR-continuity=         | Number.                                                                                                                                                                                |
+    | =:amp-threshold=          | Boolean.                                                                                                                                                                               |
+    | =:residual=               | String denoting the filename for the residual noise soundfile or nil if residual noise shouldn't get calculated.                                                                       |
+    | =:par-energy=             | Boolean indicating whether to distribute the residual noise to the partials.                                                                                                           |
+    | =:optimize=               | Boolean indicating whether to optimize the results.                                                                                                                                    |
+    | =:debug=                  | Boolean flag to show debug info in the REPL.                                                                                                                                           |
+    | =:verbose=                | Boolean flag for verbose output.                                                                                                                                                       |
+    | =:force-M=                | Boolean.                                                                                                                                                                               |
+    | =:force-window=           | Boolean.                                                                                                                                                                               |
+
+*** See also
+    - [[clamps:ats-cuda-display][ats-cuda-display]]
+    - [[load-ats][load-ats]]
+    - [[save-ats][save-ats]]
 ** transform
    Generic Function
    #+BEGIN_SRC lisp

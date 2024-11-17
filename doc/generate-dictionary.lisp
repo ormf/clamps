@@ -467,6 +467,11 @@ set-tempo
   (defparameter *clamps-extra-symbols*
     (append (mapcar #'first *clamps-extra-doc*)
             '(
+              ats-cuda:load-ats
+              ats-cuda:ats-sound
+              ats-cuda:save-ats
+              ats-cuda:track-ats
+              ats-cuda:*ats-snd-dir*
               cm:*rts-out*
               cm:*midi-out1*
               cm:*midi-in1*
@@ -798,6 +803,12 @@ result."
          (mapcar #'reformat-arg
                  (get-arg-entries (trim-white-spaces (trim-list arglist))))))
 
+(defun clampsdoc-transcode-slots (arglist)
+  "Reformat @Slots section of docstring for org-mode file."
+ (format nil "*** Slots~%~{~a~^~%~}~%~%"
+         (mapcar #'reformat-arg
+                 (get-arg-entries (trim-white-spaces (trim-list arglist))))))
+
 (defun clampsdoc-transcode-examples (strings)
   "Reformat @Examples section of docstring for org-mode file."
   (format nil "*** Examples~%    #+BEGIN_SRC lisp
@@ -842,6 +853,7 @@ result."
 (defparameter *docstring-fn-lookup*
   `(("@General" . ,#'clampsdoc-transcode-general)
     ("@Arguments" . ,#'clampsdoc-transcode-arguments)
+    ("@Slots" . ,#'clampsdoc-transcode-slots)
     ("@Example" . ,#'clampsdoc-transcode-example)
     ("@Examples" . ,#'clampsdoc-transcode-examples)
     ("@Example-nosrc" . ,#'clampsdoc-transcode-example-nosrc)
