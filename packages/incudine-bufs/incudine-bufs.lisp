@@ -228,7 +228,8 @@ remove-all-buffers
 
 (defun clamps-buffer-load (file &key (path cl-user:*sfile-path*))
   "Load and register buffer from /file/ if not loaded already. Return
-buffer.
+buffer. /file/ will be searched recursively in all directories of
+<<*sfile-path*>>.
 
 @Arguments
 file - Pathname or String denoting a soundfile.

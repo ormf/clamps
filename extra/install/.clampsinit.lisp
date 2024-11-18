@@ -8,7 +8,7 @@
 
 (in-package :cl-user)
 
-(export '(*sfz-preset-lookup* *sfz-preset-path* *sfile-path*) 'cl-user)
+(export '(*sfz-preset-lookup* *sfz-file-path* *sfile-path*) 'cl-user)
 
 ;;; The following paths are the defaults, where sfz and soundfiles are
 ;;; located in the clamps repository. In order to be able to pull

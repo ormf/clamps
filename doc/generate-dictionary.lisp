@@ -483,8 +483,9 @@ set-tempo
               clamps:set-bpm clamps:start-doc-acceptor
               clamps:clamps-start clamps:gui clamps:meters
 
-              cl-user:*sfz-preset-path*
+              cl-user:*sfz-file-path*
               cl-user:*sfile-path*
+              cl-user:*ats-file-path*
               cm:svg->browser cm:rts-hush incudine:node-free-unprotected
               cm:tempo->svg-timescale
               cm:rts cm::rts? ;; cl-midictl::midi-controller
@@ -571,14 +572,14 @@ set-tempo
     svg-import-export:svg-text
 
     clog-dsp-widgets:amp-node
-    cl-poolplayer:args ats-cuda-display:ats-amod ats-cuda-display:ats-bw
-    ats-cuda-display:ats-crosshairs ats-cuda-display:ats-data
+    cl-poolplayer:args ats-cuda-display:atsd.amod ats-cuda-display:atsd.bw
+    ats-cuda-display:atsd.crosshairs ats-cuda-display:atsd.data
     ats-cuda-display:ats-display ats-cuda-display:ats-display-init
-    ats-cuda-display:ats-fmod ats-cuda-display:ats-idx
-    ats-cuda-display:ats-mousepos ats-cuda-display:ats-play
-    ats-cuda-display:ats-player-node-id ats-cuda-display:ats-res-balance
-    ats-cuda-display:ats-scale ats-cuda-display:ats-shift-x
-    ats-cuda-display:ats-sound ats-cuda-display:ats-width ats-cuda-display:ats-x
+    ats-cuda-display:atsd.fmod ats-cuda-display:atsd.idx
+    ats-cuda-display:atsd.mousepos ats-cuda-display:atsd.play
+    ats-cuda-display:atsd.player-node-id ats-cuda-display:atsd.res-balance
+    ats-cuda-display:atsd.scale ats-cuda-display:atsd.shift-x
+    ats-cuda-display:atsd.sound ats-cuda-display:atsd.width ats-cuda-display:atsd.x
     svg-import-export:attributes clog-dsp-widgets:b-attr clog-dsp-widgets:b-elist
     clog-dsp-widgets:b-map clog-dsp-widgets:b-ref clog-dsp-widgets:b-unregister
     clog-dsp-widgets:b-unwatch cl-midictl:bank-buttons clog-dsp-widgets:binding

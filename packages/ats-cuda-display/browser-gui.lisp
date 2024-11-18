@@ -72,15 +72,14 @@ clamps-base-url
 (defun start-browser-play ()
 ;;;  (format t "starting!~%")
   (when (and atsd.amod atsd.fmod)
-    (setf atsd.player-node-id (incudine:next-node-id))
     (if (ats-sound-bands atsd.sound)
         (incudine::sin-noi-rtc-synth* (float (or (first (get-val atsd.mousepos)) 0.0) 1.0d0) atsd.sound
                                       :amp-scale 0.1
-                                      :id atsd.player-node-id
                                       :res-bal (get-val atsd.res-balance)
                                       :amod atsd.amod
                                       :fmod atsd.fmod
-                                      :head 200))))
+                                      :head 200
+                                      :action (lambda (n) (setf atsd.player-node-id (node-id n)))))))
 
 (defun stop-browser-play ()
 ;;;  (format t "stopping!~%")
@@ -121,12 +120,14 @@ clamps-base-url
   )
 
 (defun start-atsd-oscillator ()
-  (setf atsd.osc-node-id (incudine:next-node-id))
-  (osc~ (get-val atsd.freq) (get-val atsd.osc-amp) :head 200 :id atsd.osc-node-id))
+  (osc~ (get-val atsd.freq) (get-val atsd.osc-amp)
+        :head 200
+        :action (lambda (n) (setf atsd.osc-node-id (node-id n)))))
 
 (defun stop-atsd-oscillator ()
-  (free atsd.osc-node-id)
-  (setf atsd.osc-node-id nil))
+  (when atsd.osc-node-id
+    (free atsd.osc-node-id)
+    (setf atsd.osc-node-id nil)))
 
 (defun ats-display-init ()
   (dolist (fn (list balance-watch data-watch play-watch pos-watch))
@@ -200,7 +201,9 @@ clamps-base-url
                                                                 (round (* soundpos
                                                                           (1- frames))))))
                                      do (setf (aref atsd.amod partial)
-                                              (float (ou:db->amp (* -18 (abs (/ (- freq mousefreq) (* 2 maxfreq bw))))) 1.0d0))))))))))))
+                                              (float (ou:db->amp (* -18 (abs (/ (- freq mousefreq) (* 2 maxfreq bw))))) 1.0d0)))))
+                         )
+                       ))))))
   (ats->browser atsd.sound)
   nil)
 

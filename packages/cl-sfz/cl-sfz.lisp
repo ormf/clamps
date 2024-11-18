@@ -26,7 +26,7 @@
   (defvar cl-user::*sfz-preset-lookup* (make-hash-table)))
 
 (unless (boundp 'cl-user::*sfz-preset-lookup*)
-  (defvar cl-user::*sfz-preset-path* nil))
+  (defvar cl-user::*sfz-file-path* nil))
 
 (defparameter *sfz-tables* (make-hash-table))
 
@@ -206,11 +206,14 @@ sfz-preset-loaded?
              12)))
 
 (defun load-sfz-preset (file name &key force oneshot)
-  "Load a sfz file into a preset with the id name. In case this preset
-already exists, the old one will only be overwritten if force is
-set to t. This function normally doesn't need to be called
+  "Load a sfz /file/ into a preset with the id name. In case this preset
+already exists, the old one will only be overwritten if force is set
+to t. This function normally doesn't need to be called
 explicitely. The preferred mechanism to deal with sfz presets is by
 using a combination of <<add-sfz-preset>> and <<ensure-sfz-preset>>.
+/file/ will be searched recursively in all directories of
+<<*sfz-file-path*>>.
+
 
 @Arguments
 file - Path or filename of the sfz file to load
@@ -235,6 +238,7 @@ sfz
 sfz-get-range
 sfz-preset-file
 sfz-preset-loaded?
+*sfz-file-path*
 "
   (add-sfz-preset name file :force force)
   (when (or force (not (gethash name *sfz-tables*)))
@@ -365,14 +369,12 @@ sfz-preset-loaded?
 (defun add-sfz-preset (preset file &key force)
   "Register the association between a sfz preset name /key/ and the
 /filename/ of its /.sfz/ file. The filename can be absolute or
-relative. If relative, all folders in <<*sfz-preset-path*>> will get
-recursively searched when the preset gets loaded.
+relative. If relative, all directories in <<*sfz-file-path*>> will
+get searched recursively when the preset gets loaded.
 
 @Arguments
-preset - A keyword or symbol to name the preset
-file - A string or path to the associated sfz file. If the file
-path is relative, it will be searched recursively in all paths of
-<<*sfz-preset-path*>>.
+preset - A Keyword or Symbol to name the preset
+file - A String or Pathname to the associated sfz file.
 
 @Note
 This function only stores the association between the preset
@@ -391,6 +393,7 @@ sfz
 sfz-get-range
 sfz-preset-file
 sfz-preset-loaded?
+*sfz-file-path*
 "
   (if (or (not (gethash preset cl-user::*sfz-preset-lookup*)) force)
       (setf (gethash preset cl-user::*sfz-preset-lookup*) file)
@@ -414,12 +417,12 @@ sfz-preset-loaded?
 "
   (and
    (boundp 'cl-user::*sfz-preset-lookup*)
-   (boundp 'cl-user::*sfz-preset-path*)
+   (boundp 'cl-user::*sfz-file-path*)
    (let ((name (gethash preset cl-user::*sfz-preset-lookup*)))
      (and name
           (path-find-file
            name
-           cl-user::*sfz-preset-path*)))))
+           cl-user::*sfz-file-path*)))))
 
 (defun get-sfz-preset (preset &key force oneshot)
   "Load the sfz definition of /preset/ and all its samples into the

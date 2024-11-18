@@ -20,7 +20,7 @@
 
 (in-package :cl-user)
 
-(defparameter *sfz-preset-path* (list (pathname "~/work/snd/sfz/"))
+(defparameter *sfz-file-path* (list (asdf:system-relative-pathname :clamps "extra/snd/sfz/"))
   "List of directories to search recursively for /.sfz/ files.
 
 @See-also
@@ -28,7 +28,7 @@ add-sfz-preset
 load-sfz-preset
 ")
 
-(defparameter *sfile-path* (list (pathname "~/work/snd/"))
+(defparameter *sfile-path* (list (asdf:system-relative-pathname :ats-cuda "snd/"))
   "List of directories to search recursively for soundfiles.
 
 @See-also
@@ -40,11 +40,8 @@ create-lsample
   "List of directories to search recursively for ats files.
 
 @See-also
-clamps-buffer-load
-create-lsample
+load-ats
 ")
-
-
 
 (defparameter *sfz-preset-lookup* (make-hash-table))
 
@@ -124,4 +121,4 @@ rts
     (funcall #'clampscall :clamps-start
              :gui-root gui-root :qsynth qsynth :open-gui open-gui)))
 
-(export '(*sfz-preset-lookup* *sfz-preset-path* *sfile-path* *ats-file-path* set-clamps-doc-root *clamps-doc-root* clamps clamps-no-gui clamps-image-start) 'cl-user)
+(export '(*sfz-preset-lookup* *sfz-file-path* *sfile-path* *ats-file-path* set-clamps-doc-root *clamps-doc-root* clamps clamps-no-gui clamps-image-start) 'cl-user)
