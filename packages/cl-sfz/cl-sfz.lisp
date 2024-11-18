@@ -369,19 +369,18 @@ sfz-preset-loaded?
 (defun add-sfz-preset (preset file &key force)
   "Register the association between a sfz preset name /key/ and the
 /filename/ of its /.sfz/ file. The filename can be absolute or
-relative. If relative, all directories in <<*sfz-file-path*>> will
-get searched recursively when the preset gets loaded.
+relative. If relative, all directories in <<*sfz-file-path*>> will get
+searched recursively when the preset gets loaded.
+
+This function only stores the association between the preset name and
+its sfz file. Loading of its samples into memory is done implicitely
+when the preset is used by a playing function like <<#'play-sfz>> or
+by using <<#'ensure-sfz-preset>> or its synonym <<#'get-sfz-preset>>.
+
 
 @Arguments
 preset - A Keyword or Symbol to name the preset
 file - A String or Pathname to the associated sfz file.
-
-@Note
-This function only stores the association between the preset
-name and its sfz file. Loading of its samples into memory is done
-implicitely when the preset is used by a playing function like
-<<#'play-sfz>> or by using <<#'ensure-sfz-preset>> or its synonym
-<<#'get-sfz-preset>>.
 
 @See-also
 add-sfz-preset
