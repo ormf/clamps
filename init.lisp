@@ -45,6 +45,13 @@ load-ats
 
 (defparameter *sfz-preset-lookup* (make-hash-table))
 
+;; Declaration for the init process only so that it is available in
+;; ~/.clampsinit.lisp. In cl-sfz, #'add-sfz-preset is defined
+;; seperately including documentation.
+
+(defun add-sfz-preset (key fname)
+  (setf (gethash key *sfz-preset-lookup*) fname))
+
 (defun set-clamps-doc-root (url)
   (slynk:eval-in-emacs `(setq *common-music-doc-root* ,url)))
 
