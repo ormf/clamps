@@ -34,7 +34,7 @@ path - List of paths to search.
                           #-darwin
                           (uiop:run-program (format nil "find ~a -name ~a -print -quit" dir fname) :output str)
                           #+darwin
-                          (uiop:run-program (format nil "find ~a -name ~a -print -exit" dir fname) :output str)))
+                          (uiop:run-program (format nil "find ~a -name ~a -print -quit" dir fname) :output str)))
           while (string= result "")
           finally (return (unless (string= result "") (pathname result)))))))
 

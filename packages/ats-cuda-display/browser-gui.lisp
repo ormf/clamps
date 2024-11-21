@@ -25,8 +25,16 @@
 (defun restore-tables ()
   (setq *sine1024* (make-buffer 1024 :fill-function (gen:partials '(1)))))
 
+
+(incudine.vug:dsp! sine~ (freq amp)
+  (:defaults 440 0.1)
+  (incudine.vug:foreach-frame
+    (let ((sig (incudine.vug:sine freq amp 0)))
+      (incudine.vug:out sig sig))))
+
+
 (incudine.vug:dsp! osc~ (freq amp (buf buffer))
-  (:defaults 440 0.1 *SINE1024*)
+  (:defaults 440 0.1 *SINE-TABLE*)
   (incudine.vug:foreach-frame
     (let ((sig (incudine.vug:osc buf freq amp 0 :linear)))
       (incudine.vug:out sig sig))))
@@ -318,7 +326,7 @@ clamps-base-url
           (create-o-svg
            body (bind-refs-to-attrs atsd.width "width" atsd.x "cursor-pos" atsd.shift-x "shift-x" atsd.data "svg-file"
                                     atsd.scale "scale" atsd.crosshairs "crosshairs" atsd.mousepos "mousepos"
-                                    atsd.bw "bandwidth" atsd.contrast "atsd.contrast")))
+                                    atsd.bw "bandwidth" atsd.contrast "ats-contrast")))
     ;; (create-o-radio body (bind-refs-to-attrs idx "value") :css '(:width "6em") :labels (list (loop for idx from 1 to 6 collect idx)) :num 6)
     (setf controls (create-div body :style "display: flex; height: 3em; margin-top: 0.5em"))
     (setf atsd.play-toggle
