@@ -341,7 +341,7 @@ ats-sound
 save-ats
 track-ats
 "
-  (let* ((filepath (path-find-file file *ats-file-path*))
+  (let* ((filepath (ou:path-find-file file cl-user:*ats-file-path*))
          (file (namestring filepath)))
 ;;; check if file exists
     (unless (probe-file file) (error "File ~s does not exist!" file))
