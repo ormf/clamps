@@ -53,7 +53,7 @@ class NumBoxElement extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
       switch (name) {
       case 'value':
-          console.log('attribute-change: ', newValue, 'external: ', this.externalValueChange);
+          // console.log('attribute-change: ', newValue, 'external: ', this.externalValueChange);
           this.setValue(newValue);
       }
   }

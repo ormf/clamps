@@ -62,10 +62,10 @@ clamps-base-url
     (setf atsd.sound ats-snd)
     (unless (zerop play-state) (set-val atsd.play 0))
     (when reload (ats->svg atsd.sound))
+    (set-val atsd.scale 0.3)
     (set-val atsd.data svg-file :force t)
     (set-val atsd.x 0)
     (set-val atsd.bw (- bw 0.001))
-    (set-val atsd.shift-x (/ (get-val atsd.width) 2))
     (let ((num-partials (ats-sound-partials atsd.sound)))
       (setf atsd.fmod (make-array num-partials
                                  :element-type 'incudine::sample
@@ -322,6 +322,7 @@ clamps-base-url
         atsd.res-bal-slider atsd.pitchbox atsd.freqbox atsd.timebox
         atsd.osc-play-toggle atsd.osc-amp-slider)
     (setf (title (clog::html-document body)) "ATS Cuda display")
+    (set-val atsd.scale 0.3)
     (setf atsd.svg
           (create-o-svg
            body (bind-refs-to-attrs atsd.width "width" atsd.x "cursor-pos" atsd.shift-x "shift-x" atsd.data "svg-file"
