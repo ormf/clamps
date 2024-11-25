@@ -29,8 +29,8 @@
   "On-new-window handler."
   (funcall #'clamps-gui body))
 
-(set-on-new-window #'clamps-gui :boot-file "/start.html")
-(set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
+(set-on-new-window #'clamps-gui :boot-file "/clamps-start.html")
+(set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/clamps-start.html")
 
 (in-package :cl-midictl)
 
@@ -157,16 +157,16 @@ clamps-gui-root
     (setf ats-cuda:*ats-file-dir* (merge-pathnames "ats/" dir))
     (setf cm.svgd:svg-dir (merge-pathnames "svg/" *clamps-gui-root*))
     (let ((targetpath (namestring (merge-pathnames dir "/www"))))
-      (dolist (dir-or-file '("js" "css" "favicon.ico" "start.html"))
+      (dolist (dir-or-file '("js" "css" "favicon.ico" "clamps-start.html"))
         (let* ((subdirpath (format nil "www/~a" dir-or-file))
                (srcpath (namestring (asdf:system-relative-pathname :clog-dsp-widgets subdirpath))))
           (unless (uiop:probe-file* (merge-pathnames (format nil "~a~a" dir subdirpath)))
             (uiop:run-program (format nil "ln -s ~A ~A" srcpath targetpath))))))
     ;;    (clog:set-on-new-window #'clog::clamps-gui :path "/" :boot-file "/start.html")
     (setf (fdefinition 'clog-dsp-widgets::on-new-window) #'clog::clamps-gui)
-    (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
-    (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
-    (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")
+    (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "clamps-start.html")
+    (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "clamps-start.html")
+    (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "clamps-start.html")
     (progn (sleep 0.5) (clog-dsp-widgets:start-gui :gui-root (namestring dir) :port port :open open))))
 
 ;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))

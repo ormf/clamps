@@ -680,7 +680,7 @@ clog-obj - A Clog object which accepts a highlight() function, like a Button or 
   (initialize #'on-new-window
               :port port
               :static-root (merge-pathnames gui-root "/www")
-              :boot-file "/start.html")
+              :boot-file "/clamps-start.html")
   ;; Open a browser to http://127.0.0.1:8080 - the default for CLOG apps
   (when open (open-browser)))
 

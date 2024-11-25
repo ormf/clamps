@@ -63,8 +63,8 @@ group 0
   (levelmeter-gui :lm-out body :audio-bus 8 :group 300 :num 8))
 
 ;;; open the gui in a browser
-(start)
 
+(set-on-new-window #'new-window :boot-file "/start.html")
 
 #|
 ;;; (setf *debug* nil)

@@ -46,7 +46,7 @@
     (setf ats-cuda:*ats-file-dir* (merge-pathnames "ats/" dir))
     (setf cm.svgd:svg-dir (merge-pathnames "www/svg/" dir))
     (let ((targetpath (namestring (merge-pathnames dir "/www"))))
-      (dolist (dir-or-file '("js" "css" "favicon.ico" "start.html"))
+      (dolist (dir-or-file '("js" "css" "favicon.ico" "clamps-start.html"))
         (let* ((subdirpath (format nil "www/~a" dir-or-file))
                (srcpath (namestring (asdf:system-relative-pathname :clog-dsp-widgets subdirpath))))
           (unless (uiop:probe-file* (merge-pathnames (format nil "~a~a" dir subdirpath)))
