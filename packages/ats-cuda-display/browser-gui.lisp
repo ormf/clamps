@@ -210,8 +210,7 @@ clamps-base-url
                                                                           (1- frames))))))
                                      do (setf (aref atsd.amod partial)
                                               (float (ou:db->amp (* -18 (abs (/ (- freq mousefreq) (* 2 maxfreq bw))))) 1.0d0)))))
-                         )
-                       ))))))
+                         )))))))
   (ats->browser atsd.sound)
   nil)
 

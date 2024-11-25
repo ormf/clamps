@@ -49,7 +49,8 @@
 (defparameter *svg-dir* nil)
 
 (defun ensure-directory (dir)
-  (if (stringp dir) (format nil "~A/" dir) dir))
+  "return pathname of dir, ensuring it ends with a slash."
+  (pathname (format nil "~A/" (if (stringp dir) dir (namestring dir)))))
 
 (defvar *clamps-gui-root* nil)
 

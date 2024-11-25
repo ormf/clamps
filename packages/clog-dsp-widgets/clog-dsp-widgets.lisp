@@ -676,7 +676,7 @@ clog-obj - A Clog object which accepts a highlight() function, like a Button or 
 
 (defun start-gui (&key (port 54619) (gui-root (asdf:system-source-directory :clog-dsp-widgets)) (open t))
   (clear-bindings) ;;; start from scratch
-  (format t "starting webserver at ~A" (merge-pathnames gui-root "/www"))
+  (format t "starting webserver at ~A" (merge-pathnames "www/" gui-root))
   (initialize #'on-new-window
               :port port
               :static-root (merge-pathnames gui-root "/www")
@@ -685,4 +685,6 @@ clog-obj - A Clog object which accepts a highlight() function, like a Button or 
   (when open (open-browser)))
 
 ;;; (start-gui) should start a webserver
+
+;;; (merge-pathnames "www/" (pathname "/tmp/www"))
 
