@@ -367,7 +367,7 @@
            orm-utils:case-ext orm-utils:m-lin-rd-rev-fn orm-utils:combinations
            orm-utils:array-slice orm-utils:flatten orm-utils:m-lin
            orm-utils:every-nth cl-plot:construct-plot-command cl-plot:plot
-           cl-plot:o cl-plot:*gnuplot-header* cl-plot:*gnuplot-options*
+           cl-plot:*gnuplot-header* cl-plot:*gnuplot-options*
            cl-plot:plot-2d cl-plot:with-gnuplot-instance
            cl-plot:*gnuplot-program* cl-plot:plot cl-refs:ref-object-super
            cl-refs:clear-dependencies cl-refs:*refs-seen* cl-refs:bang-object
