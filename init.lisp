@@ -77,10 +77,10 @@ Apart from starting the webserver for the Gui, the function also:
 The following directories will be created in the /gui-base/ path if
 they don't exist:
 
-- /<gui-base>/ats
-- /<gui-base>/snd
-- /<gui-base>/www/
-- /<gui-base>/www/svg/
+- /<gui-base>/ats//
+- /<gui-base>/snd//
+- /<gui-base>/www//
+- /<gui-base>/www/svg//
 
 The latter is the file path for svg files used in the
 /<clamps-base-url>/svg-display/ page of the Gui.

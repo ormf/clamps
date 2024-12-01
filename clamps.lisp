@@ -115,10 +115,11 @@ clamps-gui-root
   (merge-pathnames (format nil "svg/~a" file) (ensure-directory (clamps-gui-root))))
 
 (defun clamps-restart-gui (&key (gui-base "/tmp") (open t) (port 54619))
-  "Reset the root directory of the Gui to /<gui-base>/www/, optionally
+  "Reset the root directory of the Gui to /<gui-base>/www//, optionally
 opening the Gui in a browser window. The command will create the
-subdirectories /www/, /snd/ and /ats/ in the /gui-root/ directory, if
-they don't exist.
+subdirectories /www//, /snd//, /ats// and /www/svg// in the
+/<gui-base>/ directory, if they don't exist. /<gui-base>/www/svg// is
+the file path for svg files used in the /svg-display/ page of the Gui.
 
 @Arguments
 :gui-base - String or Pathname where to put the /www/ subfolder for files
@@ -127,15 +128,6 @@ this dictionary). Defaults to //tmp/.
 
 :open - is a flag indicating whether to open <<clamps-base-url>> in a
 browser window after starting the gui.
-
-In the given path the following directories
-will be created:
-
-- /<clamps-gui-base>/www//
-- /<clamps-gui-base>/www/svg//
-
-file path for svg files used in the /svg-display/ page of the
-Gui.
 
 Any files which need to be accessible by the Gui have to be put
 into the /<clamps-gui-base>/www// subdirectory with their filenames
