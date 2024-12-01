@@ -74,20 +74,23 @@ Apart from starting the webserver for the Gui, the function also:
 - Creates groups and buses for incudine dsps (see the Chapter <<clamps:General Incudine Setup>>.
 - Starts the documentation acceptor for the online doc at /http://localhost:8282/overview/index.html/.
 
-The following directories will be created in the gui-root path :
+The following directories will be created in the /gui-base/ path if
+they don't exist:
 
-- /<clamps-gui-base>/www//
-- /<clamps-gui-base>/www/svg/
+- /<gui-base>/ats
+- /<gui-base>/snd
+- /<gui-base>/www/
+- /<gui-base>/www/svg/
 
 The latter is the file path for svg files used in the
 /<clamps-base-url>/svg-display/ page of the Gui.
 
-Any files which need to be accessible by the Gui have to be put
-into the /<clamps-gui-root>/www// subdirectory with their filenames
-relative to this directory.
+Any files which need to be accessible by the Gui have to be put into
+the /<gui-base>/www// subdirectory with their filenames relative to
+this directory.
 
 @Arguments
-:gui-root - String or Pathname indicating where to put the /www/ subfolder
+:gui-base - String or Pathname indicating where to put the /www/ subfolder
 for files accessible by the gui (nicknamed /<clamps-gui-root>/).
 
 :open-gui - Boolean indicating whether to open the /<clamps-base-url>/ in a

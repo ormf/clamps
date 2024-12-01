@@ -115,13 +115,13 @@ clamps-gui-root
   (merge-pathnames (format nil "svg/~a" file) (ensure-directory (clamps-gui-root))))
 
 (defun clamps-restart-gui (&key (gui-base "/tmp") (open t) (port 54619))
-  "Reset the root directory of the Gui to /<gui-root>/www/, optionally
+  "Reset the root directory of the Gui to /<gui-base>/www/, optionally
 opening the Gui in a browser window. The command will create the
 subdirectories /www/, /snd/ and /ats/ in the /gui-root/ directory, if
 they don't exist.
 
 @Arguments
-:gui-root - String or Pathname where to put the /www/ subfolder for files
+:gui-base - String or Pathname where to put the /www/ subfolder for files
 accessible by the gui (nicknamed /<clamps-gui-root>/ throughout
 this dictionary). Defaults to //tmp/.
 
@@ -364,7 +364,7 @@ Incudine, optionally start qsynth (Linux only) and open the gui in a
 browser. This function should normally not be called by the user.
 
 @Arguments
-gui-root - The root path of the gui
+gui-base - The base path of the gui. <clamps-gui-root> will be <gui-base>/www/.
 qsynth - Boolean indicating whether to start the qsynth softsynth (Linux only).
 open-gui - Boolean indicating whether to open the gui in a Browser window.
 

@@ -636,7 +636,7 @@ set-tempo
     cl-midictl:nk2-fader-last-cc cl-midictl:nk2-fader-modes
     cl-midictl:nk2-fader-update-fns cl-midictl:nk2-faders cl-midictl:nk2-last-cc
     cl-midictl:note-fns cl-midictl:note-state cl-poolplayer:npreset-play
-    clog-dsp-widgets:num-meters cl-plot:o
+    clog-dsp-widgets:num-meters 
     svg-import-export:opacity clog-dsp-widgets:opt-format-attr
     cl-poolplayer:*outseq13* cl-poolplayer:*outseq8* cl-poolplayer:*outseq9*
     cl-poolplayer:p-song-afterfn cl-poolplayer:p-song-beforefn
