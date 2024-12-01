@@ -114,7 +114,7 @@ clamps-gui-root
 "
   (merge-pathnames (format nil "svg/~a" file) (ensure-directory (clamps-gui-root))))
 
-(defun clamps-restart-gui (&key (gui-root "/tmp") (open t) (port 54619))
+(defun clamps-restart-gui (&key (gui-base "/tmp") (open t) (port 54619))
   "Reset the root directory of the Gui to /<gui-root>/www/, optionally
 opening the Gui in a browser window. The command will create the
 subdirectories /www/, /snd/ and /ats/ in the /gui-root/ directory, if
@@ -131,14 +131,14 @@ browser window after starting the gui.
 In the given path the following directories
 will be created:
 
-- /<clamps-gui-root>/www//
-- /<clamps-gui-root>/www/svg//
+- /<clamps-gui-base>/www//
+- /<clamps-gui-base>/www/svg//
 
 file path for svg files used in the /svg-display/ page of the
 Gui.
 
 Any files which need to be accessible by the Gui have to be put
-into the /<clamps-gui-root>/www// subdirectory with their filenames
+into the /<clamps-gui-base>/www// subdirectory with their filenames
 relative to this directory.
 
 @See-also
@@ -146,7 +146,7 @@ clamps
 clamps-base-url
 clamps-gui-root
 "
-  (let* ((dir (pathname (ensure-directory gui-root)))
+  (let* ((dir (pathname (ensure-directory gui-base)))
          (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
     (format t "(re)starting gui...~%")
     (setf *clamps-gui-root* (merge-pathnames "www/" dir))
@@ -168,7 +168,7 @@ clamps-gui-root
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters")
     (clog:set-on-new-window  #'cm:svg-display :path "/svg-display")
     (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display")
-    (progn (sleep 0.5) (clog-dsp-widgets:start-gui :gui-root (namestring dir) :port port :open open))))
+    (progn (sleep 0.5) (clog-dsp-widgets:start-gui :gui-base (namestring dir) :port port :open open))))
 
 ;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))
 
@@ -357,7 +357,7 @@ clamps-base-url
 gui
 "  (clog:open-browser :url (format nil "http://127.0.0.1:~A/meters" clog::*clog-port*)))
 
-(defun clamps-start (&key (gui-root "/tmp") (qsynth nil) (open-gui nil))
+(defun clamps-start (&key (gui-base "/tmp") (qsynth nil) (open-gui nil))
   "Entry function called by <<clamps>> to start the webserver for the
 GUI, call <<rts>> to set up IO and MIDI, start the OSC responder for
 Incudine, optionally start qsynth (Linux only) and open the gui in a
@@ -384,7 +384,7 @@ rts
   ;; (install-sly-hooks)
   (incudine:setup-io)
   (start-doc-acceptor)
-  (clamps-restart-gui :gui-root gui-root :open open-gui)
+  (clamps-restart-gui :gui-base gui-base :open open-gui)
   (ats-cuda-display:ats-display-init)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (reset-logger-stream)

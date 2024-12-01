@@ -63,7 +63,7 @@ load-ats
 (defun clamps-image-start ()
   (setf *package* (find-package :cl-user)))
 
-(defun clamps (&key (gui-root "/tmp") (qsynth nil) (open-gui nil))
+(defun clamps (&key (gui-base "/tmp") (qsynth nil) (open-gui nil))
   "Start Clamps including the Gui. This function can be called from the
 /:cl-user/ package.
 
@@ -76,8 +76,8 @@ Apart from starting the webserver for the Gui, the function also:
 
 The following directories will be created in the gui-root path :
 
-- /<clamps-gui-root>/www//
-- /<clamps-gui-root>/www/svg/
+- /<clamps-gui-base>/www//
+- /<clamps-gui-base>/www/svg/
 
 The latter is the file path for svg files used in the
 /<clamps-base-url>/svg-display/ page of the Gui.
@@ -126,6 +126,6 @@ rts
                               (cmvar :*cm-readtable*))
                         (symbol-value sym)))))))
     (funcall #'clampscall :clamps-start
-             :gui-root gui-root :qsynth qsynth :open-gui open-gui)))
+             :gui-base gui-base :qsynth qsynth :open-gui open-gui)))
 
 (export '(*sfz-preset-lookup* *sfz-file-path* *sfile-path* *ats-file-path* set-clamps-doc-root *clamps-doc-root* clamps clamps-no-gui clamps-image-start) 'cl-user)
