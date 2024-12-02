@@ -19,23 +19,32 @@
 ;;; **********************************************************************
 
 (defpackage :clamps
-  (:export set-standard-pitch
-           cl-user:clamps
+  (:export cl-user:clamps
+           
+           set-standard-pitch
+           svg-gui-root
+
            ats-cuda:load-ats
            ats-cuda:save-ats
            ats-cuda:track-ats
            ats-cuda:*ats-snd-dir*
            ats-cuda-display:ats->svg
+
            incudine-bufs:find-buffer
+           incudine-bufs:ensure-buffer
+
            cl-sfz:sfz-preset-lsamples
            cl-sfz:sfz-preset-buffers
            cl-sfz:get-sfz-preset
+           
            orm-utils:ftom orm-utils:mtof
-
            orm-utils:get-props-list orm-utils:m-exp
-           output-stream cl-midictl:midi-output cl-midictl:get-ref
+           output-stream
+
+           cl-midictl:midi-output cl-midictl:get-ref
+
            orm-utils:delete-props cl-midictl:buchla-scale
-           incudine-bufs:ensure-buffer orm-utils:call/collecting
+           orm-utils:call/collecting
            clog-dsp-widgets:levelmeter cl-midictl:nanoktl2-midi
            of-incudine-dsps:restore-envs orm-utils:m-lin
            cl-midictl:stop-midi-receive orm-utils:let-default

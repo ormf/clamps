@@ -42,7 +42,8 @@ gets generated from *svg-fn-assoc-syms* using #'create-svg-fn-assoc")
           (destructuring-bind (type . fn-sym) fn-assoc
             (remove-svg-assoc-fn type)
             (pushnew fn-assoc *svg-fn-assoc-syms* :test #'equal :key #'first)
-            (pushnew (cons type (symbol-function fn-sym)) *svg-fn-assoc* :test #'equal :key #'first)))
+            (pushnew (cons type (symbol-function fn-sym)) *svg-fn-assoc*
+                     :test #'equal :key #'first)))
         fn-assoc-seq)
   *svg-fn-assoc*)
 
@@ -528,7 +529,7 @@ svg element."
 
 (defun svg->midi (&rest args)
   (apply #'make-instance 'midi
-         (ou:get-props-list args '(:time :keynum :duration :amp :channel))))
+         (ou:get-props-list args '(:time :keynum :duration :amplitude :channel))))
 
 (defun svg->midi-note-on (&rest args)
   (apply #'make-instance 'midi-note-on

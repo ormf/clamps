@@ -361,7 +361,7 @@ clamps-base-url
 (defun on-new-ats-window (body)
   (ats-display body))
 
-(set-on-new-window #'on-new-ats-window :path "/ats-display" :boot-file "/start.html")
+(set-on-new-window #'on-new-ats-window :path "/ats-display")
 
 (defun ats-display-start ()
   (clear-bindings) ;;; start from scratch

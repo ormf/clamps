@@ -149,7 +149,7 @@ arg2 - Number denoting the bets per minute.
                           (typecase obj
                             (poolevt (sv* obj :stretch (get-val cm.svgd:timescale)))
                             (t (sv* obj :duration (get-val cm.svgd:timescale))))))
-;;;                    (format t "~a~%" obj)
+                    (clamps::msg :warn "~a~%" obj)
                     (sprout obj))
                   ))
               ))
@@ -229,7 +229,7 @@ arg2 - Number denoting the bets per minute.
     (set-keyboard-shortcuts body transport-toggle)
     ))
 
-(clog:set-on-new-window 'svg-display :path "/svg-display" :boot-file "/start.html")
+(clog:set-on-new-window 'svg-display :path "/svg-display")
 
 ;; Initialize the CLOG system with a boot file which contains the
 ;; static js files. For customized uses copy the "www" subdirectory of
@@ -310,9 +310,9 @@ clamps:cm-svg.rts
         (watch (let ((last-pos 0))
                  (lambda () (if (zerop (get-val cm.svgd:transport))
                            (let (cl-refs::*curr-ref*)
-;;;                                        (format t "stopping~%")
+;;;                             (format t "stopping~%")
                              (dolist (hook cm.svgd:*stop-hooks*) (funcall hook))
-                             (rts-hush)
+                             (at (+ (now 0)) #'rts-hush)
                              (unless (zerop (get-val cm.svgd:auto-return))
                                (set-val cm.svgd:shift last-pos)))
                            (alexandria:if-let ((seq (get-val cm.svgd:seq)))

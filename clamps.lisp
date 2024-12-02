@@ -114,6 +114,21 @@ clamps-gui-root
 "
   (merge-pathnames (format nil "svg/~a" file) (ensure-directory (clamps-gui-root))))
 
+(defun svg-gui-path (fname)
+  "Return the path /<clamps-gui-root>/svg/fname/ as a string.
+
+@Arguments
+fname - String or Pathname.
+
+@See-also
+
+clamps-gui-root
+"
+  (namestring
+   (merge-pathnames
+    (format nil "svg/~a" fname)
+    *clamps-gui-root*)))
+
 (defun clamps-restart-gui (&key (gui-base "/tmp") (open t) (port 54619))
   "Reset the root directory of the Gui to /<gui-base>/www//, optionally
 opening the Gui in a browser window. The command will create the
