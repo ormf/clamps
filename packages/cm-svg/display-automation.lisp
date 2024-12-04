@@ -149,7 +149,7 @@ arg2 - Number denoting the bets per minute.
                           (typecase obj
                             (poolevt (sv* obj :stretch (get-val cm.svgd:timescale)))
                             (t (sv* obj :duration (get-val cm.svgd:timescale))))))
-                    (clamps::msg :warn "~a~%" obj)
+                    (incudine.util::msg :warn "~a~%" obj)
                     (sprout obj))
                   ))
               ))
