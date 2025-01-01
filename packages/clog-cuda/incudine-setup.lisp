@@ -21,15 +21,15 @@
 (in-package #:incudine)
 (export '(setup-meters
           setup-io
-          input-bus
+;;;          input-bus
           node-free-unprotected
-          clear-buses
-          cp-input-buses
-          cp-output-buses
-          clear-buses
-          bus-value
-          mix-bus-to-out
-          bus-to-out)
+;;;          clear-buses
+;;;          cp-input-buses
+;;;          cp-output-buses
+;;;          bus-value
+;;;          mix-bus-to-out
+;;;          bus-to-out
+          )
         :incudine)
 
 (defvar *aux* (incudine.external:foreign-alloc-sample
@@ -45,20 +45,17 @@
 
 (defsetf aux set-aux)
 
+#|
 (define-vug input-bus ((channel fixnum))
   (bus (the fixnum
          (+ (the fixnum
               (* current-frame *number-of-input-bus-channels*))
             channel))))
+|#
 
-(define-vug bus-value ((channel fixnum))
-  "if blocksize > 1 returns the value of bus for current-frame."
-  (with ((frames (block-size)))
-    (bus (the fixnum
-              (+ (the fixnum
-                      (* current-frame frames))
-                 channel)))))
 
+
+#|
 (dsp! cp-input-buses ((first-input channel-number) (first-bus channel-number)
                       (num-channels channel-number))
   "cp all audio inputs to buses starting at first-in-bus + bus-offset."
@@ -94,6 +91,7 @@
   (foreach-frame
     (dochannels (current-channel numchannels)
       (setf (input-bus (+ current-channel startidx)) +sample-zero+))))
+|#
 
 (defun setup-io ()
   (free 0)

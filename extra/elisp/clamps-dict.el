@@ -1,4 +1,4 @@
-(load "~/quicklisp/local-projects/clamps/extra/elisp/cm-dict.el")
+(load "/home/orm/work/programmieren/lisp/clamps/doc/../extra/elisp/cm-dict.el")
 (mapcar
  (lambda (entry)
    (let ((symbol (intern (car entry)
@@ -235,6 +235,7 @@
    ("open" "clamps-dict/open.html")
    ("open" "clamps-dict/open-1.html")
    ("osc-midi-write-short" "clamps-dict/osc-midi-write-short.html")
+   ("#oscin" "clamps-dict/​oscin​.html")
    ("#out-refs" "clamps-dict/​out-refs​.html")
    ("out-stream-open?" "clamps-dict/out-stream-open.html")
    ("output-stream" "clamps-dict/output-stream.html")

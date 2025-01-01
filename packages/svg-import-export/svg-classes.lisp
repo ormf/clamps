@@ -325,7 +325,7 @@ svg-text")))
          id=\"text~a\"
          y=\"~a\"
          x=\"~a\"
-         style=\"font-size:~apx;font-style:~a;font-weight:~a;opacity:~a;fill:~a;fill-opacity:~a;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~a;font-family:~a\"~@[
+         style=\"font-size:~apx;font-style:~a;font-weight:~a;opacity:~f;fill:~a;fill-opacity:~f;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~f;font-family:~a\"~@[
          attributes= \"~a\"~]
          xml:space=\"preserve\"
          text-anchor=\"~a\"><tspan
@@ -348,7 +348,7 @@ svg-text")))
          height=\"~a\"
          width=\"~a\"
          id=\"rect~a\"
-         style=\"fill:~a;fill-rule:~a;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~a;opacity:~a\" />"
+         style=\"fill:~a;fill-rule:~a;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~f;opacity:~f\" />"
               y x height width id (get-color fill-color) fill-rule (get-color stroke-color) stroke-width stroke-linecap stroke-linejoin stroke-opacity opacity)))
 
 ;; (print-to-stream (make-instance 'svg-rect :width 117 :height 139 :x 100 :y 117) nil)
@@ -361,7 +361,7 @@ svg-text")))
     (if marker-end
         (format stream
                 "    <path
-       style=\"fill:~a;fill-opacity:~a;fill-rule:~a;opacity:~a;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~a;marker-end:~a\"
+       style=\"fill:~a;fill-opacity:~f;fill-rule:~a;opacity:~f;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~f;marker-end:~a\"
        d=\"M ~a,~a L ~a,~a\"
        id=\"path~a\"
        attributes=\"~a\" />
@@ -370,7 +370,7 @@ svg-text")))
                 x1 y1 x2 y2 id attributes)
         (format stream
                 "    <path
-       style=\"fill:~a;fill-opacity:~a;fill-rule:~a;opacity:~a;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~a\"
+       style=\"fill:~a;fill-opacity:~f;fill-rule:~a;opacity:~f;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~f\"
        d=\"M ~a,~a L ~a,~a\"
        id=\"path~a\"
        attributes=\"~a\" />
@@ -387,7 +387,7 @@ svg-text")))
       obj
     (format stream
             "   <path
-       style=\"fill:~a;fill-opacity:~a;fill-rule:~a;opacity:~a;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~a\"
+       style=\"fill:~a;fill-opacity:~f;fill-rule:~a;opacity:~f;stroke:~a;stroke-width:~apx;stroke-linecap:~a;stroke-linejoin:~a;stroke-opacity:~f\"
        d=\"~a\"
        id=\"~a\"
        inkscape:connector-curvature=\"0\" />"
@@ -405,7 +405,7 @@ svg-text")))
        cy=\"~a\"
        cx=\"~a\"
        class=\"~a\"
-       style=\"opacity:1;fill:~a;fill-opacity:~a;fill-rule:~a;stroke:~a;stroke-width:~a;stroke-linecap:~a;stroke-linejoin:~a;stroke-miterlimit:~a;stroke-dasharray:~a;stroke-opacity:~a\"
+       style=\"opacity:1;fill:~a;fill-opacity:~f;fill-rule:~a;stroke:~a;stroke-width:~a;stroke-linecap:~a;stroke-linejoin:~a;stroke-miterlimit:~a;stroke-dasharray:~a;stroke-opacity:~f\"
        id=\"~a\"
        />
 "

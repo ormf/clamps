@@ -12,6 +12,6 @@
                (:file "lsample")
                (:file "bus")
                (:file "levelmeter")
-;;;               (:file "basic-dsps")
+               (:file "basic-dsps")
                ))
 

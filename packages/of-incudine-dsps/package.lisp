@@ -43,13 +43,14 @@
            #:RESTORE-ENVS
            #:KEYNUM->HZ
            #:*KEYNUM-OFFSET*
-           ;; #:METERS
-           ;; #:INPUT-BUS
-           ;; #:NODE-FREE-UNPROTECTED
-           ;; #:CLEAR-BUSES
-           ;; #:CP-INPUT-BUSES
-           ;; #:CP-OUTPUT-BUSES
-           ;; #:CLEAR-BUSES
-           ;; #:MIX-BUS-TO-OUT
-           ;; #:BUS-TO-OUT
+           #:METERS
+           #:INPUT-BUS
+           #:BUS-VALUE
+;;;           #:NODE-FREE-UNPROTECTED
+           #:CLEAR-BUSES
+           #:CP-INPUT-BUSES
+           #:CP-OUTPUT-BUSES
+           #:CLEAR-BUSES
+           #:MIX-BUS-TO-OUT
+           #:BUS-TO-OUT
            ))

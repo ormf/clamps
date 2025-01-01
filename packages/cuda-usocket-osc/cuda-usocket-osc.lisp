@@ -360,6 +360,7 @@ Example:
         `(incudine:make-responder
           ,stream
           (lambda (,message)
+            (incudine.util:msg :debug "osc-in: ~a" ,message)
             (let* ((x1 (position (char-code #\,) ,message))
                    (x2 (+ (or x1 0) (position 0 (subseq ,message (1+ x1))))))
               (if (and (cuda-usocket-osc::match-address ,message ,address-vector)

@@ -6,7 +6,7 @@
 
 (in-package #:of-incudine-dsps)
 
-
+#|
 (define-vug input-bus ((channel fixnum))
   (bus (the fixnum
          (+ (the fixnum
@@ -44,9 +44,6 @@
     (dochannels (current-channel numchannels)
       (setf (input-bus (+ current-channel startidx)) +sample-zero+))))
 
-
-
-#|
 (defvar *aux* (incudine.external:foreign-alloc-sample
                (* 256 *number-of-input-bus-channels*)))
 

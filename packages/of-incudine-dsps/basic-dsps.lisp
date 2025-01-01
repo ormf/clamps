@@ -22,10 +22,11 @@
 
 (deftype non-negative-fixnum () `(integer 0 ,most-positive-fixnum))
 
-(dsp! osc~ (freq amp (buf buffer))
-  (:defaults 440 0.1 *SINE1024*)
+(dsp! osc~ (freq amp phase (buf buffer))
+  "table lookup cosine oscillator."
+  (:defaults 440 0.1 0 *COSINE-TABLE*)
   (foreach-frame
-    (let ((sig (osc buf freq amp 0 :linear)))
+    (let ((sig (osc buf freq amp phase)))
       (out sig sig))))
 
 (define-vug input-bus ((channel channel-number))
@@ -34,18 +35,31 @@
               (* current-frame *number-of-input-bus-channels*))
             channel))))
 
-(dsp! cp-input-buses ((first-in-bus channel-number))
-  (:defaults 0)
-  (foreach-frame
-    (dochannels (current-channel *number-of-input-bus-channels*)
-      (setf (input-bus (+ current-channel first-in-bus))
-            (audio-in (+ current-channel first-in-bus))))))
+(define-vug bus-value ((channel fixnum))
+  "if blocksize > 1 returns the value of bus for current-frame."
+  (with ((frames (block-size)))
+    (bus (the fixnum
+              (+ (the fixnum
+                      (* current-frame frames))
+                 channel)))))
+
+(dsp! cp-input-buses ((first-input channel-number) (first-bus channel-number)
+                      (num-channels channel-number))
+  "cp all audio inputs to buses starting at first-in-bus + bus-offset."
+  (:defaults 0 0 *number-of-input-bus-channels*)
+  (let ((numchans (min num-channels *number-of-input-bus-channels*)))
+    (foreach-frame
+      (dochannels (current-channel numchans)
+        (setf (input-bus (+ current-channel first-bus))
+              (audio-in (+ current-channel first-input)))))))
 
 (dsp! cp-output-buses ((first-out-bus channel-number))
+  "cp all audio outputs to buses starting at first-out-bus."
   (:defaults 8)
   (foreach-frame
-    (setf (input-bus (+ 0 first-out-bus)) (audio-out current-channel))
-    (setf (input-bus (+ 1 first-out-bus)) (audio-out current-channel))))
+    (dochannels (current-channel *number-of-input-bus-channels*)
+      (setf (input-bus (+ current-channel first-out-bus))
+            (audio-out current-channel)))))
 
 (dsp! bus-to-out ((numchannels channel-number) (startidx channel-number))
   (foreach-frame

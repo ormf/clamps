@@ -303,6 +303,17 @@
            incudine.fudi:output-stream-p incudine.fudi:stream-open?
            incudine.fudi:send incudine.fudi:stream incudine.fudi:input-stream-p
            incudine.fudi:stream-p incudine.fudi:close incudine.fudi:open
+
+
+
+           of-incudine-dsps:meters
+           of-incudine-dsps:input-bus
+           of-incudine-dsps:bus-value
+           of-incudine-dsps:clear-buses
+           of-incudine-dsps:cp-input-buses
+           of-incudine-dsps:cp-output-buses
+           of-incudine-dsps:mix-bus-to-out
+           of-incudine-dsps:bus-to-out
            of-incudine-dsps:create-lsample
            of-incudine-dsps:play-buffer-stretch-env-pan-out
            of-incudine-dsps:play-buffer-stretch-env-pan-out*

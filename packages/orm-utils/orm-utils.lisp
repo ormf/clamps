@@ -1693,7 +1693,7 @@ seqs - One or more sequences where mapping gets applied, similar to map.
   (with-open-file (out outfile
                        :direction :output
                        :if-exists :supersede)
-    (format out "~{~A~%~}" seq)))
+    (format out "~{~S~%~}" seq)))
 
 
 (defun slurp (file)
