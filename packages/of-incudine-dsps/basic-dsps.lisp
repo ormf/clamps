@@ -22,6 +22,23 @@
 
 (deftype non-negative-fixnum () `(integer 0 ,most-positive-fixnum))
 
+;;; experimental aux bus:
+#|
+(defvar *aux* (incudine.external:foreign-alloc-sample
+               (* 256 *number-of-input-bus-channels*)))
+
+(declaim (inline aux))
+(defun aux (n)
+  (smp-ref *aux* n))
+
+(declaim (inline set-aux))
+(defun set-aux (n value)
+  (setf (smp-ref *aux* n) (sample value)))
+
+(defsetf aux set-aux)
+|#
+
+
 (dsp! osc~ (freq amp phase (buf buffer))
   "table lookup cosine oscillator."
   (:defaults 440 0.1 0 *COSINE-TABLE*)

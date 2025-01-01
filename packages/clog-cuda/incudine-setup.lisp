@@ -21,77 +21,8 @@
 (in-package #:incudine)
 (export '(setup-meters
           setup-io
-;;;          input-bus
-          node-free-unprotected
-;;;          clear-buses
-;;;          cp-input-buses
-;;;          cp-output-buses
-;;;          bus-value
-;;;          mix-bus-to-out
-;;;          bus-to-out
-          )
+          node-free-unprotected)
         :incudine)
-
-(defvar *aux* (incudine.external:foreign-alloc-sample
-               (* 256 *number-of-input-bus-channels*)))
-
-(declaim (inline aux))
-(defun aux (n)
-  (smp-ref *aux* n))
-
-(declaim (inline set-aux))
-(defun set-aux (n value)
-  (setf (smp-ref *aux* n) (sample value)))
-
-(defsetf aux set-aux)
-
-#|
-(define-vug input-bus ((channel fixnum))
-  (bus (the fixnum
-         (+ (the fixnum
-              (* current-frame *number-of-input-bus-channels*))
-            channel))))
-|#
-
-
-
-#|
-(dsp! cp-input-buses ((first-input channel-number) (first-bus channel-number)
-                      (num-channels channel-number))
-  "cp all audio inputs to buses starting at first-in-bus + bus-offset."
-  (:defaults 0 0 *number-of-input-bus-channels*)
-  (let ((numchans (min num-channels *number-of-input-bus-channels*)))
-    (foreach-frame
-      (dochannels (current-channel numchans)
-        (setf (input-bus (+ current-channel first-bus))
-              (audio-in (+ current-channel first-input)))))))
-
-(dsp! cp-output-buses ((first-out-bus channel-number))
-  "cp all audio outputs to buses starting at first-out-bus."
-  (:defaults 8)
-  (foreach-frame
-    (dochannels (current-channel *number-of-input-bus-channels*)
-      (setf (input-bus (+ current-channel first-out-bus))
-            (audio-out current-channel)))))
-
-(dsp! bus-to-out ((numchannels channel-number) (startidx channel-number))
-  (foreach-frame
-    (dochannels (current-channel numchannels)
-      (setf (audio-out current-channel)
-            (input-bus (+ current-channel startidx))))))
-
-(dsp! mix-bus-to-out ((startidx channel-number) (numchannels channel-number))
-  (:defaults 8 8)
-  (foreach-frame
-    (dochannels (current-channel numchannels)
-      (incf (audio-out current-channel) (input-bus (+ current-channel startidx))))))
-
-(dsp! clear-buses ((startidx channel-number) (numchannels channel-number))
-  (:defaults 16 8)
-  (foreach-frame
-    (dochannels (current-channel numchannels)
-      (setf (input-bus (+ current-channel startidx)) +sample-zero+))))
-|#
 
 (defun setup-io ()
   (free 0)
@@ -123,24 +54,3 @@ rts-hush
 ;;; (set-rt-block-size 256)
 ;;; (rt-start)
 
-#|
-(define-vug input-bus ((channel fixnum))
-  (bus (the fixnum
-         (+ (the fixnum
-              (* current-frame *number-of-input-bus-channels*))
-            channel))))
-
-(dsp! cp-input-buses ()
-  (foreach-frame
-    (dochannels (current-channel *number-of-input-bus-channels*)
-      (setf (input-bus current-channel)
-            (audio-in current-channel)))))
-
-(dsp! out-test ()
-  (foreach-frame
-    (dochannels (current-channel *number-of-input-bus-channels*)
-      (cout (input-bus current-channel)))))
-|#
-
-;;; (member :slynk *features*)
-;;; (member :slime *features*)
