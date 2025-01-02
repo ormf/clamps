@@ -482,6 +482,10 @@ set-tempo
               clamps:svg-gui-path clamps:set-tempo
               clamps:set-bpm clamps:start-doc-acceptor
               clamps:clamps-start clamps:gui clamps:meters
+              clamps:evt-time
+              clamps:evt-duration
+              clamps:evt-keynum
+              clamps:evt-amp
 
               cl-user:*sfz-file-path*
               cl-user:*sfile-path*

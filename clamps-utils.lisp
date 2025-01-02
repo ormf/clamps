@@ -308,6 +308,9 @@ fr2ct
 @Arguments
 obj - Instance of a Common Music event
 
+@Example
+(evt-duration (new midi)) ; => 0.5
+
 @See-also
 evt-keynum
 evt-time
@@ -321,10 +324,12 @@ evt-amp
 @Arguments
 obj - Instance of a Common Music event
 
+@Example
+(evt-keynum (new midi)) ; => 60
+
 @See-also
 evt-amp
 evt-duration
-evt-keynum
 evt-time
 "
   (sv obj :keynum))
@@ -335,11 +340,13 @@ evt-time
 @Arguments
 obj - Instance of a Common Music event
 
+@Example
+(evt-time (new sfz :time 3)) ; => 3
+
 @See-also
 evt-amp
 evt-duration
 evt-keynum
-evt-time
 "
   (sv obj :time))
 
@@ -348,6 +355,9 @@ evt-time
 
 @Arguments
 obj - Instance of a Common Music event
+
+@Example
+(evt-amp (new midi)) ; => 0.5
 
 @See-also
 evt-duration
