@@ -588,14 +588,6 @@
    #+BEGIN_SRC lisp
      (ccin ccnum &optional (channel *global-midi-channel*))
    #+END_SRC
-   Return the last received MIDI CC value of controller number /ccnum/
-   at MIDI channel /channel/. Setfable.
-*** Arguments
-    | =ccnum=   | Integer in the range [1..128] indicating the Controller Number. |
-    | =channel= | Integer in the range [1..16] indicating the MIDI channel.       |
-
-*** See also
-    - [[#midi-cc-state][*​​midi-cc-state​​*]]
 ** cd
    Function
    #+BEGIN_SRC lisp
@@ -1953,6 +1945,14 @@
    #+BEGIN_SRC lisp
      (input-bus channel)
    #+END_SRC
+** input-cu-osc-stream
+   Structure
+
+** input-cu-osc-stream-receiver
+   Function
+   #+BEGIN_SRC lisp
+     (input-cu-osc-stream-receiver instance)
+   #+END_SRC
 ** input-stream
    Structure
 
@@ -2831,35 +2831,10 @@
    values, the current n and the accumulated results of previous
    calls. If collect is t return all results in a list.
 ** n-exp
-   Function
+   Macro
    #+BEGIN_SRC lisp
      (n-exp x min max)
    #+END_SRC
-   Return the exponential interpolation for a normalized value in the
-   range /[min..max]/ as a float value.
-   
-    @Arguments
-   x - An input value in the range /[0..1]/ to be interpolated.
-   min - The output value for /x = 0/.
-   max - The output value for /x = 1/.
-*** Examples
-    #+BEGIN_SRC lisp
-      #+BEGIN_SRC lisp
-      (n-exp 0 1 100) ; => 1.0
-      
-      (n-exp 0.5 1 100) ; => 10.0
-      
-      (n-exp 1 1 100) ; => 100.0
-      #+END_SRC
-    #+END_SRC
-*** See also
-    - [[exp-n][exp-n]]
-    - [[lin-n][lin-n]]
-    - [[m-exp][m-exp]]
-    - [[m-lin][m-lin]]
-    - [[n-exp-dev][n-exp-dev]]
-    - [[n-lin][n-lin]]
-    - [[n-lin-dev][n-lin-dev]]
 ** n-exp-dev
    Function
    #+BEGIN_SRC lisp
@@ -2912,31 +2887,6 @@
    #+BEGIN_SRC lisp
      (n-lin x min max)
    #+END_SRC
-   Return the linear interpolation for a normalized value in the range
-   /[min..max]/ as a float value.
-*** Arguments
-    | =x=   | An input value in the range /[0..1]/ to be interpolated. |
-    | =min= | The output value for /x = 0/.                            |
-    | =max= | The output value for /x = 1/.                            |
-
-*** Examples
-    #+BEGIN_SRC lisp
-      #+BEGIN_SRC lisp
-      (n-lin 0 10 20) ; => 10.0
-      
-      (n-lin 0.5 10 20) ; => 15.0
-      
-      (n-lin 1 10 20)  ; => 20.0
-      #+END_SRC
-    #+END_SRC
-*** See also
-    - [[exp-n][exp-n]]
-    - [[lin-n][lin-n]]
-    - [[m-exp][m-exp]]
-    - [[m-lin][m-lin]]
-    - [[n-exp][n-exp]]
-    - [[n-exp-dev][n-exp-dev]]
-    - [[n-lin-dev][n-lin-dev]]
 ** n-lin-dev
    Function
    #+BEGIN_SRC lisp
@@ -3165,6 +3115,12 @@
    #+BEGIN_SRC lisp
      (osc-midi-write-short stream st d1 d2)
    #+END_SRC
+** *​oscin​*
+   :PROPERTIES:
+   :CUSTOM_ID: oscin
+   :END:
+   Variable
+
 ** osc~
    Function
    #+BEGIN_SRC lisp
@@ -3222,24 +3178,9 @@
 ** permute
    Function
    #+BEGIN_SRC lisp
-     (permute list permutation)
+     (permute fn permutation)
    #+END_SRC
-   Return a permutation of /list/ according to the indexes in
-   /permutation/.
-*** Arguments
-    | =list=        | List of elements to be permuted. |
-    | =permutation= | List of permutation indexes.     |
-
-*** Examples
-    #+BEGIN_SRC lisp
-      (permute '(1 2 3 4 5) '(3 1 4 2 0)) ; => (4 2 5 3 1)
-    #+END_SRC
-*** Note
-    For a valid permutation the /permutation/ index list should contain
-    all integer indexes of list starting from zero. In that case, length
-    of /list/ is equal to the length of /permutation/. If it is shorter,
-    an error occurs, if it is longer, not all elements of /list/ are
-    returned.
+   permute a fader idxs (1-16) according to permutation.
 ** phasor*
    :PROPERTIES:
    :CUSTOM_ID: phasor
@@ -3635,16 +3576,6 @@
    #+BEGIN_SRC lisp
      (r-elt seq)
    #+END_SRC
-   Return a random element of seq.
-*** Arguments
-    | =seq= | a sequence fulfilling the predicate /(typep seq 'sequence)/ like a list or a vector. |
-
-*** Examples
-    #+BEGIN_SRC lisp
-      (r-elt #(1 2 3 4)) ; => 1, 2, 3 or 4
-      
-      (r-elt '(dog cat bird cow)) ; => dog, cat, bird or cow
-    #+END_SRC
 ** r-exp
    Function
    #+BEGIN_SRC lisp
@@ -4513,9 +4444,9 @@
 ** start-osc-midi-receive
    Function
    #+BEGIN_SRC lisp
-     (start-osc-midi-receive local-midi-in &key (port 4711))
+     (start-osc-midi-receive &key (host "127.0.0.1") (port 4711))
    #+END_SRC
-   start osc on localhost:port and its receivers.
+   start osc on host:port and its receivers.
 ** stop-midi-receive
    Function
    #+BEGIN_SRC lisp
