@@ -24,6 +24,11 @@
            set-standard-pitch
            svg-gui-root
 
+           evt-amp
+           evt-duration
+           evt-keynum
+           evt-time
+           
            ats-cuda:load-ats
            ats-cuda:save-ats
            ats-cuda:track-ats

@@ -28,5 +28,10 @@
            #:remove-osc-responder
            #:open #:close #:send #:stream #:input-stream #:output-stream
            #:stream-p #:input-stream-p #:output-stream-p
-           #:out-stream-open?))
+           #:out-stream-open?
+           #:input-cu-osc-stream
+           #:input-cu-osc-stream-receiver
+
+
+           ))
 

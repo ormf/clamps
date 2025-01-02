@@ -299,3 +299,60 @@ cent - The interval in Midicents.
 fr2ct
 "
   (expt 2 (/ ct 12)))
+
+;;; wrappers for cm eventclass slots:
+
+(defun evt-duration (obj)
+  "Return the duration of CM /obj/.
+
+@Arguments
+obj - Instance of a Common Music event
+
+@See-also
+evt-keynum
+evt-time
+evt-amp
+"
+  (sv obj :duration))
+
+(defun evt-keynum (obj)
+  "Return the keynum of CM /obj/.
+
+@Arguments
+obj - Instance of a Common Music event
+
+@See-also
+evt-amp
+evt-duration
+evt-keynum
+evt-time
+"
+  (sv obj :keynum))
+
+(defun evt-time (obj)
+  "Return the time of CM /obj/.
+
+@Arguments
+obj - Instance of a Common Music event
+
+@See-also
+evt-amp
+evt-duration
+evt-keynum
+evt-time
+"
+  (sv obj :time))
+
+(defun evt-amp (obj)
+  "Return the amplitude of CM /obj/.
+
+@Arguments
+obj - Instance of a Common Music event
+
+@See-also
+evt-duration
+evt-keynum
+evt-time
+"
+  (sv obj :amplitude))
+

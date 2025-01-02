@@ -100,7 +100,7 @@ messages."
 (defun default-udp-binary-socket-handler (socket-data osc-stream)
   (declare (type vector socket-data) (type input-cu-osc-stream osc-stream))
   (let ((receiver (input-cu-osc-stream-receiver osc-stream)))
-    (if (incudine::receiver-status receiver)
+    (if (and receiver (incudine::receiver-status receiver))
         (handler-case
             (dolist (fn (incudine::receiver-functions receiver))
               (funcall (the function fn) socket-data))
