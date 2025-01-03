@@ -1,12 +1,12 @@
-(load "/home/orm/work/programmieren/lisp/clamps/doc/../extra/elisp/cm-dict.el")
+(load "~/quicklisp/local-projects/clamps/extra/elisp/cm-dict.el")
 (mapcar
- (lambda (entry)
-   (let ((symbol (intern (car entry)
-			 *common-music-symbols*)))
-     (if (boundp symbol)
-	 (push (cadr entry) (symbol-value symbol))
-       (set symbol (cdr entry)))))
- '(
+   (lambda (entry)
+     (let ((symbol (intern (car entry)
+  			 *common-music-symbols*)))
+       (if (boundp symbol)
+  	 (push (cadr entry) (symbol-value symbol))
+         (set symbol (cdr entry)))))
+   '(
    ("Notation and Usage" "clamps-dict/overview.html")
    ("add-buffer" "clamps-dict/a.html")
    ("add-dsp" "clamps-dict/add-dsp.html")
@@ -27,6 +27,7 @@
    ("bind-ref-to-attr" "clamps-dict/bind-ref-to-attr.html")
    ("bind-refs-to-attrs" "clamps-dict/bind-refs-to-attrs.html")
    ("#bindings" "clamps-dict/​bindings​.html")
+   ("bool" "clamps-dict/bool.html")
    ("buchla-scale" "clamps-dict/buchla-scale.html")
    ("buffer-id" "clamps-dict/buffer-id.html")
    ("buffer-loop-play*" "clamps-dict/buffer-loop-play.html")

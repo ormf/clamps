@@ -137,5 +137,5 @@
    #:DEFPARAMETER*
    #:DEFVAR*
    #:CLIP
-   )
-  )
+   #:BOOL
+   ))

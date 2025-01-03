@@ -2865,3 +2865,14 @@ defparameter*
                        (t
                         `(defvar ,(first entry) ,(second entry)))))))
 
+(defun bool (pred)
+  "Enforce /t/ or /nil/ on pred.
+
+@Arguments
+pred - Any lisp expression.
+
+@Examples
+(bool 1) ; => t
+(bool nil) ; => nil
+"
+  (if pred t))

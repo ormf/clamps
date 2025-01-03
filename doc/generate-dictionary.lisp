@@ -70,6 +70,16 @@
     (or (null forced)
         (eq (find-package forced) pkg))))
 
+          "(insert \"(load \\\"~/quicklisp/local-projects/clamps/extra/elisp/cm-dict.el\\\")
+  (mapcar
+     (lambda (entry)
+       (let ((symbol (intern (car entry)
+    			 ,*common-music-symbols*)))
+         (if (boundp symbol)
+    	 (push (cadr entry) (symbol-value symbol))
+           (set symbol (cdr entry)))))
+     '(\\n\")"
+
 (defparameter *org-mode-dict-file-header*
   "#+TITLE: Clamps Dictionary
 #+AUTHOR: Orm Finnendahl
@@ -108,17 +118,15 @@
   (defun export-dict-to-clamps (s backend info)
     (let ((filename (buffer-file-name)))
       (with-temp-buffer
-        (insert
-         (format \"(load \\\"%s%s\\\")\\n\" (file-name-directory filename)
-                 \"../extra/elisp/cm-dict.el\"))
-        (insert \"(mapcar
-   (lambda (entry)
-     (let ((symbol (intern (car entry)
-  			 ,*common-music-symbols*)))
-       (if (boundp symbol)
-  	 (push (cadr entry) (symbol-value symbol))
-         (set symbol (cdr entry)))))
-   '(\\n\")
+        (insert \"(load \\\"~~/quicklisp/local-projects/clamps/extra/elisp/cm-dict.el\\\")
+  (mapcar
+     (lambda (entry)
+       (let ((symbol (intern (car entry)
+    			 ,*common-music-symbols*)))
+         (if (boundp symbol)
+    	 (push (cadr entry) (symbol-value symbol))
+           (set symbol (cdr entry)))))
+     '(\\n\")
         (mapcar
          (lambda (entry)
            (insert

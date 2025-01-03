@@ -42,6 +42,7 @@
            cl-sfz:sfz-preset-buffers
            cl-sfz:get-sfz-preset
            
+           orm-utils:bool
            orm-utils:ftom orm-utils:mtof
            orm-utils:get-props-list orm-utils:m-exp
            output-stream
