@@ -39,11 +39,11 @@
 |#
 
 
-(dsp! osc~ (freq amp phase (buf buffer))
+(dsp! osc~ (freq amp phase master (buf buffer))
   "table lookup cosine oscillator."
-  (:defaults 440 0.1 0 *COSINE-TABLE*)
+  (:defaults 440 0.1 0 *COSINE-TABLE* 1.0)
   (foreach-frame
-    (let ((sig (osc buf freq amp phase)))
+    (let ((sig (* (lag amp 0.1) (osc buf freq master phase))))
       (out sig sig))))
 
 (define-vug input-bus ((channel channel-number))
