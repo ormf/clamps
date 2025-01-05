@@ -41,7 +41,7 @@
 
 (dsp! osc~ (freq amp phase master (buf buffer))
   "table lookup cosine oscillator."
-  (:defaults 440 0.1 0 *COSINE-TABLE* 1.0)
+  (:defaults 440 0.1 0 1.0 *COSINE-TABLE*)
   (foreach-frame
     (let ((sig (* (lag amp 0.1) (osc buf freq master phase))))
       (out sig sig))))
