@@ -32,7 +32,7 @@
    #:ats-sound-window-size #:ats-sound-partials #:ats-sound-frames #:ats-sound-bands
    #:ats-sound-optimized #:ats-sound-ampmax #:ats-sound-frqmax #:ats-sound-frq-av
    #:ats-sound-amp-av #:ats-sound-dur #:ats-sound-time #:ats-sound-frq #:ats-sound-amp
-   #:ats-sound-pha #:ats-sound-energy #:ats-sound-band-energy)
+   #:ats-sound-pha #:ats-sound-energy #:ats-sound-band-energy #:ats-sound)
   (:shadowing-import-from :incudine
    :play :scale-envelope :normalize-envelope)
   (:shadowing-import-from :incudine.util
