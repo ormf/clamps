@@ -28,7 +28,8 @@ add-sfz-preset
 load-sfz-preset
 ")
 
-(defparameter *sfile-path* (list (asdf:system-relative-pathname :ats-cuda "snd/"))
+(defparameter *sfile-path* (list (asdf:system-relative-pathname :ats-cuda "snd/")
+                                 (asdf:system-relative-pathname :clamps "extra/snd/"))
   "List of directories to search recursively for soundfiles.
 
 @See-also

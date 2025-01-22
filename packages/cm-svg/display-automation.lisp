@@ -269,9 +269,14 @@ arg2 - Number denoting the bets per minute.
 
 ;;; (funcall my-watch)
 
-(defun svg->browser (svg-file &key (bar-lines 1) (staff-systems 1)
-                                (piano-roll 0) (scale 1)
-                                (timescale 1/32) (inverse 0))
+(defun bool->int (bool)
+  "convert t to 1 and nil to 0."
+  (if bool 1 0))
+
+(defun svg->browser (svg-file &key (bar-lines t) (staff-systems t)
+                                (piano-roll nil) (scale 1)
+                                (timescale 1/32) (inverse nil)
+                                (reload t))
   "Display =svg-file= in the SVG Player Gui, located at
 /<clamps-base-url>/svg-display/.
 
@@ -308,12 +313,12 @@ directory.
 clamps:cm-svg.rts
 svg-gui-path
 "
-  (set-val cm.svgd:svg-file svg-file)
-  (set-val cm.svgd:piano-roll piano-roll)
-  (set-val cm.svgd:staff-systems staff-systems)
-  (set-val cm.svgd:bar-lines bar-lines)
+  (set-val cm.svgd:svg-file svg-file :force reload)
+  (set-val cm.svgd:piano-roll (bool->int piano-roll))
+  (set-val cm.svgd:staff-systems (bool->int staff-systems))
+  (set-val cm.svgd:bar-lines (bool->int bar-lines))
   (set-val cm.svgd:scale scale)
-  (set-val cm.svgd:inverse inverse)
+  (set-val cm.svgd:inverse (bool->int inverse))
   (if cm.svgd:data-watch (funcall cm.svgd:data-watch))
   (if cm.svgd:play-watch (funcall cm.svgd:play-watch))
   (if cm.svgd:timescale-watch (funcall cm.svgd:timescale-watch))
