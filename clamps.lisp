@@ -154,7 +154,7 @@ clamps-gui-root
         (let* ((subdirpath (format nil "www/~a" dir-or-file))
                (srcpath (namestring (asdf:system-relative-pathname :clog-dsp-widgets subdirpath))))
           (unless (uiop:probe-file* (merge-pathnames (format nil "~a~a" dir subdirpath)))
-            (uiop:run-program (format nil "ln -s ~A ~A" srcpath targetpath))))))
+            (uiop:run-program (format nil "ln -fs ~A ~A" srcpath targetpath))))))
     ;;    (clog:set-on-new-window #'clog::clamps-gui :path "/" :boot-file "/start.html")
     (setf (fdefinition 'clog-dsp-widgets::on-new-window) #'clog::clamps-gui)
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters")
