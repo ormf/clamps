@@ -7,7 +7,7 @@
   (:use #:cl #:ou #:cl-refs #:cl-midictl #:clog #:clog-dsp-widgets #:incudine)
   (:shadowing-import-from #:incudine
                           #:group)
-  (:shadowing-import-from #:clog
+  (:shadowing-import-from #:alexandria
                           #:rotate)
   (:export #:NANOKTL2-GUI #:FADERFOX-GUI #:NANOKTL2-PRESET-GUI
            #:MIDICONTROLLER

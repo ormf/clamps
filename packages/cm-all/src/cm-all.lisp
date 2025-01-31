@@ -30,6 +30,8 @@
 
 (in-package #:cm)
 
+(shadowing-import 'ats-display 'ats-cuda-display)
+
 (defparameter *svg-dir* nil)
 
 (defun ensure-directory (dir)
