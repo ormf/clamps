@@ -652,7 +652,7 @@ svg element."
                                                            :keynum svg-ie::y1
                                                            :y2 svg-ie::y2
                                                            :duration (float (max 0.001 (* x-scale (- svg-ie::x2 svg-ie::x1))))
-                                                           :amplitude svg-ie::opacity
+                                                           :amplitude (float svg-ie::opacity 1.0)
                                                            (keynum->saved-keynum svg-ie::attributes)))))
                        (warn "can't import type ~a" (getf svg-ie::attributes :type))))))
       into result

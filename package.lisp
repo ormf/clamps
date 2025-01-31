@@ -261,7 +261,9 @@
            cm:poolevt-release cm:at cm:now cm:axis cm:install-standard-sly-hooks
            cm:wait-until cm:plotter-close cm:seq cm:point cm:chan->color
            cm:scale-amp cm:poolevt-attack cm:output cm:player-mute cm:wait
-           cm:midi-write-message cm:controller cm:expl cm:cm-restart-gui
+           cm:midi-write-message
+           ;;; cm:controller
+           cm:expl cm:cm-restart-gui
            cm:start-inkscape-osc cm:player-load-midifile cm:*svg-colormap*
            cm:svg->poolevt cm:explseg cm:list-subobjects cm:sfz-preset
            cm:midi-close-default cm:interval cm:midi-pitch-bend cm:rotation

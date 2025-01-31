@@ -2,7 +2,16 @@
 
 (in-package :cl-user)
 
-(pushnew (merge-pathnames "local-projects/clamps/packages/svg-import-export/" ql:*quicklisp-home*)
+;;; avoid xlock violation error on xpath:
+
+(ql:quickload :xpath)
+(ql:quickload :cxml-stp)
+
+;;; make sure svg-import-export and clog-dsp-widgets are loaded from
+;;; the packages subdir rather than from ~/quicklisp/local-projects.
+
+(pushnew (merge-pathnames "local-projects/clamps/packages/svg-import-export/"
+                          ql:*quicklisp-home*)
          asdf:*central-registry*)
 
 (pushnew (merge-pathnames "local-projects/clamps/packages/clog-dsp-widgets/" ql:*quicklisp-home*)
