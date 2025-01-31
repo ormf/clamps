@@ -270,7 +270,7 @@
            cm:*time-slots* cm:db->opacity cm:midi-note cm:song cm:subobjects
            cm:palindrome cm:i cm:reverse-obj cm:poolevt-start cm:player-unmute
            cm:defaxis cm:join cm:midi-connections cm:*fudi-out* cm:midi-eot
-           cm:calc-dur cm:date-and-time cm:eod? cm:program cm:*midi-in1*
+           cm:calc-dur cm:date-and-time cm:eod? cm:*midi-in1*
            cm:+ml-opcode-mask+ cm:sv+ cm:player-pause cm:best-normal-form
            cm:shell cm:jack-connect-qsynth cm:defobject cm:*beat* cm:mode
            cm:remove-receiver! cm:value cm:rts cm:sampleevt-start
