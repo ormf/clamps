@@ -26,7 +26,7 @@
    )
   (:shadowing-import-from :orm-utils #:path-find-file)
   (:shadowing-import-from :clog
-   :run :rotate)
+   :run)
   (:shadowing-import-from :ats-cuda
    #:ats-sound-frames #:ats-sound-name #:ats-sound-sampling-rate #:ats-sound-frame-size
    #:ats-sound-window-size #:ats-sound-partials #:ats-sound-frames #:ats-sound-bands
