@@ -273,7 +273,9 @@
            cm:calc-dur cm:date-and-time cm:eod? cm:*midi-in1*
            cm:+ml-opcode-mask+ cm:sv+ cm:player-pause cm:best-normal-form
            cm:shell cm:jack-connect-qsynth cm:defobject cm:*beat* cm:mode
-           cm:remove-receiver! cm:value cm:rts cm:sampleevt-start
+           cm:remove-receiver!
+           ;;; cm:value
+           cm:rts cm:sampleevt-start
            cm:status->opcode cm:make-mt-stream cm:cmn cm:tendency cm:sfz
            cm:decode-interval cm:hertz cm:object->cmn cm:rhythm cm:explsegs
            cm:midi cm:play cm:call-sly-connected-hooks cm:player-cont
