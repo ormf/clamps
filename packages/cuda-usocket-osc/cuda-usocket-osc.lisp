@@ -324,6 +324,7 @@ address."
     (progn
       (format t "~&not shadowing incudine.osc functions~%")))
 
+#|
 (defun incudine.osc:message (stream address types &rest values)
   (cu-osc:send stream
                (concatenate
@@ -331,6 +332,7 @@ address."
                 (osc::encode-address address)
                 (encode-typetag types)
                 (encode-args values))))
+|#
 
 (in-package :incudine)
 
