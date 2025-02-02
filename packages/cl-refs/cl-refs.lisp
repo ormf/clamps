@@ -152,11 +152,13 @@ watch
   (make-instance 'bang-object :listeners (if fn (list fn))))
 
 (defun %trigger (obj)
+  "call all ref-listeners of /obj/ in the dynamic scope of *refs-seen*."
   (map nil #'funcall (ref-listeners obj)))
 
 (defgeneric trigger (obj)
+  (:documentation "call all ref-listeners of /obj/ with *refs-seen* set to nil.")
   (:method ((obj bang-object))
-    (let ((*refs-seen* nil)) (map nil #'funcall (ref-listeners obj)))))
+    (let ((*refs-seen* nil)) (%trigger obj))))
 
 (defun clear-dependencies (co cb)
   "clear all dependencies of a computed ref object."
