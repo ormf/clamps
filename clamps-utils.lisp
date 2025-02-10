@@ -83,6 +83,47 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
 (setf (fdefinition 'bus) #'incudine:bus)
 (defsetf bus incudine::set-bus)
 
+(defun set-page-dimensions (body width height &key (scale 1.0))
+  "Set the page dimensions of the /body/ of a clog html page given its
+/body/ in rem units. The minimum font-size of the HTML will be scaled
+that in full screen display 1 rem equals 10 px. Use this function in
+the gui creation function to change the aspect ratio of a page. The
+optional /scale/ will scale the /width/ and /height/ of the page
+proportionally, resuling in a reciprocal scaling of all CSS elements
+using em or rem units.
+
+@Arguments
+
+body - Instance of clog:clog-body denoting the body element of the html page.
+
+width -  Number denoting the page width in rem units.
+
+height - Number denoting the page height in rem units.
+
+scale - Number to scale width and height.
+
+@Examples
+
+;; For full HD with 16:9 aspect ratio:
+
+(set-page-dimensions body 192 108)
+
+;; For full HD with 8:5 aspect ratio:
+
+(set-page-dimensions body 192 120)
+
+;; For Quad HD with 16:9 aspect ratio:
+
+(set-page-dimensions body 256 144)
+
+
+"
+  (let ((html (clog:document-element (html-document body))))
+    (setf (style html :font-size) (format nil "min(~,8fvw, ~,8fvh)" (/ 100 (* scale width)) (/ 100 (* scale height))))
+    (setf (style body :height) (format nil "~arem" (* height scale)))
+    (setf (style body :width) (format nil "~arem" (* width scale)))))
+
+
 #|
 (defmacro imsg (type format-control &rest format-arguments)
   "Produce a formatted log message controlled by FORMAT-CONTROL and

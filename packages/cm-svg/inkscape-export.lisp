@@ -57,7 +57,7 @@
      (stop-inkscape-osc)
      (start-inkscape-osc)))
 
- ;;; (stop-inkscape-osc)
+;;; (stop-inkscape-osc)
 ;;; (start-inkscape-osc)
 
 (export '(*osc-inkscape-export-in* restart-inkscape-osc start-inkscape-osc stop-inkscape-osc) :cm)

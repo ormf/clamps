@@ -1,4 +1,4 @@
-:root{
+html{
    font-size: min(00.52083333vw, 00.92592593vh);
 }
 
@@ -54,10 +54,11 @@ body{
 }
 
 o-bang {
+    box-sizing: border-box;
     position: relative;
-    font-size: 2em;
+    font-size: 1.6em;
     user-select: none;
-    text-align: center;
+    /* text-align: center; */
     /* background-off: transparent; */
     /* background-on: orange; */
     /* color-off: black; */
@@ -65,10 +66,15 @@ o-bang {
     border: solid 0.1em;
     min-width: 1em;
     min-height: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
 }
 
 
 o-toggle {
+    box-sizing: border-box;
     position: relative;
     font-size: 2em;
     user-select: none;

@@ -138,4 +138,5 @@
    #:DEFVAR*
    #:CLIP
    #:BOOL
+   #:DOLIST-DB
    ))

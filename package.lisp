@@ -28,7 +28,8 @@
            evt-duration
            evt-keynum
            evt-time
-           
+
+           set-page-dimensions
            ats-cuda:load-ats
            ats-cuda:save-ats
            ats-cuda:track-ats
@@ -43,6 +44,7 @@
            cl-sfz:get-sfz-preset
            
            orm-utils:bool
+           orm-utils:dolist-db
            orm-utils:ftom orm-utils:mtof
            orm-utils:get-props-list orm-utils:m-exp
            output-stream

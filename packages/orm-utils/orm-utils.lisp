@@ -2876,3 +2876,10 @@ pred - Any lisp expression.
 (bool nil) ; => nil
 "
   (if pred t))
+
+(defmacro dolist-db ((args list) &body body)
+  "like dolist, but using destructuring-bind of args on each list element."
+  (let ((item (gensym)))
+    `(dolist (,item ,list)
+       (destructuring-bind ,args ,item
+         ,@body))))

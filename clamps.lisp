@@ -241,7 +241,6 @@ supplied and gets interned as a parameter."
     (sleep 1)
     (reinit-midi)))
 
-
 (defun install-slime-hooks ()
   (swank:eval-in-emacs
    `(load ,(namestring
@@ -366,7 +365,7 @@ clamps-gui-root
 rts
 "
   (setf *package* (find-package :clamps))
-   (restart-inkscape-osc)
+  (restart-inkscape-osc)
 ;;; rts also initializes midi
   (rts)
 ;;;  (unless (cm::rts?) (rts))
