@@ -318,44 +318,43 @@ clamps-base-url
 (defun ats-display (body)
   "On-new-window handler."
   (let (controls atsd.svg atsd.play-toggle atsd.bw-slider atsd.contrast-slider
-        atsd.res-bal-slider atsd.pitchbox atsd.freqbox atsd.timebox
-        atsd.osc-play-toggle atsd.osc-amp-slider)
+        atsd.res-bal-slider
+;;        atsd.pitchbox atsd.freqbox atsd.timebox
+;;;        atsd.osc-play-toggle atsd.osc-amp-slider
+        )
     (setf (title (clog::html-document body)) "ATS Cuda display")
     (set-val atsd.scale 0.3)
     (setf atsd.svg
           (create-o-svg
            body (bind-refs-to-attrs atsd.width "width" atsd.x "cursor-pos" atsd.shift-x "shift-x" atsd.data "svg-file"
                                     atsd.scale "scale" atsd.crosshairs "crosshairs" atsd.mousepos "mousepos"
-                                    atsd.bw "bandwidth" atsd.contrast "ats-contrast")))
+                                    atsd.bw "bandwidth" atsd.contrast "ats-contrast")
+           :css '(:height "101rem")))
     ;; (create-o-radio body (bind-refs-to-attrs idx "value") :css '(:width "6em") :labels (list (loop for idx from 1 to 6 collect idx)) :num 6)
-    (setf controls (create-div body :style "display: flex; height: 3em; margin-top: 0.5em"))
+    (setf controls (create-div body :style "display: flex; height: 4em; align-items: center; justify-content: space-between"))
     (setf atsd.play-toggle
           (create-o-toggle controls (bind-refs-to-attrs atsd.play "value")
                            :css '(:font-size "2em" :width "3em" :display "block") :label '("off" "on") :background '("transparent" "#8f8")))
     (setf atsd.contrast-slider
           (create-o-slider controls (bind-refs-to-attrs atsd.contrast "value")
-                           :width "4em" :css '(:margin-left "0.5em") :height "88%" :direction :right :min 0 :max 1))
+                           :width "4em" :css '(:margin-left "0.5em") :height "1.2em" :direction :right :min 0 :max 1))
     (setf atsd.bw-slider
           (create-o-slider controls (bind-refs-to-attrs atsd.bw "value")
-                           :width "4em" :css '(:margin-left "0.5em") :height "88%" :direction :right :min 0.01 :max 1))
+                           :width "4em" :css '(:margin-left "0.5em") :height "1.2em" :direction :right :min 0.01 :max 1))
     (setf atsd.res-bal-slider
           (create-o-slider controls (bind-refs-to-attrs atsd.res-balance "value")
-                           :width "4em" :css '(:margin-left "0.5em") :height "88%" :direction :right :min 0 :max 1))
-    (setf atsd.timebox
-          (create-o-numbox controls (bind-refs-to-attrs atsd.time "value") :min 0 :max 10
-                           :css '(:margin-left "0.5em")))
-    (setf atsd.pitchbox
-          (create-o-numbox controls (bind-refs-to-attrs atsd.pitch "value") :min 0 :max 127
-                           :css '(:margin-left "0.5em")))
-    (setf atsd.freqbox
-          (create-o-numbox controls (bind-refs-to-attrs atsd.freq "value") :min 0 :max 10000
-                           :css '(:margin-left "0.5em")))
-    (setf atsd.osc-play-toggle
-          (create-o-toggle controls (bind-refs-to-attrs atsd.osc-play "value")
-                           :css '(:font-size "2em" :margin-left "0.5em" :width "3em" :display "block") :label '("off" "on") :background '("transparent" "#8f8")))
-    (setf atsd.osc-amp-slider
-          (create-o-slider controls (bind-refs-to-attrs atsd.osc-amp "value")
-                           :width "4em" :css '(:margin-left "0.5em") :height "88%" :direction :right :min 0 :max 0.01))
+                           :width "4em" :css '(:margin-left "0.5em") :height "1.2em" :direction :right :min 0 :max 1))
+    (create-o-numbox controls (bind-refs-to-attrs atsd.time "value") :min 0 :max 10
+                                                                     :css '(:margin-left "0.5em"))
+    (create-o-numbox controls (bind-refs-to-attrs atsd.pitch "value") :min 0 :max 127
+                                                                      :css '(:margin-left "0.5em"))
+    (create-o-numbox controls (bind-refs-to-attrs atsd.freq "value") :min 0 :max 10000
+                                                                     :css '(:margin-left "0.5em"))
+    (create-o-toggle controls (bind-refs-to-attrs atsd.osc-play "value")
+                     :css '(:font-size "2em" :margin-left "0.5em" :width "3em" :display "block") :label '("off" "on") :background '("transparent" "#8f8"))
+    (create-o-slider controls (bind-refs-to-attrs atsd.osc-amp "value")
+                     :width "4em" :css '(:margin-left "0.5em") :height "1.2em" :direction :right :min 0 :max 0.01)
+
     (atsd-set-keyboard-mouse-shortcuts body atsd.svg atsd.play-toggle atsd.bw-slider atsd.contrast-slider atsd.res-bal-slider)))
 
 (defun on-new-ats-window (body)

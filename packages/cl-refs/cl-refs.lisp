@@ -35,7 +35,7 @@
    (dependencies :initarg :dependencies :initform '() :accessor ref-dependencies)))
 
 (defclass bang-object (ref-object-super)
-  ((value :initarg :value :initform nil :reader ref-value)))
+  ((value :initform nil :initarg :value :accessor ref-value)))
 
 (defclass ref-object (ref-object-super)
   ((value :initarg :value :accessor ref-value)
