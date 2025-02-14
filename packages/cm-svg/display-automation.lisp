@@ -199,7 +199,7 @@ arg2 - Number denoting the bets per minute.
 
 (defun svg-display (body)
   "On-new-window handler."
-  (let (transport-toggle)
+  (let (transport-toggle controls)
     (setf (clog:title (clog:html-document body)) "SVG Player")
     (create-o-svg
      body (bind-refs-to-attrs cm.svgd:width "width"
@@ -210,24 +210,25 @@ arg2 - Number denoting the bets per minute.
                               cm.svgd:piano-roll "piano-roll"
                               cm.svgd:staff-systems "staff-systems"
                               cm.svgd:bar-lines "bar-lines"
-                              cm.svgd:inverse "inverse"))
+                              cm.svgd:inverse "inverse")
+     :css '(:height "98rem"))
     (create-o-slider body (bind-refs-to-attrs cm.svgd:shift "value" cm.svgd:width "max")
                      :min 0 :max 200 :direction :right
                      :css `(:display "inline-block" :height "1em" :width "100%"))
+    (setf controls (clog:create-div body :css '(:display "flex" :width "100%")))
     (setf transport-toggle
-          (create-o-toggle body (bind-refs-to-attrs cm.svgd:transport "value")
+          (create-o-toggle controls (bind-refs-to-attrs cm.svgd:transport "value")
                            :label '("play" "stop") :background '("transparent" "#8f8")
                            :css `(:display "inline-block" :height "1.2em" :width "3em")))
-    (create-o-toggle body (bind-refs-to-attrs cm.svgd:auto-return "value")
-                     :label '("rtn") :css `(:display "inline-block" :height "1.2em" :width "3em"))
-    (create-o-toggle body (bind-refs-to-attrs cm.svgd:piano-roll "value")
-                     :label '("pno") :css `(:display "inline-block" :height "1.2em" :width "3em"))
-    (create-o-toggle body (bind-refs-to-attrs cm.svgd:staff-systems "value")
-                     :label '("stf") :css `(:display "inline-block" :height "1.2em" :width "3em"))
-    (create-o-toggle body (bind-refs-to-attrs cm.svgd:bar-lines "value")
-                     :label '("bar") :css `(:display "inline-block" :height "1.2em" :width "3em"))
-    (set-keyboard-shortcuts body transport-toggle)
-    ))
+    (create-o-toggle controls (bind-refs-to-attrs cm.svgd:auto-return "value")
+                     :label '("rtn") :css `(:display "inline-block" :height "1.2em" :width "3em" :margin-left "0.2em"))
+    (create-o-toggle controls (bind-refs-to-attrs cm.svgd:piano-roll "value")
+                     :label '("pno") :css `(:display "inline-block" :height "1.2em" :width "3em" :margin-left "0.2em"))
+    (create-o-toggle controls (bind-refs-to-attrs cm.svgd:staff-systems "value")
+                     :label '("stf") :css `(:display "inline-block" :height "1.2em" :width "3em" :margin-left "0.2em"))
+    (create-o-toggle controls (bind-refs-to-attrs cm.svgd:bar-lines "value")
+                     :label '("bar") :css `(:display "inline-block" :height "1.2em" :width "3em" :margin-left "0.2em"))
+    (set-keyboard-shortcuts body transport-toggle))) 
 
 (clog:set-on-new-window 'svg-display :path "/svg-display")
 
