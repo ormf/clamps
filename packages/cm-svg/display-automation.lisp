@@ -314,6 +314,7 @@ directory.
 clamps:cm-svg.rts
 svg-gui-path
 "
+  (set-val cm.svgd:transport 0)
   (set-val cm.svgd:svg-file svg-file :force reload)
   (set-val cm.svgd:piano-roll (bool->int piano-roll))
   (set-val cm.svgd:staff-systems (bool->int staff-systems))
