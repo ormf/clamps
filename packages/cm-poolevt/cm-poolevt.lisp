@@ -107,7 +107,7 @@ an external package, a leading <package-name>: has to be provided."
   "recreate a poolevt from the :attributes property of the svg element."
 ;;;  (if *debug* (format t "~&svg->poolevent: ~a~%" args))
 ;;;  (break "svg->poolevt: args: ~S" args)
-  (ou:with-props (lsample lsample-keynum lsample-amp lsample-play-fn saved-keynum keynum
+  (ou:with-props (lsample lsample-keynum lsample-amp lsample-oneshot saved-keynum keynum
                        amp amplitude duration start end stretch loopstart loopend adjust-stretch)
       args
     (let ((buf (incudine-bufs:ensure-buffer lsample)))
@@ -119,7 +119,7 @@ an external package, a leading <package-name>: has to be provided."
                            :amp lsample-amp
                            :loopstart loopstart
                            :loopend loopend
-                           :play-fn (svg-symbol->fn lsample-play-fn)))
+                           :oneshot lsample-oneshot))
              (bufdur (- (/ (incudine:buffer-frames buffer)
                            (incudine:buffer-sample-rate buffer))
                         start))
@@ -135,9 +135,9 @@ an external package, a leading <package-name>: has to be provided."
                       :stretch new-stretch
                       :keynum keynum
                       :amp (+ amp (opacity->db amplitude))
-                      (ou:delete-props args :y2 :lsample :lsample-keynum :lsample-amp :lsample-play-fn
-                                            :loopstart :loopend :amp
-                                                     :saved-keynum :amplitude :duration :channel)))))))
+                      (ou:delete-props args :y2 :lsample :lsample-keynum :lsample-amp :lsample-oneshot
+                                                :loopstart :loopend :amp
+                                            :saved-keynum :amplitude :duration :channel)))))))
 
 #|
 (opacity->db -9)
@@ -153,7 +153,7 @@ an external package, a leading <package-name>: has to be provided."
 insert it at the appropriate position into the elements slot of the
 svg-file."
   (with-slots (lsample amp keynum dy start end stretch wwidth attack release pan snd-id adjust-stretch out1 out2) obj
-    (with-slots (of-incudine-dsps::buffer of-incudine-dsps::play-fn of-incudine-dsps::keynum of-incudine-dsps::loopstart of-incudine-dsps::loopend) lsample
+    (with-slots (of-incudine-dsps::buffer of-incudine-dsps::oneshot of-incudine-dsps::keynum of-incudine-dsps::loopstart of-incudine-dsps::loopend) lsample
       (let* ((myid (incudine-bufs:buffer-id incudine::buffer))
              (filename (incudine:buffer-file incudine::buffer))
              (x-scale (x-scale fil))
@@ -181,11 +181,11 @@ svg-file."
                       :opacity opacity
                       :stroke-color color 
                       ;; :fill-color color
-                      :attributes (format nil ":type poolevt :lsample ~A :lsample-keynum ~a :lsample-amp ~a :lsample-play-fn ~a :keynum ~a :amp ~a :start ~a :end ~a :stretch ~a :wwidth ~a :attack ~a :release ~a :pan ~a :out1 ~a :out2 ~a :loopstart ~a :loopend ~a :dy ~a :snd-id ~a :adjust-stretch ~a"
+                      :attributes (format nil ":type poolevt :lsample ~A :lsample-keynum ~a :lsample-amp ~a :lsample-oneshot ~a :keynum ~a :amp ~a :start ~a :end ~a :stretch ~a :wwidth ~a :attack ~a :release ~a :pan ~a :out1 ~a :out2 ~a :loopstart ~a :loopend ~a :dy ~a :snd-id ~a :adjust-stretch ~a"
                                           filename
                                           of-incudine-dsps::keynum
                                           (of-incudine-dsps:lsample-amp lsample)
-                                          (function-name of-incudine-dsps::play-fn)
+                                          (function-name of-incudine-dsps::oneshot)
                                           keynum
                                           amp
                                           start (if (= region-end bufdur) 0 region-end)

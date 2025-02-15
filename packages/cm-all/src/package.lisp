@@ -21,7 +21,7 @@
           buffer-sample-rate
           node bus
           lsample envelope
-          lsample-keynum lsample-play-fn lsample-amp lsample-buffer
+          lsample-keynum lsample-oneshot lsample-amp lsample-buffer
           lsample-buffer remove-all-responders recv-stop
           cycle without-interrupts
           midi-output

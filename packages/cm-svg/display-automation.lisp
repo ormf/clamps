@@ -201,6 +201,7 @@ arg2 - Number denoting the bets per minute.
   "On-new-window handler."
   (let (transport-toggle controls)
     (setf (clog:title (clog:html-document body)) "SVG Player")
+    (setf (clog:style body :overflow) "auto")
     (create-o-svg
      body (bind-refs-to-attrs cm.svgd:width "width"
                               cm.svgd:cursor-pos "cursor-pos"
@@ -211,7 +212,8 @@ arg2 - Number denoting the bets per minute.
                               cm.svgd:staff-systems "staff-systems"
                               cm.svgd:bar-lines "bar-lines"
                               cm.svgd:inverse "inverse")
-     :css '(:height "98rem"))
+;;;     :css '(:height "98rem")
+     )
     (create-o-slider body (bind-refs-to-attrs cm.svgd:shift "value" cm.svgd:width "max")
                      :min 0 :max 200 :direction :right
                      :css `(:display "inline-block" :height "1em" :width "100%"))

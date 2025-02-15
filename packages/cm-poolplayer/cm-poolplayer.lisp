@@ -31,13 +31,14 @@
          (start (caar seq)))
     (cm:events
      (mapcar (lambda (evt)
-               (let ((time (- (first evt) start))
-                     (keynum (+ (getf (cdr evt) :transp)
-                                (of-incudine-dsps:lsample-keynum
-                                 (getf (cdr evt) :lsample)))))
-                 (remf (cdr evt) :buffer)
-                 (remf (cdr evt) :transp)
-                 (setf (getf (cdr evt) :amp) (ou:db->amp (getf (cdr evt) :amp)))
-                 (apply #'make-instance 'poolevt :time time :keynum keynum (cdr evt))))
+               (let* ((new (copy-list evt))
+                      (time (- (first new) start))
+                      (keynum (+ (getf (cdr new) :transp)
+                                 (of-incudine-dsps:lsample-keynum
+                                  (getf (cdr new) :lsample)))))
+                 (remf (cdr new) :buffer)
+                 (remf (cdr new) :transp)
+                 (setf (getf (cdr new) :amp) (ou:db->amp (getf (cdr new) :amp)))
+                 (apply #'make-instance 'poolevt :time time :keynum keynum (cdr new))))
              seq)
      (namestring file))))
