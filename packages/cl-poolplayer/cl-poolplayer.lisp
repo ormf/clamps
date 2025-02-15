@@ -10,15 +10,20 @@
   (aref preset (get-fn-idx key)))
 
 (defun collect-argvals (x dur preset &rest args)
-  "central routine called on each sample to be played. The preset is a
-property list containing key/value pairs for each of the synth's
-params, where the value is a form containing the body of a function
-definition which gets called here within a local scope of x, dur,
-p1..p4 and args to produce the parameter value for the current call. x
-is the normalized local time within the total duration (dur) of the
-preset. The function returns a property list for a call of the synth
-issued in the #'perform function."
-  (let* ((p1 (apply (get-preset-fn preset :p1) x dur args))
+  "Central routine called on each sample to be played. This routine
+returns all the arguments for a call to the synth in a property list.
+
+/x/ is the normalized time of the sample in the interval [0..dur].
+
+/preset/ is a vector of functions, one for each synth argument.
+
+The first four functions of /preset/ are special: They are used to
+calculate the params p1, p2, p3 and p4 before any of the synth
+arguments are calculated. Each of the functions for the synth
+arguments are then called with x, dur and p1..p4 as arguments. That
+way, p1..p4 can be referenced as global variables for the calculation
+of synth arguments within their respective functions."
+  (let* ((p1 (apply (get-preset-fn preset :p1) x dur args)) ;;; calc "global" vars
          (p2 (apply (get-preset-fn preset :p2) x dur p1 args))
          (p3 (apply (get-preset-fn preset :p3) x dur p1 p2 args))
          (p4 (apply (get-preset-fn preset :p4) x dur p1 p2 p3 args)))
@@ -33,10 +38,10 @@ issued in the #'perform function."
        append (list key (apply (get-preset-fn preset fnkey) x dur p1 p2 p3 p4 args)))
      ;;; speaker output is different from the general method to
      ;;; generate args as we want to be able to get phantom sources
-     ;;; between arbitrary speakers. We accomplish this by calculating
-     ;;; three values: the speaker idx of the two speakers involved
-     ;;; and the (normalized) pan between these speakers. The :outfn
-     ;;; has to return these three values.
+     ;;; between arbitrary speakers. We accomplish this by returning
+     ;;; two index values of the outputs to use with the :outfn. The
+     ;;; previously calculated :pan will pan between those two
+     ;;; outputs.
      (multiple-value-bind (out1 out2)
          (apply (get-preset-fn preset :outfn) x dur p1 p2 p3 p4 args)
        (list :out1 out1 :out2 out2)))))
