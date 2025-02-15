@@ -231,9 +231,9 @@ between those speakers according to the idx and the given figure.
 (defparameter *scircle-cw* #(0 1 2 7 8))
 (defparameter *circle-ccw* #(0 8 7 6 5 12 11 10 9 4 3 2 1))
 
-(defun stereo-out (x)
+(defun stereo-out (&rest args)
   "default output function returning the idx 0 and 1."
-  (declare (ignore x))
+  (declare (ignore args))
   (values 0 1))
 
 (defun pan-at-idx (idx fig &key (modulo 13))

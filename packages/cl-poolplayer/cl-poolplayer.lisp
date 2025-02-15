@@ -46,7 +46,9 @@ of synth arguments within their respective functions."
          (apply (get-preset-fn preset :outfn) x dur p1 p2 p3 p4 args)
        (list :out1 out1 :out2 out2)))))
 
-;;; (collect-argvals 0 nil (aref *poolplayer-presets* 0))
+;;; (collect-argvals 0 nil (aref *poolplayer-presets* 0) (list :poolposfn (lambda (x) (random 1.0))))
+
+(get-preset-fn (aref *poolplayer-presets* 0) :outfn)
 
 (defun normalize-x (curr-time end-time dur)
   "given curr-time, end-time and total-duration of a preset, return
