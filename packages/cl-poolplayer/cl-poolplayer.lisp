@@ -38,7 +38,7 @@ issued in the #'perform function."
      ;;; and the (normalized) pan between these speakers. The :outfn
      ;;; has to return these three values.
      (multiple-value-bind (out1 out2)
-         (funcall (apply (get-preset-fn preset :outfn) x dur p1 p2 p3 p4 args) x)
+         (apply (get-preset-fn preset :outfn) x dur p1 p2 p3 p4 args)
        (list :out1 out1 :out2 out2)))))
 
 ;;; (collect-argvals 0 nil (aref *poolplayer-presets* 0))
