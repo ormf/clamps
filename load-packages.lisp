@@ -35,7 +35,6 @@
                   :incudine-plot
                   :cl-refs
                   :cl-sfz
-                  :cl-poolplayer
                   :svg-import-export
                   :cm-sfz
                   :cm-poolevt
@@ -43,6 +42,7 @@
                   :cm-fomus
                   :cm-incudine
                   :cl-midictl
+                  :cl-poolplayer
                   :cm-utils
                   :clog-dsp-widgets
                   :clog-cuda

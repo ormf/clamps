@@ -58,7 +58,7 @@
            cl-midictl:stop-midi-receive orm-utils:let-default
            clog-dsp-widgets:create-grid orm-utils:count-elements cl-refs:copy-ref
            cl-midictl:set-marker orm-utils:combinations export-svg
-           orm-utils:with-curr-dir orm-utils:n-collect plot-2d
+           orm-utils:with-curr-dir plot-2d
            orm-utils:differentiate of-incudine-dsps:buffer-loop-play*
            orm-utils:m-exp-rd-rev-fn orm-utils:map-params
            of-incudine-dsps:play-buffer-stretch-env-out orm-utils:make-quantlist
@@ -116,6 +116,7 @@
            cl-midictl:remove-all-midi-controllers *gnuplot-header*
            clog-dsp-widgets:num-channels of-incudine-dsps:envelope*
            cl-sfz:list-sfz-presets orm-utils:every-nth orm-utils:v-collect
+           orm-utils:v-append
            clog-midi-controller:midicontroller clog-dsp-widgets:create-o-radio
            of-incudine-dsps:play-buffer-stretch-out
            common-lisp:stream orm-utils:r-exp orm-utils:all-permutations
@@ -150,7 +151,7 @@
            clog-midi-controller:nanoktl2-preset-gui orm-utils:db->amp
            orm-utils:do-proplist/collecting clog-dsp-widgets:levelmeter-full-gui
            cl-midictl:start-midi-receive orm-utils:r-getf orm-utils:partition-seq
-           cl-refs:get-val cl-refs:trigger orm-utils:n-lin-dev
+           cl-refs:get-val orm-utils:n-lin-dev
            of-incudine-dsps:play-lsample orm-utils:with-exp-midi-fn
            transform clog-dsp-widgets:node-group
            orm-utils:memorize-random-state cl-sfz:play-sfz-loop
@@ -224,7 +225,8 @@
            cm:incudine-stream cm:player-start cm:player-set-tempo
            cm:sampleevt-lsample cm:plotter-add-layer cm:chord
            cm:midi-open-default cm:player-save-midifile cm:pattern-value
-           cm:plotter-property cm:*osc-inkscape-export-in* cm:samps->secs
+           cm:plotter-property
+           cm:samps->secs
            cm:+ml-channel-mask+ cm:ensure-jackmidi cm:range cm:*svg-x-scale*
            cm:midi-sequence-number cm:midi-tempo-change cm:pattern-state
            cm:quantize cm:pgm-change cm:scale-order cm:next cm:midi-channel-map
@@ -234,7 +236,8 @@
            cm:midi-file-print cm:poolevt-pan cm:export-poolplayer-events
            cm:scale-max cm:imsg cm:process cm:midi-channel-pressure
            cm:sampleevt-out cm:prime-form cm:color->chan cm:ransegs cm:recv?
-           cm:restart-qsynth cm:cd cm:svg-display cm:pwd cm:secs->samps
+           cm:restart-qsynth cm:cd
+           cm:pwd cm:secs->samps
            cm:rt-wait cm:defprocess cm:midi-system-event cm:insert-object cm:note
            cm:false cm:transpose-evt cm:set-clm-output-hook! cm:interp
            cm:amp->velo cm:ran cm:object-time cm:lsample->poolevt cm:keynum
@@ -256,17 +259,21 @@
            cm:midi-note-on cm:drunk-traverse cm:make-mm-mask cm:subcontainers
            cm:sc-file cm:vstime->speed-fn cm:set-midi-output-hook! cm:scale<
            cm:start-cm-all cm:sprout cm:pick cm:rewrite-generation cm:svg->cm
-           cm:player-stop cm:jackmidi-input-stream cm:stop-inkscape-osc
+           cm:player-stop cm:jackmidi-input-stream
+           cm:stop-inkscape-osc
+           cm:restart-inkscape-osc
            cm:recv-set! cm:svg->sfz cm:scaler->cents cm:sv* cm:save-object
            cm:lookup cm:play-svg cm:io cm:map-subobjects cm:svg-lines->cm
-           cm:midi-key-signature cm:cycle cm:restart-inkscape-osc
+           cm:midi-key-signature cm:cycle
            cm:poolevt-release cm:at cm:now cm:axis cm:install-standard-sly-hooks
            cm:wait-until cm:plotter-close cm:seq cm:point cm:chan->color
            cm:scale-amp cm:poolevt-attack cm:output cm:player-mute cm:wait
            cm:midi-write-message
-           ;;; cm:controller
+;;; cm:controller
            cm:expl cm:cm-restart-gui
-           cm:start-inkscape-osc cm:player-load-midifile cm:*svg-colormap*
+           cm:start-inkscape-osc
+           cm:*osc-inkscape-export-in* 
+           cm:player-load-midifile cm:*svg-colormap*
            cm:svg->poolevt cm:explseg cm:list-subobjects cm:sfz-preset
            cm:midi-close-default cm:interval cm:midi-pitch-bend cm:rotation
            cm:*time-slots* cm:db->opacity cm:midi-note cm:song cm:subobjects
@@ -276,7 +283,7 @@
            cm:+ml-opcode-mask+ cm:sv+ cm:player-pause cm:best-normal-form
            cm:shell cm:jack-connect-qsynth cm:defobject cm:*beat* cm:mode
            cm:remove-receiver!
-           ;;; cm:value
+;;; cm:value
            cm:rts cm:sampleevt-start
            cm:status->opcode cm:make-mt-stream cm:cmn cm:tendency cm:sfz
            cm:decode-interval cm:hertz cm:object->cmn cm:rhythm cm:explsegs
@@ -368,7 +375,7 @@
            orm-utils:lin-n orm-utils:with-lin-midi-fn orm-utils:db->amp
            orm-utils:rotate orm-utils:n-exp-fn orm-utils:call/collecting
            orm-utils:m-exp-dev orm-utils:str-concat orm-utils:delete-props
-           orm-utils:n-collect orm-utils:do-proplist/collecting
+           orm-utils:do-proplist/collecting
            orm-utils:format-time orm-utils:with-shadowed-variable orm-utils:group
            orm-utils:ntom orm-utils:n-lin-fn orm-utils:map-all-pairs
            orm-utils:slurp orm-utils:param-exp-func orm-utils:get-time
@@ -376,7 +383,7 @@
            orm-utils:ucopy orm-utils:last-n orm-utils:ensure-prop
            orm-utils:m-lin-dev orm-utils:m-exp-rd-rev-fn orm-utils:defvar*
            orm-utils:n-exp-dev orm-utils:m-exp-fn orm-utils:file-string
-           orm-utils:repeat-format orm-utils:get-props-list orm-utils:get-prop
+           orm-utils:get-props-list orm-utils:get-prop
            orm-utils:permute orm-utils:range orm-utils:r-getf
            orm-utils:m-exp-zero-rev-fn orm-utils:differentiate orm-utils:repeat
            orm-utils:insert orm-utils:group-by-key orm-utils:n-exp

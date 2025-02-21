@@ -6,7 +6,7 @@
   :license  "Specify license here"
   :version "0.0.1"
   :serial t
-  :depends-on (#:incudine-bufs #:of-incudine-dsps #:cl-sfz #:orm-utils)
+  :depends-on (#:incudine-bufs #:of-incudine-dsps #:cl-sfz #:cl-midictl #:orm-utils)
   :components ((:file "package")
                (:file "globals")
                (:file "classes")

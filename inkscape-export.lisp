@@ -33,13 +33,31 @@
                                              :output out)))))
 |#
 
+(defmacro start-inkscape-osc (&optional (osc-conn '*osc-inkscape-export-in*))
+  `(if (ou:port-available-p 1337)
+       (progn
+         (setf ,osc-conn (incudine.osc:open :port 1337 :host "127.0.0.1" :direction :input :protocol :udp))
+         (incudine:make-osc-responder ,osc-conn "/inkscape/play" ""
+                                      (lambda () (load #P"/tmp/incudine-export.lisp")
+;;;                           (format t "~&~S~%~%" cl-user::*tmpsnd*)
+                                        )
+                                      )
+         (incudine:recv-start ,osc-conn)
+         :inkscape-osc-rcv-started)
+       (warn "port 1337 already open!")))
 
+(defmacro stop-inkscape-osc (&optional (osc-conn '*osc-inkscape-export-in*))
+  `(progn
+     (incudine:remove-all-responders ,osc-conn)
+     (if ,osc-conn (incudine.osc:close ,osc-conn))
+     (setf ,osc-conn nil)))
 
+(defmacro restart-inkscape-osc ()
+  `(progn
+     (stop-inkscape-osc)
+     (start-inkscape-osc)))
 
-
-
- ;;; (stop-inkscape-osc)
+;;; (stop-inkscape-osc)
 ;;; (start-inkscape-osc)
 
-(export '(*osc-inkscape-export-in* fn-start-inkscape-osc fn-stop-inkscape-osc start-inkscape-osc stop-inkscape-osc) :cm)
-
+(export '(*osc-inkscape-export-in* restart-inkscape-osc start-inkscape-osc stop-inkscape-osc svg->browser) :cm)

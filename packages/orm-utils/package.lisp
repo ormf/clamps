@@ -44,7 +44,7 @@
    #:REVERSE-ALL
    #:PARAM-EXP-FUNC
    #:V-COLLECT
-   #:N-COLLECT
+   #:V-APPEND
    #:REPEAT
    #:RANGE
    #:SUM_X

@@ -24,7 +24,6 @@
                #:cm-sfz
                #:cm-poolevt
                #:cm-fomus
-               #:cm-svg.rts
                #:cm-poolevt
                #:cm-poolplayer
                #:cm-incudine

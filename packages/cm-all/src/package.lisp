@@ -4,7 +4,6 @@
 
 ;;; (shadowing-import '(play-sfz-one-shot play-sfz-loop) 'cl-sfz)
 ;; (shadowing-import '(at now) 'cm)
-;;; (shadowing-import '(trigger) 'cl-refs)
 
 (shadowing-import '(rescale-envelope
                     init stop group tempo
@@ -25,6 +24,7 @@
           lsample-buffer remove-all-responders recv-stop
           cycle without-interrupts
           midi-output
+          trigger
           ))
 (shadowing-import '(*midi-in1* *midi-out1*
                     chan id)
@@ -35,13 +35,15 @@
                #:cl-midictl
                #:of-incudine-dsps
                #:incudine-bufs
-               #:cl #:cl-refs
+               #:cl
+               #:cl-refs
                #:cl-sfz
                #:clog-dsp-widgets
                #:ats-cuda
                #:ats-cuda-display
                #:clog-midi-controller
                ))
+
 
 ;;; weird voodoo as importing incudine:node gives the error that a
 ;;; symbol node already exists in cm, although it's not found/bound.

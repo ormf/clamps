@@ -148,7 +148,7 @@ clamps-gui-root
     (uiop:run-program (format nil "mkdir -p ~Aats" (namestring dir)))
     (setf ats-cuda:*ats-snd-dir* (merge-pathnames "snd/" dir))
     (setf ats-cuda:*ats-file-dir* (merge-pathnames "ats/" dir))
-    (setf cm.svgd:svg-dir (merge-pathnames "svg/" *clamps-gui-root*))
+    (setf clamps.svgd:svg-dir (merge-pathnames "svg/" *clamps-gui-root*))
     (let ((targetpath (namestring (merge-pathnames dir "/www"))))
       (dolist (dir-or-file '("js" "css" "favicon.ico" "boot.html"))
         (let* ((subdirpath (format nil "www/~a" dir-or-file))
@@ -348,7 +348,7 @@ clamps-base-url
 gui
 "  (clog:open-browser :url (format nil "http://127.0.0.1:~A/meters" clog::*clog-port*)))
 
-(defun clamps-start (&key (gui-base "/tmp") (qsynth nil) (open-gui nil))
+(defun clamps-start (&key (gui-base "/tmp") (qsynth nil) (open-gui nil) (port 54619))
   "Entry function called by <<clamps>> to start the webserver for the
 GUI, call <<rts>> to set up IO and MIDI, start the OSC responder for
 Incudine, optionally start qsynth (Linux only) and open the gui in a
@@ -375,7 +375,7 @@ rts
   ;; (install-sly-hooks)
   (incudine:setup-io)
   (start-doc-acceptor)
-  (clamps-restart-gui :gui-base gui-base :open open-gui)
+  (clamps-restart-gui :gui-base gui-base :port port :open open-gui)
   (ats-cuda-display:ats-display-init)
   (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (reset-logger-stream)

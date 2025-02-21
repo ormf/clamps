@@ -1477,6 +1477,51 @@ list - The list to recursively reverse.
 
 |#
 
+#|
+(defun append-into (collector value)
+  "Collect VALUE into COLLECTOR, returning VALUE.
+
+If COLLECTOR is something made by MAKE-COLLECTOR, do the right thing.
+If it is a function (such as the local functions defined by COLLECTING
+/ WITH-COLLECTORS), simply call it with the value.
+
+This is the closest equivalent to Interlisp's TCONC."
+  (etypecase collector
+    (function
+     (funcall collector value))
+    (cons
+     (let ((it (list value)))
+       (if (null (cdr collector))
+           (setf (car collector) it
+                 (cdr collector) it)
+         (setf (cdr (cdr collector)) it
+               (cdr collector) it))
+       value))))
+
+(defun call/appending (f n &optional (tail '()))
+  "Call function /f/ /n/ times, with idx [0..n-1] as argument,
+collecting its results. Return results with /tail/ appended.
+
+@Arguments
+
+f - Function of one argument (an integer in the range [0..n])
+n - Positive integer
+tail - A list collected into by prepending to it
+
+@Examples
+
+(call/collecting (lambda (x) (* x x)) 4) ; => (0 1 4 9)
+
+(call/collecting (lambda (x) (1+ x)) 4 '(hi)) ; => (1 2 3 4 hi)
+
+@See-also
+v-collect
+"
+  (let ((c (make-collector)))
+    (dotimes (i n (collector-contents c tail))
+      (append-into c (funcall f i)))))
+|#
+
 (defun call/collecting (f n &optional (tail '()))
   "Call function /f/ /n/ times, with idx [0..n-1] as argument,
 collecting its results. Return results with /tail/ appended.
@@ -1501,9 +1546,9 @@ v-collect
       (collect-into c (funcall f i)))))
 
 (defmacro v-collect ((v n &optional (tail '())) &rest body)
-  "Return a list of /n/ elems prepended to tail by evaluating /body/ /n/
-times with the symbol /v/ bound to the iteration index in the lexical
-scope of form.
+  "Return a list of /n/ elems prepended to /tail/ by evaluating /body/
+/n/ times with the symbol /v/ bound to the iteration index in the
+lexical scope of body.
 
 @Arguments
 v - Symbol used as variable name.
@@ -1515,6 +1560,7 @@ body - Function body being evaluated n times.
 
 @See-also
 call/collecting
+v-append
 "
   `(call/collecting (lambda (,v) 
                       (declare (ignorable ,v))
@@ -1523,45 +1569,25 @@ call/collecting
 
 ;;; (v-collect (n 10) (* n n)) ;-> (0 1 4 9 16 25 36 49 64 81)
 
-#|
-;;; experimental, seems to be less efficient than v-collect.
+(defmacro v-append ((v n &optional (tail '())) &rest body)
+  "Return a list of /n/ elems appended to each other and prepended to
+/tail/ by evaluating /body/ /n/ times with the symbol /v/ bound to the
+iteration index in the lexical scope of body. The body has to return a
+list.
 
-(defmacro v2-collect ((v n &optional (tail '())) form)
-  (let ((my-fn (gensym "fn"))
-        (idx (gensym "idx"))
-        (seq (gensym "seq"))
-        (num (gensym "num")))
-    `(let ((,num ,n))
-       (labels
-           ((,my-fn (,idx ,seq)
-              (if (>= ,idx ,num)
-                  ,seq
-                  (,my-fn
-                   (+ ,idx 1)
-                   (cons (let ((,v ,idx))
-                           (declare (ignorable ,v))
-                           ,form)
-                         ,seq)))))
-         (,my-fn 0 ,tail)))))
+@Arguments
+v - Symbol used as variable name.
+n - Integer indicating the number of iterations.
+body - Macro body being evaluated n times. Needs to return a list.
+@Examples
 
-(defmacro n-collect (n form &key (initial-element '()))
-  "return a list of n elems prepended to initial-element by
-evaluating form n times with the symbol n bound to the iteration
-index in the lexical scope of form."
-  (let ((n-var (intern "N")))
-    `(labels
-         ((fn (idx seq)
-            (if (< idx ,n)
-                (cons
-                 (let ((,n-var idx))
-                   (declare (ignorable ,n-var))
-                   ,form)
-                 (fn (+ idx 1) seq))
-                seq)))
-       (fn 0 ,initial-element))))
+(v-append (n 5) (list :num (* n n))) ;-> (:num 0 :num 1 :num 4 :num 9 :num 16)
 
-;;; (n-collect 11 n)
-|#
+@See-also
+call/collecting
+v-collect
+"
+  `(apply #'append (v-collect (,v ,n (list ,tail)) ,@body)))
 
 (defun repeat (n elem)
   "return a list with n occurences of elem. All occurences of elem are

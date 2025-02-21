@@ -11,6 +11,7 @@
                           #:weighting
                           )
   (:shadowing-import-from #:orm-utils #:group #:clip)
+  (:shadowing-import-from #:cl-midictl #:ccin)
   (:export
    #:*POOL-HASH*
    #:DTIME-DEV #:DTIME #:PRESET-PLAY #:EVENTPLAYER #:EVENTPLOTTER #:R-ELT

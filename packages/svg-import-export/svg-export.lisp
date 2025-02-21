@@ -94,5 +94,5 @@ elems - One or more Instances of svg objects or lists of Instances to add."
     fname))
 
 (defmacro with-svg-file ((svg-file &rest keys) &body body)
-  `(let ((,svg-file (apply #'make-instance 'svg-file ',keys)))
+  `(let ((,svg-file (make-instance 'svg-file ,@keys)))
      ,@body))
