@@ -17,7 +17,7 @@
 
 (in-package :cm)
 
-(export '(rts-hush) 'cm)
+(export '(rts-hush add-rts-hush-hook remove-all-rts-hush-hooks show-rts-hush-hooks) 'cm)
 
 (defparameter *incudine-default-input* nil)
 (defparameter *incudine-default-output* nil)
@@ -27,25 +27,71 @@
 (defparameter *incudine-default-filter* 0)
 (defparameter *incudine-default-mask* 0)
 (defparameter *rtsdebug* nil)
+(defparameter *rts-hush-hooks* nil)
 
-(defun incudine-rts-hush ()
-  "Flush pending events from incudine's event queue, send out an all
-notes off message to all 16 channels of *​midi-out1​* and call
-<<node-free-unprotected>>."
-  (incudine:flush-pending)
-  (dotimes (chan 16) (cm::sprout
-                      (cm::new cm::midi-control-change :time 0
-                        :controller 123 :value 127 :channel chan)))
-  (incudine::node-free-unprotected))
+(defun all-notes-off ()
+  "Send an all-notes-off message to all 16 channels of *rts-out*."
+  (dotimes (chan 16)
+    (cm::sprout
+     (cm::new cm::midi-control-change :time 0
+       :controller 123 :value 127 :channel chan))))
 
-(setf (fdefinition 'rts-hush) #'incudine-rts-hush)
+(defun rts-hush ()
+  "Functions to be called when audio is hushed.
 
-(setf (documentation 'rts-hush 'function)
-      (documentation 'incudine-rts-hush 'function))
+@See also
 
+add-rts-hush-hook
+remove-all-rts-hush-hooks
+show-rts-hush-hooks
+"
+  (dolist (fn *rts-hush-hooks*) (funcall fn)))
+
+(defun add-rts-hush-hook (&rest fns)
+  "Add one ore more functions to rts-hush.
+
+@Arguments
+
+fns - One or more functions to be called when invoking rts-hush.
+
+@See also
+
+remove-all-rts-hush-hooks
+rts-hush
+show-rts-hush-hooks
+"
+  (dolist (fn fns)
+    (pushnew fn *rts-hush-hooks*)))
+
+(defun remove-all-rts-hush-hooks ()
+    "remove all functions to be called on rts-hush.
+
+@See also
+
+add-rts-hush-hook
+rts-hush
+show-rts-hush-hooks
+"
+  (setf *rts-hush-hooks* nil))
+
+(defun show-rts-hush-hooks ()
+  "Show all functions invoked on rts-hush.
+
+@See also
+
+add-rts-hush-hook
+remove-all-rts-hush-hooks
+rts-hush
+"
+  *rts-hush-hooks*)
+
+
+(add-rts-hush-hook
+ #'incudine:flush-pending
+ #'all-notes-off)
 
 (defun set-standard-hush ()
-  (setf (fdefinition 'rts-hush) #'incudine-rts-hush))
+  (setf (fdefinition 'rts-hush) #'rts-hush))
 
 (progn
 (defclass incudine-stream (rt-stream midi-stream-mixin)

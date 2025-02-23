@@ -48,6 +48,9 @@ rts-hush
   (dogroup (n (node 200))
     (free n)))
 
+(cm:add-rts-hush-hook
+ #'node-free-unprotected)
+
 ;;; (setup-io)
 ;;; (dump (node 0))
 ;;; (block-size)

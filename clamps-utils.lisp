@@ -218,15 +218,30 @@ interpreted as 2-d coordinate pairs.
 
 @Important-Note
 
-Don't set this value directly! Rather use the <<set-standard-pitch>>
-function which changes the standard pitch reference for the entire
-/Clamps/ system.
+Don't set this value directly! Rather use the <<standard-pitch>>
+function with setf which changes the standard pitch reference for the
+entire /Clamps/ system.
 
 @See-also
 ftom
 mtof
-set-standard-pitch
+standard-pitch
 ")
+
+(defun set-standard-pitch (freq)
+  "Set the ∗​standard-pitch​∗ reference of Clamps to freq in Hz.
+
+@Arguments
+freq - Frequency of A4 in Hz.
+
+@See-also
+*standard-pitch*
+*keynum-offset*
+"
+  (setf *standard-pitch* (float freq 1.0))
+  (setf oid::*standard-pitch* (float freq 1.0))
+  (setf *keynum-offset* (fr->ct (/ *standard-pitch* 440)))
+  freq)
 
 (defun standard-pitch ()
   "Return the tuning reference of A4 in Hz. Setfable.

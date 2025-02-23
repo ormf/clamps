@@ -253,6 +253,7 @@ supplied and gets interned as a parameter."
             (asdf:system-relative-pathname :clamps "elisp/incudine-hush-sly.el"))))
   (slynk:eval-in-emacs `(sly-interactive-eval "(cm)")))
 
+#|
 (defun incudine-rts-hush ()
   "Sends an all-notes-off message to all channels of
 /*​midi-out1​*/ and
@@ -261,29 +262,26 @@ calls <<node-free-unprotected>>.
 @Note
 This command is bound to the Keyboard Sequence /<C-.>/ in emacs.
 "
-  (incudine:flush-pending)
-  (dotimes (chan 16) (cm::sprout
-                      (cm::new cm::midi-control-change :time 0
-                        :controller 123 :value 127 :channel chan)))
-  (incudine::node-free-unprotected)
+  (rts-hush)
 ;;;  (scratch::node-free-all)
   )
+|#
 
 #+slynk
 (defun install-standard-sly-hooks ()
   (slynk:eval-in-emacs
    '(progn
-     (defun incudine-hush ()
+     (defun clamps-hush ()
        (interactive)
        (progn
-         (sly-interactive-eval "(cm::rts-hush)"))
+         (sly-interactive-eval "(cm::incudine-rts-hush)"))
        "hush")
      (defun set-std-incudine-hush ()
        (interactive)
        (setq incudine-hush (symbol-function 'std-incudine-hush)))
-     (defun set-cm-incudine-hush ()
+     (defun set-clamps-hush ()
        (interactive)
-       (setq incudine-hush (symbol-function 'cm-incudine-hush)))
+       (setq incudine-hush (symbol-function 'clamps-hush)))
      (defun incudine-rt-start ()
        (interactive)
        (sly-interactive-eval "(incudine:rt-start)"))
@@ -291,7 +289,7 @@ This command is bound to the Keyboard Sequence /<C-.>/ in emacs.
      (defun incudine-rt-stop ()
        (interactive)
        (sly-interactive-eval "(incudine:rt-stop)"))
-     (define-key lisp-mode-map (kbd "C-.") 'incudine-hush)
+     (define-key lisp-mode-map (kbd "C-.") 'clamps-hush)
      (define-key lisp-mode-map (kbd "C-c C-.") 'incudine-rt-stop)
      (define-key lisp-mode-map (kbd "C-c M-.") 'incudine-rt-start))
    t)
@@ -377,7 +375,6 @@ rts
   (start-doc-acceptor)
   (clamps-restart-gui :gui-base gui-base :port port :open open-gui)
   (ats-cuda-display:ats-display-init)
-  (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
   (reset-logger-stream)
   (clamps-logo))
 

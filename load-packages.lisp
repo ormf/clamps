@@ -40,12 +40,12 @@
                   :cm-poolevt
                   :cm-poolplayer
                   :cm-fomus
+                  :clog-cuda
                   :cm-incudine
                   :cl-midictl
                   :cl-poolplayer
                   :cm-utils
                   :clog-dsp-widgets
-                  :clog-cuda
                   :clog-midi-controller
                   :cm-all
                   ))
