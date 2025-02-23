@@ -228,21 +228,6 @@ mtof
 set-standard-pitch
 ")
 
-(defun set-standard-pitch (freq)
-  "Set the ∗​standard-pitch​∗ reference of Clamps to freq in Hz.
-
-@Arguments
-freq - Frequency of A4 in Hz.
-
-@See-also
-*standard-pitch*
-*keynum-offset*
-"
-  (setf *standard-pitch* (float freq 1.0))
-  (setf oid::*standard-pitch* (float freq 1.0))
-  (setf *keynum-offset* (fr->ct (/ *standard-pitch* 440)))
-  freq)
-
 (defun standard-pitch ()
   "Return the tuning reference of A4 in Hz. Setfable.
 
