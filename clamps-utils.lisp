@@ -235,7 +235,7 @@ standard-pitch
 freq - Frequency of A4 in Hz.
 
 @See-also
-*standard-pitch*
+standard-pitch
 *keynum-offset*
 "
   (setf *standard-pitch* (float freq 1.0))

@@ -179,6 +179,19 @@
     - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
     - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+** add-rts-hush-hook
+   Function
+   #+BEGIN_SRC lisp
+     (add-rts-hush-hook &rest fns)
+   #+END_SRC
+   Add one ore more functions to rts-hush.
+*** Arguments
+    | =fns= | One or more functions to be called when invoking rts-hush. |
+
+*** See also
+    - [[remove-all-rts-hush-hooks][remove-all-rts-hush-hooks]]
+    - [[rts-hush][rts-hush]]
+    - [[show-rts-hush-hooks][show-rts-hush-hooks]]
 ** add-sfz-preset
    Function
    #+BEGIN_SRC lisp
@@ -208,6 +221,14 @@
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
     - [[#sfz-file-path][*​​sfz-file-path​​*]]
+** all-notes-off
+   Function
+   #+BEGIN_SRC lisp
+     (all-notes-off)
+   #+END_SRC
+   Send an all-notes-off cc message to all 16 channels of *​rts-out​*.
+*** See also
+    - [[rts-hush][rts-hush]]
 ** all-permutations
    Function
    #+BEGIN_SRC lisp
@@ -3943,6 +3964,16 @@
     - [[find-controller][find-controller]]
     - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
+** remove-all-rts-hush-hooks
+   Function
+   #+BEGIN_SRC lisp
+     (remove-all-rts-hush-hooks)
+   #+END_SRC
+   Remove all functions to be called on rts-hush.
+*** See also
+    - [[add-rts-hush-hook][add-rts-hush-hook]]
+    - [[rts-hush][rts-hush]]
+    - [[show-rts-hush-hooks][show-rts-hush-hooks]]
 ** remove-buffer
    Function
    #+BEGIN_SRC lisp
@@ -4194,9 +4225,15 @@
    #+BEGIN_SRC lisp
      (rts-hush)
    #+END_SRC
-   Flush pending events from incudine's event queue, send out an all
-   notes off message to all 16 channels of *​​midi-out1​​* and call
-   [[node-free-unprotected][node-free-unprotected]].
+   Functions to be called when audio is hushed. This command gets invoked
+   on the /<C-.>/ keyboard shortcut.
+   
+   In the standard setting this calls ~#'incudine:flush-pending~,
+   [[node-free-unprotected][node-free-unprotected]] and [[all-notes-off][all-notes-off]].
+*** See also
+    - [[add-rts-hush-hook][add-rts-hush-hook]]
+    - [[remove-all-rts-hush-hooks][remove-all-rts-hush-hooks]]
+    - [[show-rts-hush-hooks][show-rts-hush-hooks]]
 ** *​rts-out​*
    :PROPERTIES:
    :CUSTOM_ID: rts-out
@@ -4502,6 +4539,16 @@
     - [[remove-midi-cc-fns][remove-midi-cc-fns]]
     - [[remove-all-channel-midi-cc-fns][remove-all-channel-midi-cc-fns]]
     - [[remove-all-midi-cc-fns][remove-all-midi-cc-fns]]
+** show-rts-hush-hooks
+   Function
+   #+BEGIN_SRC lisp
+     (show-rts-hush-hooks)
+   #+END_SRC
+   Show all functions invoked on rts-hush.
+*** See also
+    - [[add-rts-hush-hook][add-rts-hush-hook]]
+    - [[remove-all-rts-hush-hooks][remove-all-rts-hush-hooks]]
+    - [[rts-hush][rts-hush]]
 ** *​sine1024​*
    :PROPERTIES:
    :CUSTOM_ID: sine1024
@@ -4700,7 +4747,7 @@
       ;; Then open a browser at http://127.0.0.1:54619/svg-display
     #+END_SRC
 *** See also
-    - [[clamps:cm-svg.rts][cm-svg.rts]]
+    - [[clamps:clamps-svg.rts][clamps-svg.rts]]
     - [[svg-gui-path][svg-gui-path]]
 ** svg->lines
    Function

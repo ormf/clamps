@@ -184,7 +184,69 @@ notes off message to all 16 channels of *​midi-out1​* and call
 
 (progn
   (defparameter *clamps-extra-doc*
-    '((clamps:reset-logger-stream
+    '((cm:all-notes-off
+       (function ()
+        "Send an all-notes-off cc message to all 16 channels of *rts-out*.
+
+@See-also
+
+rts-hush
+"))
+      (cm:rts-hush
+       (function ()
+        "Functions to be called when audio is hushed. This command gets invoked
+on the /<C-.>/ keyboard shortcut.
+
+In the standard setting this calls ~#'incudine:flush-pending~,
+<<node-free-unprotected>> and <<all-notes-off>>.
+
+@See-also
+
+add-rts-hush-hook
+remove-all-rts-hush-hooks
+show-rts-hush-hooks
+"))
+
+      (cm:add-rts-hush-hook
+       (function (&rest fns)
+        "Add one ore more functions to rts-hush.
+
+@Arguments
+
+fns - One or more functions to be called when invoking rts-hush.
+
+@See-also
+
+remove-all-rts-hush-hooks
+rts-hush
+show-rts-hush-hooks
+"))
+
+      (cm:remove-all-rts-hush-hooks
+       (function ()
+        "Remove all functions to be called on rts-hush.
+
+@See-also
+
+add-rts-hush-hook
+rts-hush
+show-rts-hush-hooks
+"))
+
+      (cm:show-rts-hush-hooks
+       (function ()
+        "Show all functions invoked on rts-hush.
+
+@See-also
+
+add-rts-hush-hook
+remove-all-rts-hush-hooks
+rts-hush
+"))
+
+
+
+      (clamps:reset-logger-stream
        (function ()
         "Resets /incudine:*logger-stream*/ to /*​error-output​*/ Call this
 function, if calls to /incudine.util:msg/ don't produce any output in

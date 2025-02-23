@@ -289,7 +289,7 @@
            cm:decode-interval cm:hertz cm:object->cmn cm:rhythm cm:explsegs
            cm:midi cm:play cm:call-sly-connected-hooks cm:player-cont
            cm:*mt-out01* cm:true cm:audio-file cm:*rts-out* cm:between
-           cm:fm-spectrum cm:fit cm:rts-hush
+           cm:fm-spectrum cm:fit cm:all-notes-off cm:rts-hush
            cm:add-rts-hush-hook cm:remove-all-rts-hush-hooks cm:show-rts-hush-hooks
            cm:midi-sequencer-event
            cm:*sly-connected-hooks* cm:sfz-startpos cm:graph cm:cmio cm:send-fudi

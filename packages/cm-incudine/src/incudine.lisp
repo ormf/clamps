@@ -17,7 +17,7 @@
 
 (in-package :cm)
 
-(export '(rts-hush add-rts-hush-hook remove-all-rts-hush-hooks show-rts-hush-hooks) 'cm)
+(export '(all-notes-off rts-hush add-rts-hush-hook remove-all-rts-hush-hooks show-rts-hush-hooks) 'cm)
 
 (defparameter *incudine-default-input* nil)
 (defparameter *incudine-default-output* nil)
@@ -30,16 +30,25 @@
 (defparameter *rts-hush-hooks* nil)
 
 (defun all-notes-off ()
-  "Send an all-notes-off message to all 16 channels of *rts-out*."
+  "Send an all-notes-off cc message to all 16 channels of *rts-out*.
+
+@See-also
+
+rts-hush
+"
   (dotimes (chan 16)
     (cm::sprout
      (cm::new cm::midi-control-change :time 0
        :controller 123 :value 127 :channel chan))))
 
 (defun rts-hush ()
-  "Functions to be called when audio is hushed.
+  "Functions to be called when audio is hushed. This command gets invoked
+on the /<C-.>/ keyboard shortcut.
 
-@See also
+In the standard setting this calls ~#'incudine:flush-pending~,
+<<node-free-unprotected>> and <<all-notes-off>>.
+
+@See-also
 
 add-rts-hush-hook
 remove-all-rts-hush-hooks
@@ -54,7 +63,7 @@ show-rts-hush-hooks
 
 fns - One or more functions to be called when invoking rts-hush.
 
-@See also
+@See-also
 
 remove-all-rts-hush-hooks
 rts-hush
@@ -66,7 +75,7 @@ show-rts-hush-hooks
 (defun remove-all-rts-hush-hooks ()
     "remove all functions to be called on rts-hush.
 
-@See also
+@See-also
 
 add-rts-hush-hook
 rts-hush
@@ -77,7 +86,7 @@ show-rts-hush-hooks
 (defun show-rts-hush-hooks ()
   "Show all functions invoked on rts-hush.
 
-@See also
+@See-also
 
 add-rts-hush-hook
 remove-all-rts-hush-hooks
