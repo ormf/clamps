@@ -101,6 +101,7 @@
 
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-id][buffer-id]]
     - [[buffer-name][buffer-name]]
     - [[bufname=][bufname=]]
@@ -406,6 +407,27 @@
    its current value and the maximum value, if it moves down (< curr
    old), the software target will be interpolated between the current
    value and 0 using the remaining space below the hardware fader.
+** buffer-dur
+   Function
+   #+BEGIN_SRC lisp
+     (buffer-dur buffer)
+   #+END_SRC
+   Return duration of /buffer/ in seconds.
+*** Arguments
+    | =buffer= | Incudine buffer struct. |
+
+*** See also
+    - [[clamps:incudine-bufs][incudine-bufs]]
+    - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
+    - [[buffer-id][buffer-id]]
+    - [[buffer-name][buffer-name]]
+    - [[bufname=][bufname=]]
+    - [[clamps-buffer-load][clamps-buffer-load]]
+    - [[find-buffer][find-buffer]]
+    - [[list-buffers][list-buffers]]
+    - [[remove-buffer][remove-buffer]]
+    - [[remove-all-buffers][remove-all-buffers]]
 ** buffer-id
    Function
    #+BEGIN_SRC lisp
@@ -419,6 +441,7 @@
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
     - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-name][buffer-name]]
     - [[bufname=][bufname=]]
     - [[clamps-buffer-load][clamps-buffer-load]]
@@ -465,6 +488,7 @@
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
     - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-id][buffer-id]]
     - [[bufname=][bufname=]]
     - [[find-buffer][find-buffer]]
@@ -546,6 +570,7 @@
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
     - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-id][buffer-id]]
     - [[buffer-name][buffer-name]]
     - [[clamps-buffer-load][clamps-buffer-load]]
@@ -728,6 +753,7 @@
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
     - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-id][buffer-id]]
     - [[find-buffer][find-buffer]]
     - [[buffer-name][buffer-name]]
@@ -1348,6 +1374,7 @@
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
     - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-id][buffer-id]]
     - [[find-buffer][find-buffer]]
     - [[buffer-name][buffer-name]]
@@ -1643,6 +1670,7 @@
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
     - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-id][buffer-id]]
     - [[buffer-name][buffer-name]]
     - [[bufname=][bufname=]]
@@ -2193,6 +2221,7 @@
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
     - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-id][buffer-id]]
     - [[buffer-name][buffer-name]]
     - [[bufname=][bufname=]]
@@ -2310,6 +2339,18 @@
     
 *** See also
     - [[sfz][sfz]]
+** lsample-dur
+   Function
+   #+BEGIN_SRC lisp
+     (lsample-dur lsample)
+   #+END_SRC
+   Return duration of /lsample/ in seconds.
+*** Arguments
+    | =lsample= | Lsample Struct |
+
+*** See also
+    - [[lsample][lsample]]
+    - [[lsample-pathname][lsample-pathname]]
 ** lsample-pathname
    Function
    #+BEGIN_SRC lisp
@@ -2321,6 +2362,7 @@
 
 *** See also
     - [[lsample][lsample]]
+    - [[lsample-dur][lsample-dur]]
 * M
 ** m-controller
    Generic Function
@@ -3905,6 +3947,7 @@
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
     - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-id][buffer-id]]
     - [[buffer-name][buffer-name]]
     - [[bufname=][bufname=]]
@@ -3987,6 +4030,7 @@
 *** See also
     - [[clamps:incudine-bufs][incudine-bufs]]
     - [[add-buffer][add-buffer]]
+    - [[buffer-dur][buffer-dur]]
     - [[buffer-id][buffer-id]]
     - [[buffer-name][buffer-name]]
     - [[bufname=][bufname=]]

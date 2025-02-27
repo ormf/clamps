@@ -218,7 +218,7 @@ svg-file."
           :transp transp :start start :end end
           :stretch stretch :wwidth wwidth :attack attack
           :release release :pan pan :out1 out1 :out2 out2
-          :head 200)
+          :tail 200)
 
       ;; (at time #'cl-poolplayer::distributed-play (list :buffer buffer :amp amp
       ;;                                                  :transp transp :start start :end end

@@ -105,9 +105,24 @@ lsample - Instance of type lsample.
 
 @See-also
 lsample
+lsample-dur
 "
   (pathname
    (incudine:buffer-file (lsample-buffer lsample))))
+
+(defun lsample-dur (lsample)
+  "Return duration of /lsample/ in seconds.
+
+@Arguments
+
+lsample - Lsample Struct
+
+@See-also
+
+lsample
+lsample-pathname
+"
+  (incudine-bufs:buffer-dur (lsample-buffer lsample)))
 
 (defun db->lin (value)
   "Convert VALUE dB to linear value."

@@ -110,7 +110,8 @@
            with-gnuplot-instance cl-sfz:play-sfz-one-shot
            cl-midictl:*midi-cc-state* clog-dsp-widgets:flash
            clog-dsp-widgets:named-amp-bus orm-utils:m-lin-fn
-           incudine-bufs:add-buffer cl-midictl:faderfox-midi
+           incudine-bufs:add-buffer incudine-bufs:buffer-dur
+           cl-midictl:faderfox-midi
            clog-dsp-widgets:bind-ref-to-attr orm-utils:array-slice
            orm-utils:with-props clog-dsp-widgets:remove-dsp
            cl-midictl:remove-all-midi-controllers *gnuplot-header*
@@ -339,6 +340,7 @@
            of-incudine-dsps:play-buffer-stretch-env-pan-out
            of-incudine-dsps:play-buffer-stretch-env-pan-out*
            of-incudine-dsps:lsample-pathname
+           of-incudine-dsps:lsample-dur
            of-incudine-dsps:lsample-name of-incudine-dsps:lsample-loopstart
            of-incudine-dsps:play-buffer-stretch*
            of-incudine-dsps:make-lsample

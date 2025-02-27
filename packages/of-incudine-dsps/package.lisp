@@ -38,6 +38,7 @@
            #:LSAMPLE-AMP
            #:LSAMPLE-LOOPEND
            #:LSAMPLE-PATHNAME
+           #:LSAMPLE-DUR
            #:PLAY-LSAMPLE
            #:PLAY-SAMPLE
            #:RESTORE-ENVS

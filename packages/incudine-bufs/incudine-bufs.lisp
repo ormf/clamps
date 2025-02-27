@@ -61,6 +61,7 @@ buffer - Incudine buffer, Pathname or String denoting the filename of the buffer
 @See-also
 clamps:incudine-bufs
 add-buffer
+buffer-dur
 buffer-name
 bufname=
 clamps-buffer-load
@@ -91,6 +92,7 @@ buffer - Incudine buffer.
 @See-also
 clamps:incudine-bufs
 add-buffer
+buffer-dur
 buffer-id
 bufname=
 find-buffer
@@ -110,6 +112,7 @@ ref - Integer denoting id of buffer or String or Pathname denoting the buffer's 
 @See-also
 clamps:incudine-bufs
 add-buffer
+buffer-dur
 buffer-id
 buffer-name
 bufname=
@@ -132,6 +135,7 @@ buf - Incudine buffer.
 
 @See-also
 clamps:incudine-bufs
+buffer-dur
 buffer-id
 buffer-name
 bufname=
@@ -159,6 +163,7 @@ buf - Incudine:buffer, Integer denoting buffer id or filename of buffer.
 @See-also
 clamps:incudine-bufs
 add-buffer
+buffer-dur
 buffer-id
 buffer-name
 bufname=
@@ -185,6 +190,7 @@ remove-all-buffers
 @See-also
 clamps:incudine-bufs
 add-buffer
+buffer-dur
 buffer-id
 buffer-name
 bufname=
@@ -213,6 +219,7 @@ file - String denoting the file.
 @See-also
 clamps:incudine-bufs
 add-buffer
+buffer-dur
 buffer-id
 buffer-name
 clamps-buffer-load
@@ -238,6 +245,7 @@ file - Pathname or String denoting a soundfile.
 @See-also
 clamps:incudine-bufs
 add-buffer
+buffer-dur
 buffer-id
 find-buffer
 buffer-name
@@ -261,6 +269,7 @@ the clamps buffer registry.
 @See-also
 clamps:incudine-bufs
 add-buffer
+buffer-dur
 buffer-id
 buffer-name
 bufname=
@@ -278,5 +287,31 @@ remove-all-buffers
     (if result (sort result #'< :key #'first))))
 
 (setf (fdefinition 'ensure-buffer) #'clamps-buffer-load)
+
+(defun buffer-dur (buffer)
+  "Return duration of /buffer/ in seconds.
+
+@Arguments
+
+buffer - Incudine buffer struct.
+
+@See-also
+
+clamps:incudine-bufs
+add-buffer
+buffer-dur
+buffer-id
+buffer-name
+bufname=
+clamps-buffer-load
+find-buffer
+list-buffers
+remove-buffer
+remove-all-buffers
+"
+  (/ (buffer-size buffer) (buffer-sample-rate buffer))
+
+  )
+
 
 ;;; (clamps-buffer-load "/home/orm/work/kompositionen/letzte-worte/snd/fl-s01-line01.wav")
