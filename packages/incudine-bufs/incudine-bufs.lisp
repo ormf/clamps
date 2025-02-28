@@ -309,9 +309,7 @@ list-buffers
 remove-buffer
 remove-all-buffers
 "
-  (/ (buffer-size buffer) (buffer-sample-rate buffer))
-
-  )
+  (/ (buffer-size buffer) (buffer-sample-rate buffer)))
 
 
 ;;; (clamps-buffer-load "/home/orm/work/kompositionen/letzte-worte/snd/fl-s01-line01.wav")

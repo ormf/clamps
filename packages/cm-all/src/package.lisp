@@ -16,8 +16,10 @@
 (shadowing-import '(clip)
                   'of-incudine-dsps)
 
+#|
 (shadowing-import '(buffer-dur)
                   'incudine-bufs)
+|#
 
 (shadow '(quantize at now tuning *tempo* buffer buffer-frames
           buffer-sample-rate
@@ -36,8 +38,8 @@
 (use-package '(
                #:incudine
                #:cl-midictl
-               #:of-incudine-dsps
                #:incudine-bufs
+               #:of-incudine-dsps
                #:cl
                #:cl-refs
                #:cl-sfz
