@@ -122,7 +122,8 @@ lsample - Lsample Struct
 lsample
 lsample-pathname
 "
-  (incudine-bufs:buffer-dur (lsample-buffer lsample)))
+  (let ((buffer (lsample-buffer lsample)))
+    (/ (buffer-size buffer) (buffer-sample-rate buffer))))
 
 (defun db->lin (value)
   "Convert VALUE dB to linear value."

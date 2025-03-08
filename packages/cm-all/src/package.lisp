@@ -16,11 +16,6 @@
 (shadowing-import '(clip)
                   'of-incudine-dsps)
 
-#|
-(shadowing-import '(buffer-dur)
-                  'incudine-bufs)
-|#
-
 (shadow '(quantize at now tuning *tempo* buffer buffer-frames
           buffer-sample-rate
           node bus

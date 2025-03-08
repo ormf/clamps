@@ -49,9 +49,8 @@
   (with-slots (lsample keynum start end stretch time) obj
     (with-slots (buffer) lsample
       (with-slots (buffer-frames buffer-sample-rate) buffer
-        (let* ((buffer-dur (/ buffer-frames buffer-sample-rate))
-               (start (min 0 start))
-               (end (if (zerop end) buffer-dur (min end buffer-dur)))
+        (let* ((bufdur (buffer-dur buffer)) (start (min 0 start))
+               (end (if (zerop end) bufdur (min end bufdur)))
                (stretch (ou:ct->fr (* 100 (- keynum (incudine::lsample-keynum lsample))))))
           (* stretch (- end start)))))))
 
