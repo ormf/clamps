@@ -38,12 +38,30 @@
           digest-nanoktl2-presets)
         'cl-midictl)
 
-;;; preset buttons are special: they have labels which change
-;;; dynamically, they have highlight state (0, 1 or 2 for flashing)
-;;; and they can be pressed/clicked.  Therefore there are 3 slots in
-;;; nanoktl2-preset-midi to accomodate that: s-buttons and m-buttons
-;;; contain the highlight state, button-labels their labels and
-;;; preset-buttons function as bang ref-objects for pressing/clicking.
+
+;;; the nanoktl2-preset-midi class extends the nanoktl2-midi class
+;;; which contains ref-cells for all buttons with additional slots:
+;;;
+;;; preset buttons (the top two rows) are special: they have labels
+;;; which change dynamically, they have highlight state (0, 1 or 2 for
+;;; flashing) and they can be pressed/clicked. Therefore there are 3
+;;; slots in nanoktl2-preset-midi to accomodate that:
+;;;
+;;; 1. s-buttons and m-buttons from the superclass nanoktl2-midi are
+;;;    used as ref-cells containing the highlight state
+;;; 2. the additional slots button-labels contain their labels and
+;;; 3. the additional preset-buttons function as bang ref-objects for
+;;;    pressing/clicking.
+;;;
+;;; The bank buttons are simple bangs and the curr-bank is the current
+;;; active bank. Pressing a bank button changes the curr-bank. The
+;;; curr-bank has a watch function which highlights the s and m
+;;; buttons of the nanoctl2-midi superclass depending on their preset
+;;; state and the respective r-button.
+;;;
+;;; The cc-state of the superclass copies the cc-state of *cc-state*
+;;; with the cc nums of all hardware elements mapped to the indexes
+;;; 0->45.
 
 (defclass nanoktl2-preset-midi (nanoktl2-midi)
   ((button-labels :initarg :button-labels :accessor button-labels
@@ -84,25 +102,28 @@
                  ))
            'vector))
     (dotimes (i 128) (setf (aref cc-map i) nil)) ;;; initialize cc-map with nil
-    (loop for idx from 0 for bang across (preset-buttons obj)
-          do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (ref-listeners bang)))
-    (loop for idx from 0 for bang across (bank-buttons obj)
-          do (push (let ((idx idx)) (lambda () (set-val (curr-bank obj) idx))) (ref-listeners bang)))
-    (loop
+    (loop for idx from 0 for bang across (preset-buttons obj) ;;; attach trigger action to top two rows
+          do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (trigger-fns bang)))
+    (loop for idx from 0 for bang across (bank-buttons obj) ;;; attach trigger action to bottom bank row
+          do (push (let ((idx idx)) (lambda () (set-val (curr-bank obj) idx))) (trigger-fns bang)))
+    (loop ;;; map ccnum to idx of all nanoktl elems.
       for idx from 0
       for ccnum across cc-nums
       do (setf (aref cc-map ccnum) idx))
     (setf cc-state (make-array (length cc-nums)
                                :initial-contents
                                (loop for x below (length cc-nums)
-                                     collect (if (<= 40 x 45)
+                                     collect (if (<= 40 x 45) ;;; prev -> next-mark are bang-cells
                                                  (make-bang)
                                                  (make-ref 0.0)))))
     (setf nk2-faders (make-array 16 :displaced-to cc-state))
     (setf s-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 16))
     (setf m-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 24))
     (setf r-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 32))
-    (map () (lambda (slot local-idx)
+    (map () (lambda (slot local-idx) ;;; this seems illogical: track-left
+                                ;;; -> marker-right are bangs and have
+                                ;;; no value. Only the bottom row is
+                                ;;; ok.
               (setf (slot-value obj slot) (aref cc-state local-idx)))
          '(track-left track-right
            cycle set-marker marker-left marker-right
@@ -127,7 +148,7 @@
                          (set-val (aref r-buttons idx) 0))))))
           unwatch))
     (let ((opcode (+ (1- chan) 176)))
-      (loop for idx below 8 ;;; state change in any of the preset buttons
+      (loop for idx below 8 ;;; reflect state change in any of the preset buttons in the hardware LED.
             do (loop
                  for offs in '(16 24)
                  for slot in '(s-buttons m-buttons)
@@ -145,7 +166,7 @@
                               (if (zerop (get-val button)) 0 127)))
                             (2 (pulse obj button cc-num))))))
                      unwatch)))
-      (loop for idx below 8 ;;; preset bank buttons
+      (loop for idx below 8 ;;; reflect preset bank button state change in the hardware LEDs.
             do (push
                 (watch
                  (let* ((idx idx)
@@ -223,9 +244,8 @@ off is determined by <initial-flash>."
         (1
          (store-preset instance preset-no)
          (set-val tr-rec 0)
-         (update-preset-buttons instance)
-         )
-        (2 (if cp-src
+         (update-preset-buttons instance))
+        (2 (if cp-src ;;; src already seleted? Then copy it to pressed preset button
                (let* ((src-idx (mod cp-src 16))
                       (slot-name (if (< src-idx 8) 's-buttons 'm-buttons))
                       (src-button (aref (slot-value instance slot-name) (mod src-idx 8))))
@@ -234,7 +254,7 @@ off is determined by <initial-flash>."
                  (setf cp-src nil)
                  (set-val tr-rec 0) ;;; unhighlight store button
                  (update-preset-buttons instance))
-               (let* ((slot-name (if (< button-idx 8) 's-buttons 'm-buttons)))
+               (let* ((slot-name (if (< button-idx 8) 's-buttons 'm-buttons)));;; otherwise flash and set cp-src
                  (set-val (aref (slot-value instance slot-name) (mod button-idx 8)) 2)
                  (setf cp-src preset-no))))))))
 

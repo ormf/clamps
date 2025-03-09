@@ -37,31 +37,6 @@
 (defun ensure-directory (dir)
   (if (stringp dir) (format nil "~A/" dir) dir))
 
-#|
-(defun cm-restart-gui (gui-root &key (start-gui t) (port 54619) (open t))
-  (let* ((dir (pathname (ensure-directory gui-root)))
-         (svg-dir-path (format nil "~Awww/svg/" (namestring dir))))
-    (when (clog:is-running-p) (clog:shutdown))
-    (uiop:run-program (format nil "mkdir -p ~a" svg-dir-path))
-    (uiop:run-program (format nil "mkdir -p ~Asnd" (namestring dir)))
-    (uiop:run-program (format nil "mkdir -p ~Aats" (namestring dir)))
-    (setf ats-cuda:*ats-snd-dir* (merge-pathnames "snd/" dir))
-    (setf ats-cuda:*ats-file-dir* (merge-pathnames "ats/" dir))
-    (setf clamps.svgd:svg-dir (merge-pathnames "www/svg/" dir))
-    (let ((targetpath (namestring (merge-pathnames dir "/www"))))
-      (dolist (dir-or-file '("js" "css" "favicon.ico" "clamps-start.html"))
-        (let* ((subdirpath (format nil "www/~a" dir-or-file))
-               (srcpath (namestring (asdf:system-relative-pathname :clog-dsp-widgets subdirpath))))
-          (unless (uiop:probe-file* (merge-pathnames (format nil "~a~a" dir subdirpath)))
-            (uiop:run-program (format nil "ln -s ~A ~A" srcpath targetpath))))))
-    (clog:set-on-new-window #'clog::cm-gui :boot-file "/start.html")
-    (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters" :boot-file "/start.html")
-    (clog:set-on-new-window  #'cm:svg-display :path "/svg-display" :boot-file "/start.html")
-    (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display" :boot-file "/start.html")
-(when start-gui (clog-dsp-widgets:start-gui :gui-root (namestring dir) :port port :open open))))
-
-|#
-
 ;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))
 
 (defparameter *mt-out01* nil)

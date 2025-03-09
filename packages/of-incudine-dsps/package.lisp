@@ -1,7 +1,7 @@
 ;;;; package.lisp
 
 (defpackage #:of-incudine-dsps
-  (:use #:cl #:ou #:incudine :incudine.vug :incudine.util :incudine.analysis)
+  (:use #:cl #:ou #:incudine :incudine.vug :incudine.util :incudine.analysis #:incudine-bufs)
   (:nicknames #:oid)
   (:shadowing-import-from #:incudine #:GROUP)
   (:shadow #:clip)

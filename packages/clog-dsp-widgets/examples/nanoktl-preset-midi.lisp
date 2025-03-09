@@ -76,7 +76,7 @@
            'vector))
     (dotimes (i 128) (setf (aref cc-map i) nil)) ;;; initialize cc-map with nil
     (loop for idx from 0 for bang across (preset-buttons obj)
-          do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (ref-listeners bang)))
+          do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (trigger-fns bang)))
     (loop
       for idx from 0
       for ccnum across cc-nums

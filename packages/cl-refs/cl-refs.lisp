@@ -34,23 +34,24 @@
    (listeners :initarg :listeners :initform '() :accessor ref-listeners)
    (dependencies :initarg :dependencies :initform '() :accessor ref-dependencies)))
 
-(defclass bang-object (ref-object-super)
-  ((value :initform nil :initarg :value :accessor ref-value)))
-
 (defclass ref-object (ref-object-super)
   ((value :initarg :value :accessor ref-value)
    (setter :initarg :setter :initform '() :reader ref-setter)
    (fn :initarg :fn  :initform '() :reader ref-fn)
-   (update :initarg :update  :initform '() :accessor ref-update))
+   (update :initarg :update  :initform '() :accessor ref-update)
+   )
   (:documentation
    "A /ref-object/ is a special class used in the /cl-refs/
 package. Its slots shouldn't be accessed or manipulated directly,
 but rather using the public functions of the cl-refs package listed
-below. For information how to use ref-objects refer to <<clamps:cl-refs>> in
+below. A ref-object should get instantiated using the <<make-ref>> function.
+
+For information how to use ref-objects refer to <<clamps:cl-refs>> in
 the Clamps Packages documentation.
 
 @See-also
 get-val
+make-bang
 make-computed
 make-ref
 set-val
@@ -59,6 +60,26 @@ watch
 
 (defmethod print-object ((obj ref-object) stream)
   (format stream "#<ref ~S>" (ref-value obj)))
+
+(defclass bang-object (ref-object)
+  ((trigger-fns :initform nil :initarg :trigger-fns :accessor trigger-fns))
+    (:documentation
+   "A /bang-object/ is a /ref-object/ with an additional =trigger-fns=
+slot which get called when the object is the argument of the trigger
+function. Apart from that it behaves like a ref-object. A bang object
+should get instantiated using the <<make-bang>> function.
+
+@See-also
+get-val
+make-bang
+make-computed
+make-ref
+set-val
+watch
+"))
+
+(defmethod print-object ((obj bang-object) stream)
+  (format stream "#<bang ~S>" (ref-value obj)))
 
 ;;; constructor
 (defun make-ref (val &rest args)
@@ -145,18 +166,40 @@ watch
     (pushnew ref (ref-dependencies *curr-ref*)))
   (ref-value ref))
 
-(defmethod print-object ((obj bang-object) stream)
-  (format stream "#<bang>"))
+(defun make-bang (&optional fn val)
+  "create and return a bang-object instance with trigger-fns set to /fn/
+and its ref-value set to /val/.
 
-(defun make-bang (&optional fn)
-  (make-instance 'bang-object :listeners (if fn (list fn))))
+@Arguments
+
+fn - A function or list of functions to call on the trigger function.
+val - The value of the ref-object.
+
+@Example
+
+(defparameter *test-bang* (make-bang (lambda () (format t \"~&HiHo\")) 2.5))
+
+(trigger *test-bang*) ;;; -> nil
+;;; output in the REPL: HiHo
+
+(set-val *test-bang* 42) ;;; -> 42
+
+(get-val *test-bang*) ;;; -> 42
+
+@See-also
+trigger
+set-val
+get-val
+"
+  (make-instance 'bang-object :trigger-fns (if (functionp fn) (list fn) fn)
+                 :value val))
 
 (defun %trigger (obj)
-  "call all ref-listeners of /obj/ in the dynamic scope of *refs-seen*."
-  (map nil #'funcall (ref-listeners obj)))
+  "call all trigger-fns of /obj/ in the dynamic scope of *refs-seen*."
+  (map nil #'funcall (trigger-fns obj)))
 
 (defgeneric trigger (obj)
-  (:documentation "call all ref-listeners of /obj/ with *refs-seen* set to nil.")
+  (:documentation "call all trigger-fns of /obj/ with *refs-seen* set to nil.")
   (:method ((obj bang-object))
     (let ((*refs-seen* nil)) (%trigger obj))))
 

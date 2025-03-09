@@ -417,7 +417,7 @@
            cl-refs:ref-object cl-refs:trigger cl-refs:%trigger cl-refs:make-ref
            cl-refs:%set-val cl-refs:on-deps-update cl-refs:with-unwatched
            cl-refs:copy-ref cl-refs:make-bang cl-refs:make-computed cl-refs:watch
-           cl-refs:ref-id cl-refs:ref-listeners cl-refs:set-val cl-refs:get-val
+           cl-refs:trigger-fns cl-refs:ref-id cl-refs:ref-listeners cl-refs:set-val cl-refs:get-val
            cl-refs:with-updating-deps cl-sfz:load-sfz-preset
            cl-sfz:sf-table-get-range cl-sfz:ensure-sfz-preset
            cl-sfz:list-sfz-presets cl-sfz:play-sfz-one-shot
