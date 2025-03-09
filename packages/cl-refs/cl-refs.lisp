@@ -50,6 +50,7 @@ For information how to use ref-objects refer to <<clamps:cl-refs>> in
 the Clamps Packages documentation.
 
 @See-also
+bang-object
 get-val
 make-bang
 make-computed
@@ -74,6 +75,7 @@ get-val
 make-bang
 make-computed
 make-ref
+ref-object
 set-val
 watch
 "))
@@ -94,8 +96,10 @@ internally and are not intended to be used directly when working
 with /cl-refs/.
 
 @See-also
+bang-object
 get-val
 make-computed
+ref-object
 set-val
 watch
 "  (apply #'make-instance 'ref-object :value val args))
@@ -136,9 +140,11 @@ force - A boolean indicating to set the value even if it is eql to
 the previous value of the ref-object.
 
 @See-also
+bang-object
 get-val
 make-computed
 make-ref
+ref-object
 watch
 "
   (let ((*refs-seen* nil))
@@ -150,14 +156,16 @@ watch
 ;;; to the listeners. This is very cool.
 
 (defun get-val (ref)
-  "Return the value of /ref-object/.
+  "Return the value of /ref/.
 
 @Arguments
-ref-object - An instance of <<ref-object>>.
+ref - An instance of <<ref-object>>.
 
 @See-also
+bang-object
 make-computed
 make-ref
+ref-object
 set-val
 watch
 "
@@ -167,7 +175,7 @@ watch
   (ref-value ref))
 
 (defun make-bang (&optional fn val)
-  "create and return a bang-object instance with trigger-fns set to /fn/
+  "create and return a <<bang-object>> instance with trigger-fns set to /fn/
 and its ref-value set to /val/.
 
 @Arguments
@@ -182,14 +190,18 @@ val - The value of the ref-object.
 (trigger *test-bang*) ;;; -> nil
 ;;; output in the REPL: HiHo
 
+(get-val *test-bang*) ;;; -> 2.5
+
 (set-val *test-bang* 42) ;;; -> 42
 
 (get-val *test-bang*) ;;; -> 42
 
 @See-also
-trigger
-set-val
+bang-object
 get-val
+ref-object
+set-val
+trigger
 "
   (make-instance 'bang-object :trigger-fns (if (functionp fn) (list fn) fn)
                  :value val))

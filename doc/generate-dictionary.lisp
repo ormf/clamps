@@ -505,17 +505,43 @@ between the two outputs of the dsp on playback.
 @See-also
 dict:midi
 "))
-      (cl-refs:ref-object
+      (cl-refs:bang-object
        (standard-class
         nil
-        "    A /ref-object/ is a special class used in the /cl-refs/
-   package. Its slots shouldn't be accessed or manipulated directly,
-   but rather using the public functions of the cl-refs package listed
-   below. For information how to use ref-objects refer to
-   <<clamps:cl-refs>> in the Clamps Packages documentation.
+ "A /bang-object/ is a special class used in the /cl-refs/
+package. It extends the slots of a <<ref-object>> with a slot
+/trigger-fns/, a list of functions called when the function
+<<trigger>> is called with the bang-object as argument. The slots of a
+bang-object shouldn't be accessed or manipulated directly, but rather
+using the public functions of the cl-refs package listed below. A
+bang-object should get instantiated using the <<make-bang>> function.
+
+For information how to use bang-objects refer to <<clamps:cl-refs>> in
+the Clamps Packages documentation.
 
 @See-also
 get-val
+make-bang
+set-val
+trigger
+watch
+"
+        ))
+      (cl-refs:ref-object
+       (standard-class
+        nil
+ "A /ref-object/ is a special class used in the /cl-refs/
+package. Its slots shouldn't be accessed or manipulated directly,
+but rather using the public functions of the cl-refs package listed
+below. A ref-object should get instantiated using the <<make-ref>> function.
+
+For information how to use ref-objects refer to <<clamps:cl-refs>> in
+the Clamps Packages documentation.
+
+@See-also
+bang-object
+get-val
+make-bang
 make-computed
 make-ref
 set-val

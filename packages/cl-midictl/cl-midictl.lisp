@@ -246,10 +246,15 @@ show-midi-cc-fns
          :documentation
          "Accessor method for the chan slot of an instance of type
 <<midi-controller>>.")
-   (cc-map :initform (make-array 128 :initial-contents (loop for i below 128 collect i))
+   (cc-map :initform (make-array 128 :initial-element nil)
            :initarg :cc-map :accessor cc-map
            :documentation
          "Accessor method for the cc-map slot of an instance of type
+<<midi-controller>>.")
+   (keynum-map :initform (make-array 128 :initial-element nil)
+           :initarg :keynum-map :accessor keynum-map
+           :documentation
+         "Accessor method for the keynum-map slot of an instance of type
 <<midi-controller>>.")
    (midi-input :initform nil :initarg :midi-input :accessor midi-input
                :documentation
@@ -266,7 +271,7 @@ midi-input is received. (default: t)")
    (last-note-on :initform 0 :initarg :last-note-on :accessor last-note-on
                  :documentation
                  "Accessor method for the last-note-on slot of an instance of type <<midi-controller>>.")
-   (cc-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-ref 0)))
+   (cc-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-bang (lambda ()) 0)))
              :initarg :cc-state :accessor cc-state
              :documentation
                  "Accessor method for the cc-state slot of an instance of type <<midi-controller>>.")
@@ -276,7 +281,7 @@ midi-input is received. (default: t)")
                  "Accessor method for the note-state slot of an instance of type <<midi-controller>>.")
    ;;; storage of functions to call for individual cc events. An entry
    ;;; of the array is a list of functions accepting one arg: the
-   ;;; controller value.
+   ;;; controller value. Instead of cc-fns, the ref-objects of cc-state can be used.
    (cc-fns :initform (make-array 128 :initial-element nil)
            :initarg :cc-fns :accessor cc-fns)
    ;;; storage of functions to call for individual note-on/off
@@ -295,10 +300,12 @@ being the keywords of the slot symbol:
 
 =cc-map= -- Array mapping CC nums to internal indexes of the instance.
 
+=keynum-map= -- Array mapping keynums to internal indexes of the instance.
+
 =cc-fns= -- Array of 128 lists storing functions to call when
 receiving a value at any of the 128 CC numbers.
 
-=cc-state= -- Array of 128 <<ref-object><ref-objects>> storing the last
+=cc-state= -- Array of 128 <<bang-object><bang-objects>> storing the last
 received CC value for each CC number.
 
 =chan= -- Integer in the range [1..16] denoting the MIDI channel.
@@ -350,26 +357,34 @@ receiver but can also be called by gui code or directly to emulate
 controller actions."))
 
 (defmethod handle-midi-in ((instance midi-controller) opcode d1 d2)
-  (with-slots (cc-fns cc-map cc-state note-state note-fn last-note-on) instance
+  (with-slots (cc-fns cc-map keynum-map cc-state note-state note-fn last-note-on) instance
     (incudine.util:msg :debug "midi-controller-handle-midi-in: ~a ~a ~a" opcode d1 d2)
     (case opcode
-      (:cc (progn
-             (set-val (aref cc-state (aref cc-map d1)) d2)
-             (mapcar (lambda (fn) (funcall fn d2)) (aref cc-fns d1))))
-      (:note-on (progn
-                  (set-val (aref note-state (aref cc-map d1)) d2)
-                  (mapcar (lambda (fn) (funcall fn d1 d2)) (note-fns instance))
-                  (setf last-note-on d1)))
-      (:note-off (progn
-                   (set-val (aref note-state (aref cc-map d1)) 0)
-                   (mapcar (lambda (fn) (funcall fn d1 0)) (note-fns instance)))))))
+      (:cc (if (aref cc-map d1)
+               (progn
+                 (set-val (aref cc-state (aref cc-map d1)) d2)
+                 (mapcar (lambda (fn) (funcall fn d2)) (aref cc-fns d1)))
+               (warn "ccnum ~d not mapped in midi-controller ~a, ignored." d1 instance)))
+      (:note-on (if (aref keynum-map d1)
+                    (progn
+                      (set-val (aref note-state (aref keynum-map d1)) d2)
+                      (mapcar (lambda (fn) (funcall fn d1 d2)) (note-fns instance))
+                      (setf last-note-on d1))
+                    (warn "note-on ~d not mapped in midi-controller ~a, ignored." d1 instance)))
+      (:note-off (if (aref keynum-map d1)
+                     (progn
+                       (set-val (aref note-state (aref keynum-map d1)) 0)
+                       (mapcar (lambda (fn) (funcall fn d1 0)) (note-fns instance)))
+                     (warn "note-off ~d not mapped in midi-controller ~a, ignored." d1 instance))))))
 
 ;;; (make-instance 'midi-controller)
 
-(defgeneric update-state (instance)
-  (:documentation "set state of controller according to *midi-cc-state*"))
+(defgeneric update-state (instance))
 
 (defmethod update-state ((instance midi-controller))
+  "Set the state of the hardware of <<midi-controller>> /instance/
+according to <<*midi-cc-state*>> by sending all 128 cc values of the
+controllers midi-channel to the midi-controller's midi output."
   (with-slots (chan midi-output) instance
     (dotimes (cc-num 128)
       (osc-midi-write-short
@@ -567,6 +582,8 @@ start-midi-receive
 ;;; (stop-midi-receive *midi-in1*)
 
 (defun update-all-controllers (midi-in-port)
+  "call <<update-state>> on all registered midi-controllers of
+/midi-in-port/."
   (dolist (controller (gethash midi-in-port *midi-controllers*))
     (update-state controller)))
 

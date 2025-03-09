@@ -71,19 +71,20 @@
              (push (list obj attr) *refs-seen*)
              (setf (attribute obj attr) val)))))))
   (:method ((refvar bang-object) attr new)
-    (watch ;;; watch registers an on-update function
+    (watch ;;; watch registers in an on-update function
      (lambda ()
        (let ((val (get-val refvar))) ;; we read val only to register
                                       ;; the watch function in the
                                       ;; listeners of the bang
-       (declare (ignore val))
        ;; (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
        ;; (if *debug* (format t "~&~%seen: ~a~%" (obj-print *refs-seen*)))
        (dolist (obj (b-elist new)) ;;; iterate through all bound html elems
          (unless (member (list obj attr) *refs-seen* :test #'equal)
            ;; (if *debug* (format t "~&~%watch update: ~a~%-> ~a~%" (obj-print *refs-seen*) obj))
            (push obj *refs-seen*)
-           (js-execute obj (format nil "~A.bang()" (script-id obj)))
+           (if (equal attr "bang")
+               (js-execute obj (format nil "~A.bang()" (script-id obj)))
+               (setf (attribute obj attr) val))
            )))))))
 
 (defgeneric bind-ref-to-attr (refvar attr &optional map)
