@@ -47,7 +47,7 @@
 (defclass binding ()
   ((ref :initarg :ref :accessor b-ref)
    (attr :initarg :attr :accessor b-attr)
-   (elist :initarg :elist :initform '() :accessor b-elist)
+   (elist :initarg :elist :initform '() :accessor b-elist :documentation "bound html elements")
    (map :initarg :map :accessor b-map)
    (unwatch :initarg :unwatch :initform '() :accessor b-unwatch)))
 
@@ -56,6 +56,20 @@
 
 (defun make-binding (&rest args)
   (apply #'make-instance 'binding args))
+
+(defun bang-watch (refvar attr new)
+  "special watch function for bang-objects: pushes a function triggering
+a call to bang() on all elements of (b-elist new) to the trigger-fns
+of refvar. refvar has to be a bang-object."
+  (let ((fn (lambda () (dolist (obj (b-elist new)) ;;; iterate through all bound html elems
+                    (unless (member (list obj attr) *refs-seen* :test #'equal)
+                      ;; (if *debug* (format t "~&~%watch update: ~a~%-> ~a~%" (obj-print *refs-seen*) obj))
+                      (push obj *refs-seen*)
+                      (if (equal attr "bang")
+                          (js-execute obj (format nil "~A.bang()" (script-id obj))))
+                      )))))
+    (push fn (trigger-fns refvar))
+    (lambda () (remove fn (trigger-fns refvar)))))
 
 ;;; (trigger x-bang)
 (defgeneric define-watch (refvar attr new)
@@ -71,21 +85,20 @@
              (push (list obj attr) *refs-seen*)
              (setf (attribute obj attr) val)))))))
   (:method ((refvar bang-object) attr new)
-    (watch ;;; watch registers in an on-update function
-     (lambda ()
-       (let ((val (get-val refvar))) ;; we read val only to register
-                                      ;; the watch function in the
-                                      ;; listeners of the bang
-       ;; (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
-       ;; (if *debug* (format t "~&~%seen: ~a~%" (obj-print *refs-seen*)))
-       (dolist (obj (b-elist new)) ;;; iterate through all bound html elems
-         (unless (member (list obj attr) *refs-seen* :test #'equal)
-           ;; (if *debug* (format t "~&~%watch update: ~a~%-> ~a~%" (obj-print *refs-seen*) obj))
-           (push obj *refs-seen*)
-           (if (equal attr "bang")
-               (js-execute obj (format nil "~A.bang()" (script-id obj)))
-               (setf (attribute obj attr) val))
-           )))))))
+    (if (equal attr "bang")
+        (bang-watch refvar attr new)
+            (watch ;;; watch registers in an on-update function
+             (lambda ()
+               (let ((val (get-val refvar))) ;; we read val only to register
+                 ;; the watch function in the
+                 ;; listeners of the bang
+                 ;; (if *debug* (format t "~&~%elist: ~a~%" (b-elist new)))
+                 ;; (if *debug* (format t "~&~%seen: ~a~%" (obj-print *refs-seen*)))
+                 (dolist (obj (b-elist new)) ;;; iterate through all bound html elems
+                   (unless (member (list obj attr) *refs-seen* :test #'equal)
+                     ;; (if *debug* (format t "~&~%watch update: ~a~%-> ~a~%" (obj-print *refs-seen*) obj))
+                     (push obj *refs-seen*)
+                     (setf (attribute obj attr) val)))))))))
 
 (defgeneric bind-ref-to-attr (refvar attr &optional map)
   (:method ((refvar ref-object-super) attr &optional (map (lambda (val) val)))
@@ -291,7 +304,14 @@ array of bindings, depending on the class."))
 (defun opt-format-attr (attr val)
   (when val (format nil "~a='~(~a~)'" attr val)))
 
+(defun clog-trigger-fn (obj)
+  "execute bang() on the clog obj."
+  (lambda () (clog:js-execute obj (format nil "~a.bang()" (clog:script-id obj)))))
+
+;;; (funcall (clog-trigger-fn (elt *bangs* 0)))
+
 (defun create-o-bang (parent bindings &key width height label (background '("transparent" "orange")) color flash-time css flash)
+  (declare (ignorable width height))
   (let* ((var (b-ref (first bindings)))
 ;;;         (attr (b-attr (first bindings)))
          (element (create-child

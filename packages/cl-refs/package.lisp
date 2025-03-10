@@ -21,4 +21,7 @@
    #:COPY-REF
    #:TRIGGER
    #:%TRIGGER
+   #:CLEAR-TRIGGERS
+   #:ADD-TRIGGER-FN
+   #:TOGGLE-REF-FN
    ))

@@ -67,7 +67,7 @@ nanokontrol2.
                (cc-state (aref cc-state idx)))
           (lambda () (osc-midi-write-short midi-output opcode cc-num (round (* 127 (get-val cc-state)))))))
        unwatch)))
-  (update-state obj))
+  (update-hw-state obj))
 
 (defun midi-delta->i (n)
   (if (zerop (ash n -6))
@@ -98,7 +98,7 @@ nanokontrol2.
                 (let ((button-slot (aref note-state button-idx)))
                   (toggle-slot button-slot)))))))))
 
-(defmethod update-state ((instance faderfox-midi))
+(defmethod update-hw-state ((instance faderfox-midi))
   (with-slots (chan cc-nums cc-map cc-state note-state midi-output) instance
     (dotimes (local-idx 16)
       (let ((cc-num (aref cc-nums local-idx)))

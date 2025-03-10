@@ -205,7 +205,7 @@
            cl-midictl:remove-all-channel-midi-cc-fns cm::repeat
            cm:cd orm-utils:fibonacci orm-utils:file-string
            orm-utils:exp-n orm-utils:defparameter* orm-utils:permute
-           cl-midictl:update-state orm-utils:copy-instance orm-utils:get-time
+           cl-midictl:update-hw-state orm-utils:copy-instance orm-utils:get-time
            cl-midictl:*midi-debug* orm-utils:slurp-string
            of-incudine-dsps:make-oasr cl-refs:set-val cl-midictl:*oscin*
            orm-utils:ct->fr clog-midi-controller:faderfox-gui cm:transp
@@ -414,7 +414,9 @@
            cl-plot:with-gnuplot-instance
            cl-plot:*gnuplot-program* cl-plot:plot cl-refs:ref-object-super
            cl-refs:clear-dependencies cl-refs:*refs-seen* cl-refs:bang-object
-           cl-refs:ref-object cl-refs:trigger cl-refs:%trigger cl-refs:make-ref
+           cl-refs:ref-object cl-refs:trigger cl-refs:%trigger
+           cl-refs:toggle-ref-fn cl-refs:add-trigger-fn cl-refs:clear-triggers
+           cl-refs:make-ref
            cl-refs:%set-val cl-refs:on-deps-update cl-refs:with-unwatched
            cl-refs:copy-ref cl-refs:make-bang cl-refs:make-computed cl-refs:watch
            cl-refs:trigger-fns cl-refs:ref-id cl-refs:ref-listeners cl-refs:set-val cl-refs:get-val
@@ -560,7 +562,7 @@
            cl-midictl:remove-all-midi-cc-fns
            cl-midictl:remove-all-channel-midi-cc-fns cl-midictl:nk-cycle
            cl-midictl:osc-midi-write-short cl-midictl:faderfox-midi
-           cl-midictl:preset-state cl-midictl:update-state
+           cl-midictl:preset-state
            cl-midictl:faderfox-midi-f.orm cl-midictl:*midi-debug*
            cl-midictl:cc-map cl-midictl:handle-store-button-press
            cl-midictl:s-buttons cl-midictl:nanoktl2-preset-midi

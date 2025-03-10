@@ -47,32 +47,27 @@
 ;;; flashing) and they can be pressed/clicked. Therefore there are 3
 ;;; slots in nanoktl2-preset-midi to accomodate that:
 ;;;
+
 ;;; 1. s-buttons and m-buttons from the superclass nanoktl2-midi are
-;;;    used as ref-cells containing the highlight state
-;;; 2. the additional slots button-labels contain their labels and
-;;; 3. the additional preset-buttons function as bang ref-objects for
-;;;    pressing/clicking.
+;;;    used as ref-cells containing the highlight state and as
+;;;    bang-cells triggering actions when pressed.
+;;; 2. the additional slots button-labels contain their labels.
 ;;;
-;;; The bank buttons are simple bangs and the curr-bank is the current
-;;; active bank. Pressing a bank button changes the curr-bank. The
-;;; curr-bank has a watch function which highlights the s and m
-;;; buttons of the nanoctl2-midi superclass depending on their preset
-;;; state and the respective r-button.
+;;; The curr-bank is the current active bank. Pressing a r-button
+;;; changes the curr-bank. The curr-bank has a watch function which
+;;; highlights the s and m buttons of the nanoctl2-midi superclass
+;;; depending on their preset state and the respective r-button.
 ;;;
 ;;; The cc-state of the superclass copies the cc-state of *cc-state*
-;;; with the cc nums of all hardware elements mapped to the indexes
-;;; 0->45.
+;;; with the cc nums of all hardware elements mapped to the local
+;;; indexes 0->45.
 
 (defclass nanoktl2-preset-midi (nanoktl2-midi)
   ((button-labels :initarg :button-labels :accessor button-labels
                   :initform (loop for i below 16 collect (make-ref (format nil "~a" i)))
                   :documentation "labels of preset buttons in gui (if present)")
-   (preset-buttons :initarg :preset-buttons :accessor preset-buttons
-                   :initform (make-array 16 :initial-contents (loop repeat 16 collect (make-bang))))
-   (bank-buttons :initarg :bank-buttons :accessor bank-buttons
-                   :initform (make-array 8 :initial-contents (loop repeat 8 collect (make-bang))))
    (curr-bank :initform (make-ref 0) :initarg :curr-bank :accessor curr-bank
-           :documentation "idx of current preset bank")
+              :documentation "idx of current preset bank")
    (cp-src :initform nil :initarg :cp-src :accessor cp-src
            :documentation "idx of src preset to copy")
    (presets :initform (make-array 128 :initial-contents
@@ -87,52 +82,18 @@
                tr-rewind tr-ffwd tr-stop tr-play tr-rec)
       obj
     (set-val curr-bank 1)
-    (setf cc-nums
-          (coerce
-           (or (getf args :cc-nums)
-               '(16 17 18 19 20 21 22 23 ;;; knobs
-                 0 1 2 3 4 5 6 7         ;;; fader
-                 32 33 34 35 36 37 38 39 ;;; s-buttons
-                 48 49 50 51 52 53 54 55 ;;; m-buttons1
-                 64 65 66 67 68 69 70 71 ;;; r-buttons
-               
-                 58 59        ;;; prev next
-                 46 60 61 62  ;;; cycle, set, prev-mark, next-mark
-                 43 44 42 41 45 ;;; transport: rew, ffwd, stop, play, rec
-                 ))
-           'vector))
-    (dotimes (i 128) (setf (aref cc-map i) nil)) ;;; initialize cc-map with nil
-    (loop for idx from 0 for bang across (preset-buttons obj) ;;; attach trigger action to top two rows
+    (loop for idx from 0 for bang across (s-buttons obj) ;;; attach trigger action to top row
           do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (trigger-fns bang)))
-    (loop for idx from 0 for bang across (bank-buttons obj) ;;; attach trigger action to bottom bank row
+    (loop for idx from 0 for bang across (m-buttons obj) ;;; attach trigger action to middle row (m-buttons)
+          do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (trigger-fns bang)))
+    (loop for idx from 0 for bang across (r-buttons obj) ;;; attach trigger action to bottom bank row
           do (push (let ((idx idx)) (lambda () (set-val (curr-bank obj) idx))) (trigger-fns bang)))
     (loop ;;; map ccnum to idx of all nanoktl elems.
       for idx from 0
       for ccnum across cc-nums
       do (setf (aref cc-map ccnum) idx))
-    (setf cc-state (make-array (length cc-nums)
-                               :initial-contents
-                               (loop for x below (length cc-nums)
-                                     collect (if (<= 40 x 45) ;;; prev -> next-mark are bang-cells
-                                                 (make-bang)
-                                                 (make-ref 0.0)))))
-    (setf nk2-faders (make-array 16 :displaced-to cc-state))
-    (setf s-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 16))
-    (setf m-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 24))
-    (setf r-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 32))
-    (map () (lambda (slot local-idx) ;;; this seems illogical: track-left
-                                ;;; -> marker-right are bangs and have
-                                ;;; no value. Only the bottom row is
-                                ;;; ok.
-              (setf (slot-value obj slot) (aref cc-state local-idx)))
-         '(track-left track-right
-           cycle set-marker marker-left marker-right
-           tr-rewind tr-ffwd tr-stop tr-play tr-rec)
-         (v-collect (n 11) (+ n 40)))
-    (dotimes (i (length cc-nums))
-      (unless (<= 40 i 45)
-        (set-val (aref cc-state i) (get-val (aref (aref *midi-cc-state* (1- chan)) (aref cc-nums i))))))
-    (update-state obj)
+
+    (update-hw-state obj)
     (mapcar #'funcall unwatch)
     (loop for idx below 8
       do (push ;;; bank-change buttons: relabeling of preset-buttons
@@ -347,7 +308,7 @@ off is determined by <initial-flash>."
                 (43 ;;; set button
                  (setf hide-fader (> d2 0)))
                 (42 ;;; cycle button
-                 (when (/= d2 0) (update-state instance)))
+                 (when (/= d2 0) (update-hw-state instance)))
                 (otherwise
                  (let ((slot (aref cc-state (aref cc-map d1))))
                    (unless (zerop d2) (trigger slot))))))

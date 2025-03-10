@@ -19,12 +19,14 @@
 
 (defconstant +ml-opcode-mask+ #xf0)
 (defconstant +ml-channel-mask+ #x0f)
+
 (defparameter *midi-in1* nil
   "Default clamps MIDI input stream of type /<jackmidi:input-stream>/.
 
 @See-also
 *midi-out1*
 ")
+
 (defparameter *midi-out1* nil
   "Default clamps MIDI output stream of type
 /<jackmidi:output-stream>/.

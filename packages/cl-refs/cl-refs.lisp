@@ -378,3 +378,39 @@ set-val
 (defun copy-ref (ref)
   (make-computed (lambda () (get-val ref))
                  (lambda (val) (%set-val ref val))))
+
+(defun add-trigger-fn (ref &rest fns)
+  "add one or more fns to be executed if ref is called with the #'trigger
+function.
+
+@Arguments
+ref - A <<bang-object>>
+fns - one or more functions of zero argument called when the trigger function is invoked on ref.
+
+@See-also
+clear-triggers
+make-bang
+"
+  (declare (type bang-object ref))
+  (dolist (fn fns) (pushnew fn (trigger-fns ref))))
+
+(defun clear-triggers (ref)
+  "clear all trigger-fns of /ref/.
+
+@Arguments
+ref - A <<bang-object>>
+
+@See-also
+add-trigger-fn
+make-bang
+"
+  (declare (type bang-object ref))
+  (setf (trigger-fns ref) nil))
+
+(defun toggle-ref-fn (ref)
+  "Return a function of no arguments which toggles the ref-cell /ref/
+between 0 and 1.
+
+@Arguments
+ref - A <<ref-object>> or <<bang-object>>"
+  (lambda () (set-val ref (if (zerop (get-val ref)) 1 0))))

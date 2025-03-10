@@ -211,7 +211,9 @@
                              :background '("gray" "#ff8888") :label label
                              :css `(:height "1.3em" :font-size "1.5em" :text-align "center" :margin ,margin)))
              (bang2
-              (create-nk2-store-button control-buttons midi-controller button margin))
+              (create-o-bang control-buttons (bind-refs-to-attrs button "highlight")
+                             :background '("gray" "#ff8888") :label label
+                             :css `(:height "1.3em" :font-size "1.5em" :text-align "center" :margin ,margin)))
              (toggle
               (create-o-toggle control-buttons (bind-refs-to-attrs button "value")
                                :background '("gray" "#ff8888") :label label
@@ -221,11 +223,13 @@
 (defun nanoktl2-preset-gui (id container &key (chan 5))
   (let ((midi-controller (or
                           (find-controller id)
-                          (add-midi-controller 'nanoktl2-preset-midi
-                                               id
-                                               :midi-input *midi-in1*
-                                               :midi-output *midi-out1*
-                                               :chan chan)))
+                          (let ((ctlr (add-midi-controller 'nanoktl2-preset-midi
+                                                           id
+                                                           :midi-input cl-midictl::*midi-in1*
+                                                           :midi-output cl-midictl::*midi-out1*
+                                                           :chan chan)))
+                            (setf (tr-rec ctlr) (make-bang (lambda () (handle-store-button-press ctlr)) 0))
+                            ctlr)))
         (margin "0.2em"))
     (with-slots (fader s-buttons m-buttons r-buttons
                  track-left track-right

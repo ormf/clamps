@@ -39,7 +39,7 @@
     (push connection *midictl-osc-remote-connections*)
     (incudine.osc:message connection "/msg" "s" "connected")
     (sleep 1)
-    (dolist (obj (gethash local-midi-in *midi-controllers*)) (update-state obj))))
+    (dolist (obj (gethash local-midi-in *midi-controllers*)) (update-hw-state obj))))
 
 (defun osc-midi-remove-remote-connection (host)
   (let ((entry (first (member host *midictl-osc-remote-connections* :key #'incudine.osc:host :test #'string-equal))))

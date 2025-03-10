@@ -165,7 +165,7 @@
 ** add-midi-controller
    Function
    #+BEGIN_SRC lisp
-     (add-midi-controller class id &rest args)
+     (add-midi-controller class #:id &rest args)
    #+END_SRC
    Register a MIDI controller of class /class/ with ID /id/ and optional
    initialization argumens /args/.
@@ -222,6 +222,20 @@
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
     - [[#sfz-file-path][*​​sfz-file-path​​*]]
+** add-trigger-fn
+   Function
+   #+BEGIN_SRC lisp
+     (add-trigger-fn ref &rest fns)
+   #+END_SRC
+   add one or more fns to be executed if ref is called with the #'trigger
+   function.
+*** Arguments
+    | =ref= | A [[bang-object][bang-object]]                                                                              |
+    | =fns= | one or more functions of zero argument called when the trigger function is invoked on ref. |
+
+*** See also
+    - [[clear-triggers][clear-triggers]]
+    - [[make-bang][make-bang]]
 ** all-notes-off
    Function
    #+BEGIN_SRC lisp
@@ -848,6 +862,18 @@
      (clear-dependencies co cb)
    #+END_SRC
    clear all dependencies of a computed ref object.
+** clear-triggers
+   Function
+   #+BEGIN_SRC lisp
+     (clear-triggers ref)
+   #+END_SRC
+   clear all trigger-fns of /ref/.
+*** Arguments
+    | =ref= | A [[bang-object][bang-object]] |
+
+*** See also
+    - [[add-trigger-fn][add-trigger-fn]]
+    - [[make-bang][make-bang]]
 ** clip
    Function
    #+BEGIN_SRC lisp
@@ -1699,7 +1725,7 @@
 ** find-controller
    Function
    #+BEGIN_SRC lisp
-     (find-controller id)
+     (find-controller #:id)
    #+END_SRC
    Return MIDI controller instance with ID /id/ or /nil/ if not
    registered.
@@ -3233,33 +3259,33 @@
    
    =nk2-fader-last-cc= Storage of the last CC value of the 16 faders.
    
-   =s-buttons= Array of 8 [[ref-object][ref-objects]] containing the state of the 8 S buttons with a value of 0 or 1.
+   =s-buttons= Array of 8 [[bang-object][ref-objects]] containing the state of the 8 S buttons with a value of 0 or 1.
    
-   =m-buttons= Array of 8 [[ref-object][ref-objects]] containing the state of the 8 M buttons with a value of 0 or 1.
+   =m-buttons= Array of 8 [[bang-object][ref-objects]] containing the state of the 8 M buttons with a value of 0 or 1.
    
-   =r-buttons= Array of 8 [[ref-object][ref-objects]] containing the state of the 8 R buttons with a value of 0 or 1.
+   =r-buttons= Array of 8 [[bang-object][ref-objects]] containing the state of the 8 R buttons with a value of 0 or 1.
    
-   =track-left= [[ref-object][ref-object]] of the track left button.
+   =track-left= [[bang-object][bang-object]] of the track left button.
    
-   =track-right= [[ref-object][ref-object]] of the track right button.
+   =track-right= [[bang-object][bang-object]] of the track right button.
    
-   =cycle= [[ref-object][ref-object]] of the cycle button.
+   =cycle= [[bang-object][bang-object]] of the cycle button.
    
-   =set-marker= [[ref-object][ref-object]] of the set marker button.
+   =set-marker= [[bang-object][bang-object]] of the set marker button.
    
-   =marker-left= [[ref-object][ref-object]] of the marker left button.
+   =marker-left= [[bang-object][bang-object]] of the marker left button.
    
-   =marker-right= [[ref-object][ref-object]] of the marker right button.
+   =marker-right= [[bang-object][bang-object]] of the marker right button.
    
-   =tr-rewind= [[ref-object][ref-object]] of the rewind transport button.
+   =tr-rewind= [[bang-object][bang-object]] of the rewind transport button.
    
-   =tr-ffwd= [[ref-object][ref-object]] of the fast forward transport button.
+   =tr-ffwd= [[bang-object][bang-object]] of the fast forward transport button.
    
-   =tr-stop= [[ref-object][ref-object]] of the stop transport button.
+   =tr-stop= [[bang-object][bang-object]] of the stop transport button.
    
-   =tr-play= [[ref-object][ref-object]] of the play transport button.
+   =tr-play= [[bang-object][bang-object]] of the play transport button.
    
-   =tr-record= [[ref-object][ref-object]] of the record transport button.
+   =tr-record= [[bang-object][bang-object]] of the record transport button.
 *** See also
     - [[midi-controller][midi-controller]]
 ** nanoktl2-preset-gui
@@ -4127,7 +4153,7 @@
 ** remove-midi-controller
    Function
    #+BEGIN_SRC lisp
-     (remove-midi-controller id)
+     (remove-midi-controller #:id)
    #+END_SRC
    Unregister and delete the instance of a midi controller with ID /id/.
 *** Arguments
@@ -5036,6 +5062,16 @@
      (text-anchor object)
    #+END_SRC
    automatically generated reader method
+** toggle-ref-fn
+   Function
+   #+BEGIN_SRC lisp
+     (toggle-ref-fn ref)
+   #+END_SRC
+   Return a function of no arguments which toggles the ref-cell /ref/
+   between 0 and 1.
+*** Arguments
+    | =ref= | A [[ref-object][ref-object]] or [[bang-object][bang-object]] |
+
 ** toggle-slot
    Macro
    #+BEGIN_SRC lisp
@@ -5113,21 +5149,25 @@
    #+BEGIN_SRC lisp
      (update-all-controllers midi-in-port)
    #+END_SRC
-   call [[update-state][update-state]] on all registered midi-controllers of
+   call [[update-hw-state][update-hw-state]] on all registered midi-controllers of
    /midi-in-port/.
+** update-hw-state
+   Generic Function
+   #+BEGIN_SRC lisp
+     (update-hw-state instance)
+   #+END_SRC
+   Update the state of a Midicontroller Hardware by sending all values of
+   /instance/ to its midi-out port.
+*** Arguments
+    | =instance= | An instance of a class or subclass of [[midi-controller][midi-controller]]. |
+
+*** See also
+    - [[clamps:cl-midictl][cl-midictl]]
 ** update-preset-buttons
    Function
    #+BEGIN_SRC lisp
      (update-preset-buttons controller)
    #+END_SRC
-** update-state
-   Generic Function
-   #+BEGIN_SRC lisp
-     (update-state instance)
-   #+END_SRC
-   Set the state of the hardware of [[midi-controller][midi-controller]] /instance/
-   according to [[#midi-cc-state][*​​midi-cc-state​​*]] by sending all 128 cc values of the
-   controllers midi-channel to the midi-controller's midi output.
 * V
 ** v-append
    Macro

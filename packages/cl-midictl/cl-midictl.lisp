@@ -379,9 +379,9 @@ controller actions."))
 
 ;;; (make-instance 'midi-controller)
 
-(defgeneric update-state (instance))
+(defgeneric update-hw-state (instance))
 
-(defmethod update-state ((instance midi-controller))
+(defmethod update-hw-state ((instance midi-controller))
   "Set the state of the hardware of <<midi-controller>> /instance/
 according to <<*midi-cc-state*>> by sending all 128 cc values of the
 controllers midi-channel to the midi-controller's midi output."
@@ -582,10 +582,10 @@ start-midi-receive
 ;;; (stop-midi-receive *midi-in1*)
 
 (defun update-all-controllers (midi-in-port)
-  "call <<update-state>> on all registered midi-controllers of
+  "call <<update-hw-state>> on all registered midi-controllers of
 /midi-in-port/."
   (dolist (controller (gethash midi-in-port *midi-controllers*))
-    (update-state controller)))
+    (update-hw-state controller)))
 
 ;;; (start-midi-engine)
 
