@@ -86,16 +86,20 @@ conventions. Returns the plist."
     for line = (read-line in nil nil)
 ;;;    do (break "line: ~S" line)
     while line
-    until (string= (string-left-trim '(#\SPACE #\TAB) line)  "<region>")
+    until (and (>= (length line) 8) (string= (subseq (string-left-trim '(#\SPACE #\TAB) (string-downcase line)) 0 8)  "<region>"))
     finally (return line)))
 
-(defun parse-region (in)
-    (loop
-      for line = (read-line in nil nil)
+(defun parse-region (in first-line)
+  (append
+   (line->plist
+    (string-left-trim '(#\SPACE #\TAB)
+                      (subseq (string-left-trim '(#\SPACE #\TAB) first-line) 8 nil)))
+   (loop
+     for line = (read-line in nil nil)
 ;;;      do (break "line: ~S" line)
-      while line
-      until (string= (string-left-trim '(#\SPACE #\TAB) line) "")
-      append (if line (line->plist line))))
+     while line
+     until (string= (string-left-trim '(#\SPACE #\TAB) line) "")
+     append (if line (line->plist line)))))
 
 (defun keynum->pitch2 (keynum)
   (multiple-value-bind (oct pc) (floor keynum 12)
@@ -119,8 +123,9 @@ conventions. Returns the plist."
   "Parse all regions in file to plists and return them in a list."
   (with-open-file (in file)
     (loop
-      while (skip-to-next-region in)
-      collect (parse-region in) into result
+      for line = (skip-to-next-region in)
+      while line
+      collect (parse-region in line) into result
       finally (return result))))
 
 ;;; (parse-sfz "/home/orm/work/snd/sfz/Flute-nv/000_Flute-nv.sfz")
