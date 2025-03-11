@@ -2130,6 +2130,12 @@ with-props
          collect ,@body))
 |#
 
+(defun hash-table-contents (hash-table)
+  "Return all key/value pairs of /hash-table/ in a list."
+  (let ((res nil))
+    (maphash (lambda (key val) (push (list key val) res)) hash-table)
+    res))
+
 (defmacro do-proplist/collecting ((keysym valuesym) proplist &body body)
   "Like do-proplist but collecting the result. All keys and values of
 /proplist/ are bound to the symbols /keysym/ and /valuesym/ in the

@@ -88,6 +88,7 @@
            cl-midictl:*global-midi-channel* cm:pwd orm-utils:n-apply
            orm-utils:rfind collect-pool orm-utils:n-lin
            cl-sfz:sfz-preset-loaded? orm-utils:subseqx
+           clog-dsp-widgets:unregister-element
            cl-midictl:update-preset-buttons clog-dsp-widgets:pulse-on
            ats-cuda-display:restore-tables orm-utils:make-keyword
            orm-utils:m-exp-dev orm-utils:fv2ct cl-midictl:*midi-cc-fns*

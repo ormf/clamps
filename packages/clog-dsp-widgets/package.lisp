@@ -30,6 +30,7 @@
    #:bind-ref-to-attr
    #:bind-refs-to-attrs
    #:b-unregister
+   #:unregister-element
    #:set-on-data
    #:create-o-knob
    #:create-o-numbox
@@ -53,5 +54,4 @@
    #:highlight
    #:start-gui
    #:new-gui-window
-
    #:clog-dsp-widgets-initialize))

@@ -338,6 +338,21 @@ remove-midi-controller
 remove-all-midi-controllers
 "))
 
+(defmethod initialize-instance :after ((instance midi-controller) &rest args)
+  (declare (ignorable args))
+  (with-slots (id midi-input midi-output chan) instance
+;;    (format t "~&midictl-id: ~a ~%" id)
+    (if (gethash id *midi-controllers*)
+        (warn "id already used: ~a" id)
+        (progn
+          (unless chan (setf chan *global-midi-channel*))
+          (setf midi-input (or midi-input *midi-in1*))
+          (format t "adding midi controller ~S~%" id)
+          (setf midi-output (ensure-default-midi-out midi-output))
+          (when id
+            (push instance (gethash midi-input *midi-controllers*))
+            (setf (gethash id *midi-controllers*) instance))))))
+
 (defgeneric (setf midi-input) (new-midi-in instance)
   (:method (new-midi-in (instance midi-controller))
     (if (member instance (gethash (midi-input instance) *midi-controllers*))
@@ -393,20 +408,6 @@ controllers midi-channel to the midi-controller's midi output."
 
 (defun ensure-defaultmidi-out (midi-out)
   (or midi-out *midi-out1*))
-
-(defmethod initialize-instance :after ((instance midi-controller) &rest args)
-  (declare (ignorable args))
-  (with-slots (id midi-input midi-output chan) instance
-;;    (format t "~&midictl-id: ~a ~%" id)
-    (if (gethash id *midi-controllers*)
-        (warn "id already used: ~a" id)
-        (progn
-          (unless chan (setf chan *global-midi-channel*))
-          (setf midi-input (or midi-input *midi-in1*))
-          (format t "adding midi controller ~S~%" id)
-          (setf midi-output (ensure-default-midi-out midi-output))
-          (push instance (gethash midi-input *midi-controllers*))
-          (setf (gethash id *midi-controllers*) instance)))))
 
 ;;; central registry for midi controllers:
 

@@ -144,7 +144,13 @@ array of bindings, depending on the class."))
                   seq)))
 
 (defmacro b-unregister (element binding)
-  `(setf (b-elist ,binding) (remove ,element (b-elist ,binding))))
+  "Unregister element from binding e-list, removing the binding from the
+hash-table if its e-list is empty."
+  `(progn
+     (setf (b-elist ,binding) (remove ,element (b-elist ,binding)))
+     (unless (b-elist ,binding)
+       (remhash (binding-name (b-ref ,binding) (b-attr ,binding))
+                *bindings*))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;                       clog part                                          ;;;
@@ -187,6 +193,7 @@ array of bindings, depending on the class."))
 ;;; o-knob is a custom html element defined in js:
 
 (defun create-o-knob (parent bindings &key (unit "") (precision 2) min max width height step css)
+  (declare (ignorable width height))
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
@@ -213,6 +220,7 @@ array of bindings, depending on the class."))
     element))
 
 (defun create-o-numbox (parent bindings &key min max width height (precision 2) css)
+  (declare (ignorable width height))
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
@@ -260,6 +268,7 @@ array of bindings, depending on the class."))
     "[0]"))
 
 (defun create-o-scope (parent bindings &key width height css buffer)
+  (declare (ignorable width height))
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
@@ -310,6 +319,7 @@ array of bindings, depending on the class."))
 
 ;;; (funcall (clog-trigger-fn (elt *bangs* 0)))
 
+
 (defun create-o-bang (parent bindings &key width height label (background '("transparent" "orange")) color flash-time css flash)
   (declare (ignorable width height))
   (let* ((var (b-ref (first bindings)))
@@ -332,13 +342,10 @@ array of bindings, depending on the class."))
       (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
-                   ;; (incudine.util:msg :info "~&~%clog event from ~a: ~a~%" element
-                   ;;                    (or (if (gethash "close" data) "close")
-                   ;;                        (gethash attr data)))
+                   (incudine.util:msg :info "clog event from ~a: ~{~{~S~^ ~}~^,~}" (html-id element)
+                                      (ou:hash-table-contents data))
                    (cond ((gethash "close" data)
-                          (progn
-;;;                              (format t "closing bang~%")
-                            (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding)))))) ;;; cleanup: unregister elem.
+                          (unregister-element element bindings)) ;;; cleanup: unregister elem.
                          (t (let ((*refs-seen* (list (list obj "bang"))))
                               ;; (incudine.util:msg :info "~&triggering: ~a~%" var
                               ;;                    (or (if (gethash "close" data) "close")
@@ -347,10 +354,17 @@ array of bindings, depending on the class."))
                               (%trigger var))))))
     element))
 
+(defun unregister-element (element bindings)
+  "Remove element from all bindings, removing the binding from the
+hash-table if its element-list is empty."
+  (dolist (binding bindings)
+    (b-unregister element binding)))
+
 (defun array->attr (arr)
   (format nil "[~{~a~^, ~}]" (coerce arr 'list)))
 
 (defun create-o-toggle (parent bindings &key width height label (background '("transparent" "orange")) color flash-time values css)
+  (declare (ignorable width height))
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))
          (element (create-child
@@ -379,16 +393,15 @@ array of bindings, depending on the class."))
                      ;;                     (or (if (gethash "close" data) "close")
                      ;;                         (gethash attr data))))
                      (cond ((gethash "close" data)
-                            (progn
-;;;                              (format t "closing toggle~%")
-                              (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding))))))
+                            (unregister-element element bindings))
                            (t (%set-val var (read-from-string (gethash attr data))))
                            ))))
     element))
 
 (defun create-o-radio (parent bindings &key labels label width height (background '(("transparent") ("orange")))
                                         color flash-time values (num 8) (direction :right) css)
-  (declare (type (member :up :right :down :left) direction))
+  (declare (type (member :up :right :down :left) direction)
+           (ignorable width height))
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings))) ;;; format nil "~{~a~^,~}"
          (element (create-child
@@ -415,13 +428,8 @@ array of bindings, depending on the class."))
                  (lambda (obj data)
                    (declare (ignore obj))
                    (let ((*refs-seen* (list (list element attr))))
-                     ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                     ;;                     (or (if (gethash "close" data) "close")
-                     ;;                         (gethash attr data))))
                      (cond ((gethash "close" data)
-                            (progn
-;;;                              (format t "closing radio~%")
-                              (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding))))))
+                            (unregister-element element bindings))
                            (t (%set-val var (gethash attr data)))))))
     element))
 
@@ -456,13 +464,8 @@ array of bindings, depending on the class."))
                  (lambda (obj data)
                    (declare (ignore obj))
                    (let ((*refs-seen* (list (list element attr)))) ;;; set context for %set-val below
-                     ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
-                     ;;                     (or (if (gethash "close" data) "close")
-                     ;;                         (gethash attr data))))
                      (cond ((gethash "close" data)
-                            (progn
-;;;                              (format t "closing slider~%")
-                              (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding))))))
+                            (unregister-element element bindings))
                            (t (%set-val var (gethash attr data)))))))
     element))
 
@@ -473,7 +476,8 @@ array of bindings, depending on the class."))
                              width height
                                label background colors (thumb-color "transparent")
                                (mapping :lin) (clip-zero nil))
-  (declare (type (member :lin :log) mapping)
+  (declare (ignorable width height)
+           (type (member :lin :log) mapping)
            (type (member :up :right :down :left) direction))
   (let* ((num-sliders (length (first bindings)))
          (element (create-child
@@ -526,9 +530,7 @@ array of bindings, depending on the class."))
                      ;;                     (or (if (gethash "close" data) "close")
                      ;;                         (gethash attr data))))
                      (cond ((gethash "close" data)
-                            (progn
-;;;                              (format t "closing vumeter~%")
-                              (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding))))))))))
+                            (unregister-element element bindings))))))
     element))
 
 (defun create-o-svg (parent bindings &key svg padding css (cursor-pos 0) (shift-x 0) (shift-y 0) (background "#fff") (scale 1) (inverse 0))
@@ -557,9 +559,7 @@ array of bindings, depending on the class."))
                    ;;                        (gethash attr data)))
                    (cond
                      ((gethash "close" data)
-                      (progn
-;;;                              (format t "closing o-svg~%")
-                        (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding))))))
+                      (unregister-element element bindings))
                      (t
                       (dolist (binding bindings)
                         (let* ((attr (b-attr binding))
