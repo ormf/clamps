@@ -161,7 +161,7 @@ transformed into toggles.
                  43 44 42 41 45 ;;; transport: rew, ffwd, stop, play, rec
                  ))
            'vector))
-    (setf midi-output (clamps:ensure-jackmidi midi-output))
+;;;    (setf midi-output (cm:ensure-jackmidi midi-output))
     (loop
       for idx from 0
       for ccnum across cc-nums
@@ -185,12 +185,17 @@ transformed into toggles.
          (v-collect (n 11) (+ n 40)))
     (loop
       for i from 16 below (length cc-nums) ;;; reflect the value of all buttons in the hardware LED.
-      do (let ((local-idx i))
+      do (let* ((local-idx i)
+                (cc-num (aref cc-nums local-idx))
+                (local-pulsar (make-led-pulsar cc-num chan midi-output)))
            (push (watch (lambda ()
-                          (let ((cc-num (aref cc-nums local-idx)))
-                            (osc-midi-write-short
-                             midi-output
-                             (+ (1- chan) 176) cc-num (if (zerop (round (get-val (aref cc-state local-idx)))) 0 127)))))
+                          (let ((state (round (get-val (aref cc-state local-idx)))))
+                            (case state
+                              ((0 1) (funcall local-pulsar :stop)
+                               (osc-midi-write-short
+                                midi-output
+                                (+ (1- chan) 176) cc-num (if (zerop state) 0 127)))
+                              (2 (funcall local-pulsar :start))))))
                  unwatch)
            (set-val (aref cc-state local-idx) (get-val (aref (aref *midi-cc-state* (1- chan)) (aref cc-nums local-idx)))))))
   (update-hw-state obj))

@@ -66,4 +66,6 @@
    #:UNWATCH
    #:BUCHLA-SCALE
    #:SHOW-MIDI-CC-FNS
+   #:SHOW-MIDI-CC-FNS
+   #:MAKE-LED-PULSAR
    ))

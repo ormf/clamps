@@ -98,3 +98,56 @@ body - Zero or more lisp forms.
          (setf (gui-update-off ,instance) t))
      (unwind-protect ,@body
        (setf (gui-update-off ,instance) tmp))))
+
+(defun make-led-pulsar (ccnum chan midi-output &key (freq 2) (pulse-width 0.5))
+  "Return an \"instance\" (closure) of a pulse generator flashing a LED
+on an external MIDI Harware device by sending the values 0/127 using
+/ccnum/, /chan/ and /midi-output/.
+
+Funcalling the returned instance with the :start argumnet will start
+the pulse, funcalling it with the :stop argument will stop flashing.
+
+@Example
+
+(defvar *my-pulsar* (make-led-pulsar 32 1 (cm:ensure-jackmidi:*midi-out1*)))
+
+(funcall *my-pulsar*:start)
+
+(funcall *my-pulsar*:stop)
+
+"
+  (let (node-id
+        running)
+    (lambda (cmd)
+      (case cmd
+        (:start (unless running
+                  (incudine::pulse-midi-led chan ccnum :midi-out midi-output :freq freq :pulse-width pulse-width :tail 100
+                                                       :action (lambda (id) (setf node-id id)))
+                  (setf running t)))
+        (:stop (free node-id)
+         (when running
+           (setf running nil)
+           (cl-midictl:osc-midi-write-short
+            midi-output
+            (+ (1- chan) 176) ccnum 0)))))))
+
+(in-package :incudine)
+
+(define-vug pulse-0-1 (freq width)
+  "Pulse wave oscillator with frequency FREQ, amplitude AMP and WIDTH
+between 0 and 1."
+  (:defaults 4 .5)
+  (if (< (phasor freq 0) width) 1 0))
+
+(dsp! pulse-midi-led ((chan channel-number) (cc-num channel-number) freq pulse-width (midi-out jackmidi:output-stream))
+  "Pulse an LED on an external MIDI Hardware controller with freq and
+pulse-width by sending  0/127 to /ccnum/ on /chan/ using /midi-out/ ."
+  (:defaults 0 0 0.5 0.5 (incudine:incudine-missing-arg "MIDI-OUTPUT"))
+  (with ((state 0))
+    (foreach-frame
+      (let ((new-state (round (pulse-0-1 freq pulse-width))))
+        (when (/= new-state state)
+            (cl-midictl:osc-midi-write-short
+             midi-out
+             (+ (1- chan) 176) cc-num (if (zerop state) 127 0))
+            (setf state new-state))))))
