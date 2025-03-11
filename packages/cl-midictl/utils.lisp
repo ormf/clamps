@@ -99,6 +99,13 @@ body - Zero or more lisp forms.
      (unwind-protect ,@body
        (setf (gui-update-off ,instance) tmp))))
 
+(defun toggle-ref-watch (ref &optional (modulo 2))
+  "Install a function to cycle the value of /ref/ between 0 and (1-
+/modulo/ on trigger. Returns its uninstall function."
+  (let ((fn (toggle-ref-fn ref modulo)))
+    (pushnew fn (trigger-fns ref))
+    (lambda () (setf (trigger-fns ref) (remove fn (trigger-fns ref))))))
+
 (defun make-led-pulsar (ccnum chan midi-output &key (freq 2) (pulse-width 0.5))
   "Return an \"instance\" (closure) of a pulse generator flashing a LED
 on an external MIDI Harware device by sending the values 0/127 using

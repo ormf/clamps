@@ -42,6 +42,7 @@ function bang (elem) {
 
     var myBang;
     
+    
     if (elem.nodeType == undefined)
         myBang = elem.get(0);
     else
@@ -63,7 +64,7 @@ function bang (elem) {
 
     function pulseOn(ms) {
         myBang.pulseActive = true;
-        if (myBang.style.background === myBang.getAttribute('background-off'))
+        if (myBang.highlightState === myBang.getAttribute('background-off'))
             (myBang.pulseState == false);
         else
             (myBang.pulseState == true);
@@ -106,21 +107,29 @@ function bang (elem) {
     async function flashBang() {
         if (myBang.getAttribute('flash') != '0') {
             if (myBang.flashTime > 0) {
-                setBang(1);
+                bang.flashing = true;
+                if (myBang.highlightState == 0)
+                    setBang(1);
+                else
+                    setBang(0);
                 await sleep(myBang.flashTime);
-                
-                setBang(0);
+                setBang(myBang.highlightState);
+                bang.flashing = false;
+
             }
         }
     }
 
     function highlight(v) {
+        myBang.highlightState = v;
         switch (v) {
         case 0: myBang.pulseOff();
-            setBang(0);
+            if (!bang.flashing)
+                setBang(0);
             break;
         case 1: myBang.pulseOff();
-            setBang(1);
+            if (!bang.flashing)
+                setBang(1);
             break;
         case 2:
             myBang.pulseOn(250);
@@ -149,6 +158,7 @@ function bang (elem) {
         myBang.externalValueChange = true;
         myBang.pulseState = false;
         myBang.pulseActive = false;
+        myBang.highlightState = 0;
         myBang.ondragstart = disable;
         myBang.addEventListener('mousedown', mouseDownListener);
         addEventListener('beforeunload', (event) => {

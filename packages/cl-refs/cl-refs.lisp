@@ -394,23 +394,25 @@ make-bang
   (declare (type bang-object ref))
   (dolist (fn fns) (pushnew fn (trigger-fns ref))))
 
-(defun clear-triggers (ref)
-  "clear all trigger-fns of /ref/.
+(defun clear-triggers (ref &key (unless (lambda (elem) elem nil)))
+  "clear all trigger-fns of /ref/ which don't match the /unless/
+predicate.
 
 @Arguments
 ref - A <<bang-object>>
+unless - Predicate called on all trigger-fns to determine which functions to keep
 
 @See-also
 add-trigger-fn
 make-bang
 "
   (declare (type bang-object ref))
-  (setf (trigger-fns ref) nil))
+  (remove-if-not unless (trigger-fns ref)))
 
-(defun toggle-ref-fn (ref)
-  "Return a function of no arguments which toggles the ref-cell /ref/
-between 0 and 1.
+(defun toggle-ref-fn (ref &optional (num-states 2))
+  "Return a function of no arguments which cycles the values of ref-cell
+/ref/ between 0 and (1- /num-states/).
 
 @Arguments
 ref - A <<ref-object>> or <<bang-object>>"
-  (lambda () (set-val ref (if (zerop (get-val ref)) 1 0))))
+  (lambda () (set-val ref (mod (1+ (get-val ref)) num-states))))
