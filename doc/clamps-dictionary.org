@@ -227,15 +227,18 @@
    #+BEGIN_SRC lisp
      (add-trigger-fn ref &rest fns)
    #+END_SRC
-   add one or more fns to be executed if ref is called with the #'trigger
-   function.
+   Add one or more /fns/ to be executed when /ref/ is called with the
+   #'trigger function. The function returns a function removing the
+   trigger function(s) from ref, comparable to the [[watch][watch]] function on
+   a <ref-object>>.
 *** Arguments
-    | =ref= | A [[bang-object][bang-object]]                                                                              |
+    | =ref= | A [[bang-object][bang-object]].                                                                             |
     | =fns= | one or more functions of zero argument called when the trigger function is invoked on ref. |
 
 *** See also
-    - [[clear-triggers][clear-triggers]]
     - [[make-bang][make-bang]]
+    - [[remove-all-triggers][remove-all-triggers]]
+    - [[remove-trigger-fn][remove-trigger-fn]]
 ** all-notes-off
    Function
    #+BEGIN_SRC lisp
@@ -862,18 +865,6 @@
      (clear-dependencies co cb)
    #+END_SRC
    clear all dependencies of a computed ref object.
-** clear-triggers
-   Function
-   #+BEGIN_SRC lisp
-     (clear-triggers ref)
-   #+END_SRC
-   clear all trigger-fns of /ref/.
-*** Arguments
-    | =ref= | A [[bang-object][bang-object]] |
-
-*** See also
-    - [[add-trigger-fn][add-trigger-fn]]
-    - [[make-bang][make-bang]]
 ** clip
    Function
    #+BEGIN_SRC lisp
@@ -2089,6 +2080,12 @@
       [[./img/hanning-plot.svg]]
 *** See also
     - [[#sine1024][*​​sine1024​​*]]
+** hash-table-contents
+   Function
+   #+BEGIN_SRC lisp
+     (hash-table-contents hash-table)
+   #+END_SRC
+   Return all key/value pairs of /hash-table/ in a list.
 ** highlight
    Generic Function
    #+BEGIN_SRC lisp
@@ -2629,6 +2626,25 @@
 *** Example
     #+BEGIN_SRC lisp
       (make-keyword "Hello") => :hello
+    #+END_SRC
+** make-led-pulsar
+   Function
+   #+BEGIN_SRC lisp
+     (make-led-pulsar ccnum chan midi-output &key (freq 2) (pulse-width 0.5))
+   #+END_SRC
+   Return an "instance" (closure) of a pulse generator flashing a LED
+   on an external MIDI Harware device by sending the values 0/127 using
+   /ccnum/, /chan/ and /midi-output/.
+   
+   Funcalling the returned instance with the :start argumnet will start
+   the pulse, funcalling it with the :stop argument will stop flashing.
+*** Example
+    #+BEGIN_SRC lisp
+      (defvar *my-pulsar* (make-led-pulsar 32 1 (cm:ensure-jackmidi:*midi-out1*)))
+      
+      (funcall *my-pulsar*:start)
+      
+      (funcall *my-pulsar*:stop)
     #+END_SRC
 ** make-lsample
    Function
@@ -3222,7 +3238,7 @@
    slots with accessor methods of the same name (if not indicated
    otherwise) and initargs being the keywords of the slot symbol:
    
-   =name= -- String naming the bus. Accessor is [[bus-name][bus-name]]. Defaults to the empty string.
+   =name= -- String naming the bus. Accessoqnr is [[bus-name][bus-name]]. Defaults to the empty string.
    
    =num-chans= -- Positive Integer denoting the number of channels. Defaults to 2. Accessor is [[num-channels][num-channels]]
    
@@ -3236,56 +3252,89 @@
 ** nanoktl2-midi
    Class
 
-   Class for a Nanoktl2 midi controller.
+   Class for a Korg Nanokontrol2 midi controller. This class contains the
+   state of the Hardware Controller in respect to the Knobs, Faders and
+   Buttons of the device. If the device is connected bidirectionally to
+   the midi Ports and the instance is created with
+   [[add-midi-controller][add-midi-controller]], the following behaviour is implemented:
+   
+   - Moving the hardware faders will update the respective slots of the
+     instance. Note that the values of the slots for the faders and
+     buttons are normalized to the range [0..1].
+   
+   - Setting the values of the button slots of the instance to 0, 1 or 2
+     will highlight the respective button on the hardware controller.
+     [fn::For this to work, the LED mode of the NanoKONTROL2 has to be
+     set to /External/ (see [[clamps:Using a Korg NanoKONTROL2
+     Controller][Using a Korg NanoKONTROL2 Controller]])]
+   
+   - Pressing a button on the Hardware controller will call the
+     [[trigger][trigger]] function with the corresponding slot of the instance as
+     argument.
+   
+   See [[clamps:Using a Korg NanoKONTROL2 Controller][Using a Korg NanoKONTROL2 Controller]] in the Clamps
+   Packages documentation for usage examples.
    
    nanoktl2-midi implements the following slots with accessor methods of
    the same name and initargs being the keywords of the slot symbol:
    
-   =cc-nums= -- Array of 128 elements containing the CC numbers of all
-   buttons and faders of the NanoKontrol2.
+   =cc-nums= -- Array of 51 elements containing the CC numbers of all
+   knobs, faders and buttons of the NanoKontrol2 in the following
+   order (with their array idxs in brackets):
+   
+   | knobs [0..7]    | faders [8..15]   | s-buttons [16..23] | m-buttons [24..31] | r-buttons [32..39] |                   |
+   | track-left [40] | track-right [41] | cycle[42]          | set [43]           | marker-left [44]   | marker-right [45] |
+   | rew [46]        | ff [47]          | stop [48]          | play [49]          | rec [50]           |                   |
+   
+   =cc-state= -- Array of 51 [[bang-object][bang-objects]] or [[ref-object][ref-objects]] containing the state (value)
+   of all buttons and faders of the NanoKontrol2 in the same idx order, as in =cc-nums=.
    
    =nk2-faders= -- Array of 16 elements containing the
    [[ref-object][ref-objects]] of the 8 knobs and the 8 faders of the
-   NanoKontrol2.
+   NanoKontrol2 (same as ccstate[0..15]).
    
-   =nk2-fader-update-fns=
-   
-   =nk2-fader-modes= Array of 16 elements containing the mode of the
+   =nk2-fader-modes= -- Array of 16 elements containing the mode of the
    fader when the hardware fader is out of sync with the program state of
    the fader. Currently implemented are:
    
    - /:scale/ Scale fader values when moving the hardware fader.
    - /:jump/ Jump to the value when moving the hardware fader.
+   - /:catch/ Catch the slot-value when moving the hardware fader.
    
-   =nk2-fader-last-cc= Storage of the last CC value of the 16 faders.
+   =nk2-fader-test-sync-fns= -- Array of 16 functions, invoked if fader-mode /:catch/ is used.
    
-   =s-buttons= Array of 8 [[bang-object][ref-objects]] containing the state of the 8 S buttons with a value of 0 or 1.
+   =nk2-fader-last-cc= -- Array of 16 values containing the last (normalized) received CC values of the hardware faders.
    
-   =m-buttons= Array of 8 [[bang-object][ref-objects]] containing the state of the 8 M buttons with a value of 0 or 1.
+   =button-labels= -- Array of 35 elements containing the labels of all
+   buttons of the NanoKontrol2.
    
-   =r-buttons= Array of 8 [[bang-object][ref-objects]] containing the state of the 8 R buttons with a value of 0 or 1.
+   =s-buttons= -- Array of 8 [[bang-object][bang-objects]] containing the state of the 8 S buttons with a value of 0, 1 or 2 (same as ccstate[16..23]).
    
-   =track-left= [[bang-object][bang-object]] of the track left button.
+   =m-buttons= -- Array of 8 [[bang-object][bang-objects]] containing the state of the 8 M buttons with a value of 0, 1 or 2 (same as ccstate[24..31]).
    
-   =track-right= [[bang-object][bang-object]] of the track right button.
+   =r-buttons= -- Array of 8 [[bang-object][bang-objects]] containing the state of the 8 R buttons with a value of 0 or 1 (same as ccstate[32..39]).
    
-   =cycle= [[bang-object][bang-object]] of the cycle button.
+   =track-left= -- [[bang-object][bang-object]] of the track left button (same as ccstate[40]).
    
-   =set-marker= [[bang-object][bang-object]] of the set marker button.
+   =track-right= -- [[bang-object][bang-object]] of the track right button (same as ccstate[41]).
    
-   =marker-left= [[bang-object][bang-object]] of the marker left button.
+   =cycle= -- [[bang-object][bang-object]] of the cycle button (same as ccstate[42]).
    
-   =marker-right= [[bang-object][bang-object]] of the marker right button.
+   =set-marker= -- [[bang-object][bang-object]] of the set marker button (same as ccstate[43]).
    
-   =tr-rewind= [[bang-object][bang-object]] of the rewind transport button.
+   =marker-left= -- [[bang-object][bang-object]] of the marker left button (same as ccstate[44]).
    
-   =tr-ffwd= [[bang-object][bang-object]] of the fast forward transport button.
+   =marker-right= -- [[bang-object][bang-object]] of the marker right button (same as ccstate[45]).
    
-   =tr-stop= [[bang-object][bang-object]] of the stop transport button.
+   =tr-rewind= -- [[bang-object][bang-object]] of the rewind transport button (same as ccstate[46]).
    
-   =tr-play= [[bang-object][bang-object]] of the play transport button.
+   =tr-ffwd= -- [[bang-object][bang-object]] of the fast forward transport button (same as ccstate[47]).
    
-   =tr-record= [[bang-object][bang-object]] of the record transport button.
+   =tr-stop= -- [[bang-object][bang-object]] of the stop transport button (same as ccstate[48]).
+   
+   =tr-play= -- [[bang-object][bang-object]] of the play transport button (same as ccstate[49]).
+   
+   =tr-record= -- [[bang-object][bang-object]] of the record transport button (same as ccstate[50]).
 *** See also
     - [[midi-controller][midi-controller]]
 ** nanoktl2-preset-gui
@@ -3301,6 +3350,12 @@
    #+BEGIN_SRC lisp
      (new-id svg-file id-type)
    #+END_SRC
+** nk2-fader-test-sync-fns
+   Generic Function
+   #+BEGIN_SRC lisp
+     (nk2-fader-test-sync-fns object)
+   #+END_SRC
+   automatically generated reader method
 ** node-free-unprotected
    Function
    #+BEGIN_SRC lisp
@@ -4096,6 +4151,21 @@
     - [[add-rts-hush-hook][add-rts-hush-hook]]
     - [[rts-hush][rts-hush]]
     - [[show-rts-hush-hooks][show-rts-hush-hooks]]
+** remove-all-triggers
+   Function
+   #+BEGIN_SRC lisp
+     (remove-all-triggers ref &key (unless (lambda (elem) elem nil)))
+   #+END_SRC
+   Remove all trigger-fns of /ref/ which don't match the /unless/
+   predicate.
+*** Arguments
+    | =ref=    | A [[bang-object][bang-object]].                                                            |
+    | =unless= | Predicate called on all trigger-fns to determine which functions to keep. |
+
+*** See also
+    - [[add-trigger-fn][add-trigger-fn]]
+    - [[remove-trigger-fn][remove-trigger-fn]]
+    - [[make-bang][make-bang]]
 ** remove-buffer
    Function
    #+BEGIN_SRC lisp
@@ -4190,6 +4260,20 @@
     - [[sfz-get-range][sfz-get-range]]
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
+** remove-trigger-fn
+   Function
+   #+BEGIN_SRC lisp
+     (remove-trigger-fn ref fn)
+   #+END_SRC
+   Remove /fn/ from the trigger-fns of /ref/.
+*** Arguments
+    | =ref=    | A [[bang-object][bang-object]].                                                            |
+    | =unless= | Predicate called on all trigger-fns to determine which functions to keep. |
+
+*** See also
+    - [[add-trigger-fn][add-trigger-fn]]
+    - [[make-bang][make-bang]]
+    - [[remove-all-triggers][remove-all-triggers]]
 ** repeat
    Function
    #+BEGIN_SRC lisp
@@ -5065,13 +5149,20 @@
 ** toggle-ref-fn
    Function
    #+BEGIN_SRC lisp
-     (toggle-ref-fn ref)
+     (toggle-ref-fn ref &optional (num-states 2))
    #+END_SRC
-   Return a function of no arguments which toggles the ref-cell /ref/
-   between 0 and 1.
+   Return a function of no arguments which cycles the values of ref-cell
+   /ref/ between 0 and (1- /num-states/).
 *** Arguments
-    | =ref= | A [[ref-object][ref-object]] or [[bang-object][bang-object]] |
+    | =ref= | A [[ref-object][ref-object]] or [[bang-object][bang-object]]. |
 
+** toggle-ref-watch
+   Function
+   #+BEGIN_SRC lisp
+     (toggle-ref-watch ref &optional (modulo 2))
+   #+END_SRC
+   Install a function to cycle the value of /ref/ between 0 and (1-
+   /modulo/ on trigger. Returns its uninstall function.
 ** toggle-slot
    Macro
    #+BEGIN_SRC lisp
@@ -5138,6 +5229,13 @@
      (ucopy sym)
    #+END_SRC
    Copy an instance of a class recursively.
+** unregister-element
+   Function
+   #+BEGIN_SRC lisp
+     (unregister-element element bindings)
+   #+END_SRC
+   Remove element from all bindings, removing the binding from the
+   hash-table if its element-list is empty.
 ** unwatch
    Generic Function
    #+BEGIN_SRC lisp

@@ -380,39 +380,60 @@ set-val
                  (lambda (val) (%set-val ref val))))
 
 (defun add-trigger-fn (ref &rest fns)
-  "add one or more fns to be executed if ref is called with the #'trigger
-function.
+  "Add one or more /fns/ to be executed when /ref/ is called with the
+#'trigger function. The function returns a function removing the
+trigger function(s) from ref, comparable to the <<watch>> function on
+a <ref-object>>.
 
 @Arguments
-ref - A <<bang-object>>
+ref - A <<bang-object>>.
 fns - one or more functions of zero argument called when the trigger function is invoked on ref.
 
 @See-also
-clear-triggers
 make-bang
+remove-all-triggers
+remove-trigger-fn
 "
   (declare (type bang-object ref))
-  (dolist (fn fns) (pushnew fn (trigger-fns ref))))
+  (dolist (fn fns) (pushnew fn (trigger-fns ref)))
+  (lambda () (dolist (fn fns) (remove-trigger-fn ref fn))))
 
-(defun clear-triggers (ref &key (unless (lambda (elem) elem nil)))
-  "clear all trigger-fns of /ref/ which don't match the /unless/
+(defun remove-all-triggers (ref &key (unless (lambda (elem) elem nil)))
+  "Remove all trigger-fns of /ref/ which don't match the /unless/
 predicate.
 
 @Arguments
-ref - A <<bang-object>>
-unless - Predicate called on all trigger-fns to determine which functions to keep
+ref - A <<bang-object>>.
+unless - Predicate called on all trigger-fns to determine which functions to keep.
+
+@See-also
+add-trigger-fn
+remove-trigger-fn
+make-bang
+"
+  (declare (type bang-object ref))
+  (setf (trigger-fns ref) (remove-if-not unless (trigger-fns ref))))
+
+(defun remove-trigger-fn (ref fn)
+  "Remove /fn/ from the trigger-fns of /ref/.
+
+@Arguments
+ref - A <<bang-object>>.
+unless - Predicate called on all trigger-fns to determine which functions to keep.
 
 @See-also
 add-trigger-fn
 make-bang
+remove-all-triggers
 "
   (declare (type bang-object ref))
-  (remove-if-not unless (trigger-fns ref)))
+  (setf (trigger-fns ref) (remove fn (trigger-fns ref))))
 
 (defun toggle-ref-fn (ref &optional (num-states 2))
   "Return a function of no arguments which cycles the values of ref-cell
 /ref/ between 0 and (1- /num-states/).
 
 @Arguments
-ref - A <<ref-object>> or <<bang-object>>"
+ref - A <<ref-object>> or <<bang-object>>.
+"
   (lambda () (set-val ref (mod (1+ (get-val ref)) num-states))))

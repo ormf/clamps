@@ -63,10 +63,7 @@
 ;;; indexes 0->45.
 
 (defclass nanoktl2-preset-midi (nanoktl2-midi)
-  ((button-labels :initarg :button-labels :accessor button-labels
-                  :initform (loop for i below 16 collect (make-ref (format nil "~a" i)))
-                  :documentation "labels of preset buttons in gui (if present)")
-   (curr-bank :initform (make-ref 0) :initarg :curr-bank :accessor curr-bank
+  ((curr-bank :initform (make-ref 0) :initarg :curr-bank :accessor curr-bank
               :documentation "idx of current preset bank")
    (cp-src :initform nil :initarg :cp-src :accessor cp-src
            :documentation "idx of src preset to copy")

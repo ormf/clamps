@@ -110,7 +110,7 @@ arg2 - Number denoting the bets per minute.
   (typecase obj
     (poolevt
      (let* ((end (sv obj :end))
-            (buffer (of-incudine-dsps:lsample-buffer (sv obj :lsample)))
+            (buffer (of-incudine-dsps:lsample-buffer (sv obj of-incudine-dsps:lsample)))
             (bufdur (float (/ (incudine::buffer-frames buffer)
                               (incudine::buffer-sample-rate buffer))
                            1.0)))
@@ -151,11 +151,7 @@ arg2 - Number denoting the bets per minute.
                             (poolevt (sv* obj :stretch (get-val clamps.svgd:timescale)))
                             (t (sv* obj :duration (get-val clamps.svgd:timescale))))))
                     (incudine.util::msg :info "~a~%" obj)
-                    (sprout obj))
-                  ))
-              ))
-          ;;          (browser-play (* offs 6.041) :tscale (/ 1/8 6.041))
-          ))))
+                    (sprout obj))))))))))
 
 (defmacro sv- (obj slot val &body more) (svaux obj '- slot val more))
 
@@ -277,10 +273,16 @@ arg2 - Number denoting the bets per minute.
   "convert t to 1 and nil to 0."
   (if bool 1 0))
 
+(defun timeshift-seq (seq timeshift &key (timescale 1))
+  (let ((real-shift (* timeshift timescale)))
+    (map-subobjects (lambda (obj) (sv+ obj cm::time real-shift)) seq))
+  seq)
+
 (defun svg->browser (svg-file &key (bar-lines t) (staff-systems t)
                                 (piano-roll nil) (scale 1)
                                 (timescale 1/32) (inverse nil)
-                                (reload t))
+                                (reload t)
+                                timeshift)
   "Display =svg-file= in the SVG Player Gui, located at
 /<clamps-base-url>/svg-display/.
 
@@ -299,7 +301,13 @@ directory.
 
 :timescale - Positive number denoting The timescale for playback.
 
+:timeshift - Positive number denoting The timescale for playback.
+
 :inverse - 0 or 1 indicating inverse colors.
+
+:reload - Boolean indicating whether to reload the html page
+
+:timeshift - Number denoting an optional timeshift (will also be scaled by :timescale).
 
 @Example
 
@@ -362,7 +370,7 @@ svg-gui-path
                                     :x-scale 1)))
                              (set-val clamps.svgd:timescale timescale)
                              (format t "~&seq: ~a~%" seq)
-                             (set-val clamps.svgd:seq seq)
+                             (set-val clamps.svgd:seq (if timeshift (timeshift-seq seq timeshift :timescale timescale) seq))
                              (when seq
                                (setf (container-subobjects seq)
                                      (sort (subobjects seq) #'< :key #'object-time)))

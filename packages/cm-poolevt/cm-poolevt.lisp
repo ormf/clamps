@@ -108,7 +108,7 @@ an external package, a leading <package-name>: has to be provided."
 ;;;  (if *debug* (format t "~&svg->poolevent: ~a~%" args))
 ;;;  (break "svg->poolevt: args: ~S" args)
   (ou:with-props (lsample lsample-keynum lsample-amp lsample-oneshot saved-keynum keynum
-                       amp amplitude duration start end stretch loopstart loopend adjust-stretch)
+                     oneshot  amp amplitude duration start end stretch loopstart loopend adjust-stretch)
       args
     (let ((buf (incudine-bufs:ensure-buffer lsample)))
       (let* ((buffer (if (consp buf) (first buf) buf))

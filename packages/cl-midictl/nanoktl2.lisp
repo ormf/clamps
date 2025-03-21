@@ -27,11 +27,16 @@
 
 (defclass nanoktl2-midi (midi-controller)
   ((nk2-faders :accessor nk2-faders)
-   (nk2-fader-update-fns :accessor nk2-fader-update-fns :initform (coerce (loop repeat 16 collect nil) 'vector))
+   (nk2-fader-test-sync-fns :accessor nk2-fader-test-sync-fns :initform (coerce (loop repeat 16 collect nil) 'vector))
    (nk2-fader-modes :accessor nk2-fader-modes :initform (coerce (loop repeat 16 collect :scale) 'vector))
    (nk2-fader-last-cc :accessor nk2-fader-last-cc :initform (coerce (loop repeat 16 collect 0) 'vector))
    (button-labels :initarg :button-labels :accessor button-labels
-                  :initform (coerce (loop for i below 24 collect (make-ref (format nil "~a" (elt '("s" "m" "r") (floor i 8))))) 'vector)
+                  :initform (coerce (append
+                                     (loop for i below 24 collect (make-ref (format nil "~a" (elt '("s" "m" "r") (floor i 8)))))
+                                     (mapcar #'make-ref '("<" ">"
+                                                          "cycle" "set" "<" ">"
+                                                          "<<" ">>" "stop" "play" "rec")))
+                                    'vector)
                   :documentation "labels of preset buttons in gui (if present)")
    (hide-fader :accessor hide-fader :initform nil)
    (s-buttons :accessor s-buttons)
@@ -49,66 +54,95 @@
    (tr-play :accessor tr-play)
    (tr-rec :accessor tr-rec)
    (cc-nums :accessor cc-nums))
-  (:documentation "Class for a Nanoktl2 midi controller.
+  (:documentation "Class for a Korg Nanokontrol2 midi controller. This class contains the
+state of the Hardware Controller in respect to the Knobs, Faders and
+Buttons of the device. If the device is connected bidirectionally to
+the midi Ports and the instance is created with
+<<add-midi-controller>>, the following behaviour is implemented:
+
+- Moving the hardware faders will update the respective slots of the
+  instance. Note that the values of the slots for the faders and
+  buttons are normalized to the range [0..1].
+
+- Setting the values of the button slots of the instance to 0, 1 or 2
+  will highlight the respective button on the hardware controller.
+  [fn::For this to work, the LED mode of the NanoKONTROL2 has to be
+  set to /External/ (see [[clamps:Using a Korg NanoKONTROL2
+  Controller][Using a Korg NanoKONTROL2 Controller]])]
+
+- Pressing a button on the Hardware controller will call the
+  <<trigger>> function with the corresponding slot of the instance as
+  argument.
+
+See <<clamps:Using a Korg NanoKONTROL2 Controller>> in the Clamps
+Packages documentation for usage examples.
 
 nanoktl2-midi implements the following slots with accessor methods of
 the same name and initargs being the keywords of the slot symbol:
 
-=cc-nums= -- Array of 128 elements containing the CC numbers of all
-buttons and faders of the NanoKontrol2.
+=cc-nums= -- Array of 51 elements containing the CC numbers of all
+knobs, faders and buttons of the NanoKontrol2 in the following
+order (with their array idxs in brackets):
+
+| knobs [0..7] | faders [8..15] | s-buttons [16..23] | m-buttons [24..31] | r-buttons [32..39] |
+| track-left [40] | track-right [41] | cycle[42]  | set [43]  | marker-left [44] | marker-right [45] |
+| rew [46] | ff [47] | stop [48] | play [49] | rec [50] 
+
+=cc-state= -- Array of 51 <<bang-object><bang-objects>> or <<ref-object><ref-objects>> containing the state (value)
+of all buttons and faders of the NanoKontrol2 in the same idx order, as in =cc-nums=.
 
 =nk2-faders= -- Array of 16 elements containing the
 <<ref-object><ref-objects>> of the 8 knobs and the 8 faders of the
-NanoKontrol2.
+NanoKontrol2 (same as ccstate[0..15]).
 
-=nk2-fader-update-fns=
-
-=nk2-fader-modes= Array of 16 elements containing the mode of the
+=nk2-fader-modes= -- Array of 16 elements containing the mode of the
 fader when the hardware fader is out of sync with the program state of
 the fader. Currently implemented are:
 
 - /:scale/ Scale fader values when moving the hardware fader.
 - /:jump/ Jump to the value when moving the hardware fader.
+- /:catch/ Catch the slot-value when moving the hardware fader.
 
-=nk2-fader-last-cc= Storage of the last CC value of the 16 faders.
+=nk2-fader-test-sync-fns= -- Array of 16 functions, invoked if fader-mode /:catch/ is used.
 
-=s-buttons= Array of 8 <<bang-object><ref-objects>> containing the state of the 8 S buttons with a value of 0 or 1.
+=nk2-fader-last-cc= -- Array of 16 values containing the last (normalized) received CC values of the hardware faders.
 
-=m-buttons= Array of 8 <<bang-object><ref-objects>> containing the state of the 8 M buttons with a value of 0 or 1.
+=button-labels= -- Array of 35 elements containing the labels of all
+buttons of the NanoKontrol2.
 
-=r-buttons= Array of 8 <<bang-object><ref-objects>> containing the state of the 8 R buttons with a value of 0 or 1.
+=s-buttons= -- Array of 8 <<bang-object><bang-objects>> containing the state of the 8 S buttons with a value of 0, 1 or 2 (same as ccstate[16..23]).
 
-=track-left= <<bang-object>> of the track left button.
+=m-buttons= -- Array of 8 <<bang-object><bang-objects>> containing the state of the 8 M buttons with a value of 0, 1 or 2 (same as ccstate[24..31]).
 
-=track-right= <<bang-object>> of the track right button.
+=r-buttons= -- Array of 8 <<bang-object><bang-objects>> containing the state of the 8 R buttons with a value of 0 or 1 (same as ccstate[32..39]).
 
-=cycle= <<bang-object>> of the cycle button.
+=track-left= -- <<bang-object>> of the track left button (same as ccstate[40]).
 
-=set-marker= <<bang-object>> of the set marker button.
+=track-right= -- <<bang-object>> of the track right button (same as ccstate[41]).
 
-=marker-left= <<bang-object>> of the marker left button.
+=cycle= -- <<bang-object>> of the cycle button (same as ccstate[42]).
 
-=marker-right= <<bang-object>> of the marker right button.
+=set-marker= -- <<bang-object>> of the set marker button (same as ccstate[43]).
 
-=tr-rewind= <<bang-object>> of the rewind transport button.
+=marker-left= -- <<bang-object>> of the marker left button (same as ccstate[44]).
 
-=tr-ffwd= <<bang-object>> of the fast forward transport button.
+=marker-right= -- <<bang-object>> of the marker right button (same as ccstate[45]).
 
-=tr-stop= <<bang-object>> of the stop transport button.
+=tr-rewind= -- <<bang-object>> of the rewind transport button (same as ccstate[46]).
 
-=tr-play= <<bang-object>> of the play transport button.
+=tr-ffwd= -- <<bang-object>> of the fast forward transport button (same as ccstate[47]).
 
-=tr-record= <<bang-object>> of the record transport button.
+=tr-stop= -- <<bang-object>> of the stop transport button (same as ccstate[48]).
+
+=tr-play= -- <<bang-object>> of the play transport button (same as ccstate[49]).
+
+=tr-record= -- <<bang-object>> of the record transport button (same as ccstate[50]).
 
 
 @See-also
 midi-controller"))
 
-(export '(nanoktl2-midi
-          nk2-faders nk2-fader-update-fns nk2-fader-modes nk2-fader-last-cc hide-fader
-          s-buttons m-buttons track-left track-right nk-cycle set-marker marker-left
-          marker-right tr-rewind tr-ffwd tr-stop tr-play tr-rec cc-nums)
-        'cl-midictl)
+
 
 #|
 
@@ -201,7 +235,7 @@ transformed into toggles.
   (update-hw-state obj))
 
 (defmethod handle-midi-in ((instance nanoktl2-midi) opcode d1 d2)
-  (with-slots (cc-fns cc-nums nk2-fader-update-fns
+  (with-slots (cc-fns cc-nums nk2-fader-test-sync-fns
                nk2-fader-modes nk2-fader-last-cc
                hide-fader cc-map cc-state note-fn last-note-on midi-output chan)
       instance
@@ -212,23 +246,23 @@ transformed into toggles.
          (when local-idx
            (cond
              ((< local-idx 16)
-              (let* ((fn (aref nk2-fader-update-fns local-idx))
+              (let* ((fn (aref nk2-fader-test-sync-fns local-idx))
                      (fader-mode (aref nk2-fader-modes local-idx))
                      (last-cc (aref nk2-fader-last-cc local-idx))
-                     (gui-slot (aref cc-state local-idx)))
+                     (curr-slot-val (aref cc-state local-idx)))
                 (case fader-mode
                   (:scale
                    (progn
                      (unless hide-fader
-                       (set-val gui-slot (buchla-scale d2-norm  last-cc (get-val gui-slot))))
-                     (setf (aref nk2-fader-last-cc local-idx) d2-norm)))
-                  (:jump (unless hide-fader (set-val gui-slot d2-norm)))
+                       (set-val curr-slot-val (buchla-scale d2-norm last-cc (get-val curr-slot-val))))))
+                  (:jump (unless hide-fader (set-val curr-slot-val d2-norm)))
                   (:catch (unless hide-fader
                             (if fn
-                                (when (funcall fn d2-norm (get-val gui-slot))
-                                  (set-val gui-slot d2-norm)
-                                  (setf (aref nk2-fader-update-fns local-idx) nil))
-                                (set-val gui-slot d2-norm)))))))
+                                (when (funcall fn d2-norm (get-val curr-slot-val))
+                                  (setf (slot-value curr-slot-val 'cl-refs::value) d2-norm)
+                                  (setf (aref nk2-fader-test-sync-fns local-idx) nil))
+                                (set-val curr-slot-val d2-norm)))))
+                (setf (aref nk2-fader-last-cc local-idx) d2-norm)))
              ;; ((<= 40 local-idx 45)
              ;;  (case local-idx
              ;;    (43 ;;; set button
@@ -244,6 +278,8 @@ transformed into toggles.
                     (let ((*refs-seen* (list slot "bang")))
                       (%trigger slot)))))))))
       (:note-on (setf last-note-on d1)))))
+
+(slot-value (make-ref 3) 'cl-refs::value)
 
 (defmethod update-hw-state ((instance nanoktl2-midi))
   "Update the state of a Midicontroller Hardware by sending all values of

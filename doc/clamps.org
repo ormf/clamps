@@ -607,89 +607,178 @@
     [[dict:midi-controller][midi-controller]]. Currently classes for the [[https://www.korg.com/de/products/computergear/nanokontrol2/][Korg NanoKONTROL2]] and
     the [[https://faderfox.de/ec4.html][Faderfox EC4]] are implemented.
 
-**** Using a NanoKONTROL2 Controller
-     To use a defined midi controller, issue the [[dict:add-midi-controller][add-midi-controller]]
-     method with the class of the controller, a custom ID (choosable
-     by the user) and optionally its channel as arguments:
-     #+BEGIN_SRC lisp
-       ;; create an instance of a NanoKONTROL2 midi-controller with ID :nk2
-       ;; using MIDI channel 1 and add it to the registry:
+**** Using a Korg NanoKONTROL2 Controller
+***** Preparation
+      Restore the NanoKontrol2 to the factory defaults and set the
+      /LED Mode/ in the /Common/ section of the [[https://www.korg.com/us/support/download/software/0/159/1354/][Korg Kontrol Editor]]
+      application to "External".
 
-       (add-midi-controller 'nanoktl2-midi :nk2 :chan 1)
-    #+END_SRC
-    
-     When the factory settings of the NanoKONTROL2 are in place and
-     the controller is attached to clamps' midi ports, it can now be
-     used.
+***** Initialization
+      To initialize the controller, issue the [[dict:add-midi-controller][add-midi-controller]]
+      method with the nanoktl2-midi class and a custom ID and
+      optionally its channel as arguments:
+     
+      #+BEGIN_SRC lisp
+        ;; create an instance of a NanoKONTROL2 midi-controller with ID :nk2
+        ;; using MIDI channel 1 and add it to the registry:
 
-     We can add behaviour to it by attaching [[watch]] functions to the
-     knobs and faders:
+        (add-midi-controller 'nanoktl2-midi :nk2 :chan 1)
+      #+END_SRC
 
-     #+NAME: nanoktl2-example
-     #+BEGIN_SRC lisp
-       (with-slots (unwatch nk2-faders) (find-controller :nk2)
-         (dotimes (i 8)
-           (let ((n i))
-             (push (watch
-                    (lambda () (msg :warn (format nil "Knob ~a turned: ~a" (1+ n)
-                                              (get-val (aref nk2-faders n))))))
-                   unwatch)
-             (push (watch
-                    (lambda () (msg :warn (format nil "Fader ~a moved: ~a" (1+ n)
-                                             (get-val (aref nk2-faders (+ n 8)))))))
-                   unwatch))))
-       ;; => nil
-       ;;
-       ;; output in REPL:
-       ;; warn: Knob 1 turned: 0
-       ;; warn: Fader 1 moved: 0
-       ;; warn: Knob 2 turned: 0
-       ;; warn: Fader 2 moved: 0
-       ;; warn: Knob 3 turned: 0
-       ;; warn: Fader 3 moved: 0
-       ;; warn: Knob 4 turned: 0
-       ;; warn: Fader 4 moved: 0
-       ;; warn: Knob 5 turned: 0
-       ;; warn: Fader 5 moved: 0
-       ;; warn: Knob 6 turned: 0
-       ;; warn: Fader 6 moved: 0
-       ;; warn: Knob 7 turned: 0
-       ;; warn: Fader 7 moved: 0
-       ;; warn: Knob 8 turned: 0
-       ;; warn: Fader 8 moved: 0
-     #+END_SRC
+      If the NanoKONTROL2 hardware device is connected to the incudine
+      in/output ports, it now can be used. For details about the slots
+      and their layout, refer to [[dict:nanoktl2-midi][nanoktl2-midi]] in the Clamps
+      Dictionary.
 
-     The output in the REPL signals that the watch function has been
-     established for all knobs and faders.
+***** Adding Behaviour
+      We can add behaviour to the instance by attaching [[dict:watch][watch]]
+      functions to the faders and knobs or [[dict:trigger][trigger]] functions to the
+      buttons:
+****** Faders and Knobs
+       #+NAME: nanoktl2-example
+       #+BEGIN_SRC lisp
+         (with-slots (unwatch nk2-faders) (find-controller :nk2)
+           (dotimes (i 8)
+             (let ((n i))
+               (push (watch
+                      (lambda () (msg :warn (format nil "Knob ~a turned: ~a" (1+ n)
+                                                (get-val (aref nk2-faders n))))))
+                     unwatch)
+               (push (watch
+                      (lambda () (msg :warn (format nil "Fader ~a moved: ~a" (1+ n)
+                                               (get-val (aref nk2-faders (+ n 8)))))))
+                     unwatch))))
+         ;; => nil
+         ;;
+         ;; output in the REPL:
+         ;; warn: Knob 1 turned: 0
+         ;; warn: Fader 1 moved: 0
+         ;; warn: Knob 2 turned: 0
+         ;; warn: Fader 2 moved: 0
+         ;; warn: Knob 3 turned: 0
+         ;; warn: Fader 3 moved: 0
+         ;; warn: Knob 4 turned: 0
+         ;; warn: Fader 4 moved: 0
+         ;; warn: Knob 5 turned: 0
+         ;; warn: Fader 5 moved: 0
+         ;; warn: Knob 6 turned: 0
+         ;; warn: Fader 6 moved: 0
+         ;; warn: Knob 7 turned: 0
+         ;; warn: Fader 7 moved: 0
+         ;; warn: Knob 8 turned: 0
+         ;; warn: Fader 8 moved: 0
+       #+END_SRC
 
-     Moving a fader works like expected:
-     #+BEGIN_SRC lisp
-      clamps> 
-      warn: Fader 1 moved: 1.0
-      warn: Fader 1 moved: 2.0
-      warn: Fader 1 moved: 3.0
-      warn: Fader 1 moved: 4.0
-      warn: Fader 1 moved: 5.0
-      warn: Fader 1 moved: 6.0
-      warn: Fader 1 moved: 7.0
-      warn: Fader 1 moved: 8.0
-      warn: Fader 1 moved: 9.0
-      <...>
-      clamps> 
-     #+END_SRC
+       The output in the REPL signals that the watch function has been
+       established for all knobs and faders.
 
-#+HTML: <h5>Important Note</h5>
-#+LATEX: Important Note
+       Moving a fader works like expected:
+       #+BEGIN_SRC lisp
+        clamps> 
+        warn: Fader 1 moved: 1.0
+        warn: Fader 1 moved: 2.0
+        warn: Fader 1 moved: 3.0
+        warn: Fader 1 moved: 4.0
+        warn: Fader 1 moved: 5.0
+        warn: Fader 1 moved: 6.0
+        warn: Fader 1 moved: 7.0
+        warn: Fader 1 moved: 8.0
+        warn: Fader 1 moved: 9.0
+        <...>
+        clamps> 
+       #+END_SRC
 
-     In the above [[nanoktl2-example][example]], it might not be obvious that the binding of
-     /n/ to /i/ using the /let/ in the body of the /dotimes/ is
-     crucial for this to work. If it isn't clear, why it wouldn't work
-     to use /i/ directly in the /lambda/ forms of the /watch/
-     expressions, refer to the section [[Excursion: Closures]]. The
-     section tries to shed some light on binding and the difference of
-     /compile-time/ vs. /run-time/. Knowing how to deal with closures
-     is a recurring necessity when working with Clamps and a thorough
-     understanding indispensible.
+       #+HTML: <h5>Important Note</h5>
+       #+LATEX: Important Note
+
+       In the above [[nanoktl2-example][Fader/Knob example]], it might not be obvious that
+       the binding of /n/ to /i/ using the /let/ in the body of the
+       /dotimes/ is crucial for this to work. If it isn't clear, why
+       it wouldn't work to use /i/ directly in the /lambda/ forms of
+       the /watch/ expressions, refer to the section [[Excursion:
+       Closures]]. The section tries to shed some light on binding and
+       the difference of /compile-time/ vs. /run-time/. Knowing how to
+       deal with closures is a recurring necessity when working with
+       Clamps and a thorough understanding indispensible.
+
+****** Buttons
+       A button is inspired by a Gui element of a button, adding click
+       events on the button. It is implemented in [[cl-refs]] as a
+       [[dict:bang-object][bang-object]], a ref-cell with an additional [[dict:trigger][trigger]] function,
+       which ist invoked on a button press/click.
+
+       To add an action to the button, use the function
+       [[dict:add-trigger-fn][add-trigger-fn]].
+
+       Here is an example:
+
+       #+BEGIN_SRC lisp
+         (add-trigger-fn (tr-play (find-controller :nk2)) (lambda () (msg :warn "tr-play Button pressed.")))
+         ;; => nil
+       #+END_SRC
+
+       #+BEGIN_SRC lisp
+         (trigger (tr-play (find-object :nk2)))
+         ;; output in the REPL:
+         ;; warn: tr-play Button pressed.
+       #+END_SRC
+ 
+       This behaviour is automatically implemented in the
+       [[dict:handle-midi-in][handle-midi-in]] method of a nanoktl2-midi instance: When
+       pressing the tr-play button on the NanoKONTROL2 Hardware
+       Controller, it will call the [[dict:trigger][trigger]] function on the tr-play
+       slot of the instance and you should see the same message in the
+       REPL as before:
+       #+BEGIN_SRC lisp
+         clamps> 
+         warn: tr-play Button pressed.
+         clamps> 
+       #+END_SRC
+
+       The same result is achievd by calling [[dict:trigger][trigger]] with the
+       bang-object as argument:      
+
+      Removing the trigger functions from the button can be done using
+      the function [[dict:remove-all-triggers][remove-all-triggers]]:
+
+       #+BEGIN_SRC lisp
+         (remove-all-triggers (tr-play (find-controller :nk2)))
+       #+END_SRC
+
+       Like [[dict:watch][watch]], [[dict:add-trigger-fn][add-trigger-fn]] returns a function to remove the
+       trigger function(s) from the ref-cell. Therefore you can also
+       implement adding the trigger function to the nanoktl2-midi
+       instance like this to be able to have a finer control over
+       selectively adding and removing trigger functions for
+       ref-cells:
+      
+       #+BEGIN_SRC lisp
+         (defvar *unwatch-triggers* nil)
+         (push (add-trigger-fn (tr-play (find-controller :nk2)) (lambda () (msg :warn "tr-play Button pressed.")))
+               ,*unwatch-triggers*)
+         ;;  => (#<function (lambda () :in add-trigger-fn) {100A94123B}>
+
+         ;; remove the trigger function:
+
+         (progn
+           (map nil #'funcall *unwatch-triggers*)
+           (setf *unwatch-triggers* nil))
+         ; => nil
+
+         ;; abbreviation of the above expression:
+
+         (setf *unwatch-triggers*
+               (map nil #'funcall *unwatch-triggers*))
+         ; => nil
+       #+END_SRC
+
+       #+HTML: <h5>Note</h5>
+       #+LATEX: Note
+       As buttons are extended ref-cells, they also have a value slot
+       which can be accessed and manipulated like any normal
+       ref-cell. An application can be use this to capture the state
+       of the button (on, off, flashing, etc.) in relation to, but
+       independent from the button-press (trigger) action.
 **** Other Utility Functions
      To get a registered intance of a midi controller, use the
      [[dict:find-midi-controller][find-controller]] function with its ID as argument.
@@ -1577,7 +1666,6 @@ A poolevt also uses lsamples, but ignores their loop
    method with the buffer as argument.
 
 
-   
 * Gui
 ** General GUI Setup
    The gui is realized in a browser using the [[https://github.com/rabbibotton/clog][CLOG]] package available
@@ -1942,6 +2030,81 @@ A poolevt also uses lsamples, but ignores their loop
       ;; No further output in the REPL.
 
     #+END_SRC
+*** The bang-object class
+    A bang-object is an extension to a ref-object by adding the option
+    to trigger it. The inspiration for a bang object is an object
+    which behaves like a button in a gui or on a hardware controller:
+    In addition to the state of the button (on, off, flashing, etc.)
+    which is captured in the value of its ref-object part, a button
+    can be pressed. A button-press is realized by calling the [[dict:trigger][trigger]]
+    function on an instance of the bang-object. Note that the
+    triggered function is called without arguments and any value it
+    returns is ignored by [[dict:trigger][trigger]]. It's called for its side-effect
+    only.
+
+    #+HTML: <h5>creation function</h5>
+    <<creation function>>
+
+     A bang-object gets created with the function /make-bang/. The
+     optional arguments of the function are:
+
+     1. A function of no arguments to be executed when calling [[dict:trigger][trigger]]
+        with the created instance as argument.
+
+     2. The initial value of the object, exactly like the argument to
+        [[dict:make-ref][make-ref]].
+
+     Here is an example:
+
+     #+BEGIN_SRC lisp
+       (defparameter b1 (make-bang (lambda () (msg :warn "Bang object b1 triggered")) 1)) ; => b1
+
+       b1 ; => #<bang 1>
+
+       (get-val b1) ; => 1
+       (set-val b1 0) ; => 0
+       (get-val b1) ; => 0
+
+       (trigger b1) ; => nil
+       ;; Output in the REPL:
+       ;; warn: Bang object b1 triggered
+     #+END_SRC
+
+     When supplying /nil/ as the trigger function argument to
+     make-bang, no action is taken when calling trigger on the created
+     instance.
+
+     [[dict:add-trigger-fn][add-trigger-fn]] takes at least two arguments: An instance of a
+     bang-object and one or more functions of no argument, to be
+     executed when the object is triggered.
+
+     Like [[dict:watch][watch]] for the value part of a ref-object, [[dict:add-trigger-fn][add-trigger-fn]]
+     returns a function of no arguments, which can be called to remove
+     the added trigger-fn from the bang-object:
+
+     #+BEGIN_SRC lisp
+       (defparameter b1 (make-bang nil 0)) ; => b1
+
+       b1 ; => #<bang 1>
+
+       (trigger b1) ; => nil
+       ;; No output in the REPL
+
+       (defparameter *bang-unwatch-fn* nil)
+
+       (setf *bang-unwatch-fn* (add-trigger-fn b1 (lambda () (msg :warn "Bang object b1 triggered"))))
+       ;;  => #<function (lambda () :in add-trigger-fn) {100B72647B}>
+
+       (trigger b1) ; => nil
+       ;; Output in the REPL
+       ;; warn: Bang object b1 triggered
+
+       (funcall *bang-unwatch-fn*) ; => nil
+
+       (trigger b1) ; => nil
+       ;; No output in the REPL
+     #+END_SRC
+     
 ** cl-sfz
    cl-sfz implements the basic infrastructure to deal with [[https://en.wikipedia.org/wiki/SFZ_(file_format)][SFZ]]
    definitions. The SFZ format was developed in the context of
