@@ -55,9 +55,13 @@ load-ats
 (defun add-sfz-preset (key fname)
   (setf (gethash key *sfz-preset-lookup*) fname))
 
+(defvar *reinit-clamps-doc* nil)
+
 (defun set-clamps-doc-root (url)
   (setf *clamps-doc-root* url)
-  (slynk:eval-in-emacs `(setq *common-music-doc-root* ,url)))
+  (if (find-package :slynk)
+      (slynk:eval-in-emacs `(setq *common-music-doc-root* ,url))
+      (setf *reinit-clamps-doc* t)))
 
 (load (merge-pathnames ".clampsinit.lisp" (user-homedir-pathname))
       :if-does-not-exist nil)
@@ -112,7 +116,8 @@ rts
            (apply (find-symbol (string fn) :clamps) args))
          (cmvar (var)
            (symbol-value (find-symbol (string var) :cm))))
-    (cl-user::set-clamps-doc-root cl-user::*clamps-doc-root*)
+    (when (and *reinit-clamps-doc* (find-package :slynk))
+      (cl-user::set-clamps-doc-root cl-user::*clamps-doc-root*))
     (setf *package* (find-package :clamps))
     (setf *readtable* (cmvar :*cm-readtable*))
     ;; add slime readtable mapping...

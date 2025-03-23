@@ -416,6 +416,7 @@
            cl-plot:*gnuplot-program* cl-plot:plot cl-refs:ref-object-super
            cl-refs:clear-dependencies cl-refs:*refs-seen* cl-refs:bang-object
            cl-refs:ref-object cl-refs:trigger cl-refs:%trigger
+           cl-refs:toggle-ref-fn
            cl-refs:add-trigger-fn cl-refs:remove-trigger-fn
            cl-refs:remove-all-triggers
            cl-refs:make-ref
