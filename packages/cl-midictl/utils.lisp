@@ -109,34 +109,53 @@ body - Zero or more lisp forms.
 (defun make-led-pulsar (ccnum chan midi-output &key (freq 2) (pulse-width 0.5))
   "Return an \"instance\" (closure) of a pulse generator flashing a LED
 on an external MIDI Harware device by sending the values 0/127 using
-/ccnum/, /chan/ and /midi-output/.
+/ccnum/, /chan/ and /midi-output/. Use the /:freq/ and /:pulse-width/
+keywords to change the speed and duty cycle of the pulse.
 
-Funcalling the returned instance with the :start argumnet will start
-the pulse, funcalling it with the :stop argument will stop flashing.
+Funcalling the returned instance with the :start argument will start
+the pulse, funcalling it with the :stop argument will stop flashing,
+calling it with :freq <freq> or :pulse-width <pulse-width> will change
+the respective values.
 
 @Example
 
-(defvar *my-pulsar* (make-led-pulsar 32 1 (cm:ensure-jackmidi:*midi-out1*)))
+(defvar *my-pulsar* (make-led-pulsar 32 1 (cm:ensure-jackmidi *midi-out1*)))
 
-(funcall *my-pulsar*:start)
+(funcall *my-pulsar* :start)
 
-(funcall *my-pulsar*:stop)
+(funcall *my-pulsar* :freq 1)
+
+(funcall *my-pulsar* :pulse-width 0.1)
+
+(funcall *my-pulsar* :stop)
 
 "
-  (let (node-id
-        running)
-    (lambda (cmd)
+  (let (node-id running (freq freq) (pulse-width pulse-width))
+    (lambda (cmd &rest args)
       (case cmd
         (:start (unless running
-                  (incudine::pulse-midi-led chan ccnum :midi-out midi-output :freq freq :pulse-width pulse-width :tail 100
-                                                       :action (lambda (id) (setf node-id id)))
+                  (incudine::pulse-midi-led
+                   chan ccnum
+                   :midi-out midi-output
+                   :freq freq
+                   :pulse-width pulse-width
+                   :tail 100
+                   :action (lambda (id) (setf node-id id)))
                   (setf running t)))
         (:stop (free node-id)
          (when running
            (setf running nil)
            (cl-midictl:osc-midi-write-short
             midi-output
-            (+ (1- chan) 176) ccnum 0)))))))
+            (+ (1- chan) 176) ccnum 0)))
+        (:freq
+         (setf freq (first args))
+         (when node-id
+           (set-control node-id :freq freq)))
+        (:pulse-width
+         (setf pulse-width (first args))
+         (when node-id
+           (set-control node-id :pulse-width pulse-width)))))))
 
 (in-package :incudine)
 

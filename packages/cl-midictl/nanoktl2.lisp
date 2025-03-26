@@ -196,7 +196,7 @@ transformed into toggles.
                  ))
            'vector))
 ;;;    (setf midi-output (cm:ensure-jackmidi midi-output))
-    (loop
+    (loop ;;; map ccnum to idx of all nanoktl elems.
       for idx from 0
       for ccnum across cc-nums
       do (setf (aref cc-map ccnum) idx))
@@ -223,6 +223,7 @@ transformed into toggles.
                 (cc-num (aref cc-nums local-idx))
                 (local-pulsar (make-led-pulsar cc-num chan midi-output)))
            (push (watch (lambda ()
+                          (incudine.util:msg :info "button-value changed: ~a" local-idx)
                           (let ((state (round (get-val (aref cc-state local-idx)))))
                             (case state
                               ((0 1) (funcall local-pulsar :stop)
@@ -240,7 +241,7 @@ transformed into toggles.
                hide-fader cc-map cc-state note-fn last-note-on midi-output chan)
       instance
     (case opcode
-      (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
+      (:cc (incudine.util:msg :info "ccin: ~a ~a, local-idx: ~a" d1 d2 (aref cc-map d1))
        (let ((local-idx (aref cc-map d1))
              (d2-norm (/ d2 127)))
          (when local-idx

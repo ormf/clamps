@@ -31,7 +31,7 @@
           pulse
           curr-bank cp-src
           handle-preset-button-press
-          handle-preset-bank-button-press
+;;          handle-preset-bank-button-press
           handle-player-button-press
           handle-store-button-press
           handle-midi-in
@@ -78,111 +78,42 @@
                nk2-faders s-buttons m-buttons r-buttons unwatch
                tr-rewind tr-ffwd tr-stop tr-play tr-rec)
       obj
-    (set-val curr-bank 1)
     (loop for idx from 0 for bang across (s-buttons obj) ;;; attach trigger action to top row
           do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (trigger-fns bang)))
     (loop for idx from 0 for bang across (m-buttons obj) ;;; attach trigger action to middle row (m-buttons)
           do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (trigger-fns bang)))
     (loop for idx from 0 for bang across (r-buttons obj) ;;; attach trigger action to bottom bank row
           do (push (let ((idx idx)) (lambda () (set-val (curr-bank obj) idx))) (trigger-fns bang)))
-    (loop ;;; map ccnum to idx of all nanoktl elems.
-      for idx from 0
-      for ccnum across cc-nums
-      do (setf (aref cc-map ccnum) idx))
-
-    (update-hw-state obj)
-    (mapcar #'funcall unwatch)
     (loop for idx below 8
-      do (push ;;; bank-change buttons: relabeling of preset-buttons
-          (watch
-           (let* ((idx idx))
-             (lambda () (let ((bank (get-val curr-bank)))
-                     (if (= idx bank)
-                         (progn
-                           (set-val (aref r-buttons idx) 1)
-                           (loop for i from 0 for label in button-labels
-                                 do (set-val label (+ (* bank 16) i)))
-                           (update-preset-buttons obj))
-                         (set-val (aref r-buttons idx) 0))))))
-          unwatch))
-    (let ((opcode (+ (1- chan) 176)))
-      (loop for idx below 8 ;;; reflect state change in any of the preset buttons in the hardware LED.
-            do (loop
-                 for offs in '(16 24)
-                 for slot in '(s-buttons m-buttons)
-                 do (push
-                     (watch
-                      (let* ((idx idx)
-                             (cc-num (aref cc-nums (+ offs idx)))
-                             (button (aref (slot-value obj slot) idx)))
-                        (lambda ()
-                          (case (get-val button)
-                            ((0 1)
-                             (osc-midi-write-short
-                              midi-output
-                              opcode cc-num
-                              (if (zerop (get-val button)) 0 127)))
-                            (2 (pulse obj button cc-num))))))
-                     unwatch)))
-      (loop for idx below 8 ;;; reflect preset bank button state change in the hardware LEDs.
-            do (push
-                (watch
-                 (let* ((idx idx)
-                        (button (aref r-buttons idx))
-                        (cc-num (aref cc-nums (+ 32 idx))))
-                   (lambda ()
-                     (osc-midi-write-short
-                      midi-output
-                      opcode cc-num
-                      (if (zerop (get-val button)) 0 127)))))
-                unwatch))
-      (loop for button in (list tr-rewind tr-ffwd tr-stop tr-play) ;;; player-buttons
-            for cc-num-idx from 46 
-            do (push
-                (watch
-                 (let* ((button button)
-                        (cc-num (aref cc-nums cc-num-idx)))
-                   (lambda ()
-                     (osc-midi-write-short
-                      midi-output
-                      opcode cc-num
-                      (if (zerop (get-val button)) 0 127))
-                     (update-preset-buttons obj))))
-                unwatch))
-      (push
-       (watch
-        (let* ((button tr-rec) ;;; store button
-               (cc-num (aref cc-nums 50)))
-          (lambda ()
-            (case (get-val button)
-              ((0 1)
-               (osc-midi-write-short
-                midi-output
-                opcode cc-num
-                (if (zerop (get-val button)) 0 127)))
-              (2 (pulse obj button cc-num))))))
-       unwatch))
-    (set-val curr-bank 0)
-    (set-val (aref r-buttons 0) 1)))
+          do (push ;; reaction to val change of curr-bank slot,
+                   ;; triggered by pressing any button of r-buttons
+                   ;; (see loop above): Relabeling and state update of
+                   ;; preset-buttons
+              (watch
+               (let* ((idx idx))
+                 (lambda () (let ((bank (get-val curr-bank)))
+                         (if (= idx bank)
+                             (progn
+                               (set-val (aref r-buttons idx) 1)
+                               (loop for i from 0 for label across (subseq button-labels 0 16)
+                                     do (set-val label (+ (* bank 16) i)))
+                               (update-preset-buttons obj))
+                             (set-val (aref r-buttons idx) 0))))))
+              unwatch))
+    (update-hw-state obj)
+    (loop for button in (list tr-rewind tr-ffwd tr-stop tr-play) ;;; player-buttons
+          do (let ((button button))
+               (add-trigger-fn
+                button
+                (lambda ()
+                  (set-val button (if (zerop (get-val button)) 1 0))
+                  (update-preset-buttons obj)))))
+    (add-trigger-fn tr-rec (lambda () (handle-store-button-press obj)))
+    (set-val curr-bank 0)))
 
-(defun pulse (midi-controller slot cc-num &key (pulse-freq 2) (initial-flash nil))
-  "pulse the LED of <midi-controller> at <cc-num> with frequency
-<pulse-freq> as long as (get-val <slot>) equals 2. Starting with LED on or
-off is determined by <initial-flash>."
-  (let ((flash-state initial-flash)
-        (pulse-time (/ incudine.util:*sample-rate* pulse-freq 2)))
-    (labels ((inner (time)
-               (when (= (get-val slot) 2)
-                 (let ((next (+ time pulse-time)))
-                   (osc-midi-write-short
-                    (midi-output midi-controller)
-                    (+ (1- (chan midi-controller)) 176) cc-num (if flash-state 127 0))
-                   (setf flash-state (not flash-state))
-                   (at next #'inner next)))))
-      (inner (now)))))
-
-;;; (initialize-instance :after)
 (defun update-preset-buttons (controller)
+  "React to bank changes, etc. by updating the value of all preset
+buttons."
   (let ((preset-offs (* 16 (get-val (curr-bank controller))))
         (active-players (get-active-players controller)))
     (incudine.util:msg :info "update-preset-buttons")
@@ -191,6 +122,8 @@ off is determined by <initial-flash>."
       (set-val (aref (m-buttons controller) i) (preset-state controller (+ preset-offs i 8) active-players)))))
 
 (defun handle-preset-button-press (instance button-idx)
+  "Handling of button press of s-buttons and m-buttons: Depending on the
+state of tr-rec, recall, store or copy a preset."
   (incudine.util:msg :info "preset-button-press ~a" button-idx)
   (with-slots (curr-bank cp-src tr-rec) instance
     (let ((preset-no (+ (* 16 (get-val curr-bank)) button-idx)))
@@ -217,6 +150,8 @@ off is determined by <initial-flash>."
                  (setf cp-src preset-no))))))))
 
 (defun set-player-buttons (controller button-state)
+  "Set the player buttons according to /button-state/, a list of 4
+numbers with the value 0 or 1."
   (with-slots (tr-rewind tr-ffwd tr-stop tr-play) controller
     (mapc #'set-val
           (list tr-rewind tr-ffwd tr-stop tr-play)
@@ -232,11 +167,12 @@ off is determined by <initial-flash>."
     (loop for i from 0 for label in button-labels
           do (set-val label (+ (* curr-bank 16) i)))
     (update-preset-buttons instance)))
-|#
 
 (defun handle-preset-bank-button-press (instance button-idx)
   (incudine.util:msg :info "preset-bank-button-press ~a" button-idx)
-  (set-val (curr-bank instance) button-idx))
+(set-val (curr-bank instance) button-idx))
+
+|#
 
 (defgeneric preset-state (instance preset-no active-players)
   (:method ((instance nanoktl2-preset-midi) preset-no active-players)
@@ -252,10 +188,6 @@ off is determined by <initial-flash>."
         for slot in '(tr-rewind tr-ffwd tr-stop tr-play)
         unless (zerop (get-val (slot-value controller slot))) collect idx))
 
-(defun handle-player-button-press (instance button-idx)
-  (incudine.util:msg :info "player-button-press ~a" button-idx)
-  (toggle-slot (slot-value instance (aref #(tr-rewind tr-ffwd tr-stop tr-play) button-idx))))
-
 (defun handle-store-button-press (instance)
   (incudine.util:msg :info "store-button-press")
   (set-val (tr-rec instance) (mod (1+ (get-val (tr-rec instance))) 3))
@@ -265,57 +197,6 @@ off is determined by <initial-flash>."
       (set-val (aref (slot-value instance slot-name) (mod src-idx 8)) 0))
     (setf (cp-src instance) nil)
     (update-preset-buttons instance)))
-
-(defmethod handle-midi-in ((instance nanoktl2-preset-midi) opcode d1 d2)
-  (with-slots (cc-fns cc-nums nk2-fader-update-fns
-               nk2-fader-modes nk2-fader-last-cc
-               hide-fader cc-map cc-state note-fn last-note-on midi-output chan)
-      instance
-    (incudine.util:msg :info "~a: ~a ~a" opcode d1 d2)
-    (case opcode
-      (:cc (incudine.util:msg :info "ccin: ~a ~a" d1 d2)
-       (let ((fader-idx (aref cc-map d1)))
-         (when fader-idx
-           (cond
-             ((< fader-idx 16) ;;; faders
-              (let* ((fn (aref nk2-fader-update-fns fader-idx))
-                     (fader-mode (aref nk2-fader-modes fader-idx))
-                     (last-cc (aref nk2-fader-last-cc fader-idx))
-                     (gui-slot (aref cc-state fader-idx))
-                     (val (/ d2 127.0)))
-                (case fader-mode
-                  (:scale
-                   (progn
-                     (unless hide-fader
-                       (set-val gui-slot (buchla-scale val last-cc (get-val gui-slot) :max 1.0)))
-                     (setf (aref nk2-fader-last-cc fader-idx) val)))
-                  (:jump (unless hide-fader (set-val gui-slot val)))
-                  (:catch (unless hide-fader
-                            (if fn
-                                (when (funcall fn val (get-val gui-slot))
-                                  (set-val gui-slot val)
-                                  (setf (aref nk2-fader-update-fns fader-idx) nil))
-                                (set-val gui-slot val)))))))
-             ((<= 16 fader-idx 31) ;;; s and m buttons
-              (when (/= d2 0) (trigger (aref (preset-buttons instance) (- fader-idx 16)))))
-             ((<= 32 fader-idx 39) ;;; r buttons
-              (when (/= d2 0) (set-val (aref (r-buttons instance) (- fader-idx 32)) 127)))
-             ((<= 40 fader-idx 45) ;;; small buttons
-              (case fader-idx
-                (43 ;;; set button
-                 (setf hide-fader (> d2 0)))
-                (42 ;;; cycle button
-                 (when (/= d2 0) (update-hw-state instance)))
-                (otherwise
-                 (let ((slot (aref cc-state (aref cc-map d1))))
-                   (unless (zerop d2) (trigger slot))))))
-             ((<= 46 fader-idx 49) ;;; transport-buttons 1-4
-              (when (/= d2 0)
-                (handle-player-button-press instance (- fader-idx 46))))
-             ((= fader-idx 50) ;;; rec-button
-              (when (/= d2 0)
-                   (handle-store-button-press instance)))))))
-      (:note-on (setf last-note-on d1)))))
 
 (defun select-preset-bank (controller idx)
   (set-val (aref (r-buttons controller) idx) 1))
@@ -409,3 +290,25 @@ off is determined by <initial-flash>."
     (set-player-buttons controller '(1 1 1 1))
     (load-presets controller file)
     (handle-preset-button-press controller 0)))
+
+#|
+(defmethod update-hw-state ((instance nanoktl2-midi))
+  "Update the state of a Midicontroller Hardware by sending all values of
+/instance/ to its midi-out port.
+
+@Arguments
+
+instance - An instance of a class or subclass of <<midi-controller>>.
+
+@See-also
+
+clamps:cl-midictl
+"
+  (with-slots (chan cc-nums cc-map cc-state midi-output) instance
+    (loop
+      for local-idx from 16 below (length cc-nums)
+      do (let ((cc-num (aref cc-nums local-idx)))
+        (osc-midi-write-short
+         midi-output
+(+ (1- chan) 176) cc-num (round (get-val (aref cc-state local-idx))))))))
+|#
