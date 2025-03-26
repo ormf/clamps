@@ -274,7 +274,7 @@ This command is bound to the Keyboard Sequence /<C-.>/ in emacs.
      (defun clamps-hush ()
        (interactive)
        (progn
-         (sly-interactive-eval "(cm::incudine-rts-hush)"))
+         (sly-interactive-eval "(cm::rts-hush)"))
        "hush")
      (defun set-std-incudine-hush ()
        (interactive)
@@ -293,6 +293,12 @@ This command is bound to the Keyboard Sequence /<C-.>/ in emacs.
      (define-key lisp-mode-map (kbd "C-c C-.") 'incudine-rt-stop)
      (define-key lisp-mode-map (kbd "C-c M-.") 'incudine-rt-start))
    t)
+  (cm::remove-all-rts-hush-hooks)
+  (dolist (hook
+           `(,#'incudine:node-free-unprotected
+             ,#'incudine:flush-pending
+             ,#'all-notes-off))
+    (add-rts-hush-hook hook))
   (cm::set-standard-hush))
 
 (defun reset-logger-stream ()
@@ -372,6 +378,7 @@ rts
   (format t "~&midi initialized!~%")
   ;; (install-sly-hooks)
   (incudine:setup-io)
+  (install-standard-sly-hooks)
   (start-doc-acceptor)
   (clamps-restart-gui :gui-base gui-base :port port :open open-gui)
   (ats-cuda-display:ats-display-init)

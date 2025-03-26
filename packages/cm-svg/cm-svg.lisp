@@ -672,7 +672,53 @@ svg element."
 
 #|
 
+(svg-lines->cm
+'((:x1 307.5 :y1 53.5 :x2 331.5 :y2 53.5
+    :color "#00ff02"
+    :opacity 0.4
+    :attributes (:type cm:sfz :preset :vc-nonvib-mf-3c :oneshot nil :pan 0.5 :startpos 0 :chan 100)
+   )
+   (:x1 290.5 :y1 66 :x2 316.5 :y2 66
+    :color "#aa4403"
+    :opacity 0.42
+    :attributes (:type cm:sfz :preset :vc-nonvib-mf-4c :oneshot nil :pan 0.5 :startpos 0 :chan 100)
+   )
+   (:x1 298 :y1 60.8108 :x2 322 :y2 60.8108
+    :color "#ff6602"
+    :opacity 0.53
+    :attributes (:type cm:sfz :preset :va-nonvib-mf-4c :oneshot nil :pan 0.5 :startpos 0 :chan 100)
+   )
+   (:x1 311.5 :y1 75 :x2 343.5 :y2 75
+    :color "#6c5d56"
+    :opacity 0.31
+    :attributes (:type cm:sfz :preset :vn-nonvib-mf-4c :oneshot nil :pan 0.5 :startpos 0 :chan 100)
+   )
+   (:x1 326.5 :y1 60.5 :x2 354.5 :y2 60.5
+    :color "#aa4403"
+    :opacity 0.41
+    :attributes (:type cm:sfz :preset :vc-nonvib-mf-4c :oneshot nil :pan 0.5 :startpos 0 :chan 100)
+   )
+   (:x1 344 :y1 65.3657 :x2 369.5 :y2 65.3657
+    :color "#ff6602"
+    :opacity 0.45
+    :attributes (:type cm:sfz :preset :va-nonvib-mf-4c :oneshot nil :pan 0.5 :startpos 0 :chan 100)
+   )
+   (:x1 311.5 :y1 72.2657 :x2 343.5 :y2 72.2657
+    :color "#6c5d56"
+    :opacity 0.4
+    :attributes (:type cm:sfz :preset :vn-nonvib-mf-4c :oneshot nil :pan 0.5 :startpos 0 :chan 100)
+   )
+   (:x1 308.485 :y1 42 :x2 343.485 :y2 42
+    :color "#ff0000"
+    :opacity 0.5
+    :attributes (:type cm:pmidi :preset 6)
+   )
+   ))
+
+
 (svg-symbol->fn 'poolevt)
+
+(svg-symbol->fn 'sfz)#<function svg->sfz>
 
 (defun svg->cm (file layer x-scale &key colormap start end)
   (let* ((x-offs (if start (* -1 (/ start x-scale)) 0))

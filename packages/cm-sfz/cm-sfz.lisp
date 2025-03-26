@@ -74,10 +74,11 @@ sfz
   (let* ((props-list (ou:get-props-list args '(:time :keynum :duration :preset :play-fn :oneshot :pan :startpos)))
          (play-fn (getf props-list :play-fn))
          (oneshot (getf props-list :oneshot)))
-    (case play-fn
-      (play-sfz-one-shot (setf (getf props-list :oneshot) t))
-      (play-sfz-loop (setf (getf props-list :oneshot) nil))
-      (otherwise (setf (getf props-list :oneshot) oneshot)))
+    (if play-fn
+        (case play-fn
+          (play-sfz-one-shot (setf (getf props-list :oneshot) t))
+          (play-sfz-loop (setf (getf props-list :oneshot) nil)))
+        (setf (getf props-list :oneshot) oneshot))
     (remf props-list :play-fn)
     (apply #'make-instance 'sfz
            (list* :amplitude (opacity->db (getf args :amplitude)) props-list))))

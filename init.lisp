@@ -50,7 +50,13 @@ load-ats
 ;; ~/.clampsinit.lisp. In cl-sfz, #'add-sfz-preset is defined
 ;; seperately including documentation.
 
-(defvar *clamps-doc-root* (concatenate 'string "file://" (namestring (merge-pathnames (asdf:system-relative-pathname :clamps "doc/html/clamps-doc/")))))
+(defvar *clamps-doc-root*
+  (concatenate
+   'string
+   "file://"
+   (namestring
+    (merge-pathnames
+     (asdf:system-relative-pathname :clamps "doc/html/clamps-doc/")))))
 
 (defun add-sfz-preset (key fname)
   (setf (gethash key *sfz-preset-lookup*) fname))
@@ -58,8 +64,13 @@ load-ats
 (defvar *reinit-clamps-doc* nil)
 
 (defun set-clamps-doc-root (url)
+  "set clamps-doc-root to /url/. This function normally gets called at
+load time from ~/.clampsinit.lisp. To make sure it also works when
+building a common-lisp image for clamps, where no emacs-connection is
+present, we defer the setting of *common-music-doc-root* in emacs to
+calling (clamps) in such cases."
   (setf *clamps-doc-root* url)
-  (if (find-package :slynk)
+  (if (and (find-package :slynk) slynk-api:*emacs-connection*)
       (slynk:eval-in-emacs `(setq *common-music-doc-root* ,url))
       (setf *reinit-clamps-doc* t)))
 

@@ -36,10 +36,10 @@
 
 rts-hush
 "
-  (dotimes (chan 16)
-    (cm::sprout
-     (cm::new cm::midi-control-change :time 0
-       :controller 123 :value 127 :channel chan))))
+  (let ((stream (if (typep *rts-out* 'incudine-stream) (slot-value *rts-out* 'output) *rts-out*)))
+    (dotimes (chan 16)
+      (jackmidi:write-short stream (jackmidi:message (+ 176 chan) 123 127) 3))))
+
 
 (defun rts-hush ()
   "Functions to be called when audio is hushed. This command gets invoked

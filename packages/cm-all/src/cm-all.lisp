@@ -185,7 +185,7 @@ supplied and gets interned as a parameter."
   ;; (install-sly-hooks)
   (incudine:setup-io)
   (cm-restart-gui "/tmp" :start-gui start-gui)
-  (setf (fdefinition 'rts-hush) #'incudine-rts-hush)
+  (install-standard-sly-hooks)
   (cm))
 
 #|
