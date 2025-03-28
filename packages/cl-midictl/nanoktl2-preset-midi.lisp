@@ -80,7 +80,7 @@
       obj
     (loop for idx from 0 for bang across (s-buttons obj) ;;; attach trigger action to top row
           do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (trigger-fns bang)))
-    (loop for idx from 0 for bang across (m-buttons obj) ;;; attach trigger action to middle row (m-buttons)
+    (loop for idx from 8 for bang across (m-buttons obj) ;;; attach trigger action to middle row (m-buttons)
           do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (trigger-fns bang)))
     (loop for idx from 0 for bang across (r-buttons obj) ;;; attach trigger action to bottom bank row
           do (push (let ((idx idx)) (lambda () (set-val (curr-bank obj) idx))) (trigger-fns bang)))

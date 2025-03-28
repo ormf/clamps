@@ -126,7 +126,7 @@
       (loop
         for type in '(bang bang nil nil nil
                       bang nil bang bang bang
-                      bang bang bang bang bang)
+                      bang-toggle bang-toggle bang-toggle bang-toggle bang-toggle)
         for label in '("<" ">" nil nil nil
                        "cycle" nil "set" "<" ">"
                        "p1" "p2" "p3" "p4" "sto")
@@ -138,6 +138,12 @@
              (bang
               (create-o-bang control-buttons (bind-refs-to-attrs button "bang" button "highlight")
                              :background '("gray" "#ff8888") :label label
+                             :flash t
+                             :css `(:height "1.3em" :font-size "1.5em" :text-align "center" :margin ,margin)))
+             (bang-toggle
+              (create-o-bang control-buttons (bind-refs-to-attrs button "bang" button "highlight")
+                             :background '("gray" "#ff8888") :label label
+                             :flash nil
                              :css `(:height "1.3em" :font-size "1.5em" :text-align "center" :margin ,margin)))
              ;; (toggle
              ;;  (create-o-toggle control-buttons (bind-refs-to-attrs button "value")

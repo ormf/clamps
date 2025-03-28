@@ -320,7 +320,7 @@ hash-table if its e-list is empty."
 ;;; (funcall (clog-trigger-fn (elt *bangs* 0)))
 
 
-(defun create-o-bang (parent bindings &key width height label (background '("transparent" "orange")) color flash-time css flash)
+(defun create-o-bang (parent bindings &key width height label (background '("transparent" "orange")) color flash-time css (flash t))
   (declare (ignorable width height))
   (let* ((var (b-ref (first bindings)))
 ;;;         (attr (b-attr (first bindings)))
@@ -335,7 +335,7 @@ hash-table if its e-list is empty."
                             (opt-format-attr "color-off" (option-main color))
                             (opt-format-attr "color-on" (option-second color))
                             (opt-format-attr "flash-time" flash-time)
-                            (opt-format-attr "flash" flash))
+                            (opt-format-attr "flash" (if flash 1 0)))
                            (format-style css)
                            (or (option-main label) "")))))
     (dolist (binding bindings) (push element (b-elist binding))

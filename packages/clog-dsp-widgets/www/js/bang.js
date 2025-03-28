@@ -47,6 +47,7 @@ function bang (elem) {
         myBang = elem.get(0);
     else
         myBang = elem;
+    console.log(myBang);
     let style = getComputedStyle(elem);
     var flashTime        = myBang.getAttribute('flash-time') || '150'; // flash time in ms
 
@@ -55,7 +56,7 @@ function bang (elem) {
     }
 
     function bang() {
-//        console.log('bang')
+        console.log('bang')
         flashBang();
         if (myBang.externalValueChange == false) {
             $(myBang).trigger('data', { bang: true })
@@ -113,7 +114,7 @@ function bang (elem) {
                 else
                     setBang(0);
                 await sleep(myBang.flashTime);
-                console.log('highlightState: ' + mybang.HighlightState)
+                console.log('highlightState: ' + myBang.HighlightState)
                 setBang(myBang.highlightState);
                 bang.flashing = false;
             }
