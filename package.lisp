@@ -92,6 +92,7 @@
            cl-midictl:update-preset-buttons clog-dsp-widgets:pulse-on
            ats-cuda-display:restore-tables orm-utils:make-keyword
            orm-utils:m-exp-dev orm-utils:fv2ct cl-midictl:*midi-cc-fns*
+           incudine.util:logger-level
            reset-logger-stream meters clamps-gui-root
            incudine-bufs:buffer-id clog-dsp-widgets:pulse-off
            clog-dsp-widgets:*out-refs* orm-utils:rmprop orm-utils:multf
