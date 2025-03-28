@@ -546,7 +546,6 @@
            clog-dsp-widgets:master-amp-out-levelmeter-gui
            cl-midictl:*midi-cc-state* cl-midictl:nk2-fader-modes
            cl-midictl:*oscin* cl-midictl:toggle-slot cl-midictl:set-marker
-           cl-midictl:handle-preset-bank-button-press
            cl-midictl:start-midi-receive cl-midictl:*midi-note-state*
            cl-midictl:update-all-controllers cl-midictl:echo cl-midictl:r-buttons
            cl-midictl:m-buttons cl-midictl:curr-bank cl-midictl:note-state
