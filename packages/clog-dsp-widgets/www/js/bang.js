@@ -113,9 +113,9 @@ function bang (elem) {
                 else
                     setBang(0);
                 await sleep(myBang.flashTime);
+                console.log('highlightState: ' + mybang.HighlightState)
                 setBang(myBang.highlightState);
                 bang.flashing = false;
-
             }
         }
     }

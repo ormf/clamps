@@ -140,7 +140,7 @@
 
 (defun nanoktl2-gui (id container &key (chan 6))
   "Function called when a new browser page containing a nanoktl2-gui is
-opened. The midicontroller is the central (SPOT) instance, containing
+opened. midi-controller is the central (SPOT) instance, containing
 the state of all buttons and faders and handling MIDI IO in case a
 hardware controller is attached. nanoktl2-gui defines the gui layout
 and establishes the bidirectional bindings between the slots of the

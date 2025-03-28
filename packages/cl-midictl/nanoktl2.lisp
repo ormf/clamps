@@ -172,7 +172,7 @@ The main idea behind this is to seperate the button-press action from
 the button-state. The button state (on/off) is reflected in the value
 of the bang-object, the button-press action is executed by triggering
 the bang-object with the trigger function, which is the default
-method, implemented in handle-midi-in. By setting the trigger-fn of a
+action, implemented in handle-midi-in. By setting the trigger-fn of a
 bang-object to toggle-ref-fn, the momentary buttons can be easily
 transformed into toggles.
 
@@ -205,7 +205,6 @@ transformed into toggles.
                                (loop for x below (length cc-nums)
                                      collect (cond
                                                ((< x 16) (make-ref 0.0))
-;;;                                               ((< x 40) (make-bang (lambda ()) 0.0))
                                                (t  (make-bang nil 0.0))))))
     (setf nk2-faders (make-array 16 :displaced-to cc-state))
     (setf s-buttons (make-array 8 :displaced-to cc-state :displaced-index-offset 16))
@@ -216,7 +215,7 @@ transformed into toggles.
          '(track-left track-right
            cycle set-marker marker-left marker-right
            tr-rewind tr-ffwd tr-stop tr-play tr-rec)
-         (v-collect (n 11) (+ n 40)))
+         (range 40 51))
     (loop
       for i from 16 below (length cc-nums) ;;; reflect the value of all buttons in the hardware LED.
       do (let* ((local-idx i)
@@ -280,11 +279,11 @@ transformed into toggles.
                       (%trigger slot)))))))))
       (:note-on (setf last-note-on d1)))))
 
-(slot-value (make-ref 3) 'cl-refs::value)
-
 (defmethod update-hw-state ((instance nanoktl2-midi))
-  "Update the state of a Midicontroller Hardware by sending all values of
-/instance/ to its midi-out port.
+  "Update the state of a Hardware Midicontroller and related guis by
+resetting all values of /instance/ to their current values, effecting
+a resend of all values to the midi outputs and the guis. This can be
+used to restore a hardware controller's state after reconnecting.
 
 @Arguments
 
@@ -297,7 +296,6 @@ clamps:cl-midictl
   (with-slots (chan cc-nums cc-map cc-state midi-output) instance
     (loop
       for local-idx from 16 below (length cc-nums)
-      do (let ((cc-num (aref cc-nums local-idx)))
-        (osc-midi-write-short
-         midi-output
-         (+ (1- chan) 176) cc-num (round (get-val (aref cc-state local-idx))))))))
+      do (set-val (aref cc-state local-idx)
+                  (get-val (aref cc-state local-idx))
+                  :force t))))

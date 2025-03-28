@@ -84,22 +84,21 @@
           do (push (let ((idx idx)) (lambda () (handle-preset-button-press obj idx))) (trigger-fns bang)))
     (loop for idx from 0 for bang across (r-buttons obj) ;;; attach trigger action to bottom bank row
           do (push (let ((idx idx)) (lambda () (set-val (curr-bank obj) idx))) (trigger-fns bang)))
-    (loop for idx below 8
-          do (push ;; reaction to val change of curr-bank slot,
+    (push ;; reaction to val change of curr-bank slot,
                    ;; triggered by pressing any button of r-buttons
                    ;; (see loop above): Relabeling and state update of
                    ;; preset-buttons
               (watch
-               (let* ((idx idx))
-                 (lambda () (let ((bank (get-val curr-bank)))
-                         (if (= idx bank)
-                             (progn
-                               (set-val (aref r-buttons idx) 1)
-                               (loop for i from 0 for label across (subseq button-labels 0 16)
-                                     do (set-val label (+ (* bank 16) i)))
-                               (update-preset-buttons obj))
-                             (set-val (aref r-buttons idx) 0))))))
-              unwatch))
+               (lambda () (let ((bank (get-val curr-bank)))
+                       (loop for idx below 8
+                             do (if (= idx bank)
+                                    (progn
+                                      (set-val (aref r-buttons idx) 1)
+                                      (loop for i from 0 for label across (subseq button-labels 0 16)
+                                            do (set-val label (+ (* bank 16) i)))
+                                      (update-preset-buttons obj))
+                                    (set-val (aref r-buttons idx) 0))))))
+              unwatch)
     (update-hw-state obj)
     (loop for button in (list tr-rewind tr-ffwd tr-stop tr-play) ;;; player-buttons
           do (let ((button button))
@@ -156,23 +155,6 @@ numbers with the value 0 or 1."
     (mapc #'set-val
           (list tr-rewind tr-ffwd tr-stop tr-play)
           button-state)))
-
-#|
-(defun handle-preset-bank-button-press (instance button-idx)
-  (incudine.util:msg :info "preset-bank-button-press ~a" button-idx)
-  (with-slots (curr-bank button-labels r-buttons s-buttons m-buttons) instance
-    (set-val (aref r-buttons curr-bank) 0)
-    (setf curr-bank button-idx)
-    (set-val (aref r-buttons button-idx) 127)
-    (loop for i from 0 for label in button-labels
-          do (set-val label (+ (* curr-bank 16) i)))
-    (update-preset-buttons instance)))
-
-(defun handle-preset-bank-button-press (instance button-idx)
-  (incudine.util:msg :info "preset-bank-button-press ~a" button-idx)
-(set-val (curr-bank instance) button-idx))
-
-|#
 
 (defgeneric preset-state (instance preset-no active-players)
   (:method ((instance nanoktl2-preset-midi) preset-no active-players)
@@ -235,20 +217,6 @@ numbers with the value 0 or 1."
 (defvar *nanoktl2-presets-file* "/tmp/nanoktl2-presets.lisp")
 (defvar *curr-nk2-controller* nil)
 
-#|
-
-(defun format-player-preset (preset stream)
-  (declare (ignorable stream))
-;;;  (format stream "~&(")
-  (if preset
-      (format stream "~&(:num ~a :cc-state ~a~%:form ~a)~%"
-              (f.orm::controller-preset-num preset)
-              (f.orm::controller-preset-cc-state preset)
-              (aref (f.orm::controller-preset-fns preset) 0) )
-      (format stream "nil "))
-;;;  (format stream ")~%")
-  )
-|#
 (defun format-player-preset (preset stream)
   (declare (ignorable stream))
 ;;;  (format stream "~&(")
