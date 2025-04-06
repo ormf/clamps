@@ -104,7 +104,7 @@ nanokontrol2.
       (let ((cc-num (aref cc-nums local-idx)))
         (osc-midi-write-short
          midi-output
-         (+ (1- chan) 176) cc-num (round (get-val (aref cc-state local-idx))))
+         (+ (1- chan) 176) cc-num (round (* 127 (get-val (aref cc-state local-idx)))))
         ;; (osc-midi-write-short
         ;;  midi-output
         ;;  (+ (1- chan) 144) cc-num (get-val (aref note-state local-idx)))

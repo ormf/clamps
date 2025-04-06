@@ -416,11 +416,11 @@ count - positive Integer denoting the ength of partitions.
 (integrate '(0 1 2 3 4))
 |#
 
-(defun integrate (list &key (modifier #'+) (start (first list)))
-  "Return a running sum (or any other /modifier/ function) of /list/.
+(defun integrate (seq &key (modifier #'+) (start (elt seq 0)))
+  "Return a running sum (or any other /modifier/ function) of /seq/.
 
 @Arguments
-list - List to integrate
+seq - Proper sequence to integrate.
 :modifier - Function to apply to all elements accumulationg the results.
 :start - Number denoting the start value.
 
@@ -437,10 +437,10 @@ list - List to integrate
 @See-also
 differentiate
 "
-  (loop
-     for i in list
-     for j = start then (funcall modifier j i)
-     collect j))
+  (let (last)
+    (map (type-of seq) (lambda (x) (if last (setf last (funcall modifier last x))
+                                  (setf last start)))
+         seq)))
 
 
 ;; (defun differentiate (liste)
@@ -450,19 +450,19 @@ differentiate
 ;;            for j in (cdr liste)
 ;;            collect (- j i))))
 
-(defun differentiate (list &key (modifier #'-) (start (first list)))
+(defun differentiate (seq &key (modifier #'-) (start (elt seq 0)))
   "Return differences or the results of applying /modifier/ to subsequent
-elements of /list/.
+elements of /seq/.
 
 @Arguments
-list - List to integrate
+seq - Proper sequence to integrate
 :modifier - Function to apply to all elements accumulationg the results.
 :start - Number denoting the start value.
 
 @Examples
 (differentiate '(0 2 3 7 12)) ; => (0 2 1 4 5)
 
-(differentiate '(0 2 3 7 12) :start 3) ; => (3 2 1 4 5)
+(differentiate #(0 2 3 7 12) :start 3) ; => #(3 2 1 4 5)
 
 (differentiate '(1 2 6 12 48) :modifier #'/) ; => (1 2 3 2 4)
 
@@ -471,11 +471,18 @@ list - List to integrate
 @See-also
 integrate
 "
-  (cons start
-	(mapcar (lambda (x y) (funcall modifier x y)) (cdr list) list)))
+  (let (last)
+    (map (type-of seq) (lambda (x)
+                         (if last
+                             (prog1
+                                 (funcall modifier x last)
+                               (setf last x))
+                             (prog1 start
+                               (setf last x))))
+         seq)))
 
 #|
- (differentiate '(1 3 2 5 6 4))
+ (differentiate #(1 3 2 5 6 4))
  (differentiate '((1 3) (2 -1) (-2 2) (4 -5) (6 -2) (1 4)) 
  	       :modifier #'(lambda (curr last) (list (first curr) (- (second curr) (second last)))))
 
