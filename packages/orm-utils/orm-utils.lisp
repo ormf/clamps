@@ -437,6 +437,7 @@ seq - Proper sequence to integrate.
 @See-also
 differentiate
 "
+  (declare (type sequence seq))
   (let (last)
     (map (type-of seq) (lambda (x) (if last (setf last (funcall modifier last x))
                                   (setf last start)))
@@ -455,7 +456,7 @@ differentiate
 elements of /seq/.
 
 @Arguments
-seq - Proper sequence to integrate
+seq - Proper sequence to integrate.
 :modifier - Function to apply to all elements accumulationg the results.
 :start - Number denoting the start value.
 
@@ -471,6 +472,7 @@ seq - Proper sequence to integrate
 @See-also
 integrate
 "
+  (declare (type sequence seq))
   (let (last)
     (map (type-of seq) (lambda (x)
                          (if last
@@ -763,7 +765,25 @@ ftom
 ;; nconc-get-size as helper function. Function ist non-destructive: It
 ;; uses a local copy of list instead of the original.
 
-(defun rotate (list &optional (num 1))
+(defun rotate (seq &optional (n 1))
+  "Rotate /seq/ by /num/ elems (to the right). /num/ can be negative. If
+/num/ is larger than the list size it will wrap around as if the
+rotation was called recursively num times.
+
+@Arguments
+seq - Proper sequence to rotate.
+num - Integer number of rotations.
+
+@Examples
+(rotate '(dog bird lion cat horse) 1) ; => (horse dog bird lion cat)
+(rotate #(dog bird lion cat horse) -1)  ; => (bird lion cat horse dog)
+
+(rotate '(dog bird lion cat horse) 4733) ; => (lion cat horse dog bird)
+"
+  (let ((n (mod n (length seq))))
+    (concatenate (type-of seq) (subseq seq n) (subseq seq 0 n))))
+
+(defun rotate-list (list &optional (num 1))
   "Rotate /list/ by /num/ elems (to the right). /num/ can be negative. If
 /num/ is larger than the list size it will wrap around as if the
 rotation was called recursively num times.
@@ -786,14 +806,15 @@ num - Integer number of rotations.
         (setf (cdr newlast) nil) ;; set the cdr of the new last element to nil
         (values newfirst))))) ;; return the new first element (listhead)
 
-(defun transpose-list (list-of-lists)
-  (apply #'mapcar #'list list-of-lists))
 ;; (rotate '(0 1 2 3 4 5) -3) -> (3 4 5 0 1 2)
 ;;
 ;; (defparameter test '(0 1 2 3 4 5))
 ;;
 ;; (rotate test 3)
 ;; test
+
+(defun transpose-list (list-of-lists)
+  (apply #'mapcar #'list list-of-lists))
 
 ;;; group function from Graham's book:
 

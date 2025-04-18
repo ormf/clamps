@@ -6708,7 +6708,7 @@ them."
      ("ca" :html "&Iacute;ndex")
      ("cs" :default "Obsah")
      ("da" :default "Indhold")
-     ("de" :default "Inhaltsverzeichnis")
+     ("de" :default "Inhalt")
      ("eo" :default "Enhavo")
      ("es" :ascii "Indice" :html "&Iacute;ndice" :default "Índice")
      ("et" :default "Sisukord")

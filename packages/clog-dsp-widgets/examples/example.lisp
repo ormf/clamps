@@ -4,12 +4,42 @@
     (clamps)))
 
 (defpackage #:clog-widgets-example
+  (:shadowing-import-from #:clog
+                          #:font-style #:transform #:name #:display #:width #:height #:rotate #:inverse #:opacity)
   (:use #:cl #:clamps #:clog))
 
 ;; then select everything from here down to the end of the file and
 ;; complire/evaluate it.
 
 (in-package :clog-widgets-example)
+
+
+(defun create-o-div (parent bindings &key width height css)
+  (declare (ignorable width height))
+  (let* ((element (create-div
+                   parent
+                   (format nil "<o-numbox min=\"~a\" max=\"~a\" value=\"~a\" precision=\"~a\" ~@[~a~]>"
+                           min max (get-val var) precision
+                           (format-style css))))
+         ) ;;; the get-val automagically registers the ref
+    (dolist (binding bindings) (push element (b-elist binding))
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
+    (set-on-data ;;; react to changes in the browser page
+     element
+     (lambda (obj data)
+       (declare (ignore obj))
+       ;; (if *debug* (format t "~&~%clog event from ~a: ~a~%" element
+       ;;                     (or (if (gethash "close" data) "close")
+       ;;                         (gethash attr data))))
+       (if (gethash "close" data)
+           (progn
+;;;             (format t "closing numbox~%")
+             (dolist (binding bindings) (setf (b-elist binding) (remove element (b-elist binding))))) ;;; cleanup: unregister elem.
+           (let ((*refs-seen* (list (list element attr))))
+;;;             (format t "~&numbox recv value: ~a, ~a~%" (float (gethash attr data) 1.0) *refs-seen*)
+             (%set-val var (float (gethash attr data) 1.0))
+             ))))
+    element))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; utilities

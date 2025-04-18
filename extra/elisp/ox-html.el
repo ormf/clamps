@@ -3704,6 +3704,7 @@ images, set it to:
 DESC is the description part of the link, or the empty string.
 INFO is a plist holding contextual information.  See
 `org-export-data'."
+  (push (list link desc) glinks)
   (let* ((html-ext (plist-get info :html-extension))
 	 (dot (when (> (length html-ext) 0) "."))
 	 (link-org-files-as-html-maybe
@@ -4981,10 +4982,12 @@ pseudo elements.
 INFO is a plist used as a communication channel."
   (let* ((elem element)
          (parent (org-element-property :parent elem)))
-    (while (and parent (not (eq (org-element-type parent) 'org-page)))
+    (while (and parent (not (eq (org-element-type elem) 'org-page)))
       (setf elem parent)
       (setf parent (org-element-property :parent elem)))
-    elem))
+    (if (eq (org-element-type elem) 'org-page)
+        (org-element-property :tl-headline elem)
+        elem)))
 
 (defun org-html-get-multipage-headline-numbering (element info)
   "Return the headline of the section containing ELEMENT.
