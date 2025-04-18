@@ -3704,7 +3704,6 @@ images, set it to:
 DESC is the description part of the link, or the empty string.
 INFO is a plist holding contextual information.  See
 `org-export-data'."
-  (push (list link desc) glinks)
   (let* ((html-ext (plist-get info :html-extension))
 	 (dot (when (> (length html-ext) 0) "."))
 	 (link-org-files-as-html-maybe
