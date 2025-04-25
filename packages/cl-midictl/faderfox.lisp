@@ -94,9 +94,8 @@ nanokontrol2.
       (:note-on
        (let ((button-idx (aref cc-map d1)))
          (incudine.util:msg :debug "button-idx ~a" button-idx)
-         (cond ((and (< 3 button-idx 16))
-                (let ((button-slot (aref note-state button-idx)))
-                  (toggle-slot button-slot)))))))))
+         (let ((button-slot (aref note-state button-idx)))
+           (toggle-slot button-slot)))))))
 
 (defmethod update-hw-state ((instance faderfox-midi))
   (with-slots (chan cc-nums cc-map cc-state note-state midi-output) instance

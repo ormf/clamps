@@ -150,10 +150,10 @@ duration - Positive number denoting duration in seconds.
 lsample
 "
   (with-slots (buffer amp keynum loopstart loopend) lsample
-    (let ((rate (if pitch (incudine::sample (ou:ct->fr (+ *keynum-offset* (- pitch keynum)))) 1))
-          (oneshot (if osp oneshot (lsample-oneshot lsample)))
-          (out1 (or out1 0))
-          (out2 (or out2 (1+ out1))))
+    (let* ((rate (if pitch (incudine::sample (ou:ct->fr (+ *keynum-offset* (- pitch keynum)))) 1))
+           (oneshot (if osp oneshot (lsample-oneshot lsample)))
+           (out1 (or out1 0))
+           (out2 (or out2 (1+ out1))))
       (if oneshot
         (play-buffer* buffer oid:*env1* duration (+ amp ampdb) rate pan startpos out1 out2 :tail 200)
         (play-buffer-loop* buffer oid:*env1* duration (+ amp ampdb) rate pan loopstart loopend startpos out1 out2 :tail 200)))))

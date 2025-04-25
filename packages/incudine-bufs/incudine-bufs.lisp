@@ -311,5 +311,23 @@ remove-all-buffers
 "
   (/ (buffer-size buffer) (buffer-sample-rate buffer)))
 
+(defun load-sounds-from-dir (dir &key (filter "*.wav"))
+  "Load all soundfiles in /dir/ into clamps buffers in case they don't
+exist already in the registry and return the buffer-ids of all newly
+loaded files in a list.
+
+@Arguments
+dir - Pathname or String designing a pathname
+:filter - String designing a filename pattern. Defaults to \"*.wav\"
+
+@See-also
+clamps-buffer-load
+buffer-id
+"
+  (let ((loaded '()))
+    (dolist (snd (uiop:directory-files dir filter))
+      (let ((new (incudine-bufs:clamps-buffer-load snd)))
+        (when new (push (incudine-bufs:buffer-id new) loaded))))
+    (reverse loaded)))
 
 ;;; (clamps-buffer-load "/home/orm/work/kompositionen/letzte-worte/snd/fl-s01-line01.wav")

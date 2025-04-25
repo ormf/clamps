@@ -275,7 +275,7 @@ midi-input is received. (default: t)")
              :initarg :cc-state :accessor cc-state
              :documentation
                  "Accessor method for the cc-state slot of an instance of type <<midi-controller>>.")
-   (note-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-ref 0)))
+   (note-state :initform (make-array 128 :initial-contents (loop for i below 128 collect (make-bang (lambda ()) 0)))
                :initarg :note-state :accessor note-state
                :documentation
                  "Accessor method for the note-state slot of an instance of type <<midi-controller>>.")

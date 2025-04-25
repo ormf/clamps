@@ -3026,8 +3026,6 @@ export information channel."
            (setq info (org-export--annotate-info
                        backend info subtreep visible-only ext-plist))
            (setq global-info info)
-           (setq gtest2 (plist-get :filter-multipage info))
-           (setq gtest org-export-filter-multipage-functions)
 	   ;; Eventually transcode TREE.  Wrap the resulting string into
 	   ;; a template.
 	   (let ((output

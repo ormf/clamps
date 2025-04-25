@@ -569,27 +569,6 @@
    #+BEGIN_SRC lisp
      (buffer-stretch-play* (buffer buffer) (rate sample) (wwidth sample) (start sample) (end sample) (stretch sample))
    #+END_SRC
-   Buffer play Ugen with granular stretching working with any blocksize.
-*** Arguments
-    | =buffer=  | Incudine buffer.                                                                  |
-    | =rate=    | Positive Number denoting playback rate (will get adjusted to buffer-sample-rate). |
-    | =wwidth=  | Non Negative Integer denoting granular window size in msecs.                      |
-    | =start=   | Non Negative Integer denoting start of playback into the buffer in samples.       |
-    | =end=     | Non Negative Integer denoting end of playback into the buffer in samples.         |
-    | =stretch= | Positive Integer denoting stretching factor.                                      |
-
-*** See also
-    - [[#buffer-loop-play][buffer-loop-play​*]]
-    - [[#buffer-play][buffer-play​*]]
-    - [[#buffer-stretch-play][buffer-stretch-play​*]]
-    - [[#envelope][envelope​*]]
-    - [[#line][line​*]]
-    - [[#phasor][phasor​*]]
-    - [[#phasor-loop][phasor-loop​*]]
-    - [[#play-buffer][play-buffer​*]]
-    - [[#play-buffer-loop][play-buffer-loop​*]]
-    - [[#play-buffer-stretch][play-buffer-stretch​*]]
-    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
 ** bufname=
    Function
    #+BEGIN_SRC lisp
@@ -679,16 +658,8 @@
 ** ccin
    Function
    #+BEGIN_SRC lisp
-     (ccin ccnum &optional (channel *global-midi-channel*))
+     (ccin ccnum)
    #+END_SRC
-   Return the last received MIDI CC value of controller number /ccnum/
-   at MIDI channel /channel/. Setfable.
-*** Arguments
-    | =ccnum=   | Integer in the range [1..128] indicating the Controller Number. |
-    | =channel= | Integer in the range [1..16] indicating the MIDI channel.       |
-
-*** See also
-    - [[#midi-cc-state][*​​midi-cc-state​​*]]
 ** cd
    Function
    #+BEGIN_SRC lisp
@@ -916,6 +887,12 @@
    #+END_SRC
    Helper function to construct the gnuplot command with a given
    header, options and a grid flag.
+** controller-window
+   Function
+   #+BEGIN_SRC lisp
+     (controller-window body)
+   #+END_SRC
+   On-new-window handler.
 ** copy-instance
    Generic Function
    #+BEGIN_SRC lisp
@@ -1024,7 +1001,7 @@
 ** create-o-bang
    Function
    #+BEGIN_SRC lisp
-     (create-o-bang parent bindings &key width height label (background '("transparent" "orange")) color flash-time css flash)
+     (create-o-bang parent bindings &key width height label (background '("transparent" "orange")) color flash-time css (flash t))
    #+END_SRC
 ** create-o-knob
    Function
@@ -1248,12 +1225,12 @@
 ** differentiate
    Function
    #+BEGIN_SRC lisp
-     (differentiate list &key (modifier #'-) (start (first list)))
+     (differentiate seq &key (modifier #'-) (start (elt seq 0)))
    #+END_SRC
    Return differences or the results of applying /modifier/ to subsequent
-   elements of /list/.
+   elements of /seq/.
 *** Arguments
-    | =list=      | List to integrate                                            |
+    | =seq=       | Proper sequence to integrate.                                |
     | =:modifier= | Function to apply to all elements accumulationg the results. |
     | =:start=    | Number denoting the start value.                             |
 
@@ -1261,7 +1238,7 @@
     #+BEGIN_SRC lisp
       (differentiate '(0 2 3 7 12)) ; => (0 2 1 4 5)
       
-      (differentiate '(0 2 3 7 12) :start 3) ; => (3 2 1 4 5)
+      (differentiate #(0 2 3 7 12) :start 3) ; => #(3 2 1 4 5)
       
       (differentiate '(1 2 6 12 48) :modifier #'/) ; => (1 2 3 2 4)
       
@@ -1269,6 +1246,11 @@
     #+END_SRC
 *** See also
     - [[integrate][integrate]]
+** digest-poolplayer-preset-form-to-array
+   Function
+   #+BEGIN_SRC lisp
+     (digest-poolplayer-preset-form-to-array args)
+   #+END_SRC
 ** do-proplist
    Macro
    #+BEGIN_SRC lisp
@@ -1654,6 +1636,11 @@
    Function
    #+BEGIN_SRC lisp
      (faderfox-gui #:id gui-parent &key (chan 4))
+   #+END_SRC
+** faderfox-gui-f.orm
+   Function
+   #+BEGIN_SRC lisp
+     (faderfox-gui-f.orm id gui-parent &key (chan 5))
    #+END_SRC
 ** faderfox-midi
    Class
@@ -2062,6 +2049,13 @@
    #+BEGIN_SRC lisp
      (handle-midi-in instance opcode d1 d2)
    #+END_SRC
+** handle-preset-button-press
+   Function
+   #+BEGIN_SRC lisp
+     (handle-preset-button-press instance button-idx)
+   #+END_SRC
+   Handling of button press of s-buttons and m-buttons: Depending on the
+   state of tr-rec, recall, store or copy a preset.
 ** *​hanning1024​*
    :PROPERTIES:
    :CUSTOM_ID: hanning1024
@@ -2150,11 +2144,11 @@
 ** integrate
    Function
    #+BEGIN_SRC lisp
-     (integrate list &key (modifier #'+) (start (first list)))
+     (integrate seq &key (modifier #'+) (start (elt seq 0)))
    #+END_SRC
-   Return a running sum (or any other /modifier/ function) of /list/.
+   Return a running sum (or any other /modifier/ function) of /seq/.
 *** Arguments
-    | =list=      | List to integrate                                            |
+    | =seq=       | Proper sequence to integrate.                                |
     | =:modifier= | Function to apply to all elements accumulationg the results. |
     | =:start=    | Number denoting the start value.                             |
 
@@ -2354,6 +2348,21 @@
     - [[sfz-preset-file][sfz-preset-file]]
     - [[sfz-preset-loaded?][sfz-preset-loaded?]]
     - [[#sfz-file-path][*​​sfz-file-path​​*]]
+** load-sounds-from-dir
+   Function
+   #+BEGIN_SRC lisp
+     (load-sounds-from-dir dir &key (filter "*.wav"))
+   #+END_SRC
+   Load all soundfiles in /dir/ into clamps buffers in case they don't
+   exist already in the registry and return the buffer-ids of all newly
+   loaded files in a list.
+*** Arguments
+    | =dir=     | Pathname or String designing a pathname                  |
+    | =:filter= | String designing a filename pattern. Defaults to "*.wav" |
+
+*** See also
+    - [[clamps-buffer-load][clamps-buffer-load]]
+    - [[buffer-id][buffer-id]]
 ** lsample
    Structure
 
@@ -2634,17 +2643,24 @@
    #+END_SRC
    Return an "instance" (closure) of a pulse generator flashing a LED
    on an external MIDI Harware device by sending the values 0/127 using
-   /ccnum/, /chan/ and /midi-output/.
+   /ccnum/, /chan/ and /midi-output/. Use the /:freq/ and /:pulse-width/
+   keywords to change the speed and duty cycle of the pulse.
    
-   Funcalling the returned instance with the :start argumnet will start
-   the pulse, funcalling it with the :stop argument will stop flashing.
+   Funcalling the returned instance with the :start argument will start
+   the pulse, funcalling it with the :stop argument will stop flashing,
+   calling it with :freq <freq> or :pulse-width <pulse-width> will change
+   the respective values.
 *** Example
     #+BEGIN_SRC lisp
-      (defvar *my-pulsar* (make-led-pulsar 32 1 (cm:ensure-jackmidi:*midi-out1*)))
+      (defvar *my-pulsar* (make-led-pulsar 32 1 (cm:ensure-jackmidi *midi-out1*)))
       
-      (funcall *my-pulsar*:start)
+      (funcall *my-pulsar* :start)
       
-      (funcall *my-pulsar*:stop)
+      (funcall *my-pulsar* :freq 1)
+      
+      (funcall *my-pulsar* :pulse-width 0.1)
+      
+      (funcall *my-pulsar* :stop)
     #+END_SRC
 ** make-lsample
    Function
@@ -3238,7 +3254,7 @@
    slots with accessor methods of the same name (if not indicated
    otherwise) and initargs being the keywords of the slot symbol:
    
-   =name= -- String naming the bus. Accessoqnr is [[bus-name][bus-name]]. Defaults to the empty string.
+   =name= -- String naming the bus. Accessor is [[bus-name][bus-name]]. Defaults to the empty string.
    
    =num-chans= -- Positive Integer denoting the number of channels. Defaults to 2. Accessor is [[num-channels][num-channels]]
    
@@ -3341,6 +3357,11 @@
    Function
    #+BEGIN_SRC lisp
      (nanoktl2-preset-gui #:id container &key (chan 5))
+   #+END_SRC
+** nanoktl2-preset-gui-f.orm
+   Function
+   #+BEGIN_SRC lisp
+     (nanoktl2-preset-gui-f.orm id container &key (chan 1))
    #+END_SRC
 ** nanoktl2-preset-midi
    Class
@@ -3687,6 +3708,14 @@
     - [[#play-buffer-loop][play-buffer-loop​*]]
     - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
     - [[play-lsample][play-lsample]]
+** play-buffer-stretch-env-pan-bus-out*
+   :PROPERTIES:
+   :CUSTOM_ID: play-buffer-stretch-env-pan-bus-out
+   :END:
+   Function
+   #+BEGIN_SRC lisp
+     (play-buffer-stretch-env-pan-bus-out* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (busnum 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+   #+END_SRC
 ** play-buffer-stretch-env-pan-out*
    :PROPERTIES:
    :CUSTOM_ID: play-buffer-stretch-env-pan-out
@@ -3845,14 +3874,6 @@
 *** Arguments
     | =portno= | Integer in the range [0..65535] |
 
-** pulse
-   Function
-   #+BEGIN_SRC lisp
-     (pulse midi-controller slot cc-num &key (pulse-freq 2) (initial-flash nil))
-   #+END_SRC
-   pulse the LED of <midi-controller> at <cc-num> with frequency
-   <pulse-freq> as long as (get-val <slot>) equals 2. Starting with LED on or
-   off is determined by <initial-flash>.
 ** pulse-off
    Generic Function
    #+BEGIN_SRC lisp
@@ -4380,19 +4401,19 @@
 ** rotate
    Function
    #+BEGIN_SRC lisp
-     (rotate list &optional (num 1))
+     (rotate seq &optional (n 1))
    #+END_SRC
-   Rotate /list/ by /num/ elems (to the right). /num/ can be negative. If
+   Rotate /seq/ by /num/ elems (to the right). /num/ can be negative. If
    /num/ is larger than the list size it will wrap around as if the
    rotation was called recursively num times.
 *** Arguments
-    | =list= | List to rotate               |
-    | =num=  | Integer number of rotations. |
+    | =seq= | Proper sequence to rotate.   |
+    | =num= | Integer number of rotations. |
 
 *** Examples
     #+BEGIN_SRC lisp
       (rotate '(dog bird lion cat horse) 1) ; => (horse dog bird lion cat)
-      (rotate '(dog bird lion cat horse) -1)  ; => (bird lion cat horse dog)
+      (rotate #(dog bird lion cat horse) -1)  ; => (bird lion cat horse dog)
       
       (rotate '(dog bird lion cat horse) 4733) ; => (lion cat horse dog bird)
     #+END_SRC
@@ -4930,7 +4951,7 @@
 ** svg->browser
    Function
    #+BEGIN_SRC lisp
-     (svg->browser svg-file &key (bar-lines t) (staff-systems t) (piano-roll nil) (scale 1) (timescale 1/32) (inverse nil) (reload t))
+     (svg->browser svg-file &key (bar-lines t) (staff-systems t) (piano-roll nil) (scale 1) (timescale 1/32) (inverse nil) (reload t) timeshift)
    #+END_SRC
    Display =svg-file= in the SVG Player Gui, located at
    /<clamps-base-url>/svg-display/.
@@ -4941,7 +4962,10 @@
     | =:piano-roll=    | Boolean indicating whether to display a piano roll.                                                                        |
     | =:scale=         | Positive Number denoting the zoom factor of the graphic.                                                                   |
     | =:timescale=     | Positive number denoting The timescale for playback.                                                                       |
+    | =:timeshift=     | Positive number denoting The timescale for playback.                                                                       |
     | =:inverse=       | 0 or 1 indicating inverse colors.                                                                                          |
+    | =:reload=        | Boolean indicating whether to reload the html page                                                                         |
+    | =:timeshift=     | Number denoting an optional timeshift (will also be scaled by :timescale).                                                 |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -5254,8 +5278,10 @@
    #+BEGIN_SRC lisp
      (update-hw-state instance)
    #+END_SRC
-   Update the state of a Midicontroller Hardware by sending all values of
-   /instance/ to its midi-out port.
+   Update the state of a Hardware Midicontroller and related guis by
+   resetting all values of /instance/ to their current values, effecting
+   a resend of all values to the midi outputs and the guis. This can be
+   used to restore a hardware controller's state after reconnecting.
 *** Arguments
     | =instance= | An instance of a class or subclass of [[midi-controller][midi-controller]]. |
 
@@ -5266,6 +5292,8 @@
    #+BEGIN_SRC lisp
      (update-preset-buttons controller)
    #+END_SRC
+   React to bank changes, etc. by updating the value of all preset
+   buttons.
 * V
 ** v-append
    Macro

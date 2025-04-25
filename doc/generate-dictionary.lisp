@@ -715,8 +715,8 @@ set-tempo
     clog-midi-controller:gui-set-marker clog-midi-controller:gui-stop
     clog-midi-controller:gui-track-left clog-midi-controller:gui-track-right
     cl-midictl:gui-update-off cl-midictl:handle-player-button-press
-    cl-midictl:handle-player-switch cl-midictl:handle-preset-bank-button-press
-    cl-midictl:handle-preset-button-press cl-midictl:handle-store-button-press
+    cl-midictl:handle-player-switch
+    cl-midictl:handle-store-button-press
     svg-import-export:header svg-import-export:height cl-midictl:hide-fader
     svg-import-export:href cl-midictl:init-nk2 cl-poolplayer:init-poolplayer
     cuda-usocket-osc:input-stream svg-import-export:insensitive orm-utils:insert
