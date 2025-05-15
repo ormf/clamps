@@ -151,7 +151,7 @@ gui elements."
            (find-controller id)
            (add-midi-controller 'cl-midictl::nanoktl2-midi
                                 id
-                                :midi-input cm:*midi-in1*
+                                :midi-input (first cm:*midi-in*)
                                 :midi-output (cm:ensure-jackmidi cm:*midi-out1*)
                                 :chan chan)))
         (margin "0.2em"))

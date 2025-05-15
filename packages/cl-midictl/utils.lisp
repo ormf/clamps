@@ -128,7 +128,6 @@ the respective values.
 (funcall *my-pulsar* :pulse-width 0.1)
 
 (funcall *my-pulsar* :stop)
-
 "
   (let (node-id running (freq freq) (pulse-width pulse-width))
     (lambda (cmd &rest args)

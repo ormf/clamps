@@ -156,7 +156,7 @@
                           (find-controller id)
                           (let ((ctlr (add-midi-controller 'nanoktl2-preset-midi
                                                            id
-                                                           :midi-input cl-midictl::*midi-in1*
+                                                           :midi-input (first cl-midictl::*midi-in*)
                                                            :midi-output cl-midictl::*midi-out1*
                                                            :chan chan)))
                             (setf (tr-rec ctlr) (make-bang (lambda () (handle-store-button-press ctlr)) 0))

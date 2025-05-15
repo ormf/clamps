@@ -589,32 +589,3 @@ start-midi-receive
     (update-hw-state controller)))
 
 ;;; (start-midi-engine)
-
-(defun start-midi-engine ()
-  "open midi ports and start realtime thread."
-  (when *midi-in1*
-    (recv-stop *midi-in1*)
-    (remove-all-responders *midi-in1*)
-    (jackmidi:close *midi-in1*))
-  (incudine.util:msg :warn "closing midi streams~%")
-  (mapcar #'jackmidi:close jackmidi::*streams*)
-  (sleep 0.1)
-  (when *midi-out1* (jackmidi:close *midi-out1*))
-  (setf *midi-in1* (jackmidi:open :direction :input
-                                     :port-name "midi_in_1"))
-  (loop repeat 20 until *midi-in1* do (progn
-                                        (incudine.util:msg :warn "waiting for *midi-in1*")
-                                        (sleep 0.1)))
-  (setf *midi-out1* (jackmidi:open :direction :output
-                                   :port-name "midi_out_1"))
-  (loop repeat 20 until *midi-out1* do (progn
-                                        (incudine.util:msg :warn "waiting for *midi-out1*")
-                                        (sleep 0.1)))
-  (start-midi-receive *midi-in1*)
-;;;  (incudine:rt-start)
-  (if (and *midi-in1* *midi-out1*)
-      (progn
-        (incudine.util:msg :warn "~a" *midi-in1*)
-        (incudine.util:msg :warn "~a" *midi-out1*)
-        (list *midi-in1* *midi-out1*))
-      (error "midi didn't start properly")))

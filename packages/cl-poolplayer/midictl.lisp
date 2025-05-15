@@ -119,7 +119,7 @@
                   (setf (aref *cc-state* ch d1) d2)
                   (funcall (aref *cc-fns* ch d1) d2)
                   )))))
-     *midi-in1*
+     (first *midi-in*)
      :format :raw))
 
 

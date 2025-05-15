@@ -67,7 +67,7 @@ to be supplied. The sym of the stream gets interned as a parameter."
   (or (cm:ensure-jackmidi midi-output)
       (cm:ensure-jackmidi *midi-out1*)))
 
-(defun rts (&key (rt-wait 0))
+(defun rts (&key (rt-wait 0) (num-midi-ports 2))
   "Start the real-time system of Clamps. This functions sets the
 following special variables:
 
@@ -96,7 +96,7 @@ clamps
 rts?
 "  (declare (ignore rt-wait))
 ;;;  (cm)
-  (let ((result (cl-midictl:start-midi-engine)))
+  (let ((result (cl-midictl:start-midi-engine :num-ports num-midi-ports)))
     (setf *midi-in1* (first result))
     (make-mt-stream *midi-out1* (second result) '(1 0)))
   (loop repeat 20 until *midi-out1* do

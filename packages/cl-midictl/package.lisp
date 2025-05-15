@@ -4,7 +4,9 @@
   (:use #:cl #:ou #:cl-refs #:incudine)
   (:shadow #:id)
   (:shadowing-import-from #:cm
-                          #:chan)
+                          #:chan
+                          #:*midi-in1*
+                          #:*midi-out1*)
   (:shadowing-import-from #:incudine
                           #:group)
   (:export

@@ -75,7 +75,7 @@
               (add-midi-controller 'faderfox-midi
                                    id
                                    :chan chan
-                                   :midi-input *midi-in1*
+                                   :midi-input (first *midi-in*)
                                    :midi-output *midi-out1*))))
     (with-slots (cc-state note-state) midi-controller
       (let* ((gui-container (create-div gui-parent

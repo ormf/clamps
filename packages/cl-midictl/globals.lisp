@@ -20,8 +20,6 @@
 
 (in-package :cl-midictl)
 
-(defparameter *midi-in1* nil)
-(defparameter *midi-out1* nil)
 (defparameter *global-midi-channel* 1
   "Default MIDI channel for midi controllers or access functions like
 <<ccin>>.
@@ -37,7 +35,7 @@ midi-controller
                     collect (make-array 128 :initial-contents (loop repeat 128 collect (make-ref 0)))))
   "2-dimensional Array of 16x128 <<ref-object><ref-objects>> reflecting the last received
 CC value of a MIDI CC message for all 128 CC numbers on all 16 MIDI
-channels.
+channels of the default midi input (*midi-in1*).
 
 @See-also
 ccin
@@ -52,7 +50,7 @@ ccin
                     collect (make-array 128 :initial-contents (loop repeat 128 collect nil))))
   "2-dimensional Array of 16x128 lists containing functions to be called
 on a received MIDI CC message individually for the 128 CC numbers on
-all 16 MIDI channels with the CC value as argument.
+all 16 MIDI channels with the CC value as argument on the default midi input (*midi-in1*).
 
 @See-also
 *midi-cc-state*
@@ -66,7 +64,7 @@ all 16 MIDI channels with the CC value as argument.
                     collect (make-array 128 :initial-contents (loop repeat 128 collect (make-ref 0)))))
   "2-dimensional Array of 16x128 <<ref-object><ref-objects>> reflecting the last received
 velocity of a MIDI note on message for all 128 keynums on all 16 MIDI
-channels.
+channels on the default midi input (*midi-in1*). 
 
 @See-also
 *midi-cc-fns*
@@ -80,7 +78,7 @@ channels.
                     collect (make-array 128 :initial-contents (loop repeat 128 collect nil))))
   "2-dimensional Array of 16x128 lists containing functions to be called
 on a received MIDI note on message individually for all 128 keynums on
-all 16 MIDI channels with the velocity as argument.
+all 16 MIDI channels with the velocity as argument on the default midi input (*midi-in1*).
 
 @See-also
 *midi-cc-fns*

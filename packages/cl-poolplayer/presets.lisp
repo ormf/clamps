@@ -58,8 +58,8 @@
     (loop for key in '(:preset-form :p1 :p2 :p3 :p4 :dtimefn :lsamplefn :ampfn
                        :transpfn :startfn :endfn :stretchfn
                        :wwidthfn :attackfn :releasefn :panfn :outfn)
-       for id from 0
-       do (setf (gethash key hash) id))
+          for id from 0
+          do (setf (gethash key hash) id))
     hash))
 
 (defun new-poolplayer-preset ()
