@@ -240,7 +240,7 @@ transformed into toggles.
                hide-fader cc-map cc-state note-fn last-note-on midi-output chan)
       instance
     (case opcode
-      (:cc (incudine.util:msg :info "ccin: ~a ~a, local-idx: ~a" d1 d2 (aref cc-map d1))
+      (:cc (incudine.util:msg :info "nk2 ccin: ~a ~a, local-idx: ~a" d1 d2 (aref cc-map d1))
        (let ((local-idx (aref cc-map d1))
              (d2-norm (/ d2 127)))
          (when local-idx

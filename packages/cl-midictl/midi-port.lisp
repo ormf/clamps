@@ -25,33 +25,73 @@
 (defparameter *midi-ports* nil)
 
 (defun find-midi-port (id)
+  "Return a registered midi port denoted by /id/.
+
+@Arguments
+id - Keyword or Symbol denoting the id of the midi port.
+
+@See-also
+close-midi-port
+list-midi-ports
+open-midi-port
+"
   (getf *midi-ports* id))
 
+(defun list-midi-ports ()
+  "Return a property list with all Midi Ports with their id as key and
+their midi-port structs as value.
+
+@See-also
+close-midi-port
+find-midi-port
+open-midi-port
+"
+  *midi-ports*)
+
 (defun open-midi-port (id)
-  "open a new midi port by creating its struct. Return the struct."
+  "Register a new midi port struct and return the struct.
+
+@Arguments
+id - Keyword or Symbol denoting the id of the midi port.
+
+@See-also
+close-midi-port
+find-midi-port
+list-midi-ports
+"
   (if (find-midi-port id) (error "midi-port ~S already open" id)
-      (setf *midi-ports* (list* id
-                                (let ((in-name (format nil "~a-in" id))
-                                      (out-name (format nil "~a-out" id)))
-                                  (make-midi-port :id id
-                                                  :in (jackmidi:open :port-name in-name)
-                                                  :out (jackmidi:open :direction :output :port-name out-name)))
-                                *midi-ports*))))
+      (let ((new-midi-port
+              (let ((in-name (format nil "~a-in" id))
+                    (out-name (format nil "~a-out" id)))
+                (make-midi-port :id id
+                                :in (jackmidi:open :port-name in-name)
+                                :out (jackmidi:open :direction :output :port-name out-name)))))
+        (setf *midi-ports* (list* id new-midi-port *midi-ports*))
+        new-midi-port)))
 
 (defun close-midi-port (id)
-  "open a new midi port by creating its struct. Return the struct."
+  "Remove a midi port denoted by /id/. Return t if successful.
+
+@Arguments
+id - Keyword or Symbol denoting the id of the midi port.
+
+@See-also
+find-midi-port
+list-midi-ports
+open-midi-port
+"
   (let ((midi-port (find-midi-port id)))
     (unless midi-port  (error "midi-port ~S not found" id))
     (jackmidi:close (midi-port-in midi-port))
     (jackmidi:close (midi-port-out midi-port))
-    (remf *midi-ports* id) ^))
+    (remf *midi-ports* id)))
 
 ;;; *midi-ports*
 
 ;;; '(#xF0 #x00 #x00 #x66 #x10 #x12 #x00 #x48 #x65 #x6C #x6C #x6F #xF7)
 
  ; => (240 0 0 102 16 18 0 72 101 108 108 111 247)
-
+#|
 (open-midi-port :midi-1)
 (open-midi-port :midi-2)
 (open-midi-port :midi-3)
@@ -65,55 +105,4 @@
   (close-midi-port :midi-2)
   (close-midi-port :midi-3))
 
-(char-code #\SPACE) ;; 32
-
-(char-code #\@) 64
-(char-code #\A)
-
-(defparameter *mackie-sysex-header* '(#xF0 #x00 #x00 #x66 #x10))
-(midiout-sysex (append *mackie-sysex-header* '(#x12 0) (subseq (map 'list #'char-code "Dies ist ein Test, was man alles mit dem Asparion anstellen kann und ich bin bereits einigermaßen zufrieden :-)") 0 (* 7 3)) '(#xF7)) (midi-port-out (find-midi-port :midi-1)))
-
-
-(midiout-sysex (append *mackie-sysex-header* '(#x12 21) (subseq (map 'list #'char-code " was man alles mit dem Asparion anstellen kann und ich bin bereits einigermaßen zufrieden :-)") 0 (* 7 3)) '(#xF7)) (midi-port-out (find-midi-port :midi-1)))
-
-(loop for x below 16
-      do (midiout-sysex (append *mackie-sysex-header* `(#x12 ,(* 7 (mod x 8))) (map 'list #'char-code (format nil "~7a" (format nil "Kan ~2,'0d " (1+ x)))) '(#xF7))
-                        (midi-port-out (find-midi-port (if (< x 8) :midi-1 :midi-2)))))
-
-(loop for instr in '("Fl" "Kl" "Ob" "Fg" "Tr" "Hrn" "Pos" "Tb" "Szg1" "Szg2" "Pno" "Vn1" "Vn2" "Va" "Vc" "Kb")
-      for x below 16
-      do (midiout-sysex (append *mackie-sysex-header* `(#x12 ,(+ 56 (* 7 (mod x 8)))) (map 'list #'char-code (format nil "~7a" instr)) '(#xF7))
-                        (midi-port-out (find-midi-port (if (< x 8) :midi-1 :midi-2)))))
-
-(defun asparion-write-upper-line (text idx midi-1 midi-2)
-  (midiout-sysex (append *mackie-sysex-header* `(#x12 ,(* 7 (mod idx 8))) (map 'list #'char-code (format nil "~7a" text)) '(#xF7))
-                 (if (< idx 8) midi-1 midi-2)))
-
-(defun asparion-write-lower-line (text idx midi-1 midi-2)
-  (midiout-sysex (append *mackie-sysex-header* `(#x12 ,(+ 56 (* 7 (mod idx 8)))) (map 'list #'char-code (format nil "~7a" text)) '(#xF7))
-                        (if (< idx 8) midi-1 midi-2)))
-
-(midi-port-out (find-midi-port (if (< x 8) :midi-1 :midi-2)))
-
-(let ((midi-1 (midi-port-out (find-midi-port :midi-1)))
-      (midi-2 (midi-port-out (find-midi-port :midi-2))))
-  (dotimes (x 16) (asparion-write-upper-line (format nil "~2,'0d" (1+ x)) x midi-1 midi-2))
-  (loop
-    for instr in '("Fl" "Kl" "Ob" "Fg" "Tr" "Hrn" "Pos" "Tb" "Szg1" "Szg2" "Pno" "Vn1" "Vn2" "Va" "Vc" "Kb")
-    for x below 16
-    do (asparion-write-lower-line instr x midi-1 midi-2)))
-
-(defun pad-string)
-
-(midiout-sysex (append *mackie-sysex-header* `(#x20 0 6 #xF7)) (midi-port-out (find-midi-port :midi-1)))
-
-(midiout-sysex (append *mackie-sysex-header* `(#x21 1 #xF7)) (midi-port-out (find-midi-port :midi-1)))
-(midiout-sysex `(#xD0 #x0c) (midi-port-out (find-midi-port :midi-1)))
-(progn
-  (cm::at (cm::now) #'midiout-sysex `(#xD0 #x0c) (midi-port-out (find-midi-port :midi-1)))
-  (cm::at (+ (cm::now) 0.1) #'midiout-sysex `(#xD0 #x0c) (midi-port-out (find-midi-port :midi-1))))
-
-(format nil "~7a" "hallo")
-
-#x37
-(append *mackie-sysex-header* '(#x12 0) (map 'list #'char-code "hallo"))
+|#

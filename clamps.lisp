@@ -64,6 +64,9 @@
         (incudine.util:msg :warn "~a" *midi-out1*)
         (list *midi-in1* *midi-out1*))
       (error "midi didn't start properly")))
+
+(midi-port)
+
 #|
 (defun cl-midictl::ensure-default-midi-in (midi-in)
   (or (cm:ensure-jackmidi midi-input)
