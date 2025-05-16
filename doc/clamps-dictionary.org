@@ -569,6 +569,27 @@
    #+BEGIN_SRC lisp
      (buffer-stretch-play* (buffer buffer) (rate sample) (wwidth sample) (start sample) (end sample) (stretch sample))
    #+END_SRC
+   Buffer play Ugen with granular stretching working with any blocksize.
+*** Arguments
+    | =buffer=  | Incudine buffer.                                                                  |
+    | =rate=    | Positive Number denoting playback rate (will get adjusted to buffer-sample-rate). |
+    | =wwidth=  | Non Negative Integer denoting granular window size in msecs.                      |
+    | =start=   | Non Negative Integer denoting start of playback into the buffer in samples.       |
+    | =end=     | Non Negative Integer denoting end of playback into the buffer in samples.         |
+    | =stretch= | Positive Integer denoting stretching factor.                                      |
+
+*** See also
+    - [[#buffer-loop-play][buffer-loop-play​*]]
+    - [[#buffer-play][buffer-play​*]]
+    - [[#buffer-stretch-play][buffer-stretch-play​*]]
+    - [[#envelope][envelope​*]]
+    - [[#line][line​*]]
+    - [[#phasor][phasor​*]]
+    - [[#phasor-loop][phasor-loop​*]]
+    - [[#play-buffer][play-buffer​*]]
+    - [[#play-buffer-loop][play-buffer-loop​*]]
+    - [[#play-buffer-stretch][play-buffer-stretch​*]]
+    - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
 ** bufname=
    Function
    #+BEGIN_SRC lisp
@@ -658,8 +679,17 @@
 ** ccin
    Function
    #+BEGIN_SRC lisp
-     (ccin ccnum)
+     (ccin ccnum &optional (channel *default-midi-channel*) (midi-port *default-midi-port*))
    #+END_SRC
+   Return the last received MIDI CC value of controller number /ccnum/
+   at MIDI channel /channel/ of /midi-port/. Setfable.
+*** Arguments
+    | =ccnum=     | Integer in the range [1..128] indicating the Controller Number.                    |
+    | =channel=   | Integer in the range [1..16] indicating the MIDI channel.                          |
+    | =midi-port= | Instance of type midi-port or Keyword denoting the id of the registered midi-port. |
+
+*** See also
+    - [[#midi-cc-state][*​​midi-cc-state​​*]]
 ** cd
    Function
    #+BEGIN_SRC lisp
@@ -869,6 +899,19 @@
    #+BEGIN_SRC lisp
      (close stream)
    #+END_SRC
+** close-midi-port
+   Function
+   #+BEGIN_SRC lisp
+     (close-midi-port #:id)
+   #+END_SRC
+   Remove a midi port denoted by /id/. Return t if successful.
+*** Arguments
+    | =id= | Keyword or Symbol denoting the id of the midi port. |
+
+*** See also
+    - [[find-midi-port][find-midi-port]]
+    - [[list-midi-ports][list-midi-ports]]
+    - [[open-midi-port][open-midi-port]]
 ** collect-pool
    Function
    #+BEGIN_SRC lisp
@@ -887,12 +930,6 @@
    #+END_SRC
    Helper function to construct the gnuplot command with a given
    header, options and a grid flag.
-** controller-window
-   Function
-   #+BEGIN_SRC lisp
-     (controller-window body)
-   #+END_SRC
-   On-new-window handler.
 ** copy-instance
    Generic Function
    #+BEGIN_SRC lisp
@@ -1145,6 +1182,23 @@
    #+BEGIN_SRC lisp
      (def-params &rest syms)
    #+END_SRC
+** *​default-midi-channel​*
+   :PROPERTIES:
+   :CUSTOM_ID: default-midi-channel
+   :END:
+   Variable
+
+   Default MIDI channel for midi controllers or access functions like
+   [[ccin][ccin]].
+*** See also
+    - [[ccin][ccin]]
+    - [[midi-controller][midi-controller]]
+** *​default-midi-port​*
+   :PROPERTIES:
+   :CUSTOM_ID: default-midi-port
+   :END:
+   Variable
+
 ** define-watch
    Generic Function
    #+BEGIN_SRC lisp
@@ -1246,11 +1300,6 @@
     #+END_SRC
 *** See also
     - [[integrate][integrate]]
-** digest-poolplayer-preset-form-to-array
-   Function
-   #+BEGIN_SRC lisp
-     (digest-poolplayer-preset-form-to-array args)
-   #+END_SRC
 ** do-proplist
    Macro
    #+BEGIN_SRC lisp
@@ -1637,11 +1686,6 @@
    #+BEGIN_SRC lisp
      (faderfox-gui #:id gui-parent &key (chan 4))
    #+END_SRC
-** faderfox-gui-f.orm
-   Function
-   #+BEGIN_SRC lisp
-     (faderfox-gui-f.orm id gui-parent &key (chan 5))
-   #+END_SRC
 ** faderfox-midi
    Class
 
@@ -1729,6 +1773,19 @@
     - [[add-dsp][add-dsp]]
     - [[list-dsps][list-dsps]]
     - [[remove-dsp][remove-dsp]]
+** find-midi-port
+   Function
+   #+BEGIN_SRC lisp
+     (find-midi-port #:id)
+   #+END_SRC
+   Return a registered midi port denoted by /id/.
+*** Arguments
+    | =id= | Keyword or Symbol denoting the id of the midi port. |
+
+*** See also
+    - [[close-midi-port][close-midi-port]]
+    - [[list-midi-ports][list-midi-ports]]
+    - [[open-midi-port][open-midi-port]]
 ** flash
    Generic Function
    #+BEGIN_SRC lisp
@@ -2289,6 +2346,21 @@
     - [[midi-controller][midi-controller]]
     - [[remove-midi-controller][remove-midi-controller]]
     - [[remove-all-midi-controllers][remove-all-midi-controllers]]
+** list-midi-ports
+   Function
+   #+BEGIN_SRC lisp
+     (list-midi-ports &key (sort t))
+   #+END_SRC
+   Return a list of the ids of all registered Midi Ports. If /sort/ is
+   non-nilc, return a sorted list of the ids, otherwise return the ids in
+   the reverse order of their instantiation.
+*** Arguments
+    | =:sort= | Boolean denoting sort order of the ids. Defaults to t. |
+
+*** See also
+    - [[close-midi-port][close-midi-port]]
+    - [[find-midi-port][find-midi-port]]
+    - [[open-midi-port][open-midi-port]]
 ** list-sfz-presets
    Function
    #+BEGIN_SRC lisp
@@ -2867,7 +2939,7 @@
 
    2-dimensional Array of 16x128 lists containing functions to be called
    on a received MIDI CC message individually for the 128 CC numbers on
-   all 16 MIDI channels with the CC value as argument.
+   all 16 MIDI channels with the CC value as argument on the default midi input (*​midi-in1​*).
 *** See also
     - [[#midi-cc-state][*​​midi-cc-state​​*]]
     - [[#midi-note-fns][*​​midi-note-fns​​*]]
@@ -2880,7 +2952,7 @@
 
    2-dimensional Array of 16x128 [[ref-object][ref-objects]] reflecting the last received
    CC value of a MIDI CC message for all 128 CC numbers on all 16 MIDI
-   channels.
+   channels of the default midi input (*​midi-in1​*).
 *** See also
     - [[ccin][ccin]]
     - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
@@ -2965,7 +3037,7 @@
 
    2-dimensional Array of 16x128 lists containing functions to be called
    on a received MIDI note on message individually for all 128 keynums on
-   all 16 MIDI channels with the velocity as argument.
+   all 16 MIDI channels with the velocity as argument on the default midi input (*​midi-in1​*).
 *** See also
     - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[#midi-cc-state][*​​midi-cc-state​​*]]
@@ -2978,7 +3050,7 @@
 
    2-dimensional Array of 16x128 [[ref-object][ref-objects]] reflecting the last received
    velocity of a MIDI note on message for all 128 keynums on all 16 MIDI
-   channels.
+   channels on the default midi input (*​midi-in1​*). 
 *** See also
     - [[#midi-cc-fns][*​​midi-cc-fns​​*]]
     - [[#midi-cc-state][*​​midi-cc-state​​*]]
@@ -3000,6 +3072,26 @@
    #+END_SRC
    Accessor method for the midi-output slot of an instance of type
    [[midi-controller][midi-controller]].
+** midi-port-cc-fns
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-cc-fns instance)
+   #+END_SRC
+** midi-port-cc-state
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-cc-state instance)
+   #+END_SRC
+** midi-port-note-fns
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-note-fns instance)
+   #+END_SRC
+** midi-port-note-state
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-note-state instance)
+   #+END_SRC
 ** mix-bus-to-out
    Function
    #+BEGIN_SRC lisp
@@ -3358,11 +3450,6 @@
    #+BEGIN_SRC lisp
      (nanoktl2-preset-gui #:id container &key (chan 5))
    #+END_SRC
-** nanoktl2-preset-gui-f.orm
-   Function
-   #+BEGIN_SRC lisp
-     (nanoktl2-preset-gui-f.orm id container &key (chan 1))
-   #+END_SRC
 ** nanoktl2-preset-midi
    Class
 
@@ -3468,6 +3555,20 @@
    #+BEGIN_SRC lisp
      (open &key (host *host*) (port *in-port*) (direction :input) (element-type 'character) (protocol :tcp))
    #+END_SRC
+** open-midi-port
+   Function
+   #+BEGIN_SRC lisp
+     (open-midi-port id)
+   #+END_SRC
+   Register a new midi port struct, open its midi input and output,
+   define and start its default responders and return the struct.
+*** Arguments
+    | =id= | Keyword or Symbol denoting the id of the midi port. |
+
+*** See also
+    - [[close-midi-port][close-midi-port]]
+    - [[find-midi-port][find-midi-port]]
+    - [[list-midi-ports][list-midi-ports]]
 ** osc-midi-write-short
    Function
    #+BEGIN_SRC lisp
@@ -3708,14 +3809,6 @@
     - [[#play-buffer-loop][play-buffer-loop​*]]
     - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
     - [[play-lsample][play-lsample]]
-** play-buffer-stretch-env-pan-bus-out*
-   :PROPERTIES:
-   :CUSTOM_ID: play-buffer-stretch-env-pan-bus-out
-   :END:
-   Function
-   #+BEGIN_SRC lisp
-     (play-buffer-stretch-env-pan-bus-out* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (busnum 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
-   #+END_SRC
 ** play-buffer-stretch-env-pan-out*
    :PROPERTIES:
    :CUSTOM_ID: play-buffer-stretch-env-pan-out
@@ -4113,9 +4206,9 @@
 ** remove-all-channel-midi-cc-fns
    Function
    #+BEGIN_SRC lisp
-     (remove-all-channel-midi-cc-fns channel)
+     (remove-all-channel-midi-cc-fns channel &optional (midi-port *default-midi-port*))
    #+END_SRC
-   Remove all functions from *​midi-cc-fns​* for all ccnums of /channel/. 
+   Remove all functions from *​midi-cc-fns​* for all ccnums of /channel/ of /midi-port/.
 *** Arguments
     | =channel= | Integer in the range [1..16] denoting the MIDI channel. |
 
@@ -4137,7 +4230,7 @@
 ** remove-all-midi-cc-fns
    Function
    #+BEGIN_SRC lisp
-     (remove-all-midi-cc-fns)
+     (remove-all-midi-cc-fns &optional (midi-port *default-midi-port*))
    #+END_SRC
    Remove all functions from *​midi-cc-fns​* for all ccnums and channels.
 *** Example
@@ -4224,7 +4317,7 @@
 ** remove-midi-cc-fns
    Function
    #+BEGIN_SRC lisp
-     (remove-midi-cc-fns channel ccnum)
+     (remove-midi-cc-fns channel ccnum &optional (midi-port *default-midi-port*))
    #+END_SRC
    Remove all functions from *​midi-cc-fns​* for /channel/ and /ccnum/.
 *** Arguments
@@ -4420,7 +4513,7 @@
 ** rts
    Function
    #+BEGIN_SRC lisp
-     (rts &key (rt-wait 0))
+     (rts &key (rt-wait 0) (num-midi-ports 2))
    #+END_SRC
    Start the real-time system of Clamps. This functions sets the
    following special variables:
@@ -4866,18 +4959,18 @@
 ** start-midi-engine
    Function
    #+BEGIN_SRC lisp
-     (start-midi-engine)
+     (start-midi-engine &key (num-ports 2))
    #+END_SRC
    open midi ports and start realtime thread.
 ** start-midi-receive
    Function
    #+BEGIN_SRC lisp
-     (start-midi-receive input)
+     (start-midi-receive midi-port)
    #+END_SRC
    Start the clamps generic midi handler and all registered MIDI responders
-   of input stream /input/.
+   of /midi-port/.
 *** Arguments
-    | =input= | Input MIDI stream of type /<jackmidi:input-stream>/. |
+    | =midi-port= | Instance of a midi-port struct. |
 
 *** See also
     - [[stop-midi-receive][stop-midi-receive]]
@@ -4890,12 +4983,12 @@
 ** stop-midi-receive
    Function
    #+BEGIN_SRC lisp
-     (stop-midi-receive input)
+     (stop-midi-receive midi-port)
    #+END_SRC
    Stop the clamps generic midi handler and remove all registered MIDI
    responders of input stream /input/.
 *** Arguments
-    | =input= | Input MIDI stream of type /<jackmidi:input-stream>/. |
+    | =midi-port= | Instance of a midi-port struct. |
 
 *** See also
     - [[start-midi-receive][start-midi-receive]]
@@ -5269,10 +5362,10 @@
 ** update-all-controllers
    Function
    #+BEGIN_SRC lisp
-     (update-all-controllers midi-in-port)
+     (update-all-controllers midi-port)
    #+END_SRC
    call [[update-hw-state][update-hw-state]] on all registered midi-controllers of
-   /midi-in-port/.
+   /midi-port/.
 ** update-hw-state
    Generic Function
    #+BEGIN_SRC lisp

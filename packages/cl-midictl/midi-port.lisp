@@ -37,19 +37,29 @@ open-midi-port
 "
   (getf *midi-ports* id))
 
-(defun list-midi-ports ()
-  "Return a property list with all Midi Ports with their id as key and
-their midi-port structs as value.
+(defun list-midi-ports (&key (sort t))
+  "Return a list of the ids of all registered Midi Ports. If /sort/ is
+non-nilc, return a sorted list of the ids, otherwise return the ids in
+the reverse order of their instantiation.
+
+@Arguments
+:sort - Boolean denoting sort order of the ids. Defaults to t.
 
 @See-also
 close-midi-port
 find-midi-port
 open-midi-port
 "
-  *midi-ports*)
+  (let ((port-ids (loop for (id port) on *midi-ports* by #'cddr
+                     collect id)))
+    (if sort
+        (sort port-ids
+              (lambda (x y) (string< (symbol-name x) (symbol-name y))))
+        port-ids)))
 
 (defun open-midi-port (id)
-  "Register a new midi port struct and return the struct.
+  "Register a new midi port struct, open its midi input and output,
+define and start its default responders and return the struct.
 
 @Arguments
 id - Keyword or Symbol denoting the id of the midi port.
@@ -60,14 +70,16 @@ find-midi-port
 list-midi-ports
 "
   (if (find-midi-port id) (error "midi-port ~S already open" id)
-      (let ((new-midi-port
-              (let ((in-name (format nil "~a-in" id))
-                    (out-name (format nil "~a-out" id)))
-                (make-midi-port :id id
-                                :in (jackmidi:open :port-name in-name)
-                                :out (jackmidi:open :direction :output :port-name out-name)))))
-        (setf *midi-ports* (list* id new-midi-port *midi-ports*))
-        new-midi-port)))
+      (progn
+        (incudine.util:msg :warn "opening midi-port ~S" id)
+        (let ((new-midi-port
+                (let ((in-name (format nil "~a-in" id))
+                      (out-name (format nil "~a-out" id)))
+                  (make-midi-port :id id
+                                  :in (jackmidi:open :port-name in-name)
+                                  :out (jackmidi:open :direction :output :port-name out-name)))))
+          (setf *midi-ports* (list* id new-midi-port *midi-ports*))
+          new-midi-port))))
 
 (defun close-midi-port (id)
   "Remove a midi port denoted by /id/. Return t if successful.

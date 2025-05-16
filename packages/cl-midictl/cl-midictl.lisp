@@ -174,7 +174,7 @@ remove-all-midi-cc-fns
   (format t "cc-fns of channel ~a, ccnum ~a: ~a~%" channel ccnum
         (aref (aref *midi-cc-fns* (1- channel)) (1- ccnum))))
 
-(defun remove-midi-cc-fns (channel ccnum)
+(defun remove-midi-cc-fns (channel ccnum &optional (midi-port *default-midi-port*))
   "Remove all functions from *midi-cc-fns* for /channel/ and /ccnum/.
 
 @Arguments
@@ -191,10 +191,10 @@ remove-all-channel-midi-cc-fns
 remove-all-midi-cc-fns
 show-midi-cc-fns
 "
-  (setf (aref (aref *midi-cc-fns* (1- channel)) (1- ccnum)) nil))
+  (setf (aref (aref (midi-port-cc-fns midi-port) (1- channel)) (1- ccnum)) nil))
 
-(defun remove-all-channel-midi-cc-fns (channel)
-  "Remove all functions from *midi-cc-fns* for all ccnums of /channel/. 
+(defun remove-all-channel-midi-cc-fns (channel &optional (midi-port *default-midi-port*))
+  "Remove all functions from *midi-cc-fns* for all ccnums of /channel/ of /midi-port/.
 
 @Arguments
 channel - Integer in the range [1..16] denoting the MIDI channel.
@@ -210,9 +210,9 @@ remove-all-midi-cc-fns
 show-midi-cc-fns
 "
   (dotimes (ccnum 128)
-    (remove-midi-cc-fns (1- channel) (1+ ccnum))))
+    (remove-midi-cc-fns (1- channel) (1+ ccnum) midi-port)))
 
-(defun remove-all-midi-cc-fns ()
+(defun remove-all-midi-cc-fns (&optional (midi-port *default-midi-port*))
   "Remove all functions from *midi-cc-fns* for all ccnums and channels.
 
 @Example
@@ -227,7 +227,7 @@ show-midi-cc-fns
 "
   (dotimes (channel 16)
     (dotimes (ccnum 128)
-      (remove-midi-cc-fns (1+ channel) (1+ ccnum)))))
+      (remove-midi-cc-fns (1+ channel) (1+ ccnum) midi-port))))
 
 (defparameter *midi-controllers* (make-hash-table :test #'equal)
   "hash-table which stores all currently active midi controllers by id
@@ -345,8 +345,8 @@ remove-all-midi-controllers
     (if (gethash id *midi-controllers*)
         (warn "id already used: ~a" id)
         (progn
-          (unless chan (setf chan *global-midi-channel*))
-          (setf midi-input (or midi-input *midi-in1*))
+          (unless chan (setf chan *default-midi-channel*))
+          (setf midi-input (or midi-input (midi-port-in *default-midi-port*)))
           (format t "adding midi controller ~S~%" id)
           (setf midi-output (ensure-default-midi-out midi-output))
           (when id
@@ -507,13 +507,16 @@ remove-all-midi-controllers
 ;;; (ensure-controller :nk2)
 ;;; (setf *midi-debug* nil)
 
-(defun generic-midi-handler (opcode d1 d2 channel)
-  "the generic handler simply maintains the *midi-cc-state* array and
-calls all functions registered in *midi-cc-fns*.
+(defgeneric generic-midi-handler (midi-port opcode d1 d2 channel))
+
+(defmethod generic-midi-handler ((port midi-port) opcode d1 d2 channel)
+  "Maintain the midi-cc-state and midi-note-state arrays and calls all
+functions registered in midi-cc-fns or midi-note-fns of the specified
+midi-port struct.
 
 The function gets called by the midi responder installed with
 start-midi-receive before calling the the handle-midi-in method of all
-registered controllers.
+controllers registered with the port.
 
 Normally controllers will install their own handlers using the
 handle-midi-in method.
@@ -528,64 +531,68 @@ controller instance using mouse interaction or presets and only
 updating the cc-state in the controller when the incoming midi values
 agree to the values to avoid jumps in the cc-state of the controller
 instance."
-  (incudine.util:msg :debug "~S ~a ~a ~a" opcode d1 d2 (1+ channel))
-  (case opcode
-    (:cc
-     (set-val (aref (aref *midi-cc-state* channel) d1) d2)
-     (dolist (fn (aref (aref *midi-cc-fns* channel) d1)) (funcall fn d2)))
-    (:note-on
-     (set-val (aref (aref *midi-note-state* channel) d1) d2)
-     (dolist (fn (aref (aref *midi-note-fns* channel) d1)) (funcall fn d2)))
-    (:note-off
-     (set-val (aref (aref *midi-note-state* channel) d1) 0)
-     (dolist (fn (aref (aref *midi-note-fns* channel) d1)) (funcall fn 0)))))
+  (with-slots (id cc-state note-state cc-fns note-fns) port
+    
+    (incudine.util:msg :debug "generic-midi-handler: ~S ~a ~a ~a" id opcode d1 d2 (1+ channel))
+    (case opcode
+      (:cc
+       (set-val (aref (aref cc-state channel) d1) d2)
+       (dolist (fn (aref (aref cc-fns channel) d1)) (funcall fn d2)))
+      (:note-on
+       (set-val (aref (aref note-state channel) d1) d2)
+       (dolist (fn (aref (aref note-fns channel) d1)) (funcall fn d2)))
+      (:note-off
+       (set-val (aref (aref note-state channel) d1) 0)
+       (dolist (fn (aref (aref note-fns channel) d1)) (funcall fn 0))))))
 
-(defun start-midi-receive (input)
+(defun start-midi-receive (midi-port)
   "Start the clamps generic midi handler and all registered MIDI responders
-of input stream /input/.
+of /midi-port/.
 
 @Arguments
-input - Input MIDI stream of type /<jackmidi:input-stream>/.
+midi-port - Instance of a midi-port struct.
 
 @See-also
 stop-midi-receive
 "
   (incudine.util:msg :info "removing-responders")
-  (remove-all-responders input)
-  (make-responder input
-                  (lambda (st d1 d2)
-                    (let ((chan (status->channel st))
-                          (opcode (status->opcode st)))
-                      (generic-midi-handler opcode d1 d2 chan)
-                      (dolist (controller (gethash input *midi-controllers*))
-                        (declare (type midi-controller controller))
-                        (if (= chan (1- (chan controller)))
-                            (handle-midi-in controller opcode d1 d2))))))
-  (recv-start input)
-  (update-all-controllers input)
-  :midi-rcv-started)
+  (let ((input (midi-port-in midi-port)))
+    (remove-all-responders input)
+    (make-responder input
+                    (lambda (st d1 d2)
+                      (let ((chan (status->channel st))
+                            (opcode (status->opcode st)))
+                        (generic-midi-handler midi-port opcode d1 d2 chan)
+                        (dolist (controller (gethash input *midi-controllers*))
+                          (declare (type midi-controller controller))
+                          (if (= chan (1- (chan controller)))
+                              (handle-midi-in controller opcode d1 d2))))))
+    (recv-start input)
+    (update-all-controllers midi-port)
+    :midi-rcv-started))
 
 ;;; (start-midi-receive *midi-in1*)
 
-(defun stop-midi-receive (input)
+(defun stop-midi-receive (midi-port)
   "Stop the clamps generic midi handler and remove all registered MIDI
 responders of input stream /input/.
 
 @Arguments
-input - Input MIDI stream of type /<jackmidi:input-stream>/.
+midi-port - Instance of a midi-port struct.
 
 @See-also
 start-midi-receive
 "
-  (remove-all-responders input)
-  (recv-stop input))
+  (let ((input (midi-port-in midi-port)))
+    (remove-all-responders input)
+    (recv-stop input)))
 
 ;;; (stop-midi-receive *midi-in1*)
 
-(defun update-all-controllers (midi-in-port)
+(defun update-all-controllers (midi-port)
   "call <<update-hw-state>> on all registered midi-controllers of
-/midi-in-port/."
-  (dolist (controller (gethash midi-in-port *midi-controllers*))
+/midi-port/."
+  (dolist (controller (gethash midi-port *midi-controllers*))
     (update-hw-state controller)))
 
 ;;; (start-midi-engine)

@@ -36,27 +36,44 @@
 
 (defun start-midi-engine (&key (num-ports 2))
   "open midi ports and start realtime thread."
-  (when *midi-in1*
-    (recv-stop *midi-in1*)
-    (remove-all-responders *midi-in1*)
-    (jackmidi:close *midi-in1*))
+  (if *midi-ports*
+      (progn
+        (loop for (key value) on *midi-ports* by #'cddr
+              do (close-midi-port key))
+        (setf *midi-in1* nil)
+        (setf *midi-out1* nil))
+      (when *midi-in1*
+        (recv-stop *midi-in1*)
+        (remove-all-responders *midi-in1*)
+        (jackmidi:close *midi-in1*)
+        (setf *midi-in1* nil)))
   (incudine.util:msg :warn "closing midi streams~%")
   (mapcar #'jackmidi:close jackmidi::*streams*)
   (sleep 0.1)
-  (setf *midi-in1* nil)
-  (when *midi-out1* (jackmidi:close (ensure-jackmidi *midi-out1*)))
-  (setf *midi-out1* nil)
-  (setf *midi-in1* (jackmidi:open :direction :input
-                                            :port-name "midi_in_1"))
-  (loop repeat 20 until *midi-in1* do (progn
-                                          (incudine.util:msg :warn "waiting for *midi-in*")
-                                          (sleep 0.1)))
-  (setf *midi-out1* (jackmidi:open :direction :output
-                                            :port-name (format nil "midi_out_1")))
-  (loop repeat 20 until *midi-out1* do (progn
-                                        (incudine.util:msg :warn "waiting for *midi-out*")
-                                        (sleep 0.1)))
-  (start-midi-receive *midi-in1*)
+  (when *midi-out1*
+    (jackmidi:close (clamps:ensure-jackmidi *midi-out1*))
+    (setf *midi-out1* nil))
+  (dotimes (i num-ports)
+    (let* ((id (make-keyword (format nil "MIDI-~d" (1+ i))))
+           (midi-port (open-midi-port id)))
+      (when (zerop i)
+        (loop repeat 20 until (midi-port-in midi-port)
+              do (progn
+                   (incudine.util:msg :warn "waiting for *midi-in*")
+                   (sleep 0.1)))
+        (setf *midi-in1* (midi-port-in midi-port))
+        (setf *default-midi-port* midi-port)
+        (setf *midi-cc-state* (midi-port-cc-state midi-port))
+        (setf *midi-note-state* (midi-port-note-state midi-port))
+        (setf *midi-cc-fns* (midi-port-cc-fns midi-port))
+        (setf *midi-note-fns* (midi-port-note-fns midi-port))
+        (loop repeat 20 until (midi-port-out midi-port)
+              do (progn
+                   (incudine.util:msg :warn "waiting for *midi-out*")
+                   (sleep 0.1)))
+        (setf *midi-out1* (midi-port-out midi-port)))
+      (start-midi-receive midi-port)))
+
 ;;;  (incudine:rt-start)
   (if (and *midi-in1* *midi-out1*)
       (progn
@@ -65,7 +82,7 @@
         (list *midi-in1* *midi-out1*))
       (error "midi didn't start properly")))
 
-(midi-port)
+;;; (midi-port)
 
 #|
 (defun cl-midictl::ensure-default-midi-in (midi-in)

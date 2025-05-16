@@ -20,29 +20,32 @@
 
 (in-package :cl-midictl)
 
-(defun ccin (ccnum &optional (channel *global-midi-channel*))
+(defun ccin (ccnum &optional (channel *default-midi-channel*) (midi-port *default-midi-port*))
   "Return the last received MIDI CC value of controller number /ccnum/
-at MIDI channel /channel/. Setfable.
+at MIDI channel /channel/ of /midi-port/. Setfable.
 
 @Arguments
 ccnum - Integer in the range [1..128] indicating the Controller Number.
 channel - Integer in the range [1..16] indicating the MIDI channel.
+midi-port - Instance of type midi-port or Keyword denoting the id of the registered midi-port.
 
 @See-also
 *midi-cc-state*
 "
-  (get-val (aref (aref *midi-cc-state* (1- channel)) ccnum)))
+  (let ((midi-port (if (keywordp midi-port) (find-midi-port midi-port) midi-port)))
+    (get-val (aref (aref (midi-port-cc-state midi-port) (1- channel)) ccnum))))
 
-(defsetf ccin (ccnum &optional (channel *global-midi-channel*)) (value)
-  "Set the last received MIDI CC value of controller number <ccnum> at
-MIDI channel <channel>.
+(defsetf ccin (ccnum &optional (channel *default-midi-channel*) (midi-port *default-midi-port*)) (value)
+  "Set the last received MIDI CC value of controller number /ccnum/ at
+MIDI channel /channel/ of /midi-port/.
 
 @Arguments
 ccnum - Integer in the range [1..128] indicating the Controller Number.
 channel - Integer in the range [1..16] indicating the MIDI channel.
+midi-port - Instance of type midi-port or Keyword denoting the id of the registered midi-port.
 "
-  `(progn
-     (set-val (aref (aref *midi-cc-state* ,(1- channel)) ,ccnum) ,value)
+  `(let ((midi-port (if (keywordp ,midi-port) (find-midi-port ,midi-port) ,midi-port)))
+     (set-val (aref (aref (midi-port-cc-state midi-port) ,(1- channel)) ,ccnum) ,value)
      ,value))
 
 (defun get-ref (controller ref-idx)

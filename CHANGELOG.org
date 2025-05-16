@@ -16,5 +16,11 @@
 #+TITLE: CHANGELOG.org
 
 
-* Version 0.1
-  - Added midi-port struct and #'close-midi-port #'find-midi-port #'list-midi-ports #'open-midi-port
+* Version 0.0.2
+  - Added midi-port struct and #'close-midi-port #'find-midi-port #'list-midi-ports #'open-midi-port.
+
+  - Added midi-port argument to ccin and (setf ccin).
+
+  - Changed *​global-midi-channel​* to *​default-midi-channel​*.
+
+  - Added *​default-midi-port​*.

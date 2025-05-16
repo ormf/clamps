@@ -19,20 +19,28 @@
 ;;; **********************************************************************
 
 (in-package :cl-midictl)
-
-(defparameter *global-midi-channel* 1
+;;; *global-midi-channel*
+(defparameter *default-midi-channel* 1
   "Default MIDI channel for midi controllers or access functions like
 <<ccin>>.
 
 @See-also
 ccin
 midi-controller
+*default-midi-port*
 ")
 
-(defparameter *midi-cc-state*
-  (make-array 16 :initial-contents
-              (loop repeat 16
-                    collect (make-array 128 :initial-contents (loop repeat 128 collect (make-ref 0)))))
+(defparameter *default-midi-port* nil
+  "Default MIDI port for midi controllers or access functions like
+<<ccin>>.
+
+@See-also
+ccin
+midi-controller
+*default-midi-channel*
+")
+
+(defparameter *midi-cc-state* nil
   "2-dimensional Array of 16x128 <<ref-object><ref-objects>> reflecting the last received
 CC value of a MIDI CC message for all 128 CC numbers on all 16 MIDI
 channels of the default midi input (*midi-in1*).
@@ -44,10 +52,7 @@ ccin
 *midi-note-state*
 ")
 
-(defparameter *midi-cc-fns*
-  (make-array 16 :initial-contents
-              (loop repeat 16
-                    collect (make-array 128 :initial-contents (loop repeat 128 collect nil))))
+(defparameter *midi-cc-fns* nil
   "2-dimensional Array of 16x128 lists containing functions to be called
 on a received MIDI CC message individually for the 128 CC numbers on
 all 16 MIDI channels with the CC value as argument on the default midi input (*midi-in1*).
@@ -58,10 +63,7 @@ all 16 MIDI channels with the CC value as argument on the default midi input (*m
 *midi-note-state*
 ")
 
-(defparameter *midi-note-state*
-  (make-array 16 :initial-contents
-              (loop repeat 16
-                    collect (make-array 128 :initial-contents (loop repeat 128 collect (make-ref 0)))))
+(defparameter *midi-note-state* nil
   "2-dimensional Array of 16x128 <<ref-object><ref-objects>> reflecting the last received
 velocity of a MIDI note on message for all 128 keynums on all 16 MIDI
 channels on the default midi input (*midi-in1*). 
@@ -72,10 +74,7 @@ channels on the default midi input (*midi-in1*).
 *midi-note-fns*
 ")
 
-(defparameter *midi-note-fns*
-  (make-array 16 :initial-contents
-              (loop repeat 16
-                    collect (make-array 128 :initial-contents (loop repeat 128 collect nil))))
+(defparameter *midi-note-fns* nil
   "2-dimensional Array of 16x128 lists containing functions to be called
 on a received MIDI note on message individually for all 128 keynums on
 all 16 MIDI channels with the velocity as argument on the default midi input (*midi-in1*).

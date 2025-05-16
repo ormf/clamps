@@ -21,7 +21,7 @@
 (in-package :cl-midictl)
 
 (defstruct midi-port
-  "Structure of an bidirectional midi port, containing slots for
+  "Structure of a bidirectional midi port, containing slots for
 cc-state, note-state, cc-fns and note-fns."
   (id)
   (in)
