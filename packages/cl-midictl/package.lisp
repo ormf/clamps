@@ -2,7 +2,6 @@
 
 (defpackage #:cl-midictl
   (:use #:cl #:ou #:cl-refs #:incudine)
-  (:shadow #:id)
   (:shadowing-import-from #:cm
                           #:chan
                           #:*midi-in1*
@@ -20,6 +19,7 @@
    #:REMOVE-ALL-MIDI-CONTROLLERS
    #:MIDI-CONTROLLER
    #:CCIN
+   #:MCTL-ID
    #:FIND-CONTROLLER
    #:CLOSE-MIDI-PORT
    #:FIND-MIDI-PORT

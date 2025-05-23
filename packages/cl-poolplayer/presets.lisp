@@ -298,7 +298,7 @@ curr-preset.lisp buffer."
 ;;; (sv (aref *poolplayer-presets* 0) :amp-env )
 
 (defun get-preset-form (idx)
-  (elt (elt *poolplayer-presets* idx) 0))
+  (cl-poolplayer::preset-form (elt *poolplayer-presets* idx)))
 
 (defun get-preset-string (idx)
   (with-output-to-string (out)
@@ -310,7 +310,7 @@ curr-preset.lisp buffer."
 ;;; (get-preset-string 0)
 
 (defmacro set-poolplayer-preset-form (idx form)
-  `(setf (aref (aref *poolplayer-presets* ,idx) 0) ',form))
+  `(setf (preset-form (aref *poolplayer-presets* ,idx)) ',form))
 
 (defun get-preset-load-form (preset-no)
   (with-output-to-string (out)

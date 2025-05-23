@@ -239,7 +239,7 @@ show-midi-cc-fns
 ;;; class def
 
 (defclass midi-controller ()
-  ((id :initform nil :initarg :id :accessor id)
+  ((id :initform nil :initarg :id :accessor mctl-id)
 ;;;   (gui-update-off :initform nil :accessor gui-update-off)
 ;;;   (gui :initform nil :accessor mc-gui)
    (chan :initform nil :initarg :chan :accessor chan :type (or null (integer 1 16))

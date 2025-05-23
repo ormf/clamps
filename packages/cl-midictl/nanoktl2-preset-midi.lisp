@@ -228,17 +228,11 @@ numbers with the value 0 or 1."
 (defgeneric save-presets (instance &optional file)
   (:method ((controller nanoktl2-preset-midi) &optional (file *nanoktl2-presets-file*))
     (incudine.util:msg :info "saving nanoktl2 preset to ~S~%" file)
+    (with-slots (presets) controller
     (with-open-file (out file :direction :output :if-exists :supersede)
-      (format out "(in-package :f.orm)~%~%(digest-nanoktl2-presets cl-midictl::*curr-nk2-controller*~%'(")
-      (map nil
-           (lambda (preset)
-             (format out "(")
-             (map nil
-                  (lambda (player-preset) (format-player-preset player-preset out))
-                  preset)
-             (format out ")~%"))
-           (presets controller))
-      (format out "))"))
+      (format out "(in-package :cl-poolplayer)~%~%")
+      (format out "(parse-nk2-presets~% :nk2~% ~S)"
+              (map 'list (lambda (preset) (map 'list #'preset-save-state preset)) presets))))
     file))
 
 (defun digest-nanoktl2-presets (controller data)
