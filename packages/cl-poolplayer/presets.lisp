@@ -1,6 +1,25 @@
 ;;;
 ;;; presets.lisp
 ;;;
+;;; a preset defines the parameters of calls to buff-stretch-play.
+;;;
+;;; The parameters in a preset are given in the form of envelopes
+;;; rather than fixed values.
+;;;
+;;; An event is a metastructure with a duration and a preset slot. The
+;;; idea behind an event is that the whole event is like one
+;;; note/action on an instrument. This "note" actually consists of
+;;; many particles (like grains) which can change their
+;;; params/appearance throughout the duration of the event.
+;;;
+;;; This is accomplished by repeatedly calling buff-stretch-play. The
+;;; density of theses calls are determined by the :dtimefn of the
+;;; preset.
+;;;
+;;; The envelopes of all parameters of a preset are scaled to the
+;;; total duration of the event, defining all parameters of the call
+;;; to buff-stretch-play at any moment over the course of the event.
+;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2019 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 ;;;
@@ -20,38 +39,38 @@
 
 (in-package :cl-poolplayer)
 
-(defparameter slynk::*send-counter* 0)
+;;; a preset struct only consists of a form, its digested :dtimefn and its digested params-fn.
 
-;;; a preset defines the parameters of calls to buff-stretch-play.
-;;;
-;;; The parameters in a preset are given in the form of envelopes
-;;; rather than fixed values.
-;;;
-;;; An event is a metastructure with a duration and a preset slot. The
-;;; idea behind an event is that the whole event is like one
-;;; note/action on an instrument. This "note" actually consists of
-;;; many particles (like grains) which can change their
-;;; params/appearance throughout the duration of the event.
-;;;
-;;; This is accomplished by repeatedly calling buff-stretch-play. The
-;;; density of theses calls are determined by the dtime and dteim-dev
-;;; parameters of the preset.
-;;;
-;;; The envelopes of all parameters of a preset are scaled to the
-;;; total duration of the event, defining all parameters of the call
-;;; to buff-stretch-play at any moment over the course of the event.
-;;;
-;;; As there are two layers, 1. the calls to buff-stretch-play and
-;;; 2. the call to play an event, it is important not to confuse the
-;;; two. E.g. the amp envelope of the event defines the succession of
-;;; individual amp values for each buff-stretch-play call over the
-;;; course of an event, whereas each individual buff-stretch-play also
-;;; has an amp-envelope, defined by "suswidth" and "suspan" parameters
-;;; of the preset (which are also defined as envelopes and thus can
-;;; change over the course of an event).
+(defstruct (poolplayer-preset (:conc-name nil))
+  (preset-form)
+  (dtime-fn)
+  (params-fn))
 
-(defparameter *default-poolplayer-preset* `((:p1 0 :p2 0 :p3 0 :p4 0 :dtimefn (funcall (or (getf args :dtimefn) (lambda (x) (n-exp x 0.05 0.2))) x) :lsamplefn (r-elt (getf args :g1)) :ampfn (funcall (or (getf args :ampfn) (lambda (x) x (+ (or (getf args :amp 0)) (random 12) -6))) x) :transpfn (funcall (getf args :transpfn (lambda (x) (r-lin (n-lin x -30 40) (n-lin x -30 80)))) x) :startfn 0 :endfn 0 :stretchfn (r-exp 1 1) :wwidthfn 123 :attackfn 0 :panfn 0.5 :releasefn 0.01 :outfn (funcall (getf args :outfn #'stereo-out) x))
-                                            ,@(repeat 17 nil)))
+(defparameter *poolplayer-presets-file*
+  (namestring (merge-pathnames "presets/cl-poolplayer-01.lisp"
+                               (asdf:system-source-directory :cl-poolplayer)))) 
+
+
+(defparameter *curr-poolplayer-preset-no* 0)
+(defparameter *curr-preset-no* 0)
+(defparameter *max-poolplayer-preset-no* 99)
+
+
+(defparameter *poolplayer-presets*
+  (make-array
+   100
+   :element-type 'vector
+   :initial-contents
+   (loop for i below 100 collect (make-poolplayer-preset))))
+
+;;; Use the new definition of poolplayer-preset for *poolplayer-presets*
+;;; TODO: Incorporate into cl-poolplayer.
+
+(setf *poolplayer-presets*
+  (coerce (loop repeat 100 collect (make-poolplayer-preset)) 'vector))
+
+#|
+;;; deprecated:
 
 (defparameter *audio-fn-id-lookup*
   (let ((hash (make-hash-table)))
@@ -61,132 +80,141 @@
           for id from 0
           do (setf (gethash key hash) id))
     hash))
+|#
 
-(defun new-poolplayer-preset ()
-  (make-array 18 :initial-contents *default-poolplayer-preset*))
+(defparameter *param-lookup*
+  (mapcar (lambda (key) (list (make-keyword (format nil "~afn" key))
+                         (intern (format nil "~:@(~afn~)" key))
+                         key ))
+          '(:buffer :transp :amp :dy :start :end :stretch
+            :wwidth :attack :release :pan :out1 :out2))
+  "List of all param-fn keywords, param-fn symbols and param keywords.")
 
-;;; (new-poolplayer-preset)
-;;; *poolplayer-presets*
-(defun get-fn-idx (key)
-  (gethash key *audio-fn-id-lookup*))
+(defparameter *default-param-fns*
+  (let ((hash-table (make-hash-table)))
+    (loop for (key val) on
+          '(:dtimefn 0.3
+            :bufferfn nil
+            :transpfn 60
+            :ampfn 0
+            :dyfn 0
+            :startfn 0
+            :endfn 0
+            :stretchfn 1
+            :wwidthfn 137
+            :attackfn 0
+            :releasefn 0.01
+            :panfn 0.5
+            :out1fn 0
+            :out2fn 1)
+          by #'cddr
+          do (setf (gethash key hash-table) val))
+    hash-table)
+  "Defaults for the param fns."
+  )
 
-(defun expand-args (preset args)
-;;;  (format t "~&args: ~a" args)
-  (loop
-    for (key val) on (canonisize-arg-list args) by #'cddr
-    for idx = (get-fn-idx key)
-    for n from 3
-    collect `(setf (aref ,preset ,idx)
-                   (lambda ,(append (subseq '(&optional x dur p1 p2 p3 p4) 0 (min n 7)) '(args))
-                     (declare (ignorable ,@(append (subseq '(&optional x dur p1 p2 p3 p4) 1 (min n 7)) '(args))))
-                     ,val))))
+(defun get-param-fns (form)
+  "Return a list of function definition forms for all param-fns of a
+poolplayer-preset in a list. The list is used in digest-form-to-preset
+for labels bindings. If /form/ doesn't contain an entry for the
+param-fn, it is retrieved from *default-param-fns*."
+  (loop for (fnkey fnsym key) in *param-lookup*
+        collect `(,fnsym (x &optional dur &rest args)
+                         (declare (ignorable x dur args )
+                                  (type (or null number) dur))
+                         ,(getf form fnkey (gethash fnkey *default-param-fns*)))))
 
-(defun expand-arg-forms (args)
-;;;  (format t "~&args: ~a" args)
-  (loop
-    for (key val) on (canonisize-arg-list args) by #'cddr
-    for idx = (get-fn-idx key)
-    for n from 3
-    collect `(list ,idx (lambda ,(append (subseq '(&optional x dur p1 p2 p3 p4) 0 (min n 7)) '(args))
-                          (declare (ignorable ,@(append (subseq '(&optional x dur p1 p2 p3 p4) 1 (min n 7)) '(args))))
-                          ,val))))
+;;; (get-param-fns '(:transpfn 0 :ampfn (n-lin x 0 -12)))
 
-(defun canonisize-arg-list (args)
-  "make sure the args property list begins with the properties :p1 to
-:p4 in order."
-  (append (ou:get-props-list args '(:p1 :p2 :p3 :p4) :force-all t)
-          (ou:delete-props args :p1 :p2 :p3 :p4)))
+(defun binding-syms (bindings)
+  "Return the binding symbols of /bindings/ in a list. /bindings/ has the
+same syntax as an argument of let."
+  (mapcar (lambda (x) (if (consp x) (first x) x)) bindings))
 
-;;; (let ((n 5)) (append (subseq '(&optional x dur p1 p2 p3 p4) 0 (min n 7)) '(args)))
+(defun dtime-fn-form (form)
+  "Return the lambda form for the dtime-fn from /form/ as a quoted list."
+  `(lambda (x &optional dur &rest args)
+     (declare (ignorable x dur args)
+              (type (or null number) dur))
+     (let* ,(getf form :bindings)
+       (declare (ignorable ,@(binding-syms (getf form :bindings)))
+                (type (or null number) dur))
+       ,(getf form :dtimefn (gethash :dtimefn *default-param-fns*)))))
 
-;;; (canonisize-arg-list '(:p3 13 :p2 1 :transpfn (lambda (x) x) :p4 22))
+(defun params-fn-form (form)
+  "Return the lambda form for the parmas-fn from /form/ as a quoted list."
+  `(lambda (x dur &rest args)
+     (let* ,(getf form :bindings)
+       (declare (ignorable ,@(binding-syms (getf form :bindings))))
+       (labels ,(get-param-fns form)
+         (list ,@(loop
+                   for (fnkey fnsym key) in *param-lookup*
+                   append `(,key (,fnsym x dur args))))))))
 
-(defmacro digest-poolplayer-preset (ref args)
-  (let ((preset (gensym "preset")))
-    `(let ((,preset (aref *poolplayer-presets* ,ref)))
-       (progn
-         ,@(expand-args preset args))
-       (setf (aref ,preset 0) ',args)
-       (setf *curr-poolplayer-preset-nr* ,ref)
-       ,preset)))
+(defmacro digest-form-to-preset (preset-no form)
+  "A call to this macro will trigger compiling the dtime-fn and params-fn
+definitions of /form/ and store the compiled functions and /form/ into
+the *poolplayer-preset* with index /preset-no/."
+  `(progn
+     (incudine.util:msg :info "Compiling form to preset ~a" ,preset-no)
+     (setf (preset-form (aref *poolplayer-presets* ,preset-no)) ',form)
+     (setf (dtime-fn (aref *poolplayer-presets* ,preset-no))
+           ,(dtime-fn-form form))
+     (setf (params-fn (aref *poolplayer-presets* ,preset-no))
+           ,(params-fn-form form))
+     (aref *poolplayer-presets* ,preset-no)))
 
-(defun fn-digest-poolplayer-preset (ref args)
-  (let ((preset (aref cl-poolplayer::*poolplayer-presets* ref)))
-    (loop
-       for (key val) on args by #'cddr
-       for idx = (cl-poolplayer::get-fn-idx key)
-       do (setf (aref preset idx)
-                (eval `(lambda (&optional x dur p1 p2 p3 p4 args)
-                         (declare (ignorable x dur p1 p2 p3 p4 args))
-                          ,val))))
-    (setf (aref preset 0) args)
-    preset))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                           File IO:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; (get-fn-idx :ampfn)
+(defmacro set-poolplayer-preset-form (idx form)
+  `(setf (preset-form (aref *poolplayer-presets* ,idx)) ',form))
 
-#|
-;;; implementation as function. The args have to get quoted.
+(defun get-preset-load-form (preset-no)
+  (with-output-to-string (out)
+    (format out "(set-poolplayer-preset-form~%~d~%~A)~%"
+            preset-no
+            (get-preset-string preset-no))))
 
-(defun digest-bo-preset (ref args)
+;;; (get-preset-load-form 0)
+
+;;; #'save-poolplayer-presets
+
+(defun save-poolplayer-presets (&optional (file *poolplayer-presets-file*))
+  (with-open-file (out file :direction :output
+                            :if-exists :supersede)
+    (format out "(in-package :cl-poolplayer)~%~%(progn~%")
+    (loop for preset across *poolplayer-presets*
+          for idx from 0
+          do (format out (get-preset-load-form idx)))
+    (format out ")~%"))
+  (format t "presets written to ~a" file)
+  (format nil "presets written to ~a" file))
+
+;;; load-poolplayer-presets
+
+(defun load-poolplayer-presets (&optional (file *poolplayer-presets-file*))
+  (load file))
+
+(defun preset->digest-string (ref)
   (let ((preset (aref *poolplayer-presets* ref)))
-    (loop
-       for (key val) on args by #'cddr
-       for idx = (get-fn-idx key)
-       do (setf (aref preset idx)
-                (eval `(lambda (&optional x dur p1 p2 p3 p4 args)
-                         (declare (ignorable x dur p1 p2 p3 p4 args))
-                          ,val))))
-    (setf (aref preset 0) args)
-    preset))
-|#
+    (format nil "(digest-form-to-preset
+          ~a
+          (~{~a~^~%~}))"
+            ref
+            (do-proplist/collecting (slot val) (preset-form preset)
+              (format nil ":~a ~s" slot val)))))
 
-;;; (make-env)
-
-;;; (make-preset)
-
-(defparameter *poolplayer-presets-file*
-  (namestring (merge-pathnames "presets/cl-poolplayer-01.lisp"
-                               (asdf:system-source-directory :cl-poolplayer)))) 
-
-(defparameter *poolplayer-presets*
-  (make-array
-   100
-   :element-type 'vector
-   :initial-contents
-   (loop for i below 100 collect (new-poolplayer-preset))))
+;;; (format t (preset->digest-string 0))
 
 
 
-#| 
-(setf *poolplayer-presets*
-  (make-array
-   100
-   :element-type 'vector
-   :initial-contents
-   (loop for i below 100 collect (new-poolplayer-preset))))
 
-(setf *default-audio-preset*
-      (digest-poolplayer-preset
-       0
-       `(:p1 0
-         :p2 0
-         :p3 0
-         :p4 0
-         :dtimefn 0.5
-         :lsamplefn (r-elt *buffers*)
-         :ampfn (n-exp 0 1 2)
-         :transpfn (r-exp 1 2)
-         :startfn 0
-         :endfn 0
-         :stretchfn (r-exp 1 1)
-         :wwidthfn 123
-         :attackfn 0
-         :releasefn 0.01
-         :outfn 0)))
-|#
+;;; Emacs "GUI":
 
-(defparameter *curr-poolplayer-preset-nr* 0)
-(defparameter *max-poolplayer-preset-nr* 99)
+#+slynk
+(defparameter slynk::*send-counter* 0)
 
 #-slynk
 (defparameter *emcs-conn* swank::*emacs-connection*)
@@ -196,22 +224,22 @@
 
 (defun next-poolplayer-preset ()
   (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
-    (when (< *curr-poolplayer-preset-nr* *max-poolplayer-preset-nr*)
+    (when (< *curr-poolplayer-preset-no* *max-poolplayer-preset-no*)
       (incudine.util:msg :info "next")
-      (edit-preset-in-emacs (incf *curr-poolplayer-preset-nr*)))))
+      (edit-preset-in-emacs (incf *curr-poolplayer-preset-no*)))))
 
 (defun previous-poolplayer-preset ()
   (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
-    (when (> *curr-poolplayer-preset-nr* 0)
+    (when (> *curr-poolplayer-preset-no* 0)
       (incudine.util:msg :info "previous")
-      (edit-preset-in-emacs (decf *curr-poolplayer-preset-nr*)))))
+      (edit-preset-in-emacs (decf *curr-poolplayer-preset-no*)))))
 
 (defun show-poolplayer-preset (num)
-  (let ((new (max (min (round num) *max-poolplayer-preset-nr*) 0)))
-    (when (/= new *curr-poolplayer-preset-nr*)
-      (setf *curr-poolplayer-preset-nr* new)
+  (let ((new (max (min (round num) *max-poolplayer-preset-no*) 0)))
+    (when (/= new *curr-poolplayer-preset-no*)
+      (setf *curr-poolplayer-preset-no* new)
       (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
-        (edit-preset-in-emacs *curr-poolplayer-preset-nr*)))))
+        (edit-preset-in-emacs *curr-poolplayer-preset-no*)))))
 
 #-slynk
 (defun define-elisp-code ()
@@ -275,27 +303,26 @@ curr-preset.lisp buffer."
          ,(progn
             (in-package :cl-poolplayer)
             (defparameter slynk::*send-counter* 0)
-            (preset->string ref))
-         ,(cl-refs:get-val (if (cl-midictl:find-controller :ff01) (cl-midictl::curr-player (cl-midictl:find-controller :ff01)) (cl-refs:make-ref 0)))) t)
+            (preset->digest-string ref))
+         ,*curr-preset-no*) t)
       (slynk::eval-in-emacs
        `(save-excursion
          (switch-to-buffer (get-buffer "curr-preset.lisp"))) t)))
 
-(defun set-basedir (basedir)
+(defun init-poolplayer (presets-file)
+  "Set poolplayer presets file to /presets-file/, load all presets, set
+the *curr-preset* to 0 and display it in emacs buffer."
   (setf *poolplayer-presets-file*
-        (namestring (merge-pathnames "presets/cl-poolplayer-01.lisp" basedir)))
+        (namestring presets-file))
   (load-poolplayer-presets)
   (setf *curr-preset-no* 0)
-  (cl-poolplayer::define-elisp-code :basedir basedir))
+  (uiop:run-program "/usr/bin/touch /tmp/curr-preset.lisp")
+  (cl-poolplayer::define-elisp-code :basedir (pathname "/tmp/")))
 
 ;;; into init-file: (define-elisp-code)
 ;;;
 
 ;;; (edit-preset-in-emacs 0)
-
-;;; (setf (env-delta (preset-amp-env (aref *poolplayer-presets* 1))) 3)
-
-;;; (sv (aref *poolplayer-presets* 0) :amp-env )
 
 (defun get-preset-form (idx)
   (cl-poolplayer::preset-form (elt *poolplayer-presets* idx)))
@@ -307,78 +334,3 @@ curr-preset.lisp buffer."
           do (format out "~a~s ~s" start key value))
     (format out ")")))
 
-;;; (get-preset-string 0)
-
-(defmacro set-poolplayer-preset-form (idx form)
-  `(setf (preset-form (aref *poolplayer-presets* ,idx)) ',form))
-
-(defun get-preset-load-form (preset-no)
-  (with-output-to-string (out)
-    (format out "(set-poolplayer-preset-form~%~d~%~A)~%"
-            preset-no
-            (get-preset-string preset-no))))
-
-;;; (get-preset-load-form 0)
-
-;;; #'save-poolplayer-presets
-
-(defun save-poolplayer-presets (&optional (file *poolplayer-presets-file*))
-  (with-open-file (out file :direction :output
-                            :if-exists :supersede)
-    (format out "(in-package :cl-poolplayer)~%~%(progn~%")
-    (loop for preset across *poolplayer-presets*
-          for idx from 0
-          do (format out (get-preset-load-form idx)))
-    (format out ")~%"))
-  (format t "presets written to ~a" file)
-  (format nil "presets written to ~a" file))
-
-(defun load-poolplayer-presets (&optional (file *poolplayer-presets-file*))
-  (load file))
-
-(defparameter *curr-preset-no* 0)
-
-;;; tmp storage for all bound cc-fns in running preset. Used for
-;;; suspending current pending actions when changing a preset before
-;;; reassignment.
-
-(defparameter *curr-cc-fns* nil)
-
-(defun preset-print-slot (preset slot)
-  (format nil ":~a ~a" (string-downcase slot)
-        (let ((p-sv (slot-value preset (keyword->symbol slot))))
-          (case (type-of p-sv)
-            (env (format nil "(~{~a~^ ~})"
-                         (loop
-                           with env = p-sv
-                           for elem in '(:start :delta :attack :release :type)
-                           collect (format nil ":~a ~a" (string-downcase elem)
-                                           (let ((v (slot-value env (keyword->symbol elem))))
-                                             (if (symbolp v) (format nil ":~a" v) v))))))
-            (otherwise p-sv)))))
-
-#|
-(:dtime :dtime-dev :dur :dur-dev :transp :transp-dev :stretch :stretch-dev
-                  :wsize :wsize-dev :amp :amp-dev :inner-attack :inner-attack-dev
-                  :inner-release :inner-release-dev :chan :chan-dev)
-|#
-
-
-(defun collect-preset-slots (preset)
-  (loop
-    for slot in '(:p1 :p2 :p3 :p4 :dtimefn :lsamplefn :ampfn :transpfn :startfn :endfn
-                  :stretchfn :wwidthfn :attackfn :panfn :releasefn :outfn)
-    collect (preset-print-slot preset slot)))
-
-;;; (collect-preset-slots (aref *poolplayer-presets* 0))
-
-(defun preset->string (ref)
-  (let ((preset (aref *poolplayer-presets* ref)))
-    (format nil "(digest-poolplayer-preset
-          ~a
-          (~{~a~^~%~}))"
-            ref
-            (do-proplist/collecting (slot val) (aref preset 0)
-              (format nil ":~a ~s" slot val)))))
-
-;;; (preset->string 0)
