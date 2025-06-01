@@ -22,7 +22,8 @@
 
 (in-package :cl-midictl)
 
-(defparameter *midi-ports* nil)
+(defparameter *midi-ports* nil
+  "private proplist containing the midi-port ids and structs as key/value pairs.")
 
 (defun find-midi-port (id)
   "Return a registered midi port denoted by /id/.
@@ -97,6 +98,14 @@ open-midi-port
     (jackmidi:close (midi-port-in midi-port))
     (jackmidi:close (midi-port-out midi-port))
     (remf *midi-ports* id)))
+
+;;; util macros
+
+(defmacro midi-port-input (id)
+  (midi-port-in (find-midi-port id)))
+
+(defmacro midi-port-output (id)
+  (midi-port-out (find-midi-port id)))
 
 ;;; *midi-ports*
 

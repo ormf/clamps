@@ -20,6 +20,35 @@
 
 (in-package :cl-midictl)
 
+(defun byte->midi (byte-val)
+  (declare (type (unsigned-byte 8) byte-val))
+  "convert 8-bit value to 7-bit value by scaling.
+
+@Example:
+(byte->midi 255) ; -> 127
+(byte->midi 254) ; -> 127
+(byte->midi 253) ; -> 126
+(byte->midi 128) ; -> 64
+"
+  (ash byte-val -1))
+
+(defun color->midi-rgb (color)
+  "Return a list of MIDI RGB values for /color/.
+
+@Arguments
+color - String of 6 letters containing the HEX Values for R, G and B.
+
+@Example
+(color->midi-rgb \"ffff00\") -> (127 127 0)
+"
+  (declare (type string color))
+  (if (= (length color) 6)
+      (list
+       (byte->midi (read-from-string (str-concat "#x" (subseq color 0 2))))
+       (byte->midi (read-from-string (str-concat "#x" (subseq color 2 4))))
+       (byte->midi (read-from-string (str-concat "#x" (subseq color 4 6)))))
+      (error "color string has to have length 6: ~a" color)))
+
 (defun ccin (ccnum &optional (channel *default-midi-channel*) (midi-port *default-midi-port*))
   "Return the last received MIDI CC value of controller number /ccnum/
 at MIDI channel /channel/ of /midi-port/. Setfable.
@@ -87,6 +116,11 @@ value and 0 using the remaining space below the hardware fader.
       (* (- 1 (/ (- old curr) old)) target))
      (t (- max (* (- 1 (/ (- curr old) (- max old))) (- max target)))))
    1.0))
+
+(defun midi->inc (num)
+  "Convert a 7-bit signed integer midi increment value into a pos/neg
+integer."
+  (if (< num 64) num (- 64 num)))
 
 (defmacro with-gui-update-off ((instance) &body body)
   "Evaluate code of /body/ in the context of the gui-update-off slot of
@@ -158,6 +192,8 @@ the respective values.
          (setf pulse-width (first args))
          (when node-id
            (set-control node-id :pulse-width pulse-width)))))))
+
+
 
 (in-package :incudine)
 

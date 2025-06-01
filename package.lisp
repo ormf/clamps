@@ -50,8 +50,25 @@
            output-stream
 
            cl-midictl:midi-output cl-midictl:get-ref
+           cl-midictl:byte->midi cl-midictl:color->midi-rgb
+           
+           cl-midictl:open-midi-port cl-midictl:close-midi-port
+           cl-midictl:find-midi-port cl-midictl:list-midi-ports
+           cl-midictl:midi-port-input
+           cl-midictl:midi-port-output
+           cl-midictl:midi-port-in
+           cl-midictl:midi-port-out
+           cl-midictl:midi-port-cc-state
+           cl-midictl:midi-port-note-state
+           cl-midictl:midi-port-pitch-bend-state
+           cl-midictl:midi-port-after-touch-state
+           cl-midictl:midi-port-cc-fns
+           cl-midictl:midi-port-note-fns
+           cl-midictl:midi-port-pitch-bend-fns
+           cl-midictl:midi-port-after-touch-fns
 
            orm-utils:delete-props cl-midictl:buchla-scale
+           cl-midictl:midi->inc
            orm-utils:call/collecting
            clog-dsp-widgets:levelmeter cl-midictl:nanoktl2-midi
            of-incudine-dsps:restore-envs orm-utils:m-lin
@@ -84,8 +101,7 @@
            cl-sfz:sfz-get-range of-incudine-dsps:*env1*
            cl-midictl:osc-midi-write-short value-fn
            clog-dsp-widgets:bus-channel clog-dsp-widgets:highlight
-           cl-midictl:with-gui-update-off clog-dsp-widgets:cuda-dsp
-           cl-midictl:*global-midi-channel* cm:pwd orm-utils:n-apply
+           cl-midictl:with-gui-update-off clog-dsp-widgets:cuda-dsp cm:pwd orm-utils:n-apply
            orm-utils:rfind collect-pool orm-utils:n-lin
            cl-sfz:sfz-preset-loaded? orm-utils:subseqx
            clog-dsp-widgets:unregister-element
@@ -448,7 +464,7 @@
            cl-poolplayer:*poolplayer-events* cl-poolplayer:collect-pool
            cl-poolplayer:cm-collect cl-poolplayer:eventplotter
            cl-poolplayer:*outseq13* cl-poolplayer:eventplayer
-           cl-poolplayer:load-poolplayer-presets cl-poolplayer:set-basedir
+           cl-poolplayer:load-poolplayer-presets cl-poolplayer:init-poolplayer
            cl-poolplayer:previous-poolplayer-preset cl-poolplayer:args
            cl-poolplayer:expand-arg-forms cl-poolplayer:x
            cl-poolplayer:show-poolplayer-preset cl-poolplayer:p-song-playfn
@@ -554,7 +570,7 @@
            cl-midictl:m-buttons cl-midictl:curr-bank cl-midictl:note-state
            cl-midictl:stop-midi-receive cl-midictl:remove-midi-controller
            cl-midictl:curr-player cl-midictl:presets
-           cl-midictl:digest-nanoktl2-presets cl-midictl:*global-midi-channel*
+           cl-midictl:digest-nanoktl2-presets
            cl-midictl:with-gui-update-off cl-midictl:stop-osc-midi-receive
            cl-midictl:get-ref cl-midictl:gui-update-off
            cl-midictl:get-active-players cl-midictl:handle-midi-in

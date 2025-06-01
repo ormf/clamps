@@ -37,6 +37,12 @@ cc-state, note-state, cc-fns and note-fns."
                          collect (apply #'vector (loop repeat 128 collect nil)))))
   (note-fns (apply #'vector
                    (loop repeat 16
-                         collect (apply #'vector (loop repeat 128 collect nil))))))
+                         collect (apply #'vector (loop repeat 128 collect nil)))))
+  (pitch-bend-state (apply #'vector (loop repeat 16 collect (make-ref 0))))
+  (pitch-bend-fns (apply #'vector (loop repeat 16 collect nil)))
+  (after-touch-state (apply #'vector (loop repeat 16 collect (make-ref 0))))
+  (after-touch-fns (apply #'vector (loop repeat 16 collect nil)))
+
+  )
 
 

@@ -256,6 +256,10 @@ show-midi-cc-fns
            :documentation
          "Accessor method for the keynum-map slot of an instance of type
 <<midi-controller>>.")
+   (midi-port :initform nil :initarg :midi-port :accessor midi-port
+               :documentation
+               "Accessor method for the midi-port slot of an instance of type
+<<midi-controller>>.")
    (midi-input :initform nil :initarg :midi-input :accessor midi-input
                :documentation
                "Accessor method for the midi-input slot of an instance of type
@@ -340,15 +344,16 @@ remove-all-midi-controllers
 
 (defmethod initialize-instance :after ((instance midi-controller) &rest args)
   (declare (ignorable args))
-  (with-slots (id midi-input midi-output chan) instance
+  (with-slots (id midi-port midi-input midi-output chan) instance
 ;;    (format t "~&midictl-id: ~a ~%" id)
     (if (gethash id *midi-controllers*)
         (warn "id already used: ~a" id)
         (progn
+          (if (keywordp midi-port) (setf midi-port (find-midi-port midi-port)))
           (unless chan (setf chan *default-midi-channel*))
-          (setf midi-input (or midi-input (midi-port-in *default-midi-port*)))
+          (setf midi-input (or midi-input (midi-port-in (or midi-port *default-midi-port*))))
           (format t "adding midi controller ~S~%" id)
-          (setf midi-output (ensure-default-midi-out midi-output))
+          (setf midi-output (ensure-default-midi-out (or midi-output (midi-port-out (or midi-port *default-midi-port*)))))
           (when id
             (push instance (gethash midi-input *midi-controllers*))
             (setf (gethash id *midi-controllers*) instance))))))
@@ -365,32 +370,40 @@ remove-all-midi-controllers
    "Set the midi-input slot of /instance/ to /new-midi-in/ and update
 *midi-controllers*."))
 
-(defgeneric handle-midi-in (instance opcode d1 d2)
+(defgeneric handle-midi-in (instance opcode channel d1 d2)
   (:documentation
    "midi-handling of a midi-controller. This is called by the midi
 receiver but can also be called by gui code or directly to emulate
 controller actions."))
 
-(defmethod handle-midi-in ((instance midi-controller) opcode d1 d2)
-  (with-slots (cc-fns cc-map keynum-map cc-state note-state note-fn last-note-on) instance
+(defmethod handle-midi-in ((instance midi-controller) opcode channel d1 d2)
+  (with-slots (chan cc-fns cc-map keynum-map cc-state note-state pitch-bend-state after-touch-state
+               note-fns pitch-bend-fns after-touch-fns last-note-on)
+      instance
     (incudine.util:msg :debug "midi-controller-handle-midi-in: ~a ~a ~a" opcode d1 d2)
     (case opcode
-      (:cc (if (aref cc-map d1)
+      (:cc (if (and (= chan (1+ channel)) (aref cc-map d1))
                (progn
                  (set-val (aref cc-state (aref cc-map d1)) d2)
                  (mapcar (lambda (fn) (funcall fn d2)) (aref cc-fns d1)))
                (warn "ccnum ~d not mapped in midi-controller ~a, ignored." d1 instance)))
-      (:note-on (if (aref keynum-map d1)
+      (:note-on (if (and (= chan (1+ channel)) (aref keynum-map d1))
                     (progn
                       (set-val (aref note-state (aref keynum-map d1)) d2)
                       (mapcar (lambda (fn) (funcall fn d1 d2)) (note-fns instance))
                       (setf last-note-on d1))
                     (warn "note-on ~d not mapped in midi-controller ~a, ignored." d1 instance)))
-      (:note-off (if (aref keynum-map d1)
+      (:note-off (if (and (= chan (1+ channel)) (aref keynum-map d1))
                      (progn
                        (set-val (aref note-state (aref keynum-map d1)) 0)
                        (mapcar (lambda (fn) (funcall fn d1 0)) (note-fns instance)))
-                     (warn "note-off ~d not mapped in midi-controller ~a, ignored." d1 instance))))))
+                     (warn "note-off ~d not mapped in midi-controller ~a, ignored." d1 instance)))
+      (:pitch-bend (progn
+                     (set-val (aref pitch-bend-state channel) (+ d1 (ash d2 7)))
+                     (mapcar (lambda (fn) (funcall fn (+ d1 (ash d2 7)))) (aref pitch-bend-fns channel))))
+      (:channel-pressure (progn
+                           (set-val (aref after-touch-state channel) d1)
+                           (mapcar (lambda (fn) (funcall fn d1)) (aref after-touch-fns channel)))))))
 
 ;;; (make-instance 'midi-controller)
 
@@ -531,7 +544,9 @@ controller instance using mouse interaction or presets and only
 updating the cc-state in the controller when the incoming midi values
 agree to the values to avoid jumps in the cc-state of the controller
 instance."
-  (with-slots (id cc-state note-state cc-fns note-fns) port
+  (with-slots (id cc-state note-state pitch-bend-state after-touch-state
+               cc-fns note-fns pitch-bend-fns after-touch-fns)
+      port
     
     (incudine.util:msg :debug "generic-midi-handler: ~S ~a ~a ~a" id opcode d1 d2 (1+ channel))
     (case opcode
@@ -543,7 +558,15 @@ instance."
        (dolist (fn (aref (aref note-fns channel) d1)) (funcall fn d2)))
       (:note-off
        (set-val (aref (aref note-state channel) d1) 0)
-       (dolist (fn (aref (aref note-fns channel) d1)) (funcall fn 0))))))
+       (dolist (fn (aref (aref note-fns channel) d1)) (funcall fn 0)))
+      (:pitch-bend
+       (let ((bendval (+ d1 (ash d2 7))))
+         (set-val (aref pitch-bend-state channel) bendval)
+         (dolist (fn (aref pitch-bend-fns channel) d1) (funcall fn bendval))))
+      (:channel-pressure
+       (let ((after-touch-val d2))
+         (set-val (aref after-touch-state d1) after-touch-val)
+         (dolist (fn (aref (aref after-touch-fns channel) d1)) (funcall fn after-touch-val)))))))
 
 (defun start-midi-receive (midi-port)
   "Start the clamps generic midi handler and all registered MIDI responders
@@ -565,8 +588,7 @@ stop-midi-receive
                         (generic-midi-handler midi-port opcode d1 d2 chan)
                         (dolist (controller (gethash input *midi-controllers*))
                           (declare (type midi-controller controller))
-                          (if (= chan (1- (chan controller)))
-                              (handle-midi-in controller opcode d1 d2))))))
+                          (handle-midi-in controller opcode chan d1 d2)))))
     (recv-start input)
     (update-all-controllers midi-port)
     :midi-rcv-started))

@@ -75,27 +75,28 @@ nanokontrol2.
 
 ;;; (midi-delta->i 126)
 
-(defmethod handle-midi-in ((instance faderfox-midi) opcode d1 d2)
+(defmethod handle-midi-in ((instance faderfox-midi) opcode channel d1 d2)
   (with-slots (cc-fns cc-nums ff-fader-update-fns echo
                cc-map cc-state note-state note-fn last-note-on midi-output chan)
       instance
     (incudine.util:msg :debug "faderfox ~S ~a ~a" opcode d1 d2)
-    (case opcode
-      (:cc 
-       (cond
-         ((< (aref cc-map d1) 16)
-          (let* ((fader-idx (aref cc-map d1))
-                 (fader-slot (aref cc-state fader-idx))
-                 (old-value (get-val fader-slot))
-                 (new-value (max 0 (min 1 (float (+ old-value (/ (midi-delta->i d2) 127)) 1.0)))))
-            (incudine.util:msg :debug "old-value: ~a, new-value: ~a" old-value new-value)
-            (when (/= old-value new-value)
-              (set-val fader-slot new-value))))))
-      (:note-on
-       (let ((button-idx (aref cc-map d1)))
-         (incudine.util:msg :debug "button-idx ~a" button-idx)
-         (let ((button-slot (aref note-state button-idx)))
-           (toggle-slot button-slot)))))))
+    (if (= chan (1+ channel))
+        (case opcode
+          (:cc
+           (cond
+             ((< (aref cc-map d1) 16)
+              (let* ((fader-idx (aref cc-map d1))
+                     (fader-slot (aref cc-state fader-idx))
+                     (old-value (get-val fader-slot))
+                     (new-value (max 0 (min 1 (float (+ old-value (/ (midi-delta->i d2) 127)) 1.0)))))
+                (incudine.util:msg :debug "old-value: ~a, new-value: ~a" old-value new-value)
+                (when (/= old-value new-value)
+                  (set-val fader-slot new-value))))))
+          (:note-on
+           (let ((button-idx (aref cc-map d1)))
+             (incudine.util:msg :debug "button-idx ~a" button-idx)
+             (let ((button-slot (aref note-state button-idx)))
+               (toggle-slot button-slot))))))))
 
 (defmethod update-hw-state ((instance faderfox-midi))
   (with-slots (chan cc-nums cc-map cc-state note-state midi-output) instance

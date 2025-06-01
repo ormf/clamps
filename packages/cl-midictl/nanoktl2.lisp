@@ -234,50 +234,51 @@ transformed into toggles.
            (set-val (aref cc-state local-idx) (get-val (aref (aref *midi-cc-state* (1- chan)) (aref cc-nums local-idx)))))))
   (update-hw-state obj))
 
-(defmethod handle-midi-in ((instance nanoktl2-midi) opcode d1 d2)
+(defmethod handle-midi-in ((instance nanoktl2-midi) opcode channel d1 d2)
   (with-slots (cc-fns cc-nums nk2-fader-test-sync-fns
                nk2-fader-modes nk2-fader-last-cc
                hide-fader cc-map cc-state note-fn last-note-on midi-output chan)
       instance
-    (case opcode
-      (:cc (incudine.util:msg :info "nk2 ccin: ~a ~a, local-idx: ~a" d1 d2 (aref cc-map d1))
-       (let ((local-idx (aref cc-map d1))
-             (d2-norm (/ d2 127)))
-         (when local-idx
-           (cond
-             ((< local-idx 16)
-              (let* ((fn (aref nk2-fader-test-sync-fns local-idx))
-                     (fader-mode (aref nk2-fader-modes local-idx))
-                     (last-cc (aref nk2-fader-last-cc local-idx))
-                     (curr-slot-val (aref cc-state local-idx)))
-                (case fader-mode
-                  (:scale
-                   (progn
-                     (unless hide-fader
-                       (set-val curr-slot-val (buchla-scale d2-norm last-cc (get-val curr-slot-val))))))
-                  (:jump (unless hide-fader (set-val curr-slot-val d2-norm)))
-                  (:catch (unless hide-fader
-                            (if fn
-                                (when (funcall fn d2-norm (get-val curr-slot-val))
-                                  (setf (slot-value curr-slot-val 'cl-refs::value) d2-norm)
-                                  (setf (aref nk2-fader-test-sync-fns local-idx) nil))
-                                (set-val curr-slot-val d2-norm)))))
-                (setf (aref nk2-fader-last-cc local-idx) d2-norm)))
-             ;; ((<= 40 local-idx 45)
-             ;;  (case local-idx
-             ;;    (43 ;;; set button
-             ;;     (setf hide-fader (> d2-norm 0)))
-             ;;    (42 ;;; cycle button
-             ;;     (update-hw-state instance))
-             ;;    (otherwise
-             ;;     (let ((slot (aref cc-state (aref cc-map d1))))
-             ;;       (unless (zerop d2-norm) (trigger slot))))))
-             (t (unless (zerop d2)
+    (if (= chan (1+ channel))
+        (case opcode
+          (:cc (incudine.util:msg :info "nk2 ccin: ~a ~a, local-idx: ~a" d1 d2 (aref cc-map d1))
+           (let ((local-idx (aref cc-map d1))
+                 (d2-norm (/ d2 127)))
+             (when local-idx
+               (cond
+                 ((< local-idx 16)
+                  (let* ((fn (aref nk2-fader-test-sync-fns local-idx))
+                         (fader-mode (aref nk2-fader-modes local-idx))
+                         (last-cc (aref nk2-fader-last-cc local-idx))
+                         (curr-slot-val (aref cc-state local-idx)))
+                    (case fader-mode
+                      (:scale
+                       (progn
+                         (unless hide-fader
+                           (set-val curr-slot-val (buchla-scale d2-norm last-cc (get-val curr-slot-val))))))
+                      (:jump (unless hide-fader (set-val curr-slot-val d2-norm)))
+                      (:catch (unless hide-fader
+                                (if fn
+                                    (when (funcall fn d2-norm (get-val curr-slot-val))
+                                      (setf (slot-value curr-slot-val 'cl-refs::value) d2-norm)
+                                      (setf (aref nk2-fader-test-sync-fns local-idx) nil))
+                                    (set-val curr-slot-val d2-norm)))))
+                    (setf (aref nk2-fader-last-cc local-idx) d2-norm)))
+                 ;; ((<= 40 local-idx 45)
+                 ;;  (case local-idx
+                 ;;    (43 ;;; set button
+                 ;;     (setf hide-fader (> d2-norm 0)))
+                 ;;    (42 ;;; cycle button
+                 ;;     (update-hw-state instance))
+                 ;;    (otherwise
+                 ;;     (let ((slot (aref cc-state (aref cc-map d1))))
+                 ;;       (unless (zerop d2-norm) (trigger slot))))))
+                 (t (unless (zerop d2)
 ;;;                  (break "local-idx: ~a" local-idx)
-                  (let ((slot (aref cc-state local-idx)))
-                    (let ((*refs-seen* (list slot "bang")))
-                      (%trigger slot)))))))))
-      (:note-on (setf last-note-on d1)))))
+                      (let ((slot (aref cc-state local-idx)))
+                        (let ((*refs-seen* (list slot "bang")))
+                          (%trigger slot)))))))))
+          (:note-on (setf last-note-on d1))))))
 
 (defmethod update-hw-state ((instance nanoktl2-midi))
   "Update the state of a Hardware Midicontroller and related guis by
