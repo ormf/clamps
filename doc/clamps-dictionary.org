@@ -630,6 +630,19 @@
      (bus-value channel)
    #+END_SRC
    if blocksize > 1 returns the value of bus for current-frame.
+** byte->midi
+   Function
+   #+BEGIN_SRC lisp
+     (byte->midi byte-val)
+   #+END_SRC
+   convert 8-bit value to 7-bit value by scaling.
+*** Example
+    #+BEGIN_SRC lisp
+      (byte->midi 255) ; -> 127
+      (byte->midi 254) ; -> 127
+      (byte->midi 253) ; -> 126
+      (byte->midi 128) ; -> 64
+    #+END_SRC
 * C
 ** calcsndbytes
    Function
@@ -917,6 +930,19 @@
    #+BEGIN_SRC lisp
      (collect-pool &rest keys)
    #+END_SRC
+** color->midi-rgb
+   Function
+   #+BEGIN_SRC lisp
+     (color->midi-rgb color)
+   #+END_SRC
+   Return a list of MIDI RGB values for /color/.
+*** Arguments
+    | =color= | String of 6 letters containing the HEX Values for R, G and B. |
+
+*** Example
+    #+BEGIN_SRC lisp
+      (color->midi-rgb "ffff00") -> (127 127 0)
+    #+END_SRC
 ** combinations
    Function
    #+BEGIN_SRC lisp
@@ -1193,12 +1219,19 @@
 *** See also
     - [[ccin][ccin]]
     - [[midi-controller][midi-controller]]
+    - [[#default-midi-port][*​​default-midi-port​​*]]
 ** *​default-midi-port​*
    :PROPERTIES:
    :CUSTOM_ID: default-midi-port
    :END:
    Variable
 
+   Default MIDI port for midi controllers or access functions like
+   [[ccin][ccin]].
+*** See also
+    - [[ccin][ccin]]
+    - [[midi-controller][midi-controller]]
+    - [[#default-midi-channel][*​​default-midi-channel​​*]]
 ** define-watch
    Generic Function
    #+BEGIN_SRC lisp
@@ -2033,17 +2066,6 @@
     - [[ref-object][ref-object]]
     - [[set-val][set-val]]
     - [[watch][watch]]
-** *​global-midi-channel​*
-   :PROPERTIES:
-   :CUSTOM_ID: global-midi-channel
-   :END:
-   Variable
-
-   Default MIDI channel for midi controllers or access functions like
-   [[ccin][ccin]].
-*** See also
-    - [[ccin][ccin]]
-    - [[midi-controller][midi-controller]]
 ** *​gnuplot-header​*
    :PROPERTIES:
    :CUSTOM_ID: gnuplot-header
@@ -2104,7 +2126,7 @@
 ** handle-midi-in
    Generic Function
    #+BEGIN_SRC lisp
-     (handle-midi-in instance opcode d1 d2)
+     (handle-midi-in instance opcode channel d1 d2)
    #+END_SRC
 ** handle-preset-button-press
    Function
@@ -2916,6 +2938,12 @@
    audio bus based levelmeter (group 300) routing NUM audio buses
    starting at AUDIO-BUS to audio-out CHANNEL-OFFSET. If CREATE-BUS is
    nil just create the levelmeter.
+** mctl-id
+   Generic Function
+   #+BEGIN_SRC lisp
+     (mctl-id object)
+   #+END_SRC
+   automatically generated reader method
 ** memorize-random-state
    Function
    #+BEGIN_SRC lisp
@@ -2931,6 +2959,13 @@
 *** See also
     - [[clamps-base-url][clamps-base-url]]
     - [[gui][gui]]
+** midi->inc
+   Function
+   #+BEGIN_SRC lisp
+     (midi->inc num)
+   #+END_SRC
+   Convert a 7-bit signed integer midi increment value into a pos/neg
+   integer.
 ** *​midi-cc-fns​*
    :PROPERTIES:
    :CUSTOM_ID: midi-cc-fns
@@ -3072,6 +3107,16 @@
    #+END_SRC
    Accessor method for the midi-output slot of an instance of type
    [[midi-controller][midi-controller]].
+** midi-port-after-touch-fns
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-after-touch-fns instance)
+   #+END_SRC
+** midi-port-after-touch-state
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-after-touch-state instance)
+   #+END_SRC
 ** midi-port-cc-fns
    Function
    #+BEGIN_SRC lisp
@@ -3082,6 +3127,16 @@
    #+BEGIN_SRC lisp
      (midi-port-cc-state instance)
    #+END_SRC
+** midi-port-in
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-in instance)
+   #+END_SRC
+** midi-port-input
+   Macro
+   #+BEGIN_SRC lisp
+     (midi-port-input #:id)
+   #+END_SRC
 ** midi-port-note-fns
    Function
    #+BEGIN_SRC lisp
@@ -3091,6 +3146,26 @@
    Function
    #+BEGIN_SRC lisp
      (midi-port-note-state instance)
+   #+END_SRC
+** midi-port-out
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-out instance)
+   #+END_SRC
+** midi-port-output
+   Macro
+   #+BEGIN_SRC lisp
+     (midi-port-output #:id)
+   #+END_SRC
+** midi-port-pitch-bend-fns
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-pitch-bend-fns instance)
+   #+END_SRC
+** midi-port-pitch-bend-state
+   Function
+   #+BEGIN_SRC lisp
+     (midi-port-pitch-bend-state instance)
    #+END_SRC
 ** mix-bus-to-out
    Function
@@ -3558,7 +3633,7 @@
 ** open-midi-port
    Function
    #+BEGIN_SRC lisp
-     (open-midi-port id)
+     (open-midi-port #:id)
    #+END_SRC
    Register a new midi port struct, open its midi input and output,
    define and start its default responders and return the struct.
@@ -4599,11 +4674,6 @@
    Function
    #+BEGIN_SRC lisp
      (send stream msg)
-   #+END_SRC
-** set-basedir
-   Function
-   #+BEGIN_SRC lisp
-     (set-basedir basedir)
    #+END_SRC
 ** set-bpm
    Function

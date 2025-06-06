@@ -358,6 +358,10 @@ remove-all-midi-controllers
             (push instance (gethash midi-input *midi-controllers*))
             (setf (gethash id *midi-controllers*) instance))))))
 
+(defgeneric cleanup (instance)
+  (:method ((instance midi-controller)))
+  (:documentation "Cleanup function for a midi-controller before it gets deleted."))
+
 (defgeneric (setf midi-input) (new-midi-in instance)
   (:method (new-midi-in (instance midi-controller))
     (if (member instance (gethash (midi-input instance) *midi-controllers*))
@@ -461,8 +465,9 @@ remove-all-midi-controllers
     (if instance
         (progn
           (mapc #'funcall (unwatch instance))
-          (if (member instance (gethash (midi-input instance) *midi-controllers*))
+          (if (or (not (midi-input instance)) (member instance (gethash (midi-input instance) *midi-controllers*)))
               (progn
+                (cleanup instance)
                 (setf (gethash (midi-input instance) *midi-controllers*)
                       (delete instance (gethash (midi-input instance) *midi-controllers*)))
                 (format t "removing midi controller ~S (~a)~%" id (remhash id *midi-controllers*)))

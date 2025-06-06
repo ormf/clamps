@@ -18,4 +18,5 @@
                (:file "nanoktl2")
                (:file "nanoktl2-preset-midi")
                (:file "faderfox")
+               (:file "asparion")
                ))

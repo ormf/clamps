@@ -24,7 +24,7 @@
   (declare (type (unsigned-byte 8) byte-val))
   "convert 8-bit value to 7-bit value by scaling.
 
-@Example:
+@Example
 (byte->midi 255) ; -> 127
 (byte->midi 254) ; -> 127
 (byte->midi 253) ; -> 126
@@ -48,6 +48,22 @@ color - String of 6 letters containing the HEX Values for R, G and B.
        (byte->midi (read-from-string (str-concat "#x" (subseq color 2 4))))
        (byte->midi (read-from-string (str-concat "#x" (subseq color 4 6)))))
       (error "color string has to have length 6: ~a" color)))
+
+
+
+(defun normalized->bendvalue (normalized-value)
+  "Return /normalized-value/ scaled to the range [0..16383] as a rounded
+Integer.
+
+@Arguments
+normalized-value - Number in the range [0..1]
+
+@Example
+(normalized->bendvalue 0) -> 0
+(normalized->bendvalue 0.5) -> 8192
+(normalized->bendvalue 1) -> 16383
+"
+  (clip 0 (round (* (1- (ash 1 14)) normalized-value)) (1- (ash 1 14))))
 
 (defun ccin (ccnum &optional (channel *default-midi-channel*) (midi-port *default-midi-port*))
   "Return the last received MIDI CC value of controller number /ccnum/
@@ -192,8 +208,6 @@ the respective values.
          (setf pulse-width (first args))
          (when node-id
            (set-control node-id :pulse-width pulse-width)))))))
-
-
 
 (in-package :incudine)
 

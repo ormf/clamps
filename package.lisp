@@ -49,9 +49,10 @@
            orm-utils:get-props-list orm-utils:m-exp
            output-stream
 
+           cl-midictl:cleanup
            cl-midictl:midi-output cl-midictl:get-ref
            cl-midictl:byte->midi cl-midictl:color->midi-rgb
-           
+           cl-midictl:normalized->bendvalue
            cl-midictl:open-midi-port cl-midictl:close-midi-port
            cl-midictl:find-midi-port cl-midictl:list-midi-ports
            cl-midictl:midi-port-input

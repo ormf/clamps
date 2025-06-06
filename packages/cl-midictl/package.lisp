@@ -2,6 +2,7 @@
 
 (defpackage #:cl-midictl
   (:use #:cl #:ou #:cl-refs #:incudine)
+  (:shadow #:id)
   (:shadowing-import-from #:cm
                           #:chan
                           #:*midi-in1*
@@ -9,6 +10,7 @@
   (:shadowing-import-from #:incudine
                           #:group)
   (:export
+   #:CLEANUP
    #:*MIDI-IN1*
    #:*MIDI-OUT1*
    #:START-MIDI-RECEIVE
@@ -91,6 +93,7 @@
    #:MAKE-LED-PULSAR
    #:COLOR->MIDI-RGB
    #:BYTE->MIDI
+   #:NORMALIZED->BENDVALUE
    #:NANOKTL2-MIDI
    #:NK2-FADERS
    #:NK2-FADER-TEST-SYNC-FNS
