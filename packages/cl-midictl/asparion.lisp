@@ -30,13 +30,14 @@
 ;;; <Asparion-id>-d700ft, <Asparion-id>-d700-0, <Asparion-id>-d700-1,
 ;;; etc. in the case of three or more units.
 ;;;
-;;; The asparion instance contains arrays of the total size of the
-;;; number of channel strips for buttons, rotaries and faders to
-;;; facilitate dealing with all strips in a straightforward and
-;;; intuitive way. As the ref-cell elements of these arrays are
-;;; directly linked to the respectice arrays of the d700/d700ft
-;;; instances, value changes can be done either in the instances or in
-;;; the asparion instance, resulting in the exact same behaviour.
+;;; The asparion instance combines the arrays for buttons, rotaries
+;;; and faders of the d700/d700ft units to arrays of the total size of
+;;; the number of channel strips to facilitate dealing with all strips
+;;; in a straightforward and intuitive way. As the ref-cell elements
+;;; of these arrays are directly linked to the respectice arrays of
+;;; the d700/d700ft instances, value changes can be done either in the
+;;; instances or in the asparion instance, resulting in the exact same
+;;; behaviour.
 ;;;
 ;;; Here is an example of initalizing an Asparion with two units
 ;;; connected to MIDI ports :midi-1 and :midi-2
@@ -209,7 +210,7 @@ Controller connected to MIDI output /stream/.
 @Arguments
 color - String with 8 bit Hex Values for R, G and B.
 stream - Jackmidi output stream.
-strip-idx - Integer denoting the index of the rotary strip.
+strip-idx - Integer denoting the index of the rotary strip (On the D700FT, 8 denotes Master Rotary).
 
 @Example
 (add-midi-controller 'd700 :d700)
@@ -499,9 +500,7 @@ being the keywords of the slot symbol:
 
 =next-page-button= -- <<bang-object><bang-object>> of the next page button of the D700FT.
 
-=master-rotary= -- <<ref-object>> of the master rotary of the D700FT.
-
-=master-rotary= -- <<bang-object>> of the master rotary button of the D700FT.
+=master-rotary= -- <<bang-object>> of the master rotary of the D700FT.
 
 =master-rotary-scale= -- <<ref-object>> of the master rotary scaling factor of the D700FT.
 
@@ -520,21 +519,28 @@ d700
      additional buttons of the d700ft can be seen in the mapping list
      below. As in the d700 the default trigger function of the buttons
      is to toggle the button light. |#
-  (with-slots (pan-button eq-button send-button fx-button star-button metronome-button loop-button rec-button play-button stop-button prev-page-button next-page-button chan midi-port midi-output midi-in-active unwatch)
+  (with-slots (pan-button eq-button send-button fx-button star-button metronome-button loop-button rec-button play-button stop-button prev-page-button next-page-button master-rotary master-rotary-color chan midi-port midi-output midi-in-active unwatch)
       obj
     (dolist (mapping '((pan-button 42) (eq-button 44) (send-button 41) (fx-button 43) (star-button 54)
                        (metronome-button 89) (loop-button 86)
                        (rec-button 95) (play-button 94) (stop-button 93)
                        (prev-page-button 46) (next-page-button 47)))
       (incudine.util:msg :info "midi-out: ~a" midi-output)
-         (destructuring-bind (button-sym keynum) mapping
-           (add-trigger-fn (slot-value obj button-sym) (lambda () (toggle-slot (slot-value obj button-sym))))
-           (push (watch (lambda ()
-                          (osc-midi-write-short
-                           midi-output
-                           (+ (1- chan) #x90)
-                           keynum (if (zerop (get-val (slot-value obj button-sym))) 0 127))))
-                 unwatch)))))
+      (destructuring-bind (button-sym keynum) mapping
+        (add-trigger-fn (slot-value obj button-sym) (lambda () (toggle-slot (slot-value obj button-sym))))
+        (push (watch (lambda ()
+                       (osc-midi-write-short
+                        midi-output
+                        (+ (1- chan) #x90)
+                        keynum (if (zerop (get-val (slot-value obj button-sym))) 0 127))))
+              unwatch))
+      (push (watch (lambda ()
+                     (set-val master-rotary-color
+                              (format nil "00~2,'0X00" (round (* 127 (get-val master-rotary)))))))
+            unwatch)
+      (push (watch (lambda ()
+                     (asparion-send-color (get-val master-rotary-color) 24 midi-output)))
+            unwatch))))
 
 (defmethod handle-midi-in ((instance d700ft) opcode channel d1 d2)
   (incudine.util:msg :info "d700ft input: ~a ~a ~a ~a" opcode channel d1 d2)
@@ -598,7 +604,7 @@ d700
       (:pitch-bend
        (let ((fader-idx channel))
          (if (= channel 8)
-             (set-val master-rotary (float (/ (+ d1 (ash d2 7)) (ash 1 14))))
+             (set-val master-rotary (float (/ d2 127)))
              (progn
                (setf midi-in-active t)
                (set-val (aref faders fader-idx)
@@ -768,208 +774,3 @@ of the asparion instance."
  'cl-midictl)
 
 ;;;(defparameter *mackie-sysex-header* '(#xF0 #x00 #x00 #x66 #x10))
-
-
-
-#|
-
-
-(progn
-  (remove-midi-controller :asparion)
-  (remove-midi-controller :asparion-d700)
-  (remove-midi-controller :asparion-d700ft)
-  (add-midi-controller 'asparion :asparion :midi-ports '(:midi-1 :midi2)))
-
-
-
-(list-midi-controllers)
-(progn
-  (remove-midi-controller :asparion)
-  (add-midi-controller 'asparion :asparion :midi-ports '(:midi-1 :midi-2)))
-
-(find-controller :asparion)
-
-(let ((controller (find-controller :asparion)))
-  (let ((unit (second (slot-value controller 'units))))
-    (set-val (aref (faders unit) 0) 0.5)))
-
-(add-midi-controller 'd700 :d700)
-
-(find-controller :asparion-d700ft)
-
-(find-midi-port :midi-2)
-
-(slot-value (find-controller :d700) :id)
-(remove-midi-controller :d700)
-
-(let ((controller (find-controller :d700)))
-  (with-slots (faders) controller
-(set-val (aref faders 0) 0.3)))
-
-(setf (clamps:logger-level) :info)
-
-(midiout-sysex (append *asparion-sysex-header* '(#x12 0) (subseq (map 'list #'char-code "                                           ") 0 (* 7 3)) '(#xF7))
-               (midi-port-out (find-midi-port :midi-1)))
-
-(d700-write-line-1 "Hi" 0 (midi-port-out (find-midi-port :midi-1)))
-
-(midiout-sysex (append *asparion-sysex-header* '(#x12 0) (subseq (map 'list #'char-code "Das ist ein Test, was man alles mit dem Asparion anstellen kann und ich bin bereits einigermaßen zufrieden :-)") 0 (* 7 3)) '(#xF7))
-               (midi-port-out (find-midi-port :midi-1)))
-
-(midiout-sysex (append *asparion-sysex-header* '(#x12 0) (subseq (map 'list #'char-code "Das ist ein Test, was man alles mit dem Asparion anstellen kann und ich bin bereits einigermaßen zufrieden :-)") 0 (* 7 3)) '(#xF7))
-               (midi-port-out (find-midi-port :midi-1)))
-
-(midiout-sysex (append *asparion-sysex-header* '(#x1A 0 1) (map 'list #'char-code "Zeile 1") '(#xF7))
-               (midi-port-out (find-midi-port :midi-1)))
-
-(midiout-sysex (append *asparion-sysex-header* '(#x1A 0 2) (map 'list #'char-code "Zeile 2") '(#xF7))
-               (midi-port-out (find-midi-port :midi-1)))
-
-(midiout-sysex (append *mackie-sysex-header* '(#x19 0) (map 'list #'char-code (format nil "~8a" "Zaile 3")) '(#xF7))
-               (midi-port-out (find-midi-port :midi-1)))
-
-(midiout-sysex (append *-sysex-header* '(#x1A 0 1) (map 'list #'char-code "Hiho   ") '(#xF7))
-               (midi-port-out (find-midi-port :midi-1)))
-
-(format nil "~{0x~2,'0X~^ ~}" (append *asparion-sysex-header* '(#x1A 0 1) (map 'list #'char-code "ZTeile 1") '(#xF7))) ; => "0xF0 0x00 0x00 0x66 0x14 0x1A 0x00 0x01 0x5A 0x65 0x69 0x6C 0x65 0x20 0x31 0xF7"
-(format nil "~{0x~2,'0X~^ ~}" (append *asparion-sysex-header* '(#x1A 0 2) (map 'list #'char-code "Zeile 2") '(#xF7))) ; => "0xF0 0x00 0x00 0x66 0x14 0x1A 0x00 0x02 0x5A 0x65 0x69 0x6C 0x65 0x20 0x32 0xF7"
-
-(format nil "~{0x~2,'0X~^ ~}" (append *asparion-sysex-header* '(#x19 0) (map 'list #'char-code "Zeile 3 ") '(#xF7)))
-
-(set-val (send-button (find-controller :d700ft)) 0)
-
-(fadertouch (find-controller :d700))
-
-(let* ((midi-port (midi-port (find-controller :d700ft)))
-       (midi-output (midi-port-out midi-port)))
-  (osc-midi-write-short
-   midi-output
-   (+ 0 #x90)
-   40 0))
-
-(let ((controller (find-controller :d700ft)))
-  (toggle-slot (play-button controller)))
-
-(let ((controller (find-controller :d700ft)))
-  (dolist (sym '(pan-button eq-button send-button fx-button))
-    (toggle-slot (slot-value controller sym))))
-
-(cl-midictl:midi-port)
-
-
-
-(toggle-slot)
-
-
-
-(map 'vector #'find-controller (list-midi-controllers))
-
-(find-controller :d700ft)
-
-
-
-
-(find-controller :d700)
-
-(let ((controller (find-controller :d700)))
-  (trigger (aref (s-buttons controller) 1)))
-
-(let ((controller (find-controller :d700)))
-  (set-val (aref (s-buttons controller) 1) 1))
-
-(defparameter *d700* (add-midi-controller 'd700 :d700 :midi-port :midi-1))
-
-(find-controller :d700)
-(remove-midi-controller :d700)
-
-(let ((controller (find-controller :d700)))
-  (with-slots (midi-output) controller
-    (osc-midi-write-short
-     midi-output
-     (+ 0 144)
-     16 127)))
-
-
-
-
-
-(let ((controller (find-controller :d700)))
-  (with-slots (faders) controller
-    (let ((val (round (* (ash 1 14) (get-val (aref faders 0))))))
-      (ash val -7)
-      )))
-
-(let ((controller (find-controller :d700)))
-  (with-slots (r-buttons) controller
-    (set-val (aref r-buttons 2) 0)))
-
-(let ((controller (find-controller :d700)))
-  (with-slots (faders) controller
-    (let ((val (round (* (ash 1 14) (get-val (aref faders 0))))))
-      (ash val -7)
-      )))
-
-(let ((controller (find-controller :d700)))
-  (with-slots (faders rotary-a) controller
-    (dotimes (i 8)
-      (set-val (aref rotary-a i) (random 1.0))
-      (set-val (aref faders i) (random 1.0)))))
-
-(* 0.5 (ash 1 14))
-
-(incudine:midi-write-message)
-
-
-
-(set-val (aref (rotary-a (find-controller :d700)) 0) 0.5)
-
-(set-val (aref (faders (find-controller :d700)) 1) 0.5)
-
-
-
-(find-controller :d700)
-
-
-
-
-(char-code #\SPACE) ;; 32
-
-(char-code #\@) 64
-(char-code #\A)
-
-
-
-(midiout-sysex (append *mackie-sysex-header* '(#x12 21) (subseq (map 'list #'char-code " was man alles mit dem Asparion anstellen kann und ich bin bereits einigermaßen zufrieden :-)") 0 (* 7 3)) '(#xF7)) (midi-port-out (find-midi-port :midi-1)))
-
-(loop for x below 16
-      do (midiout-sysex (append *mackie-sysex-header* `(#x12 ,(* 7 (mod x 8))) (map 'list #'char-code (format nil "~7a" (format nil "Kan ~2,'0d " (1+ x)))) '(#xF7))
-                        (midi-port-out (find-midi-port (if (< x 8) :midi-1 :midi-2)))))
-
-(loop for instr in '("Fl" "Kl" "Ob" "Fg" "Tr" "Hrn" "Pos" "Tb" "Szg1" "Szg2" "Pno" "Vn1" "Vn2" "Va" "Vc" "Kb")
-      for x below 16
-      do (midiout-sysex (append *mackie-sysex-header* `(#x12 ,(+ 56 (* 7 (mod x 8)))) (map 'list #'char-code (format nil "~7a" instr)) '(#xF7))
-                        (midi-port-out (find-midi-port (if (< x 8) :midi-1 :midi-2)))))
-
-
-
-(defun pad-string)
-
-(midiout-sysex (append *mackie-sysex-header* `(#x20 0 6 #xF7)) (midi-port-out (find-midi-port :midi-1)))
-
-(midiout-sysex (append *mackie-sysex-header* `(#x21 1 #xF7)) (midi-port-out (find-midi-port :midi-1)))
-(midiout-sysex `(#xD0 #x0c) (midi-port-out (find-midi-port :midi-1)))
-(progn
-  (cm::at (cm::now) #'midiout-sysex `(#xD0 #x0c) (midi-port-out (find-midi-port :midi-1)))
-  (cm::at (+ (cm::now) 0.1) #'midiout-sysex `(#xD0 #x0c) (midi-port-out (find-midi-port :midi-1))))
-
-(format nil "~7a" "hallo")
-
-#x37
-(append *mackie-sysex-header* '(#x12 0) (map 'list #'char-code "hallo"))
-
-(midiout-sysex (append *mackie-sysex-header* '(#x19 0) (map 'list #'char-code (format nil "~8a" "Zaile 3")) '(#xF7))
-               (midi-port-out (find-midi-port :midi-1)))
-
-https://xhamster.desi/videos/german-fick-dates-retro-xhNqkNu
-(update-hw-state (find-controller :asparion))
-|#
