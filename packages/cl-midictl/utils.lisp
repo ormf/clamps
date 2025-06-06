@@ -209,6 +209,14 @@ the respective values.
          (when node-id
            (set-control node-id :pulse-width pulse-width)))))))
 
+(defun collect-cp-slot-forms (slots)
+  (loop for slot in slots
+        collect `(setf (aref ,slot i) (aref (,slot unit) sourceidx))))
+
+(defmacro offs-copy-slots (slots)
+  `(progn
+     ,@(collect-cp-slot-forms slots)))
+
 (in-package :incudine)
 
 (define-vug pulse-0-1 (freq width)

@@ -41,7 +41,7 @@
 ;;; Here is an example of initalizing an Asparion with two units
 ;;; connected to MIDI ports :midi-1 and :midi-2
 ;;;
-;;; (add-midi-controller 'asparion :midi-ports (:midi-1 :midi-2))
+;;; (add-midi-controller 'asparion :asparion :midi-ports (:midi-1 :midi-2))
 ;;;
 ;;; After the controller is created, (list-midi-ports) should return
 ;;; (:asparion :asparion-d700 :asparion-d700ft)
@@ -405,7 +405,7 @@ state to all elements of the controller via midi."
        (+ (1- chan) 144)
        (+ 24 i) (if (zerop (get-val (aref sel-buttons i))) 0 127)))))
 
-(update-hw-state (find-controller :asparion))
+
 ;;; stubs: redefine to bind actions to the buttons.
 
 (defun asparion-pan-press-action ())
@@ -646,14 +646,6 @@ keywords of the slot symbol:
 @See-also
 midi-controller"))
 
-(defun collect-cp-slot-forms (slots)
-  (loop for slot in slots
-        collect `(setf (aref ,slot i) (aref (,slot unit) sourceidx))))
-
-(defmacro offs-copy-slots (slots)
-  `(progn
-     ,@(collect-cp-slot-forms slots)))
-
 (defmethod initialize-instance :after ((obj asparion) &rest args)
   (declare (ignorable args))
   (with-slots (midi-ports units
@@ -692,11 +684,11 @@ midi-controller"))
             for midi-port in midi-ports
             collect (cond
                       ((zerop module-idx)
-                       (clamps:imsg :warn "midi-port of D700FT: ~a" midi-port)
+                       (incudine.util:msg :warn "midi-port of D700FT: ~a" midi-port)
                        (add-midi-controller 'd700ft (make-keyword (format nil "~@:(~a-d700ft~)" (mctl-id obj)))
                                             :midi-port midi-port))
                       ((= (length midi-ports) 2)
-                       (clamps:imsg :warn "midi-port of D700: ~a" midi-port)
+                       (incudine.util:msg :warn "midi-port of D700: ~a" midi-port)
                        (add-midi-controller 'd700 (make-keyword (format nil "~@:(~a-d700~)" (mctl-id obj)))
                                             :midi-port midi-port))
                       (t
@@ -979,4 +971,5 @@ of the asparion instance."
                (midi-port-out (find-midi-port :midi-1)))
 
 https://xhamster.desi/videos/german-fick-dates-retro-xhNqkNu
+(update-hw-state (find-controller :asparion))
 |#
