@@ -61,6 +61,8 @@
 (defparameter +ml-pitch-bend-opcode+ 14)
 (defparameter +ml-key-pressure-opcode+ 10)
 (defparameter +ml-program-change-opcode+ 12)
+(defparameter +ml-msg-sysex-type+ 15)
+(defparameter +ml-msg-eox-type+ 127)
 
 #|
 (defparameter +ml-default-note-on-velocity+ 64)
@@ -89,7 +91,8 @@
     (,+ml-program-change-opcode+ . :pgm-change)
     (,+ml-pitch-bend-opcode+ . :pitch-bend)
     (,+ml-key-pressure-opcode+ . :key-pressure)
-    (,+ml-channel-pressure-opcode+ . :channel-pressure)))
+    (,+ml-channel-pressure-opcode+ . :channel-pressure)
+    (,+ml-msg-sysex-type+ . :sysex)))
 
 (defun status->opcode (st)
   (cdr (assoc (ash (logand st +ml-opcode-mask+) -4)

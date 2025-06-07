@@ -326,9 +326,17 @@ strip-idx - Integer denoting the index of the rotary strip (On the D700FT, 8 den
   (incudine.util:msg :info "d700 input: ~a ~a ~a ~a" opcode channel d1 d2)
   (with-slots (chan rotary-a rotary-buttons rotary-scale faders
                fadertouch s-buttons m-buttons r-buttons sel-buttons
-               midi-out midi-in-active)
+               midi-input midi-in-active)
       instance
     (case opcode
+      (:pitch-bend
+       (unless (< channel 8) (error "illegal fader channel 8 for D700 instance. Did you intend to
+instantiate a D700FT instance instead or mismatched the midi-ports of the devices?"))
+       (let ((fader-idx channel))
+         (setf midi-in-active t)
+         (set-val (aref faders fader-idx)
+                  (float (/ (+ d1 (ash d2 7)) (1- (ash 1 14)))))
+         (setf midi-in-active nil)))
       (:cc
        (when (and (= chan (1+ channel)) (<= 16 d1 23))
          (let ((rotary-idx (- d1 16)))
@@ -357,14 +365,8 @@ strip-idx - Integer denoting the index of the rotary strip (On the D700FT, 8 den
            ;; ((<= 16 d1 23) (trigger (aref m-buttons (- d1 16))))
            ;; ((<= 24 d1 31) (trigger (aref sel-buttons (- d1 24))))
            ((<= 104 d1 111) (set-val (aref fadertouch (- d1 104)) 0)))))
-      (:pitch-bend
-       (unless (< channel 8) (error "illegal fader channel 8 for D700 instance. Did you intend to
-instantiate a D700FT instance instead or mismatched the midi-ports of the devices?"))
-       (let ((fader-idx channel))
-         (setf midi-in-active t)
-         (set-val (aref faders fader-idx)
-                  (float (/ (+ d1 (ash d2 7)) (1- (ash 1 14)))))
-         (setf midi-in-active nil))))))
+      (:sysex
+       (incudine.util:msg :info (jackmidi:input-stream-sysex-octets midi-input))))))
 
 (defmethod update-hw-state ((obj d700))
   "Update the state of the hardware controller by sending the current
@@ -549,9 +551,18 @@ d700
                rec-button play-button stop-button prev-page-button next-page-button
                rotary-a rotary-buttons rotary-scale faders fadertouch
                s-buttons m-buttons r-buttons sel-buttons
-               midi-output midi-in-active chan master-rotary)
+               midi-input midi-output midi-in-active chan master-rotary)
       instance
     (case opcode
+      (:pitch-bend
+       (let ((fader-idx channel))
+         (if (= channel 8)
+             (set-val master-rotary (float (/ d2 127)))
+             (progn
+               (setf midi-in-active t)
+               (set-val (aref faders fader-idx)
+                        (float (/ (+ d1 (ash d2 7)) (1- (ash 1 14)))))
+               (setf midi-in-active nil)))))
       (:cc
        (when (and (= chan (1+ channel)) (<= 16 d1 23))
          (let ((rotary-idx (- d1 16)))
@@ -601,15 +612,9 @@ d700
            ;; ((<= 24 d1 31) (trigger (aref sel-buttons (- d1 24))))
            ;; ((<= 32 d1 39) (trigger (aref rotary-buttons (- d1 32))))
            ((<= 104 d1 111) (set-val (aref fadertouch (- d1 104)) 0)))))
-      (:pitch-bend
-       (let ((fader-idx channel))
-         (if (= channel 8)
-             (set-val master-rotary (float (/ d2 127)))
-             (progn
-               (setf midi-in-active t)
-               (set-val (aref faders fader-idx)
-                        (float (/ (+ d1 (ash d2 7)) (1- (ash 1 14)))))
-               (setf midi-in-active nil))))))))
+      (:sysex
+       (incudine.util:msg :info (jackmidi:input-stream-sysex-octets midi-input))))))
+
 
 (defmethod update-hw-state ((obj d700ft))
   "Update the state of the hardware controller by sending the current
