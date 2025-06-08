@@ -552,11 +552,11 @@ controller instance using mouse interaction or presets and only
 updating the cc-state in the controller when the incoming midi values
 agree to the values to avoid jumps in the cc-state of the controller
 instance."
-  (with-slots (id cc-state note-state pitch-bend-state after-touch-state
+  (with-slots (cc-state note-state pitch-bend-state after-touch-state
                cc-fns note-fns pitch-bend-fns after-touch-fns)
       port
-    
-    (incudine.util:msg :debug "generic-midi-handler: ~S ~a ~a ~a" id opcode d1 d2 (1+ channel))
+    (unless (eq opcode :channel-pressure)
+      (incudine.util:msg :info "generic-midi-handler: ~S ~S ~a ~a ~a" (midi-port-id port) opcode d1 d2 (1+ channel)))
     (case opcode
       (:cc
        (set-val (aref (aref cc-state channel) d1) d2)
@@ -572,9 +572,11 @@ instance."
          (set-val (aref pitch-bend-state channel) bendval)
          (dolist (fn (aref pitch-bend-fns channel) d1) (funcall fn bendval))))
       (:channel-pressure
-       (let ((after-touch-val d2))
-         (set-val (aref after-touch-state d1) after-touch-val)
-         (dolist (fn (aref (aref after-touch-fns channel) d1)) (funcall fn after-touch-val)))))))
+       (let ((after-touch-val d1))
+         (set-val (aref after-touch-state channel) after-touch-val)
+         (dolist (fn (aref after-touch-fns channel)) (funcall fn after-touch-val))))
+      (:sysex
+       (incudine.util:msg :warn "sysex: ~S" (midiin-sysex-octets (midi-port-in port)))))))
 
 (defun start-midi-receive (midi-port)
   "Start the clamps generic midi handler and all registered MIDI responders
@@ -594,9 +596,10 @@ stop-midi-receive
                       (let ((chan (status->channel st))
                             (opcode (status->opcode st)))
                         (generic-midi-handler midi-port opcode d1 d2 chan)
-                        (dolist (controller (gethash input *midi-controllers*))
-                          (declare (type midi-controller controller))
-                          (handle-midi-in controller opcode chan d1 d2)))))
+                        ;; (dolist (controller (gethash input *midi-controllers*))
+                        ;;   (declare (type midi-controller controller))
+                        ;;   (handle-midi-in controller opcode chan d1 d2))
+                        )))
     (recv-start input)
     (update-all-controllers midi-port)
     :midi-rcv-started))

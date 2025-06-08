@@ -79,6 +79,9 @@
                                         collect
                                         (vector (make-ref (format nil "~a" (1+ i))) (make-ref "") (make-ref ""))))
                  :documentation "labels of strips in gui")
+   (vu-meters :initarg :vu-meters :accessor vu-meters
+                 :initform (apply #'vector (loop repeat 8 collect (make-ref 0.0)))
+                 :documentation "labels of strips in gui")
    (rotary-a :accessor rotary-a
              :initform (apply #'vector (loop repeat 8 collect (make-ref 0.0))))
    (rotary-led-modes :accessor rotary-led-modes
@@ -249,7 +252,7 @@ strip-idx - Integer denoting the index of the rotary strip (On the D700FT, 8 den
       24 25 26 27 28 29 30 31   ;;; sel-buttons (noteon/off)
     )
     |#
-  (with-slots (cc-map strip-labels rotary-a rotary-led-modes rotary-colors rotary-buttons rotary-scale chan faders m-buttons r-buttons s-buttons sel-buttons
+  (with-slots (cc-map vu-meters strip-labels rotary-a rotary-led-modes rotary-colors rotary-buttons rotary-scale chan faders m-buttons r-buttons s-buttons sel-buttons
                midi-port midi-output midi-in-active unwatch)
       obj
     (loop for cc-num in '(16 17 18 19 20 21 22 23) ;;; rotaries
@@ -320,6 +323,11 @@ strip-idx - Integer denoting the index of the rotary strip (On the D700FT, 8 den
                         midi-output
                         (+ (1- chan) 144)
                         (+ 24 i) (if (zerop (get-val (aref sel-buttons i))) 0 127))))
+              unwatch)
+        (push (watch (lambda ()
+                       (jackmidi:write-short
+                        midi-output
+                        (jackmidi:message i (round (* 127 (get-val (aref vu-meters i))))) 2)))
               unwatch)))))
 
 (defmethod handle-midi-in ((instance d700) opcode channel d1 d2)

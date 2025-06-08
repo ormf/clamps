@@ -57,28 +57,21 @@
     (let* ((id (make-keyword (format nil "MIDI-~d" (1+ i))))
            (midi-port (open-midi-port id)))
       (when (zerop i)
-        (loop repeat 20 until (midi-port-in midi-port)
-              do (progn
-                   (incudine.util:msg :warn "waiting for *midi-in*")
-                   (sleep 0.1)))
         (setf *midi-in1* (midi-port-in midi-port))
         (setf *default-midi-port* midi-port)
         (setf *midi-cc-state* (midi-port-cc-state midi-port))
         (setf *midi-note-state* (midi-port-note-state midi-port))
         (setf *midi-cc-fns* (midi-port-cc-fns midi-port))
         (setf *midi-note-fns* (midi-port-note-fns midi-port))
-        (loop repeat 20 until (midi-port-out midi-port)
-              do (progn
-                   (incudine.util:msg :warn "waiting for *midi-out*")
-                   (sleep 0.1)))
         (setf *midi-out1* (midi-port-out midi-port)))
+      (incudine.util:msg :warn "~a opened" (midi-port-in midi-port))
+      (incudine.util:msg :warn "~a opened" (midi-port-out midi-port))
       (start-midi-receive midi-port)))
 
 ;;;  (incudine:rt-start)
   (if (and *midi-in1* *midi-out1*)
       (progn
-        (incudine.util:msg :warn "~a" *midi-in1*)
-        (incudine.util:msg :warn "~a" *midi-out1*)
+
         (list *midi-in1* *midi-out1*))
       (error "midi didn't start properly")))
 

@@ -58,7 +58,7 @@ open-midi-port
               (lambda (x y) (string< (symbol-name x) (symbol-name y))))
         port-ids)))
 
-(defun open-midi-port (id)
+(defun open-midi-port (id &key (start-receiver t))
   "Register a new midi port struct, open its midi input and output,
 define and start its default responders and return the struct.
 
@@ -80,6 +80,16 @@ list-midi-ports
                                   :in (jackmidi:open :port-name in-name)
                                   :out (jackmidi:open :direction :output :port-name out-name)))))
           (setf *midi-ports* (list* id new-midi-port *midi-ports*))
+          (when start-receiver
+            (loop repeat 20 until (midi-port-in new-midi-port)
+                  do (progn
+                       (incudine.util:msg :warn "waiting for midi-in of ~s" cl-midictl::id)
+                       (sleep 0.1)))
+            (loop repeat 20 until (midi-port-out new-midi-port)
+                  do (progn
+                       (incudine.util:msg :warn "waiting for midi-out of ~s" cl-midictl::id)
+                       (sleep 0.1)))
+            (start-midi-receive new-midi-port))
           new-midi-port))))
 
 (defun close-midi-port (id)
