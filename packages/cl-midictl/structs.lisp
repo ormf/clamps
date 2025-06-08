@@ -22,7 +22,22 @@
 
 (defstruct midi-port
   "Structure of a bidirectional midi port, containing slots for
-cc-state, note-state, cc-fns and note-fns."
+cc-state, note-state, pitch-bend-state, after-touch-state, cc-fns,
+note-fns, pitch-bend-fns and after-touch-fns.
+
+@See-also
+midi-port-id
+midi-port-input
+midi-port-output
+midi-port-cc-state
+midi-port-note-state
+midi-port-pitch-bend-state
+midi-port-after-touch-state
+midi-port-cc-fns
+midi-port-note-fns
+midi-port-pitch-bend-fns
+midi-port-after-touch-fns
+"
   (id)
   (in)
   (out)
@@ -32,15 +47,15 @@ cc-state, note-state, cc-fns and note-fns."
   (note-state (apply #'vector
                    (loop repeat 16
                          collect (apply #'vector (loop repeat 128 collect (make-ref 0))))))
+  (pitch-bend-state (apply #'vector (loop repeat 16 collect (make-ref 0))))
+  (after-touch-state (apply #'vector (loop repeat 16 collect (make-ref 0))))
   (cc-fns (apply #'vector
                    (loop repeat 16
                          collect (apply #'vector (loop repeat 128 collect nil)))))
   (note-fns (apply #'vector
                    (loop repeat 16
                          collect (apply #'vector (loop repeat 128 collect nil)))))
-  (pitch-bend-state (apply #'vector (loop repeat 16 collect (make-ref 0))))
   (pitch-bend-fns (apply #'vector (loop repeat 16 collect nil)))
-  (after-touch-state (apply #'vector (loop repeat 16 collect (make-ref 0))))
   (after-touch-fns (apply #'vector (loop repeat 16 collect nil)))
 
   )

@@ -813,7 +813,7 @@
 ** clamps
    Function
    #+BEGIN_SRC lisp
-     (clamps &key (gui-base "/tmp") (qsynth nil) (open-gui nil))
+     (clamps &key (gui-base "/tmp") (qsynth nil) (open-gui nil) (num-midi-ports *num-midi-ports*))
    #+END_SRC
    Start Clamps including the Gui. This function can be called from the
    /:cl-user/ package.
@@ -842,7 +842,8 @@
 *** Arguments
     | =:gui-base= | String or Pathname indicating where to put the /www/ subfolder for files accessible by the gui (nicknamed /<clamps-gui-root>/).  |
     | =:open-gui= | Boolean indicating whether to open the /<clamps-base-url>/ in a browser window after starting the gui.  |
-    | =:qsynth= | Boolean indicating whether to start the Qsynth softsynth (Linux only). |
+    | =:qsynth= | Boolean indicating whether to start the Qsynth softsynth (Linux only).  |
+    | =:num-midi-ports= | Integer denoting the number of Midi Ports to open. |
 
 *** See also
     - [[clamps-base-url][clamps-base-url]]
@@ -936,7 +937,7 @@
 ** clamps-start
    Function
    #+BEGIN_SRC lisp
-     (clamps-start &key (gui-base "/tmp") (qsynth nil) (open-gui nil) (port 54619))
+     (clamps-start &key (gui-base "/tmp") (qsynth nil) (open-gui nil) (port 54619) (num-midi-ports *num-midi-ports*))
    #+END_SRC
    Entry function called by [[clamps][clamps]] to start the webserver for the
    GUI, call [[rts][rts]] to set up IO and MIDI, start the OSC responder for
@@ -3215,39 +3216,21 @@
    
    midi-controller implements the following slots with initargs
    being the keywords of the slot symbol:
-   
-   =cc-map= -- Array mapping CC nums to internal indexes of the instance.
-   
-   =keynum-map= -- Array mapping keynums to internal indexes of the instance.
-   
-   =cc-fns= -- Array of 128 lists storing functions to call when
-   receiving a value at any of the 128 CC numbers.
-   
-   =cc-state= -- Array of 128 [[bang-object][bang-objects]] storing the last
-   received CC value for each CC number.
-   
-   =chan= -- Integer in the range [1..16] denoting the MIDI channel.
-   
-   =echo= -- Boolean to en/disable echoing of midi input to midi output.
-   
-   =id= -- Keyword or Symbol to identify the controller in the registry.
-   
-   =last-note-on= -- The keynum of the last received note-on event with positive
-   velocity.
-   
-   =midi-input= -- jackmidi:input-stream for MIDI input.
-   
-   =midi-output= -- jackmidi:output-stream for MIDI output.
-   
-   =note-fns= -- Array of 128 lists storing functions to call with the
-   velocity as argument, mapped to a received note-on event on any of the
-   128 keynumbers.
-   
-   =note-state= -- Array of 128 [[ref-object][ref-objects]] storing the last
-   received velocity for each keynum.
-   
-   =unwatch= -- Storage for unwatch functions for the slots of the
-   controller instance, handled internally.
+*** Arguments
+    | =cc-map= | Array mapping CC nums to internal indexes of the instance.  |
+    | =keynum-map= | Array mapping keynums to internal indexes of the instance.  |
+    | =cc-fns= | Array of 128 lists storing functions to call when receiving a value at any of the 128 CC numbers.  |
+    | =cc-state= | Array of 128 [[bang-object][bang-objects]] storing the last received CC value for each CC number.  |
+    | =chan= | Integer in the range [1..16] denoting the MIDI channel.  |
+    | =echo= | Boolean to en/disable echoing of midi input to midi output.  |
+    | =id= | Keyword or Symbol to identify the controller in the registry.  |
+    | =last-note-on= | The keynum of the last received note-on event with positive velocity.  |
+    | =midi-input= | jackmidi:input-stream for MIDI input.  |
+    | =midi-output= | jackmidi:output-stream for MIDI output.  |
+    | =note-fns= | Array of 128 lists storing functions to call with the velocity as argument, mapped to a received note-on event on any of the 128 keynumbers.  |
+    | =note-state= | Array of 128 [[ref-object][ref-objects]] storing the last received velocity for each keynum.  |
+    | =unwatch= | Storage for unwatch functions for the slots of the controller instance, handled internally. |
+
 *** See also
     - [[add-midi-controller][add-midi-controller]]
     - [[find-controller][find-controller]]
@@ -3318,6 +3301,31 @@
    #+END_SRC
    Accessor method for the midi-output slot of an instance of type
    [[midi-controller][midi-controller]].
+** midi-port
+   Structure
+
+   Structure of a bidirectional midi port, containing slots for
+   cc-state, note-state, pitch-bend-state, after-touch-state, cc-fns,
+   note-fns, pitch-bend-fns and after-touch-fns.
+*** See also
+    - [[midi-port-id][midi-port-id]]
+    - [[midi-port-input][midi-port-input]]
+    - [[midi-port-output][midi-port-output]]
+    - [[midi-port-cc-state][midi-port-cc-state]]
+    - [[midi-port-note-state][midi-port-note-state]]
+    - [[midi-port-pitch-bend-state][midi-port-pitch-bend-state]]
+    - [[midi-port-after-touch-state][midi-port-after-touch-state]]
+    - [[midi-port-cc-fns][midi-port-cc-fns]]
+    - [[midi-port-note-fns][midi-port-note-fns]]
+    - [[midi-port-pitch-bend-fns][midi-port-pitch-bend-fns]]
+    - [[midi-port-after-touch-fns][midi-port-after-touch-fns]]
+** midi-port
+   Generic Function
+   #+BEGIN_SRC lisp
+     (midi-port object)
+   #+END_SRC
+   Accessor method for the midi-port slot of an instance of type
+   [[midi-controller][midi-controller]].
 ** midi-port-after-touch-fns
    Function
    #+BEGIN_SRC lisp
@@ -3338,16 +3346,20 @@
    #+BEGIN_SRC lisp
      (midi-port-cc-state instance)
    #+END_SRC
-** midi-port-in
+** midi-port-id
    Function
    #+BEGIN_SRC lisp
-     (midi-port-in instance)
+     (midi-port-id instance)
    #+END_SRC
 ** midi-port-input
    Macro
    #+BEGIN_SRC lisp
      (midi-port-input #:id)
    #+END_SRC
+   Return the jackmidi input stream of midi-port /id/.
+*** Arguments
+    | =id= | Keyword denoting the id of a midi-port or a midi-port struct. |
+
 ** midi-port-note-fns
    Function
    #+BEGIN_SRC lisp
@@ -3358,16 +3370,15 @@
    #+BEGIN_SRC lisp
      (midi-port-note-state instance)
    #+END_SRC
-** midi-port-out
-   Function
-   #+BEGIN_SRC lisp
-     (midi-port-out instance)
-   #+END_SRC
 ** midi-port-output
    Macro
    #+BEGIN_SRC lisp
      (midi-port-output #:id)
    #+END_SRC
+   Return the jackmidi output stream of midi-port /id/.
+*** Arguments
+    | =id= | Keyword denoting the id of a midi-port or a midi-port struct. |
+
 ** midi-port-pitch-bend-fns
    Function
    #+BEGIN_SRC lisp
@@ -4892,7 +4903,8 @@
    It also starts the rt engine of incudine calling
    /incudine:rt-start/ and the midi receivers.
 *** Arguments
-    | =rt-wait= | Time in seconds to wait before starting. |
+    | =:rt-wait= | Time in seconds to wait before starting. |
+    | =:num-midi-ports= | Integer denoting the number of midi ports to open. |
 
 *** Note
     

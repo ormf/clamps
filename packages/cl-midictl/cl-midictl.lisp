@@ -305,37 +305,38 @@ controller registry.
 midi-controller implements the following slots with initargs
 being the keywords of the slot symbol:
 
-=cc-map= -- Array mapping CC nums to internal indexes of the instance.
+@Arguments
+cc-map - Array mapping CC nums to internal indexes of the instance.
 
-=keynum-map= -- Array mapping keynums to internal indexes of the instance.
+keynum-map - Array mapping keynums to internal indexes of the instance.
 
-=cc-fns= -- Array of 128 lists storing functions to call when
+cc-fns - Array of 128 lists storing functions to call when
 receiving a value at any of the 128 CC numbers.
 
-=cc-state= -- Array of 128 <<bang-object><bang-objects>> storing the last
+cc-state - Array of 128 <<bang-object><bang-objects>> storing the last
 received CC value for each CC number.
 
-=chan= -- Integer in the range [1..16] denoting the MIDI channel.
+chan - Integer in the range [1..16] denoting the MIDI channel.
 
-=echo= -- Boolean to en/disable echoing of midi input to midi output.
+echo - Boolean to en/disable echoing of midi input to midi output.
 
-=id= -- Keyword or Symbol to identify the controller in the registry.
+id - Keyword or Symbol to identify the controller in the registry.
 
-=last-note-on= -- The keynum of the last received note-on event with positive
+last-note-on - The keynum of the last received note-on event with positive
 velocity.
 
-=midi-input= -- jackmidi:input-stream for MIDI input.
+midi-input - jackmidi:input-stream for MIDI input.
 
-=midi-output= -- jackmidi:output-stream for MIDI output.
+midi-output - jackmidi:output-stream for MIDI output.
 
-=note-fns= -- Array of 128 lists storing functions to call with the
+note-fns - Array of 128 lists storing functions to call with the
 velocity as argument, mapped to a received note-on event on any of the
 128 keynumbers.
 
-=note-state= -- Array of 128 <<ref-object><ref-objects>> storing the last
+note-state - Array of 128 <<ref-object><ref-objects>> storing the last
 received velocity for each keynum.
 
-=unwatch= -- Storage for unwatch functions for the slots of the
+unwatch - Storage for unwatch functions for the slots of the
 controller instance, handled internally.
 
 @See-also

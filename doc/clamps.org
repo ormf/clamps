@@ -235,10 +235,34 @@
    basic classes for midi-controllers.
 *** Opening MIDI Ports
     Before being able to work with MIDI in/output in Clamps, its MIDI
-    Ports have to get opened. Clamps uses the function [[dict:rts][rts]] to
-    open the ports, which is called by the [[dict:clamps][clamps]] function at
-    the beginning of the session. If realtime processing is
-    activated[fn:1], the ports should appear in JACK.
+    Ports have to get opened. In clamps a port gets opened with the
+    [[dict:open-midi-port][open-midi-port]] function. The function takes an id (a keyword or
+    symbol) and registers the Midi Port with Jack, using the id plus
+    the extensions /-in/ and /-out/ for the in- and output. It also
+    starts MIDI responders, which capture all incoming /cc/, /noteon/,
+    /noteoff/, /pitch-bend/ and /after-touch/ messages in arrays of
+    [[dict:ref-object][ref-objects]], which are part of the midi-port struct. In addition
+    it creates arrays with lists of functions to call on an incoming
+    /cc/, /note-on/, /note-off/, /pitch-bend/ or /after-touch/ MIDI
+    message, also part of the struct. These lists are initially empty,
+    but the user can push functions with four arguments, denoting
+    /opcode/, /channel/, /d1/ and /d2/ onto these lists and they will
+    be called automatically, when MIDI messages of the respective type
+    arrive at the midi-input of the port.
+
+
+    On startup, Clamps automatically opens 2 ports, using the function
+    [[dict:rts][rts]], which is called by the [[dict:clamps][clamps]] function at the beginning of
+    the session. The number of ports can be specified using the
+    /:num-midi-ports/ keyword of the #'clamps function, or by setting
+    the /*​num-midi-ports​*/ parameter in the file /~​/​.clampsinit/.
+
+
+    If realtime processing is activated[fn:1], the ports should appear
+    in JACK as soon as either the /clamps/ function or
+    /(open-midi-port)/ are called. Closing, accessing and accessing
+    the midi ports an be achieved with the [[dict:close-midi-port][close-midi-port]],
+    [[dict:list-midi-ports][list-midi-ports]] and [[dict:find-midi-port][find-midi-port]] functions.
 *** MIDI Output
     Once the ports have been opened and an external program or
     hardware device has been connected to Incudine's JACK ports,
@@ -264,24 +288,24 @@
 **** Receiving and handling MIDI Input
      After the Ports have been opened, MIDI input handling is started
      using the function [[dict:start-midi-receive][start-midi-receive]], which gets called
-     automatically on startup using the [[dict:clamps][clamps]] function. MIDI input
-     handling can be suspended using the [[dict:stop-midi-receive][stop-midi-receive]]
-     function. Note that this will not close the MIDI ports, so
-     connections to external devices or programs will be persistent. A
-     later call to [[dict:start-midi-receive][start-midi-receive]] will continue to process MIDI
-     input.
+     automatically on startup using the [[dict:clamps][clamps]] or [[dict:open-midi-port][open-midi-port]]
+     function. MIDI input handling can be suspended using the
+     [[dict:stop-midi-receive][stop-midi-receive]] function. Note that this will not close the
+     MIDI ports, so connections to external devices or programs will
+     be persistent. A later call to [[dict:start-midi-receive][start-midi-receive]] will continue
+     to process MIDI input.
 
-     Handling MIDI input in Clamps is done in 3 different stages:
+     A [[dict:midi-port][midi-port]] in Clamps handles MIDI input in 3 different stages:
 
-     - All note and cc input is captured in the special variables
-       *​midi-cc-state​* and *​midi-note-state​*. Both contain a
+     - All note and cc input is captured in the /cc-state/ and
+       /note-state/ arrays of the port struct. Both contain a
        2-dimensional array of 16x128 [[The ref-object class][ref-objects]] which capture the
        last received values of the 128 controller numbers or note
        numbers of all 16 MIDI channels. [[overview:Code Inspection][Inspect]] this value to see the
        current state of the MIDI input of Clamps.
 
-     - In addition two other special variables, *​midi-cc-fns​* and
-       *​midi-note-fns* contain 16x128 lists, intially empty. When
+     - In addition two other special variables, the /cc-fns/ and
+       /note-fns/ slots contain 16x128 lists, intially empty. When
        receiving MIDI cc or MIDI note input, Clamps will address these
        arrays and call all functions stored in the list of the
        corresponding channel and CC number or keynum with the received
@@ -290,6 +314,13 @@
      - At last, the #'handle-midi-in method of all midi controller
        instances registered with the function [[dict:add-midi-controller][add-midi-controller]] will
        get called.
+
+     For convenience, /*​midi-cc-state​*/, /*​midi-cc-fns*/,
+     /*​​midi-note-state*/ and /*​midi-note-fns*/ are special variables
+     pointing to the /cc-state/, /cc-fns/, /note-state/ and /note-fns/
+     slot of the midi-port /:midi-1/, opened by the [[dict:clamps][clamps]] function.
+     
+
 
 **** Example using *​midi-cc-fns​*
      Let's show this in action. We want to attach behaviour when
@@ -1664,7 +1695,6 @@ A poolevt also uses lsamples, but ignores their loop
    anymore, it will eventually get garbage collected. If the space of
    the buffer should get explicitely freed, use Incudine's #'free
    method with the buffer as argument.
-
 
 * Gui
 ** General GUI Setup

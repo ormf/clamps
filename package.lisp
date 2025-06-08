@@ -54,10 +54,10 @@
            cl-midictl:normalized->bendvalue
            cl-midictl:open-midi-port cl-midictl:close-midi-port
            cl-midictl:find-midi-port cl-midictl:list-midi-ports
+           cl-midictl:midi-port
+           cl-midictl:midi-port-id
            cl-midictl:midi-port-input
            cl-midictl:midi-port-output
-           cl-midictl:midi-port-in
-           cl-midictl:midi-port-out
            cl-midictl:midi-port-cc-state
            cl-midictl:midi-port-note-state
            cl-midictl:midi-port-pitch-bend-state

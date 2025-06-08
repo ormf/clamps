@@ -118,6 +118,7 @@ browser window after starting the gui.
 :qsynth - Boolean indicating whether to start the Qsynth
 softsynth (Linux only).
 
+:num-midi-ports - Integer denoting the number of Midi Ports to open.
 @See-also
 clamps-base-url
 clamps-restart-gui

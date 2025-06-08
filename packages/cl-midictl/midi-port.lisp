@@ -115,28 +115,21 @@ open-midi-port
 ;;; util macros
 
 (defmacro midi-port-input (id)
-  (midi-port-in (find-midi-port id)))
+  "Return the jackmidi input stream of midi-port /id/.
+
+@Arguments
+id - Keyword denoting the id of a midi-port or a midi-port struct."
+  (typecase id
+    (keyword (midi-port-in (find-midi-port id)))
+    (midi-port (midi-port-in id))
+    (otherwise (error "no midi-port with id ~s found." id))))
 
 (defmacro midi-port-output (id)
-  (midi-port-out (find-midi-port id)))
+  "Return the jackmidi output stream of midi-port /id/.
 
-;;; *midi-ports*
-
-;;; '(#xF0 #x00 #x00 #x66 #x10 #x12 #x00 #x48 #x65 #x6C #x6C #x6F #xF7)
-
- ; => (240 0 0 102 16 18 0 72 101 108 108 111 247)
-#|
-(open-midi-port :midi-1)
-(open-midi-port :midi-2)
-(open-midi-port :midi-3)
-
-(find-midi-port :midi-1)
-
-(incudine:midiout-sysex)
-
-(progn
-  (close-midi-port :midi-1)
-  (close-midi-port :midi-2)
-  (close-midi-port :midi-3))
-
-|#
+@Arguments
+id - Keyword denoting the id of a midi-port or a midi-port struct."
+  (typecase id
+    (keyword (midi-port-out (find-midi-port id)))
+    (midi-port (midi-port-out id))
+    (otherwise (error "no midi-port with id ~s found." id))))
