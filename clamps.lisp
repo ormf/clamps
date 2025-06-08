@@ -395,7 +395,7 @@ clamps-base-url
 gui
 "  (clog:open-browser :url (format nil "http://127.0.0.1:~A/meters" clog::*clog-port*)))
 
-(defun clamps-start (&key (gui-base "/tmp") (qsynth nil) (open-gui nil) (port 54619))
+(defun clamps-start (&key (gui-base "/tmp") (qsynth nil) (open-gui nil) (port 54619) (num-midi-ports *num-midi-ports*))
   "Entry function called by <<clamps>> to start the webserver for the
 GUI, call <<rts>> to set up IO and MIDI, start the OSC responder for
 Incudine, optionally start qsynth (Linux only) and open the gui in a
@@ -414,7 +414,7 @@ rts
   (setf *package* (find-package :clamps))
   (restart-inkscape-osc)
 ;;; rts also initializes midi
-  (rts)
+  (rts :num-midi-ports num-midi-ports)
 ;;;  (unless (cm::rts?) (rts))
   (if qsynth (restart-qsynth))
   ;;(setf *rts-out* *mt-out01*)

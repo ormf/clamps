@@ -20,7 +20,6 @@
 
 (defpackage :clamps
   (:export cl-user:clamps
-           
            standard-pitch
            svg-gui-root
 

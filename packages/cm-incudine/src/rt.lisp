@@ -81,7 +81,8 @@ It also starts the rt engine of incudine calling
 /incudine:rt-start/ and the midi receivers.
 
 @Arguments
-rt-wait - Time in seconds to wait before starting.
+:rt-wait - Time in seconds to wait before starting.
+:num-midi-ports - Integer denoting the number of midi ports to open.
 @Note
 
 This command is an replacement of the /rts/ command of CM, described

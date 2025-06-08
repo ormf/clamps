@@ -20,6 +20,8 @@
 
 (in-package :cl-user)
 
+(defparameter *num-midi-ports* 2)
+
 (defparameter *sfz-file-path* (list (asdf:system-relative-pathname :clamps "extra/snd/sfz/"))
   "List of directories to search recursively for /.sfz/ files.
 
@@ -80,7 +82,7 @@ calling (clamps) in such cases."
 (defun clamps-image-start ()
   (setf *package* (find-package :cl-user)))
 
-(defun clamps (&key (gui-base "/tmp") (qsynth nil) (open-gui nil))
+(defun clamps (&key (gui-base "/tmp") (qsynth nil) (open-gui nil) (num-midi-ports *num-midi-ports*))
   "Start Clamps including the Gui. This function can be called from the
 /:cl-user/ package.
 
@@ -147,6 +149,6 @@ rts
                               (cmvar :*cm-readtable*))
                         (symbol-value sym)))))))
     (funcall #'clampscall :clamps-start
-             :gui-base gui-base :qsynth qsynth :open-gui open-gui)))
+             :num-midi-ports num-midi-ports :gui-base gui-base :qsynth qsynth :open-gui open-gui)))
 
 (export '(*sfz-preset-lookup* *sfz-file-path* *sfile-path* *ats-file-path* set-clamps-doc-root *clamps-doc-root* clamps clamps-no-gui clamps-image-start) 'cl-user)

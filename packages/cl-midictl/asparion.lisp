@@ -117,33 +117,36 @@
               :initform (apply #'vector (loop repeat 8 collect (make-bang nil 0.0)))
               :documentation "action associated with pressing the Rec buttons"))
   (:documentation "Class for an Asparion D700 Controller with Display, based on the
-midi-controller class.
+<<midi-controller>> class.
 
 In addition to the slots of a <<midi-controller>> instance, d700
 implements the following slots with accessor methods of the same name
 and initargs being the keywords of the slot symbol:
 
-=strip-labels= -- Array of 8 elements containing an Array of 3 elements containing <<ref-object><ref-objects>> of the text display lines the D700.
+@Arguments
+strip-labels - Array of 8 elements containing an Array of 3 elements containing <<ref-object><ref-objects>> with strings of the text display lines of the D700.
 
-=faders= -- Array of 8 elements containing the <<ref-object><ref-objects>> of the 8 faders of the D700.
+vu-meters - Array of 8 elements containing <<ref-object><ref-objects>> of the VU meter value in the range [0..1].
 
-=fadertouch= -- Array of 8 elements containing the <<ref-object><ref-objects>> of the 8 faders of the D700.
+faders - Array of 8 elements containing the <<ref-object><ref-objects>> of the 8 faders of the D700.
 
-=rotary-a= -- Array of 8 elements containing the <<ref-object><ref-objects>> of the 8 rotaries of the D700.
+fadertouch - Array of 8 elements containing the <<ref-object><ref-objects>> of the 8 faders of the D700.
 
-=rotary-scale= -- Array of 8 elements containing the <<ref-object><ref-objects>> scaling factors of the 8 rotaries of the D700.
+rotary-a - Array of 8 elements containing the <<ref-object><ref-objects>> of the 8 rotaries of the D700.
 
-=rotary-buttons= -- Array of 8 elements containing the <<bang-object><bang-objects>> of the 8 rotary push buttons of the D700.
+rotary-scale - Array of 8 elements containing the scaling factors of the 8 rotaries of the D700.
 
-=rotary-buttons= -- Array of 8 elements containing the <<ref-object><ref-objects>> of the colors of the 8 rotary push buttons of the D700. Colors are in the format \"00ff00\", indicating the hex values for R, G and B.
+rotary-buttons - Array of 8 elements containing the <<bang-object><bang-objects>> of the 8 rotary push buttons of the D700.
 
-=sel-buttons= Array of 8 <<bang-object><bang-objects>> containing the state of the 8 Select buttons with a value of 0 or 1.
+rotary-colors - Array of 8 elements containing the <<ref-object><ref-objects>> of the colors of the 8 rotary push buttons of the D700. Colors are in the format \"00ff00\", indicating the hex values for R, G and B.
 
-=s-buttons= Array of 8 <<bang-object><bang-objects>> containing the state of the 8 Solo buttons with a value of 0 or 1.
+sel-buttons - Array of 8 <<bang-object><bang-objects>> containing the highlight state of the 8 Select buttons with a value of 0 or 1 and an associated trigger action when pushed.
 
-=m-buttons= Array of 8 <<bang-object><bang-objects>> containing the state of the 8 Mute buttons with a value of 0 or 1.
+s-buttons - Array of 8 <<bang-object><bang-objects>> containing the highlight state of the 8 Solo buttons with a value of 0 or 1 and an associated trigger action when pushed.
 
-=r-buttons= Array of 8 <<bang-object><bang-objects>> containing the state of the 8 Rec buttons with a value of 0 or 1.
+m-buttons - Array of 8 <<bang-object><bang-objects>> containing the highlight state of the 8 Mute buttons with a value of 0 or 1 and an associated trigger action when pushed.
+
+r-buttons - Array of 8 <<bang-object><bang-objects>> containing the highlight state of the 8 Rec buttons with a value of 0 or 1 and an associated trigger action when pushed.
 
 @See-also
 midi-controller
@@ -153,7 +156,7 @@ d700ft
 
 (defun d700-write-line-1 (text idx stream)
   "Set text of the first line at strip /idx/ of the Display of an
-Asparion D700 or D700FT Controller connected to /stream/ to /text/.
+Asparion <<D700>> or <<D700FT>> Controller connected to /stream/ to /text/.
 
 @Arguments
 /text/ - String of maximum 12 Characters.
@@ -171,7 +174,7 @@ d700-write-line3
 
 (defun d700-write-line-2 (text idx stream)
   "Set text of the second line at strip /idx/ of the Display of an
-Asparion D700 or D700FT Controller connected to /stream/ to /text/.
+Asparion <<D700>> or <<D700FT>> Controller connected to /stream/ to /text/.
 
 @Arguments
 /text/ - String of maximum 12 Characters.
@@ -189,7 +192,7 @@ d700-write-line3
 
 (defun d700-write-line-3 (text idx stream)
     "Set text of the third line at strip /idx/ of the Display of an
-Asparion D700 or D700FT Controller connected to /stream/ to /text/.
+Asparion <<D700>> or <<D700FT>> Controller connected to /stream/ to /text/.
 
 @Arguments
 /text/ - String of maximum 12 Characters.
@@ -222,6 +225,11 @@ strip-idx - Integer denoting the index of the rotary strip (On the D700FT, 8 den
 
 (let ((controller (find-controller :d700)))
   (asparion-send-color \"FF0000\" (midi-output controller) 0))
+
+@See-also
+asparion
+d700
+d700ft
 "
   #| colors of rotaries are set by sending noteon of midinote (+ 32
   strip-idx) with velocity 0/127 on channel 0 for on/off and the color
@@ -487,35 +495,36 @@ In addition to the slots of a <<d700>> instance, d700ft implements the
 following slots with accessor methods of the same name and initargs
 being the keywords of the slot symbol:
 
-=pan-button= -- <<bang-object><bang-object>> of the pan button of the D700FT.
+@Arguments
+pan-button - <<bang-object><bang-object>> of the pan button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed.
 
-=eq-button= -- <<bang-object><bang-object>> of the eq button of the D700FT.
+eq-button - <<bang-object><bang-object>> of the eq button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=send-button= -- <<bang-object><bang-object>> of the send button of the D700FT.
+send-button - <<bang-object><bang-object>> of the send button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=fx-button= -- <<bang-object><bang-object>> of the fx button of the D700FT.
+fx-button - <<bang-object><bang-object>> of the fx button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=star-button= -- <<bang-object><bang-object>> of the star button of the D700FT.
+star-button - <<bang-object><bang-object>> of the star button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=metronome-button= -- <<bang-object><bang-object>> of the metronome button of the D700FT.
+metronome-button - <<bang-object><bang-object>> of the metronome button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=loop-button= -- <<bang-object><bang-object>> of the loop button of the D700FT.
+loop-button - <<bang-object><bang-object>> of the loop button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=rec-button= -- <<bang-object><bang-object>> of the rec button of the D700FT.
+rec-button - <<bang-object><bang-object>> of the rec button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=play-button= -- <<bang-object><bang-object>> of the play button of the D700FT.
+play-button - <<bang-object><bang-object>> of the play button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=stop-button= -- <<bang-object><bang-object>> of the stop button of the D700FT.
+stop-button - <<bang-object><bang-object>> of the stop button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=prev-page-button= -- <<bang-object><bang-object>> of the previous page button of the D700FT.
+prev-page-button - <<bang-object><bang-object>> of the previous page button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=next-page-button= -- <<bang-object><bang-object>> of the next page button of the D700FT.
+next-page-button - <<bang-object><bang-object>> of the next page button of the D700FT indicating the highlight state (0 or 1) and an associated trigger action when pushed..
 
-=master-rotary= -- <<bang-object>> of the master rotary of the D700FT.
+master-rotary - <<bang-object>> of the master rotary of the D700FT conatining its vlaue in the range [0..1] and an associated trigger action when pushed.
 
-=master-rotary-scale= -- <<ref-object>> of the master rotary scaling factor of the D700FT.
+master-rotary-scale - <<ref-object>> of the master rotary scaling factor of the D700FT.
 
-=master-rotary-color= -- <<ref-object>> of the master rotary RGB color of the D700FT.
+master-rotary-color - <<ref-object>> of the master rotary RGB color of the D700FT.
 
 @See-also
 midi-controller
@@ -655,17 +664,68 @@ state to all elements of the controller via midi."
             :documentation
             "Slot containing the instances of the D700(FT) units of an asparion
 instance."))
-  (:documentation "Class for an Asparion midi controller with a D700FT and 0 to 7
-D700 extensions and their displays.
+  (:documentation "Class for an Asparion midi controller with a /D700FT/ and 0-7
+/D700/ extensions and their displays. The extensions are autocreated
+as <<midi-controller><midi-controllers>> of classes <<d700>> and
+<<d700ft>>, with the given /midi-ports/ assigned to these
+instances (<<d700ft>> first) and the ids /<asparion-id>-d700ft/ and
+/<asparion-id>-d700/. If more than 2 units are used, the ids of the
+<<d700>> units are named /<asparion-id>-d700-1/,
+/<asparion-id>-d700-2/, etc.
 
-Asparion implements all slots of the D700FT class plus the following
-slots with accessor methods of the same name and initargs being the
-keywords of the slot symbol:
+Asparion implements all slots of the <<d700ft>> class with the array
+sizes of the buttons, faders, rotaries, vu-meters and strip-labels
+adjusted to the total size of channel strips. Changing the value of
+the ref-objects or calling the trigger-functions of the bang-objects
+in the asparion instance is identical to changing/calling the objects
+in the instances of the autocreated <<d700ft>> and <<d700>> units.
 
-=midi-ports= -- List of Keywords denoting the ids of the Midi Ports of the D700(FT) units.
-=units= -- List containing the instances of the D700(FT) units. Autocreated, therefore no accessor function.
+In addition to the <<d700ft>> slots, the asparion class defines the
+following slots with accessor methods of the same name and initargs
+being the keywords of the slot symbol:
+
+@Arguments
+midi-ports - List of Keywords denoting the ids of the Midi Ports of the D700(FT) units.
+
+units - List containing the instances of the <<d700>>/<<d700ft>> units. Autocreated, therefore no accessor function.
+
+@Example
+
+;;; Create an Asparion with a D700FT and D700 unit connected to the
+;;; Midi Ports :midi-1 and :midi-2
+
+(add-midi-controller 'asparion :asparion :midi-ports '(:midi-1 :midi-2))
+;;; output in REPL:
+;;; adding midi controller :asparion
+;;; adding midi controller :asparion-d700ft
+;;; adding midi controller :asparion-d700
+
+(list-midi-controllers)
+;;; -> (:asparion :asparion-d700 :asparion-d700ft)
+
+(remove-midi-controller :asparion)
+;;; => nil
+
+(list-midi-controllers)
+;;; => nil
+
+;;; Create an Asparion with a D700FT and two D700 units connected to the
+;;; Midi Ports :midi-1, :midi-2 and :midi-3
+
+(add-midi-controller 'asparion :asparion :midi-ports '(:midi-1 :midi-2 :midi-3)) ;;;  => #<asparion {1200DB0343}>
+;;; output in REPL:
+;;; adding midi controller :asparion
+;;; adding midi controller :asparion-d700ft
+;;; adding midi controller :asparion-d700-1
+;;; adding midi controller :asparion-d700-2
+
+(list-midi-controllers)
+ ; => (:asparion :asparion-d700-1 :asparion-d700-2 :asparion-d700ft)
+
 
 @See-also
+d700
+d700ft
 midi-controller"))
 
 (defmethod initialize-instance :after ((obj asparion) &rest args)
@@ -714,7 +774,7 @@ midi-controller"))
                        (add-midi-controller 'd700 (make-keyword (format nil "~@:(~a-d700~)" (mctl-id obj)))
                                             :midi-port midi-port))
                       (t
-                       (add-midi-controller 'd700 (make-keyword (format nil "~@:(~a-d700-~d~)" (mctl-id obj) (1+ module-idx)))
+                       (add-midi-controller 'd700 (make-keyword (format nil "~@:(~a-d700-~d~)" (mctl-id obj) module-idx))
                                             :midi-port midi-port)))))
     (let ((num-faders (* 8 (length midi-ports)))) ;;; reinit arrays with the size of all faders.
       (dolist (sym '(rotary-colors rotary-a rotary-led-modes rotary-scale rotary-buttons
