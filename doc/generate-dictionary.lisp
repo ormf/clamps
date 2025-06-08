@@ -141,7 +141,7 @@
       (load (format \"%s%s\" (file-name-directory (buffer-file-name))
                     \"../extra/elisp/clamps-dict.el\"))
       s))
-  (setq gc-cons-threshold 102400000)
+  (setq gc-cons-threshold 10240000000)
   (setq max-lisp-eval-depth 10000)
 #+END_SRC
 #+BIND: org-export-filter-multipage-functions (export-dict-to-clamps)

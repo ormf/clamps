@@ -140,4 +140,5 @@
    #:CLIP
    #:BOOL
    #:DOLIST-DB
+   #:EMPTY-VECTOR
    ))

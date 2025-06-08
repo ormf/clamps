@@ -2943,3 +2943,7 @@ pred - Any lisp expression.
     `(dolist (,item ,list)
        (destructuring-bind ,args ,item
          ,@body))))
+
+(defun empty-vector (num)
+  "Return a simple-vector of size /num/ filled with nil."
+  (make-array num :initial-element nil))

@@ -40,7 +40,7 @@ open-midi-port
 
 (defun list-midi-ports (&key (sort t))
   "Return a list of the ids of all registered Midi Ports. If /sort/ is
-non-nilc, return a sorted list of the ids, otherwise return the ids in
+non-nil, return a sorted list of the ids, otherwise return the ids in
 the reverse order of their instantiation.
 
 @Arguments
@@ -59,11 +59,14 @@ open-midi-port
         port-ids)))
 
 (defun open-midi-port (id &key (start-receiver t))
-  "Register a new midi port struct, open its midi input and output,
-define and start its default responders and return the struct.
+  "Register a new midi-port struct, open its midi input and output,
+define and start its default responders if /start-receiver/ is t.
+/id/ is used for the internal registry and the ports in jack will be
+named <id>-in and <id>-out. Returns the midi-port struct.
 
 @Arguments
 id - Keyword or Symbol denoting the id of the midi port.
+:start-receiver - Boolean indicating whether to start the receiver.
 
 @See-also
 close-midi-port

@@ -316,7 +316,8 @@ strip-idx - Integer denoting the index of the rotary strip (On the D700FT, 8 den
                        (osc-midi-write-short
                         midi-output
                         (+ (1- chan) 144)
-                        (+ 16 i) (if (zerop (get-val (aref m-buttons i))) 0 127))))
+                        (+ 16 i)
+                        (if (zerop (get-val (aref m-buttons i))) 0 127))))
               unwatch)
         (push (watch (lambda ()
                        (osc-midi-write-short
@@ -327,7 +328,7 @@ strip-idx - Integer denoting the index of the rotary strip (On the D700FT, 8 den
         (push (watch (lambda ()
                        (jackmidi:write-short
                         midi-output
-                        (jackmidi:message i (round (* 127 (get-val (aref vu-meters i))))) 2)))
+                        (jackmidi:message #xd0 (+ (* i 16) (round (* 12 (get-val (aref vu-meters i)))))) 2)))
               unwatch)))))
 
 (defmethod handle-midi-in ((instance d700) opcode channel d1 d2)
@@ -471,7 +472,7 @@ state to all elements of the controller via midi."
                      :initform (make-bang #'asparion-next-page-press-action 0.0)
                      :documentation "action associated with pressing the Next-Page button")
    (master-rotary :accessor master-rotary
-                  :initform (make-bang #'asparion-master-rotary-press-action 0.0)
+                  :initform (make-bang #'asparion-master-rotary-press-action 1.0)
                   :documentation "action associated with pressing the Master button")
    (master-rotary-scale :accessor master-rotary-scale
                   :initform (make-ref (/ 127.0))
@@ -632,7 +633,9 @@ state to all elements of the controller via midi."
                faders s-buttons m-buttons r-buttons sel-buttons)
       obj
     (call-next-method)
-  (with-slots (pan-button eq-button send-button fx-button star-button metronome-button loop-button rec-button play-button stop-button prev-page-button next-page-button chan midi-port midi-output)
+    (with-slots (pan-button eq-button send-button fx-button star-button metronome-button
+                 loop-button rec-button play-button stop-button prev-page-button next-page-button chan
+                 midi-port midi-output)
       obj
     (dolist (mapping '((pan-button 42) (eq-button 44) (send-button 41) (fx-button 43) (star-button 54)
                        (metronome-button 89) (loop-button 86)
@@ -655,7 +658,7 @@ instance."))
   (:documentation "Class for an Asparion midi controller with a D700FT and 0 to 7
 D700 extensions and their displays.
 
-Asparion implements all Slots of the D700FT class plus the following
+Asparion implements all slots of the D700FT class plus the following
 slots with accessor methods of the same name and initargs being the
 keywords of the slot symbol:
 
@@ -681,7 +684,7 @@ midi-controller"))
                midi-input midi-output midi-in-active chan master-rotary
 
                cc-map cc-fns cc-state note-state keynum-map
-               strip-labels
+               strip-labels vu-meters
                
                sel-buttons s-buttons m-buttons r-buttons unwatch)
       obj
@@ -713,30 +716,27 @@ midi-controller"))
                       (t
                        (add-midi-controller 'd700 (make-keyword (format nil "~@:(~a-d700-~d~)" (mctl-id obj) (1+ module-idx)))
                                             :midi-port midi-port)))))
-    (let ((num-faders (* 8 (length midi-ports))))
-      (setf rotary-colors (apply #'vector (loop repeat num-faders collect (make-ref "ffff00"))))
-      (setf rotary-a (apply #'vector (loop repeat num-faders collect (make-ref 0.0))))
-      (setf rotary-led-modes (apply #'vector (loop repeat num-faders collect (make-ref 0))))
-      (setf rotary-scale (apply #'vector (loop repeat num-faders collect 0.01)))
-      (setf rotary-buttons (apply #'vector (loop repeat num-faders collect (make-bang nil 0.0))))
-      (setf faders (apply #'vector (loop repeat num-faders collect (make-ref 0.0))))
-      (setf fadertouch (apply #'vector (loop repeat num-faders collect (make-ref 0))))
-      (setf sel-buttons (apply #'vector (loop repeat num-faders collect (make-bang nil 0.0))))
-      (setf s-buttons  (apply #'vector (loop repeat num-faders collect (make-bang nil 0.0))))
-      (setf m-buttons  (apply #'vector (loop repeat num-faders collect (make-bang nil 0.0))))
-      (setf r-buttons (apply #'vector (loop repeat num-faders collect (make-bang nil 0.0)))))
-
-    (loop
+    (let ((num-faders (* 8 (length midi-ports)))) ;;; reinit arrays with the size of all faders.
+      (dolist (sym '(rotary-colors rotary-a rotary-led-modes rotary-scale rotary-buttons
+                     faders fadertouch sel-buttons s-buttons
+                     m-buttons r-buttons vu-meters strip-labels))
+        (setf (slot-value obj sym) (make-array num-faders))))
+    (loop ;;; map the arrays of the controller items of the asparion's
+          ;;; units to the reinitialized arrays from above.
       for idx from 0
       for unit in units
       for startidx = (* idx 8)
       do (loop
            for sourceidx below 8
            for i from startidx
-           do  (offs-copy-slots
-                (rotary-colors rotary-a rotary-led-modes
+           do  (dolist (slot '(rotary-colors rotary-a rotary-led-modes
                                rotary-scale rotary-buttons faders fadertouch
-                               sel-buttons s-buttons m-buttons r-buttons))))
+                               sel-buttons s-buttons m-buttons r-buttons
+                               vu-meters strip-labels))
+                 (setf (aref (slot-value obj slot) i)
+                       (aref (slot-value unit slot) sourceidx)))))
+    (dotimes (i (* 8 (length midi-ports)))
+      (set-val (aref (aref strip-labels i) 0) (format nil "~2,'0d" (1+ i))))
     (dolist (unit units) (update-hw-state unit))))
 
 (defmethod cleanup ((instance asparion))
@@ -775,7 +775,7 @@ of the asparion instance."
    strip-labels
    rotary-a rotary-led-modes rotary-scale rotary-colors rotary-buttons
    sel-buttons s-buttons m-buttons r-buttons
-   faders fadertouch
+   vu-meters faders fadertouch
    pan-button eq-button
    send-button fx-button star-button
    metronome-button loop-button rec-button
