@@ -18,7 +18,7 @@
    ("GUI" "clamps/01_02_04_00_gui.html")
    ("Meter Display" "clamps/01_02_05_00_meter-display.html")
    ("cl-midictl" "clamps/02_00_00_00_midi.html")
-   ("Opening MIDI Ports" "clamps/02_01_01_00_opening-midi-ports.html")
+   ("MIDI Ports" "clamps/02_01_01_00_midi-ports.html")
    ("MIDI Output" "clamps/02_01_02_00_midi-output.html")
    ("MIDI Input" "clamps/02_01_03_00_midi-input.html")
    ("Receiving and handling MIDI Input" "clamps/02_01_03_00_midi-input.html")

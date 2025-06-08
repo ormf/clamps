@@ -231,24 +231,29 @@
 * Midi
 ** cl-midictl
    cl-midictl implements the basic infrastructure for dealing with
-   MIDI in/output, a registry for midi-controllers and implements
-   basic classes for midi-controllers.
-*** Opening MIDI Ports
+   MIDI in/output, registries for [[dict:midi-port][midi-ports]] and [[dict:mdi-controller][midi-controllers]] and
+   implements classes for different existing hardware
+   midi-controllers, like the Korg NanoKontrol2, the Fadefox or the
+   Asparion.
+*** MIDI Ports
     Before being able to work with MIDI in/output in Clamps, its MIDI
-    Ports have to get opened. In clamps a port gets opened with the
-    [[dict:open-midi-port][open-midi-port]] function. The function takes an id (a keyword or
-    symbol) and registers the Midi Port with Jack, using the id plus
-    the extensions /-in/ and /-out/ for the in- and output. It also
-    starts MIDI responders, which capture all incoming /cc/, /noteon/,
-    /noteoff/, /pitch-bend/ and /after-touch/ messages in arrays of
-    [[dict:ref-object][ref-objects]], which are part of the midi-port struct. In addition
-    it creates arrays with lists of functions to call on an incoming
-    /cc/, /note-on/, /note-off/, /pitch-bend/ or /after-touch/ MIDI
-    message, also part of the struct. These lists are initially empty,
-    but the user can push functions with four arguments, denoting
-    /opcode/, /channel/, /d1/ and /d2/ onto these lists and they will
-    be called automatically, when MIDI messages of the respective type
-    arrive at the midi-input of the port.
+    Ports have to get opened. In Clamps, a MIDI port is a struct which
+    contains slots for its /id/, its /midi-input/, /midi-output/ and
+    arrays capturing the state of the last MIDI input.
+
+    A port gets opened with the [[dict:open-midi-port][open-midi-port]] function. The function
+    takes an id (a keyword or symbol) and registers the Midi Port with
+    Jack, using the id plus the extensions /-in/ and /-out/ for the
+    in- and output. It also starts MIDI responders, which capture all
+    incoming /cc/, /noteon/, /noteoff/, /pitch-bend/ and /after-touch/
+    messages in arrays of [[dict:ref-object][ref-objects]], which are part of the midi-port
+    struct. In addition it creates arrays with lists of functions to
+    call on an incoming /cc/, /note-on/, /note-off/, /pitch-bend/ or
+    /after-touch/ MIDI message, also part of the struct. These lists
+    are initially empty, but the user can push functions with four
+    arguments, denoting /opcode/, /channel/, /d1/ and /d2/ onto these
+    lists and they will be called automatically, when MIDI messages of
+    the respective type arrive at the midi-input of the port.
 
 
     On startup, Clamps automatically opens 2 ports, using the function
@@ -635,8 +640,8 @@
 *** MIDI Controllers
     cl-midictl implements an object oriented infrastructure to support
     dealing with hardware MIDI controllers. Its base class is
-    [[dict:midi-controller][midi-controller]]. Currently classes for the [[https://www.korg.com/de/products/computergear/nanokontrol2/][Korg NanoKONTROL2]] and
-    the [[https://faderfox.de/ec4.html][Faderfox EC4]] are implemented.
+    [[dict:midi-controller][midi-controller]]. Currently classes for the [[https://www.korg.com/de/products/computergear/nanokontrol2/][Korg NanoKONTROL2]] the
+    [[https://faderfox.de/ec4.html][Faderfox EC4]] and the [[https://asparion.de/en/products.html][Asparion D700/D700FT]] are implemented.
 
 **** Using a Korg NanoKONTROL2 Controller
 ***** Preparation
@@ -1227,7 +1232,7 @@
    The user normally doesn't need to deal with cm-incudine directly.
    Starting and stopping MIDI and initializing incudine streams is
    done with highlevel functions from clamps, explained in their
-   respective chapters (see [[Opening MIDI Ports]] or [[#clamps-startup][Startup]].
+   respective chapters (see [[MIDI Ports]] or [[#clamps-startup][Startup]].
 # ** cm-all
 ** cm-fomus
    cm-fomus is a [[https://fomus.common-lisp.dev/][FOMUS]] backend for Common Music written by Rick Taube

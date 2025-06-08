@@ -25,18 +25,21 @@
 cc-state, note-state, pitch-bend-state, after-touch-state, cc-fns,
 note-fns, pitch-bend-fns and after-touch-fns.
 
+@Slots
+midi-port-id - Keyword or Symbol denoting the id of the midi-port.
+midi-port-input - Jackmidi:input-stream
+midi-port-output - Jackmidi:output-stream
+midi-port-cc-state - Array of 128x16 <<ref-object><ref-objects>> storing the last received cc value.
+midi-port-note-state - Array of 128x16 <<ref-object><ref-objects>> storing the last received note-on velocity.
+midi-port-pitch-bend-state - Array of 16 <<ref-object><ref-objects>> storing the last received pitch-bend value.
+midi-port-after-touch-state - Array of 16 <<ref-object><ref-objects>> storing the last received after-touch value.
+midi-port-cc-fns - Array of 128x16 lists containing functions to call on receiving a cc value.
+midi-port-note-fns - Array of 128x16 lists containing functions to call on receiving a note-on with positive velocity.
+midi-port-pitch-bend-fns - Array of 16 lists containing functions to call on receiving a pitch-bend value.
+midi-port-after-touch-fns - Array of 16 lists containing functions to call on receiving a after-touch value.
+
 @See-also
-midi-port-id
-midi-port-input
-midi-port-output
-midi-port-cc-state
-midi-port-note-state
-midi-port-pitch-bend-state
-midi-port-after-touch-state
-midi-port-cc-fns
-midi-port-note-fns
-midi-port-pitch-bend-fns
-midi-port-after-touch-fns
+midi-port
 "
   (id)
   (in)

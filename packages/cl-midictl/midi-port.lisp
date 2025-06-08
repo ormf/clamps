@@ -114,7 +114,7 @@ open-midi-port
 
 ;;; util macros
 
-(defmacro midi-port-input (id)
+(defun midi-port-input (id)
   "Return the jackmidi input stream of midi-port /id/.
 
 @Arguments
@@ -124,7 +124,7 @@ id - Keyword denoting the id of a midi-port or a midi-port struct."
     (midi-port (midi-port-in id))
     (otherwise (error "no midi-port with id ~s found." id))))
 
-(defmacro midi-port-output (id)
+(defun midi-port-output (id)
   "Return the jackmidi output stream of midi-port /id/.
 
 @Arguments

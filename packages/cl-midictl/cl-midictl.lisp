@@ -584,13 +584,21 @@ instance."
 of /midi-port/.
 
 @Arguments
-midi-port - Instance of a midi-port struct.
+midi-port - Instance, id or jackmidi input stream of a midi-port struct.
+
+@Example
+;;; equivalent forms to start a midi handler:
+
+(start-midi-receive :midi-1)
+(start-midi-receive (find-midi-port :midi-1))
+(start-midi-receive *midi-in1*)
 
 @See-also
+midi-port
 stop-midi-receive
 "
   (incudine.util:msg :info "removing-responders")
-  (let ((input (midi-port-in midi-port)))
+  (let ((input (if (typep midi-port 'jackmidi:input-stream) midi-port (midi-port-input midi-port))))
     (remove-all-responders input)
     (make-responder input
                     (lambda (st d1 d2)
@@ -612,16 +620,27 @@ stop-midi-receive
 responders of input stream /input/.
 
 @Arguments
-midi-port - Instance of a midi-port struct.
+midi-port - Instance id, or jackmidi input stream of a midi-port struct.
+
+@Example
+;;; equivalent forms to stop a midi handler:
+
+(stop-midi-receive :midi-1)
+(stop-midi-receive (find-midi-port :midi-1))
+(stop-midi-receive *midi-in1*)
+
 
 @See-also
+midi-port
 start-midi-receive
 "
-  (let ((input (midi-port-in midi-port)))
+  (let ((input (if (typep midi-port 'jackmidi:input-stream) midi-port (midi-port-input midi-port))))
     (remove-all-responders input)
     (recv-stop input)))
 
-;;; (stop-midi-receive *midi-in1*)
+;;; (start-midi-receive :midi-1) (list-midi-ports)
+
+(type-of *midi-in1*)
 
 (defun update-all-controllers (midi-port)
   "call <<update-hw-state>> on all registered midi-controllers of
