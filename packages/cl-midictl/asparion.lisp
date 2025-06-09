@@ -77,18 +77,27 @@
                  :initform (apply #'vector
                                   (loop for i below 8
                                         collect
-                                        (vector (make-ref (format nil "~a" (1+ i))) (make-ref "") (make-ref ""))))
+                                        (vector (make-ref (format nil "~d" (1+ i))) (make-ref "") (make-ref ""))))
                  :documentation "labels of strips in gui")
+   (fader-labels :initarg :fader-labels :accessor fader-labels
+                 :initform t
+                 :documentation "flag indicating whether to echo the fader values in line 2 of the display.")
+   (rotary-labels :initarg :rotary-labels :accessor rotary-labels
+                 :initform t
+                  :documentation "flag indicating whether to echo the rotary values in line 3 of the display.")
+   (rotary-ring :initarg :rotary-ring :accessor rotary-ring
+                 :initform t
+                 :documentation "flag indicating whether to echo the rotary values in rotary ring leds.")
    (vu-meters :initarg :vu-meters :accessor vu-meters
                  :initform (apply #'vector (loop repeat 8 collect (make-ref 0.0)))
-                 :documentation "labels of strips in gui")
+                 :documentation "labels of strips in gui.")
    (rotary-a :accessor rotary-a
              :initform (apply #'vector (loop repeat 8 collect (make-ref 0.0))))
    (rotary-led-modes :accessor rotary-led-modes
                     :initform (apply #'vector (loop repeat 8 collect (make-ref 0))))
    (rotary-colors :accessor rotary-colors
                   :initform (apply #'vector (loop repeat 8 collect (make-ref "ffff00")))
-                  :documentation "RGB colors of the 8 rotary buttons")
+                  :documentation "RGB colors of the 8 rotary buttons.")
    (rotary-scale :accessor rotary-scale
                  :initform (apply #'vector (loop repeat 8 collect 0.01))
                  :documentation "scaling factor of the 8 rotary buttons")
@@ -260,8 +269,8 @@ d700ft
       24 25 26 27 28 29 30 31   ;;; sel-buttons (noteon/off)
     )
     |#
-  (with-slots (cc-map vu-meters strip-labels rotary-a rotary-led-modes rotary-colors rotary-buttons rotary-scale chan faders m-buttons r-buttons s-buttons sel-buttons
-               midi-port midi-output midi-in-active unwatch)
+  (with-slots (echo cc-map vu-meters strip-labels rotary-a rotary-led-modes rotary-colors rotary-buttons rotary-scale chan faders m-buttons r-buttons s-buttons sel-buttons
+               midi-port midi-output midi-in-active unwatch fader-labels rotary-labels rotary-ring)
       obj
     (loop for cc-num in '(16 17 18 19 20 21 22 23) ;;; rotaries
           for idx from 0
@@ -275,85 +284,97 @@ d700ft
         (dolist (sym '(r-buttons s-buttons m-buttons sel-buttons))
           (add-trigger-fn (aref (slot-value obj sym) i) (lambda () (toggle-slot (aref (slot-value obj sym) i)))))
         (push (watch (lambda ()
-                       (d700-write-line-1 (get-val (aref (aref strip-labels i) 0)) i midi-output)))
+                       (when echo
+                         (d700-write-line-1 (format nil "~12a" (get-val (aref (aref strip-labels i) 0))) i midi-output))))
               unwatch)
         (push (watch (lambda ()
-                       (d700-write-line-2 (format nil "~,3f" (get-val (aref (aref strip-labels i) 1))) i midi-output)))
+                       (when echo
+                         (d700-write-line-2 (format nil "~12a" (get-val (aref (aref strip-labels i) 1))) i midi-output))))
               unwatch)
         (push (watch (lambda ()
-                       (d700-write-line-3 (format nil "~,3f" (get-val (aref (aref strip-labels i) 2))) i midi-output)))
+                       (when echo
+                         (d700-write-line-3 (format nil "~12a" (get-val (aref (aref strip-labels i) 2))) i midi-output))))
               unwatch)
         (push (watch (lambda ()
                        (let ((val (get-val (aref rotary-a i))))
-                         (osc-midi-write-short
-                          midi-output
-                          (+ 1 (get-val (aref rotary-led-modes i)) 176)
-                          (+ 48 i) (round (* 127 val)))
-                         (set-val (aref (aref strip-labels i) 2) val))))
+                         (when (and echo rotary-ring)
+                           (osc-midi-write-short
+                            midi-output
+                            (+ 1 (get-val (aref rotary-led-modes i)) 176)
+                            (+ 48 i) (round (* 127 val))))
+                         (when rotary-labels (set-val (aref (aref strip-labels i) 2) (format nil "~,3f" val))))))
               unwatch)
         (push (watch (lambda ()
-                       (asparion-send-color
-                        (get-val (aref rotary-colors i))
-                        i
-                        midi-output)))
+                       (when echo
+                         (asparion-send-color
+                          (get-val (aref rotary-colors i))
+                          i
+                          midi-output))))
               unwatch)
         (push (watch (lambda ()
                        (let* ((val (get-val (aref faders i)))
                               (bendval (normalized->bendvalue val)))
-                         (unless midi-in-active
+                         (when (and echo (not midi-in-active))
                            (osc-midi-write-short
                             midi-output
                             (+ i #xe0)
                             (logand bendval 127) (ash bendval -7)))
                          (incudine.util:msg :info "setting Fader-idx: ~a" i)
-                         (set-val (aref (aref strip-labels i) 1) val))))
+                         (when fader-labels (set-val (aref (aref strip-labels i) 1) (format nil "~,3f" val))))))
               unwatch)
         (push (watch (lambda ()
-                       (osc-midi-write-short
-                        midi-output
-                        (+ (1- chan) 144)
-                        i (if (zerop (get-val (aref r-buttons i))) 0 127))))
+                       (when echo
+                         (osc-midi-write-short
+                          midi-output
+                          (+ (1- chan) 144)
+                          i (if (zerop (get-val (aref r-buttons i))) 0 127)))))
               unwatch)
         (push (watch (lambda ()
-                       (osc-midi-write-short
-                        midi-output
-                        (+ (1- chan) 144)
-                        (+ 8 i) (if (zerop (get-val (aref s-buttons i))) 0 127))))
+                       (when echo
+                         (osc-midi-write-short
+                          midi-output
+                          (+ (1- chan) 144)
+                          (+ 8 i) (if (zerop (get-val (aref s-buttons i))) 0 127)))))
               unwatch)
         (push (watch (lambda ()
-                       (osc-midi-write-short
-                        midi-output
-                        (+ (1- chan) 144)
-                        (+ 16 i)
-                        (if (zerop (get-val (aref m-buttons i))) 0 127))))
+                       (when echo
+                         (osc-midi-write-short
+                          midi-output
+                          (+ (1- chan) 144)
+                          (+ 16 i)
+                          (if (zerop (get-val (aref m-buttons i))) 0 127)))))
               unwatch)
         (push (watch (lambda ()
-                       (osc-midi-write-short
-                        midi-output
-                        (+ (1- chan) 144)
-                        (+ 24 i) (if (zerop (get-val (aref sel-buttons i))) 0 127))))
+                       (when echo
+                         (osc-midi-write-short
+                          midi-output
+                          (+ (1- chan) 144)
+                          (+ 24 i) (if (zerop (get-val (aref sel-buttons i))) 0 127)))))
               unwatch)
         (push (watch (lambda ()
-                       (jackmidi:write-short
-                        midi-output
-                        (jackmidi:message #xd0 (+ (* i 16) (round (* 12 (get-val (aref vu-meters i)))))) 2)))
+                       (when echo
+                         (jackmidi:write-short
+                          midi-output
+                          (jackmidi:message #xd0 (+ (* i 16) (round (* 12 (get-val (aref vu-meters i)))))) 2))))
               unwatch)))))
+
+(defun decode-text (vector)
+  (map 'string #'code-char vector))
 
 (defmethod handle-midi-in ((instance d700) opcode channel d1 d2)
   (incudine.util:msg :info "d700 input: ~a ~a ~a ~a" opcode channel d1 d2)
   (with-slots (chan rotary-a rotary-buttons rotary-scale faders
                fadertouch s-buttons m-buttons r-buttons sel-buttons
-               midi-input midi-in-active)
+               midi-input midi-in-active strip-labels)
       instance
+    (setf midi-in-active t)
     (case opcode
       (:pitch-bend
        (unless (< channel 8) (error "illegal fader channel 8 for D700 instance. Did you intend to
 instantiate a D700FT instance instead or mismatched the midi-ports of the devices?"))
        (let ((fader-idx channel))
-         (setf midi-in-active t)
          (set-val (aref faders fader-idx)
-                  (float (/ (+ d1 (ash d2 7)) (1- (ash 1 14)))))
-         (setf midi-in-active nil)))
+                  (float (/ (+ d1 (ash d2 7)) (1- (ash 1 14)))))))
       (:cc
        (when (and (= chan (1+ channel)) (<= 16 d1 23))
          (let ((rotary-idx (- d1 16)))
@@ -383,47 +404,58 @@ instantiate a D700FT instance instead or mismatched the midi-ports of the device
            ;; ((<= 24 d1 31) (trigger (aref sel-buttons (- d1 24))))
            ((<= 104 d1 111) (set-val (aref fadertouch (- d1 104)) 0)))))
       (:sysex
-       (incudine.util:msg :info (jackmidi:input-stream-sysex-octets midi-input))))))
+       (let* ((message (jackmidi:input-stream-sysex-octets midi-input))
+              (text (decode-text (subseq message 7 (1- (length message)))))
+              (strip-idx (/ (mod (aref message 6) 56) 7))
+              (line-idx (floor (aref message 6) 56)))
+         (set-val (aref (aref strip-labels strip-idx) line-idx) text)
+         ;; (incudine.util:msg :warn message)
+         )
+       ))
+    (setf midi-in-active nil)))
 
 (defmethod update-hw-state ((obj d700))
   "Update the state of the hardware controller by sending the current
 state to all elements of the controller via midi."
-  (with-slots (midi-output chan strip-labels
+  (with-slots (echo midi-output chan strip-labels
                rotary-a rotary-colors rotary-led-modes
                faders s-buttons m-buttons r-buttons sel-buttons)
       obj
-    (dotimes (i 8)
-      (d700-write-line-1 (get-val (aref (aref strip-labels i) 0)) i midi-output)
-      (d700-write-line-2 (format nil "~,3f" (get-val (aref (aref strip-labels i) 1))) i midi-output)  
-      (d700-write-line-3 (format nil "~,3f" (get-val (aref (aref strip-labels i) 2))) i midi-output)
-      (let ((val (get-val (aref rotary-a i))))
+    (let ((tmp echo))
+      (setf echo t)
+      (dotimes (i 8)
+        (d700-write-line-1 (get-val (aref (aref strip-labels i) 0)) i midi-output)
+        (d700-write-line-2 (format nil "~,3f" (get-val (aref (aref strip-labels i) 1))) i midi-output)  
+        (d700-write-line-3 (format nil "~,3f" (get-val (aref (aref strip-labels i) 2))) i midi-output)
+        (let ((val (get-val (aref rotary-a i))))
+          (osc-midi-write-short
+           midi-output
+           (+ 1 (get-val (aref rotary-led-modes i)) 176)
+           (+ 48 i) (round (* 127 val))))
+        (asparion-send-color (get-val (aref rotary-colors i)) i midi-output)
+        (let* ((val (get-val (aref faders i)))
+               (bendval (normalized->bendvalue val)))
+          (osc-midi-write-short
+           midi-output
+           (+ i #xe0)
+           (logand bendval 127) (ash bendval -7)))
         (osc-midi-write-short
          midi-output
-         (+ 1 (get-val (aref rotary-led-modes i)) 176)
-         (+ 48 i) (round (* 127 val))))
-      (asparion-send-color (get-val (aref rotary-colors i)) i midi-output)
-      (let* ((val (get-val (aref faders i)))
-             (bendval (normalized->bendvalue val)))
+         (+ (1- chan) 144)
+         i (if (zerop (get-val (aref r-buttons i))) 0 127))
         (osc-midi-write-short
          midi-output
-         (+ i #xe0)
-         (logand bendval 127) (ash bendval -7)))
-      (osc-midi-write-short
-       midi-output
-       (+ (1- chan) 144)
-       i (if (zerop (get-val (aref r-buttons i))) 0 127))
-      (osc-midi-write-short
-       midi-output
-       (+ (1- chan) 144)
-       (+ 8 i) (if (zerop (get-val (aref s-buttons i))) 0 127))
-      (osc-midi-write-short
-       midi-output
-       (+ (1- chan) 144)
-       (+ 16 i) (if (zerop (get-val (aref m-buttons i))) 0 127))
-      (osc-midi-write-short
-       midi-output
-       (+ (1- chan) 144)
-       (+ 24 i) (if (zerop (get-val (aref sel-buttons i))) 0 127)))))
+         (+ (1- chan) 144)
+         (+ 8 i) (if (zerop (get-val (aref s-buttons i))) 0 127))
+        (osc-midi-write-short
+         midi-output
+         (+ (1- chan) 144)
+         (+ 16 i) (if (zerop (get-val (aref m-buttons i))) 0 127))
+        (osc-midi-write-short
+         midi-output
+         (+ (1- chan) 144)
+         (+ 24 i) (if (zerop (get-val (aref sel-buttons i))) 0 127)))
+      (setf echo tmp))))
 
 
 ;;; stubs: redefine to bind actions to the buttons.
@@ -539,7 +571,7 @@ d700
      additional buttons of the d700ft can be seen in the mapping list
      below. As in the d700 the default trigger function of the buttons
      is to toggle the button light. |#
-  (with-slots (pan-button eq-button send-button fx-button star-button metronome-button loop-button rec-button play-button stop-button prev-page-button next-page-button master-rotary master-rotary-color chan midi-port midi-output midi-in-active unwatch)
+  (with-slots (echo pan-button eq-button send-button fx-button star-button metronome-button loop-button rec-button play-button stop-button prev-page-button next-page-button master-rotary master-rotary-color chan midi-port midi-output midi-in-active unwatch)
       obj
     (dolist (mapping '((pan-button 42) (eq-button 44) (send-button 41) (fx-button 43) (star-button 54)
                        (metronome-button 89) (loop-button 86)
@@ -549,28 +581,32 @@ d700
       (destructuring-bind (button-sym keynum) mapping
         (add-trigger-fn (slot-value obj button-sym) (lambda () (toggle-slot (slot-value obj button-sym))))
         (push (watch (lambda ()
-                       (osc-midi-write-short
-                        midi-output
-                        (+ (1- chan) #x90)
-                        keynum (if (zerop (get-val (slot-value obj button-sym))) 0 127))))
+                       (when echo
+                         (osc-midi-write-short
+                          midi-output
+                          (+ (1- chan) #x90)
+                          keynum (if (zerop (get-val (slot-value obj button-sym))) 0 127)))))
               unwatch))
       (push (watch (lambda ()
-                     (set-val master-rotary-color
-                              (format nil "00~2,'0X00" (round (* 127 (get-val master-rotary)))))))
+                     (when echo
+                       (set-val master-rotary-color
+                                (format nil "00~2,'0X00" (round (* 127 (get-val master-rotary))))))))
             unwatch)
       (push (watch (lambda ()
-                     (asparion-send-color (get-val master-rotary-color) 24 midi-output)))
+                     (when echo
+                       (asparion-send-color (get-val master-rotary-color) 24 midi-output))))
             unwatch))))
 
 (defmethod handle-midi-in ((instance d700ft) opcode channel d1 d2)
   (incudine.util:msg :info "d700ft input: ~a ~a ~a ~a" opcode channel d1 d2)
-  (with-slots (pan-button eq-button send-button fx-button star-button
+  (with-slots (strip-labels pan-button eq-button send-button fx-button star-button
                metronome-button loop-button
                rec-button play-button stop-button prev-page-button next-page-button
                rotary-a rotary-buttons rotary-scale faders fadertouch
                s-buttons m-buttons r-buttons sel-buttons
                midi-input midi-output midi-in-active chan master-rotary)
       instance
+    (setf midi-in-active t)
     (case opcode
       (:pitch-bend
        (let ((fader-idx channel))
@@ -631,30 +667,41 @@ d700
            ;; ((<= 32 d1 39) (trigger (aref rotary-buttons (- d1 32))))
            ((<= 104 d1 111) (set-val (aref fadertouch (- d1 104)) 0)))))
       (:sysex
-       (incudine.util:msg :info (jackmidi:input-stream-sysex-octets midi-input))))))
+       (let* ((message (jackmidi:input-stream-sysex-octets midi-input))
+              (text (decode-text (subseq message 7 (1- (length message)))))
+              (strip-idx (/ (mod (aref message 6) 56) 7))
+              (line-idx (floor (aref message 6) 56)))
+         (set-val (aref (aref strip-labels strip-idx) line-idx) text)
+;;;         (incudine.util:msg :warn message)
+         )
+       ))
+    (setf midi-in-active nil)))
 
 
 (defmethod update-hw-state ((obj d700ft))
   "Update the state of the hardware controller by sending the current
 state to all elements of the controller via midi."
-  (with-slots (midi-output chan strip-labels
+  (with-slots (echo midi-output chan strip-labels
                rotary-a rotary-colors rotary-led-modes
                faders s-buttons m-buttons r-buttons sel-buttons)
       obj
     (call-next-method)
-    (with-slots (pan-button eq-button send-button fx-button star-button metronome-button
-                 loop-button rec-button play-button stop-button prev-page-button next-page-button chan
-                 midi-port midi-output)
-      obj
-    (dolist (mapping '((pan-button 42) (eq-button 44) (send-button 41) (fx-button 43) (star-button 54)
-                       (metronome-button 89) (loop-button 86)
-                       (rec-button 95) (play-button 94) (stop-button 93)
-                       (prev-page-button 46) (next-page-button 47)))
-         (destructuring-bind (button-sym keynum) mapping
-           (osc-midi-write-short
-            midi-output
-            (+ (1- chan) #x90)
-            keynum (if (zerop (get-val (slot-value obj button-sym))) 0 127)))))))
+    (let ((tmp echo))
+      (setf echo t)
+      (with-slots (pan-button eq-button send-button fx-button star-button metronome-button
+                   loop-button rec-button play-button stop-button prev-page-button next-page-button chan
+                   midi-port midi-output)
+          obj
+        (dolist (mapping '((pan-button 42) (eq-button 44) (send-button 41) (fx-button 43) (star-button 54)
+                           (metronome-button 89) (loop-button 86)
+                           (rec-button 95) (play-button 94) (stop-button 93)
+                           (prev-page-button 46) (next-page-button 47)))
+          (destructuring-bind (button-sym keynum) mapping
+            (osc-midi-write-short
+             midi-output
+             (+ (1- chan) #x90)
+             keynum (if (zerop (get-val (slot-value obj button-sym))) 0 127)))))
+      (setf echo tmp))))
 
 (defclass asparion (d700ft)
   ((midi-ports :initarg :midi-ports :initform nil :accessor midi-ports
@@ -683,6 +730,9 @@ in the instances of the autocreated <<d700ft>> and <<d700>> units.
 In addition to the <<d700ft>> slots, the asparion class defines the
 following slots with accessor methods of the same name and initargs
 being the keywords of the slot symbol:
+
+NOTE: The :midi-ports keyword argument is mandatory, as the instance
+relies on it to initialize its slots and behaviours.
 
 @Arguments
 midi-ports - List of Keywords denoting the ids of the Midi Ports of the D700(FT) units.
@@ -730,7 +780,7 @@ midi-controller"))
 
 (defmethod initialize-instance :after ((obj asparion) &rest args)
   (declare (ignorable args))
-  (with-slots (midi-ports units
+  (with-slots (echo midi-ports units
 
                pan-button eq-button send-button fx-button star-button
                metronome-button loop-button
@@ -738,8 +788,10 @@ midi-controller"))
 
                rotary-a rotary-buttons rotary-scale
                rotary-colors rotary-led-modes
+               rotary-labels rotary-ring
                
                faders fadertouch
+               fader-labels
 
                midi-input midi-output midi-in-active chan master-rotary
 
@@ -768,11 +820,15 @@ midi-controller"))
                       ((zerop module-idx)
                        (incudine.util:msg :warn "midi-port of D700FT: ~a" midi-port)
                        (add-midi-controller 'd700ft (make-keyword (format nil "~@:(~a-d700ft~)" (mctl-id obj)))
-                                            :midi-port midi-port))
+                                            :echo echo :midi-port midi-port
+                                            :rotary-ring rotary-ring :rotary-labels rotary-labels :fader-labels fader-labels
+                                            ))
                       ((= (length midi-ports) 2)
                        (incudine.util:msg :warn "midi-port of D700: ~a" midi-port)
                        (add-midi-controller 'd700 (make-keyword (format nil "~@:(~a-d700~)" (mctl-id obj)))
-                                            :midi-port midi-port))
+                                            :echo echo :midi-port midi-port
+                                            :rotary-ring rotary-ring :rotary-labels rotary-labels :fader-labels fader-labels
+                                            ))
                       (t
                        (add-midi-controller 'd700 (make-keyword (format nil "~@:(~a-d700-~d~)" (mctl-id obj) module-idx))
                                             :midi-port midi-port)))))
@@ -797,7 +853,8 @@ midi-controller"))
                        (aref (slot-value unit slot) sourceidx)))))
     (dotimes (i (* 8 (length midi-ports)))
       (set-val (aref (aref strip-labels i) 0) (format nil "~2,'0d" (1+ i))))
-    (dolist (unit units) (update-hw-state unit))))
+    (when echo
+      (dolist (unit units) (update-hw-state unit)))))
 
 (defmethod cleanup ((instance asparion))
   (dolist (unit (slot-value instance 'units))
@@ -827,6 +884,7 @@ of the asparion instance."
     (format nil "~a~a" (subseq str 0 (max 0 (- (min width (length str)) d-len))) final-digits)))
 
 ;;; (trim-txt "blah-123" 5)
+
 
 (export
  '(asparion

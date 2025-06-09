@@ -19,4 +19,5 @@
                (:file "nanoktl2-preset-midi")
                (:file "faderfox")
                (:file "asparion")
+               (:file "qmidinet-connections")
                ))

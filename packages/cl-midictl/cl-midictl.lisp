@@ -577,7 +577,8 @@ instance."
          (set-val (aref after-touch-state channel) after-touch-val)
          (dolist (fn (aref after-touch-fns channel)) (funcall fn after-touch-val))))
       (:sysex
-       (incudine.util:msg :warn "sysex: ~S" (midiin-sysex-octets (midi-port-in port)))))))
+       ;; (incudine.util:msg :warn "sysex: ~S" (midiin-sysex-octets (midi-port-in port)))
+       ))))
 
 (defun start-midi-receive (midi-port)
   "Start the clamps generic midi handler and all registered MIDI responders
