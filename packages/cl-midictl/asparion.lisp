@@ -176,7 +176,7 @@ Asparion <<D700>> or <<D700FT>> Controller connected to /stream/ to /text/.
 d700-write-line2
 d700-write-line3
 "
-  (midiout-sysex (append *asparion-sysex-header* `(#x1a ,(* 12 (mod idx 8)) 1) (map 'list #'char-code (format nil "~12a" text)) '(#xF7))
+  (midiout-sysex (append *asparion-sysex-header* `(#x1a ,(* 12 (mod idx 8)) 1) (map 'list #'char-code text) '(#xF7))
                  stream))
 
 ;;; (d700-write-line-1 "Hi" 0 (midi-port-out (find-midi-port :midi-1)))
@@ -194,7 +194,7 @@ Asparion <<D700>> or <<D700FT>> Controller connected to /stream/ to /text/.
 d700-write-line1
 d700-write-line3
 "
-  (midiout-sysex (append *asparion-sysex-header* `(#x1a ,(* 12 (mod idx 8)) 2) (map 'list #'char-code (format nil "~12a" text)) '(#xF7))
+  (midiout-sysex (append *asparion-sysex-header* `(#x1a ,(* 12 (mod idx 8)) 2) (map 'list #'char-code text) '(#xF7))
                  stream))
 
 ;;; (d700-write-line-2 "Hi" 1 (midi-port-out (find-midi-port :midi-1)))
@@ -213,7 +213,7 @@ d700-write-line1
 d700-write-line2
 "
 
-  (midiout-sysex (append *asparion-sysex-header* `(#x19 ,(* 8 (mod idx 8))) (map 'list #'char-code (format nil "~8a" text)) '(#xF7))
+  (midiout-sysex (append *asparion-sysex-header* `(#x19 ,(* 8 (mod idx 8))) (map 'list #'char-code text) '(#xF7))
                  stream))
 
 ;;; (d700-write-line-3 "Hallo" 1 (midi-port-out (find-midi-port :midi-1)))
@@ -424,9 +424,9 @@ state to all elements of the controller via midi."
     (let ((tmp echo))
       (setf echo t)
       (dotimes (i 8)
-        (d700-write-line-1 (get-val (aref (aref strip-labels i) 0)) i midi-output)
-        (d700-write-line-2 (format nil "~,3f" (get-val (aref (aref strip-labels i) 1))) i midi-output)  
-        (d700-write-line-3 (format nil "~,3f" (get-val (aref (aref strip-labels i) 2))) i midi-output)
+        (d700-write-line-1 (format nil "~12a" (get-val (aref (aref strip-labels i) 0))) i midi-output)
+        (d700-write-line-2 (format nil "~12a" (get-val (aref (aref strip-labels i) 1))) i midi-output)  
+        (d700-write-line-3 (format nil "~12a" (get-val (aref (aref strip-labels i) 2))) i midi-output)
         (let ((val (get-val (aref rotary-a i))))
           (osc-midi-write-short
            midi-output
