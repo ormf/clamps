@@ -1,9 +1,28 @@
 ;;; 
 ;;; qmidinet-connections.lisp
 ;;;
-;;; Handling Asparion switch between MIO Console on Mac and Linux
-;;; using qmidinet/ipmidi
+;;; Handling Asparion switch between MIO Console on Mac and Clamps
+;;; on Linux using qmidinet/ipmidi. See
 ;;;
+;; After midi ports for qmidinet have been established on the linux
+;; machine and the Mac and the Asparion has been connected to the
+;; linux machine, execute the following code:
+
+#|
+(progn
+  (remove-midi-controller :asparion)
+  (remove-midi-controller :asparion-mac)
+  (add-midi-controller 'asparion :asparion :midi-ports '(:midi-1 :midi-2))
+  (add-midi-controller 'asparion :asparion-mac
+                       :midi-ports '(:midi-3 :midi-4)
+                       :echo nil
+                       :rotary-ring nil :rotary-labels nil :fader-labels nil)
+  (jack-init-connections)
+  (jack-linux))
+
+;;; Then open MIO program and switch layer (press "*" button on the
+;;; asparion) to test.
+|#
 ;;; **********************************************************************
 ;;; Copyright (c) 2025 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 ;;;
@@ -156,22 +175,4 @@ startup. Return the hash table."
   (toggle-connection))
 
 #|
-;; After midi ports for qmidinet have been established on the linux
-;; machine and the Mac and the Asparion has been connected to the
-;; linux machine, execute the following code:
-
-(progn
-  (remove-midi-controller :asparion)
-  (remove-midi-controller :asparion-mac)
-  (add-midi-controller 'asparion :asparion :midi-ports '(:midi-1 :midi-2))
-  (add-midi-controller 'asparion :asparion-mac
-                       :midi-ports '(:midi-3 :midi-4)
-                       :echo nil
-                       :rotary-ring nil :rotary-labels nil :fader-labels nil)
-  (jack-init-connections)
-  (jack-linux))
-
-
-;;; Then open MIO program and switch layer (press "*" button on the
-;;; asparion) to test.
 |#
