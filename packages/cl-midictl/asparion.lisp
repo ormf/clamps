@@ -406,7 +406,7 @@ instantiate a D700FT instance instead or mismatched the midi-ports of the device
       (:sysex
        (let* ((message (jackmidi:input-stream-sysex-octets midi-input))
               (text (decode-text (subseq message 7 (1- (length message)))))
-              (strip-idx (/ (mod (aref message 6) 56) 7))
+              (strip-idx (round (/ (mod (aref message 6) 56) 7)))
               (line-idx (floor (aref message 6) 56)))
          (set-val (aref (aref strip-labels strip-idx) line-idx) text)
          ;; (incudine.util:msg :warn message)
@@ -669,7 +669,7 @@ d700
       (:sysex
        (let* ((message (jackmidi:input-stream-sysex-octets midi-input))
               (text (decode-text (subseq message 7 (1- (length message)))))
-              (strip-idx (/ (mod (aref message 6) 56) 7))
+              (strip-idx (round (/ (mod (aref message 6) 56) 7)))
               (line-idx (floor (aref message 6) 56)))
          (set-val (aref (aref strip-labels strip-idx) line-idx) text)
 ;;;         (incudine.util:msg :warn message)
