@@ -129,7 +129,7 @@ startup. Return the hash table."
         do (some (lambda (assoc) (if (cl-ppcre:scan (second assoc) name) (setf (gethash (first assoc) hash) name))) *jack-regex-assoc*))
     hash))
 
-(defparameter *jack-port-hash* (get-jack-port-hash (get-jack-port-names)))
+(defparameter *jack-port-hash* nil)
 
 (defun jack-disconnect (src dest)
   (let ((command (format nil "jack_disconnect \"~a\" \"~a\"" (gethash src *jack-port-hash*) (gethash dest *jack-port-hash*))))
