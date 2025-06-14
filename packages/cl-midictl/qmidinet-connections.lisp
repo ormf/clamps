@@ -64,12 +64,26 @@
      (:d700-capture-1 :incudine-midi-4-in)
 )))
 
+(defun ensure-program (cmd)
+  (let ((result (with-output-to-string (out)
+                  (uiop:run-program cmd :ignore-error-status t :error-output out)
+                  out)))
+    (unless (string= result "")
+      (warn result))
+    (string= result "")))
+
 (defun get-jack-port-names ()
   "return all port names printed by a call to jack_lsp to stdout in a
 list."
-  (with-input-from-string (in
-                           (with-output-to-string (out)
-                             (uiop:run-program "/usr/bin/jack_lsp" :output out)))
+  (with-input-from-string
+      (in
+       (with-output-to-string (out)
+         (let ((result
+                 (with-output-to-string (error-out)
+                   (uiop:run-program "/usr/bin/jack_lsp" :ignore-error-status t
+                                                         :output out
+                                                         :error-output error-out))))
+           (unless (string= result "") (warn (string-right-trim '(#\NEWLINE) result))))))
     (loop
       for line = (read-line in nil nil)
       while line

@@ -259,7 +259,6 @@ supplied and gets interned as a parameter."
                                (if (eq direction :input) "input" "output"))
                        result)
       (declare (ignore end))
-
       (if start
           (subseq result (aref reg1 0) (aref reg2 0))))))
 

@@ -39,6 +39,6 @@
                 :components
                 (
                  (:file "package")
-                 (:file "cm-all")
+;;;                 (:file "cm-all")
                  
                  ))))

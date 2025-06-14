@@ -20,6 +20,8 @@
 
 (in-package #:clog)
 
+#|
+
 (defun cm-gui (body)
   "On-new-window handler."
   (setf (title (html-document body)) "Common Music Gui")
@@ -41,7 +43,6 @@
 
 (defparameter *mt-out01* nil)
 
-#|
 (defmacro make-mt-stream (symbol-name midi-out-stream chan-tuning)
   "Define, open and initialize a microtonal midistream. The name of
 the stream and an already initialized midi-port-stream has to be
@@ -59,6 +60,8 @@ supplied and gets interned as a parameter."
 
 ;;; Initialisierung der Mikrotöne:
 
+#|
+
 (defun reinit-midi ()
   (cm::initialize-io *mt-out01*)
   (write-event (new midi-program-change :program 1) *mt-out01* 0)
@@ -67,7 +70,6 @@ supplied and gets interned as a parameter."
          collect (new midi :time (* idx 0.05) :keynum (float (+ 60 (* idx 1/4)))))
    *mt-out01*))
 
-#|
 (defun get-qsynth-midi-port-name (&optional (direction :input))
   (let ((result (with-output-to-string (str)
                   (progn
@@ -80,7 +82,6 @@ supplied and gets interned as a parameter."
       (declare (ignore end))
       (if start
           (subseq result (aref reg1 0) (aref reg2 0))))))
-|#
 
 (defun get-qsynth-midi-port-name (&optional (direction :input))
   (let ((result (uiop:run-program "jack_lsp" :output :string)))
@@ -91,7 +92,6 @@ supplied and gets interned as a parameter."
       (declare (ignore end))
       (if start
           (subseq result (aref reg1 0) (aref reg2 0))))))
-
 (defun jack-connect-qsynth ()
   (let ((qsynth-port (get-qsynth-midi-port-name)))
     (if qsynth-port
@@ -100,7 +100,7 @@ supplied and gets interned as a parameter."
                  "jack_connect incudine:midi_out-1 \"~a\""
                  qsynth-port)
          :output nil
-         :ignore-error-status t))))
+:ignore-error-status t))))
 
 (defun restart-qsynth ()
   (let ((result (with-output-to-string (str)
@@ -111,7 +111,12 @@ supplied and gets interned as a parameter."
       (sleep 5))
     (jack-connect-qsynth)
     (sleep 1)
-    (reinit-midi)))
+(reinit-midi)))
+|#
+
+
+
+
 
 
 ;; m21
