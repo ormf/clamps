@@ -189,4 +189,5 @@ startup. Return the hash table."
   (toggle-connection))
 
 #|
+(jack-init-connections)
 |#
