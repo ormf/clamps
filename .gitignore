@@ -6,7 +6,6 @@ doc/#*
 clamps
 init-clamps.lisp
 todo.org
-html/*
 doc/html/clamps-doc/clamps-dict
 doc/html/clamps-doc/cm-dict-orig
 doc/html/clamps-doc/fonts
