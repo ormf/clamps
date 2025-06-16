@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-06-08 So 16:38 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Packages</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/clamps.css" />
+<link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+<script src="../js/clamps-doc.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu" href="../overview/index.html">Overview</a>
+<a class="top-menu top-menu-active" href="./index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="05_00_00_00_gui.html"> Gui </a>,&nbsp;Previous: <a accesskey="p" href="04_02_00_00_of-incudine-dsps.html"> of-incudine-dsps </a>,&nbsp;Up: <a accesskey="u" href="04_00_00_00_incudine-extensions.html"> Incudine Extensions </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_00_general.html"> General </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_00_00_general.html"class="toc-entry">General</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="01_00_00_00_general.html"class="toc-entry">Clamps Packages Overview</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_00_00_00_general.html"class="toc-entry">Package Naming</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_01_02_00_reading-the-documentation.html"class="toc-entry">Reading the Documentation</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="01_02_00_00_clamps.html"class="toc-entry">clamps</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_02_00_00_clamps.html"class="toc-entry">Symbols</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_02_00_startup.html"class="toc-entry">Startup</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_03_00_emacs-shortcuts.html"class="toc-entry">Emacs Shortcuts</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_04_00_gui.html"class="toc-entry">GUI</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_05_00_meter-display.html"class="toc-entry">Meter Display</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_00_00_midi.html"class="toc-entry">Midi</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
+<li class="toc-hidden toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
+<li class="toc-hidden toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
+<ul class="ul-toc-level-4">
+<li class="toc-hidden toc-level-4"><a href="02_01_03_00_midi-input.html"class="toc-entry">Receiving and handling MIDI Input</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_02_example-using-​midi-cc-fns​.html"class="toc-entry">Example using *​midi-cc-fns​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_03_example-using-​midi-cc-state​.html"class="toc-entry">Example using *​midi-cc-state​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_04_example-using-incudine-responders.html"class="toc-entry">Example using Incudine responders</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_05_exercise.html"class="toc-entry">Exercise</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
+<ul class="ul-toc-level-4">
+<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry">Excursion: Closures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="02_02_00_00_clog-midi-controller.html"class="toc-entry">clog-midi-controller</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">CM Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">General</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_02_00_00_cm-incudine.html"class="toc-entry">cm-incudine</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_03_00_00_cm-fomus.html"class="toc-entry">cm-fomus</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_04_00_00_cm-sfz.html"class="toc-entry">cm-sfz</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_05_00_00_cm-svg.html"class="toc-entry">cm-svg</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="03_05_01_00_export-to-svg.html"class="toc-entry">Export to SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_02_00_import-from-svg.html"class="toc-entry">Import from SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_03_00_inkscape-playback.html"class="toc-entry">Inkscape Playback</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="03_06_00_00_cm-svg.rts.html"class="toc-entry">cm-svg.rts</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_07_00_00_cm-poolevt.html"class="toc-entry">cm-poolevt</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_08_00_00_cm-utils.html"class="toc-entry">cm-utils</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">Incudine Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">General Incudine Setup</a></li>
+<li class="toc-level-2"><a href="04_02_00_00_of-incudine-dsps.html"class="toc-entry">of-incudine-dsps</a></li>
+<li class="toc-level-2"><a href="04_03_00_00_incudine-bufs.html"class="toc-entry toc-active">incudine-bufs</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_00_00_gui.html"class="toc-entry">Gui</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="05_00_00_00_gui.html"class="toc-entry">General GUI Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_02_00_00_clog-dsp-widgets.html"class="toc-entry">clog-dsp-widgets</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_03_00_00_ats-cuda-display.html"class="toc-entry">ats-cuda-display</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="06_00_00_00_networking.html"class="toc-entry">Networking</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="06_00_00_00_networking.html"class="toc-entry">cuda-usocket-osc</a></li>
+<li class="toc-hidden toc-level-2"><a href="06_02_00_00_fudi.html"class="toc-entry">fudi</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="07_00_00_00_misc-packages.html"class="toc-entry">Misc Packages</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="07_00_00_00_misc-packages.html"class="toc-entry">ats-cuda</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_02_00_00_cl-refs.html"class="toc-entry">cl-refs</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_03_01_00_loading-sfz-files.html"class="toc-entry">Loading sfz files</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_03_02_00_playing-sfz-events.html"class="toc-entry">Playing sfz events</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_04_00_00_cl-poolplayer.html"class="toc-entry">cl-poolplayer</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_05_00_00_cl-plot.html"class="toc-entry">cl-plot</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_06_00_00_orm-utils.html"class="toc-entry">orm-utils</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Packages</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="04_02_00_00_of-incudine-dsps.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-org8c31c3c" class="outline-3">
+<h3 id="org8c31c3c">incudine-bufs</h3>
+<div class="outline-text-3" id="text-org8c31c3c">
+<p>
+clamps-bufs
+</p>
+
+<p>
+clamps-dsps
+</p>
+
+<p>
+incudine-bufs implements a registry for buffers in Clamps on top of
+Incudine's infrastructure for buffers.
+</p>
+
+<p>
+The standard way to add a buffer to the registry is using the
+command <a href="../clamps-dict/clamps-buffer-load.html">clamps-buffer-load</a>. The command takes a relative or
+absolute filename and a <i>:path</i> key as arguments. The <i>:path</i> is a
+list of pathnames of directories to search. Its default value is
+<a href="../clamps-dict/​sfile-path​.html">*​sfile-path​*</a>. The user can push pathnames to that variable to add
+user- or application-specific locations to search for soundfiles.
+</p>
+
+<p>
+If a buffer of that name has already been loaded,
+clamps-buffer-load simply returns that buffer. Otherwise it loads
+the file into an incudine:buffer struct, assigns an unused integer
+<i>id</i> to it, updates the registry and returns the loaded buffer:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span>clamps-buffer-load
+ <span class="org-string">"69-Flute.nv.ff.1A4.wav"</span>
+ <span class="org-builtin">:path</span> <span class="org-rainbow-delimiters-depth-2">(</span>list <span class="org-rainbow-delimiters-depth-3">(</span>asdf:system-relative-pathname <span class="org-builtin">:clamps</span> <span class="org-string">"extra/snd/"</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0&gt;</span>
+</pre>
+</div>
+
+<p>
+The buffer gets registered under its filename, full pathname and
+its id. A buffer can be retrieved from the registry using
+<a href="../clamps-dict/find-buffer.html">find-buffer</a> with any of the registered values as argument.
+</p>
+
+<p>
+In case a buffer has already been loaded (e.g. with Incudine's
+<i>#'buffer-load</i> function), the function <a href="../clamps-dict/a.html">add-buffer</a> takes a buffer
+instead of a filename as argument and registers the buffer in the
+same way as clamps-buffer-load. <a href="../clamps-dict/list-buffers.html">list-buffers</a> lists all buffers and
+their ids, <a href="../clamps-dict/buffer-id.html">buffer-id</a> returns the id of a buffer, <a href="../clamps-dict/remove-buffer.html">remove-buffer</a>
+removes a buffer from the registry using its id, filename or the
+buffer itself as argument and <a href="../clamps-dict/remove-all-buffers.html">remove-all-buffers</a> removes all
+buffers from the registry.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">*73-flute-nv*</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span>incudine:buffer-load
+   <span class="org-rainbow-delimiters-depth-3">(</span>asdf:system-relative-pathname
+    <span class="org-builtin">:clamps</span>
+    <span class="org-string">"extra/snd/sfz/Flute-nv/samples/73-Flute.nv.ff.1Db5.wav"</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; *73-flute-nv*</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>add-buffer *73-flute-nv*<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0&gt;</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>list-buffers<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; ((0 "69-Flute.nv.ff.1A4.wav" #&lt;incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0&gt;)</span>
+<span class="org-comment-delimiter">;;     </span><span class="org-comment">(1 "73-Flute.nv.ff.1Db5.wav" #&lt;incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0&gt;))</span>
+
+
+<span class="org-rainbow-delimiters-depth-1">(</span>find-buffer <span class="org-string">"69-Flute.nv.ff.1A4.wav"</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0&gt;, t</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>buffer-id <span class="org-string">"69-Flute.nv.ff.1A4.wav"</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; 0</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>find-buffer 0<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0&gt;, t</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>buffer-name <span class="org-rainbow-delimiters-depth-2">(</span>find-buffer <span class="org-string">"69-Flute.nv.ff.1A4.wav"</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; "69-Flute.nv.ff.1A4.wav"</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">compare to incudine's built-in function buffer-file:</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>buffer-file <span class="org-rainbow-delimiters-depth-2">(</span>find-buffer <span class="org-string">"69-Flute.nv.ff.1A4.wav"</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #P"/home/orm/work/snd/sfz/transverse-flute/export/69-Flute.nv.ff.1A4.wav"</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>mapcar #'third <span class="org-rainbow-delimiters-depth-2">(</span>list-buffers<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;;  </span><span class="org-comment">=&gt; (#&lt;incudine:buffer :FRAMES 112345 :CHANNELS 2 :SR 48000.0&gt;</span>
+<span class="org-comment-delimiter">;;      </span><span class="org-comment">#&lt;incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0&gt;)</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>buffer-id #P<span class="org-string">"/home/orm/work/snd/sfz/transverse-flute/export/69-Flute.nv.ff.1A4.wav"</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; 0</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>buffer-id <span class="org-rainbow-delimiters-depth-2">(</span>find-buffer <span class="org-string">"73-Flute.nv.ff.1Db5.wav"</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; 1</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>buffer-id <span class="org-string">"73-Flute.nv.ff.1Db5.wav"</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; 1</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>buffer-id *73-flute-nv*<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; 1</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>remove-buffer 0<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; t</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>list-buffers<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; ((1 "73-Flute.nv.ff.1Db5.wav" #&lt;incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0&gt;))</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>remove-buffer *73-flute-nv*<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; t</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>list-buffers<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">The buffer *73-flute-nv* is removed from the registry, but not</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">removed from clamps/incudine:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>find-buffer *73-flute-nv*<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+
+*73-flute-nv*
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;incudine:buffer :FRAMES 114210 :CHANNELS 2 :SR 48000.0&gt;</span>
+</pre>
+</div>
+
+<h4>Note</h4>
+<p>
+The buffer containing "69-Flute.nv.ff.1A4.wav" also still exists
+after evaluating the code above, but if nothing points to it
+anymore, it will eventually get garbage collected. If the space of
+the buffer should get explicitely freed, use Incudine's #'free
+method with the buffer as argument.
+</p>
+</div>
+</div>
+</div><nav id="nav-right"><a href="05_00_00_00_gui.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

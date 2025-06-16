@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-06-08 So 16:38 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Packages</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/clamps.css" />
+<link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+<script src="../js/clamps-doc.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu" href="../overview/index.html">Overview</a>
+<a class="top-menu top-menu-active" href="./index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="07_02_04_00_the-bang-object-class.html"> The bang-object class </a>,&nbsp;Previous: <a accesskey="p" href="07_02_02_00_the-ref-object-class.html"> The ref-object class </a>,&nbsp;Up: <a accesskey="u" href="07_02_00_00_cl-refs.html"> cl-refs </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_00_general.html"> General </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_00_00_general.html"class="toc-entry">General</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="01_00_00_00_general.html"class="toc-entry">Clamps Packages Overview</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_00_00_00_general.html"class="toc-entry">Package Naming</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_01_02_00_reading-the-documentation.html"class="toc-entry">Reading the Documentation</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="01_02_00_00_clamps.html"class="toc-entry">clamps</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_02_00_00_clamps.html"class="toc-entry">Symbols</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_02_00_startup.html"class="toc-entry">Startup</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_03_00_emacs-shortcuts.html"class="toc-entry">Emacs Shortcuts</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_04_00_gui.html"class="toc-entry">GUI</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_05_00_meter-display.html"class="toc-entry">Meter Display</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_00_00_midi.html"class="toc-entry">Midi</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
+<li class="toc-hidden toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
+<li class="toc-hidden toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
+<ul class="ul-toc-level-4">
+<li class="toc-hidden toc-level-4"><a href="02_01_03_00_midi-input.html"class="toc-entry">Receiving and handling MIDI Input</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_02_example-using-​midi-cc-fns​.html"class="toc-entry">Example using *​midi-cc-fns​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_03_example-using-​midi-cc-state​.html"class="toc-entry">Example using *​midi-cc-state​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_04_example-using-incudine-responders.html"class="toc-entry">Example using Incudine responders</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_05_exercise.html"class="toc-entry">Exercise</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
+<ul class="ul-toc-level-4">
+<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry">Excursion: Closures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="02_02_00_00_clog-midi-controller.html"class="toc-entry">clog-midi-controller</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">CM Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">General</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_02_00_00_cm-incudine.html"class="toc-entry">cm-incudine</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_03_00_00_cm-fomus.html"class="toc-entry">cm-fomus</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_04_00_00_cm-sfz.html"class="toc-entry">cm-sfz</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_05_00_00_cm-svg.html"class="toc-entry">cm-svg</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="03_05_01_00_export-to-svg.html"class="toc-entry">Export to SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_02_00_import-from-svg.html"class="toc-entry">Import from SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_03_00_inkscape-playback.html"class="toc-entry">Inkscape Playback</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="03_06_00_00_cm-svg.rts.html"class="toc-entry">cm-svg.rts</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_07_00_00_cm-poolevt.html"class="toc-entry">cm-poolevt</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_08_00_00_cm-utils.html"class="toc-entry">cm-utils</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">Incudine Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">General Incudine Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_02_00_00_of-incudine-dsps.html"class="toc-entry">of-incudine-dsps</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_03_00_00_incudine-bufs.html"class="toc-entry">incudine-bufs</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_00_00_gui.html"class="toc-entry">Gui</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="05_00_00_00_gui.html"class="toc-entry">General GUI Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_02_00_00_clog-dsp-widgets.html"class="toc-entry">clog-dsp-widgets</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_03_00_00_ats-cuda-display.html"class="toc-entry">ats-cuda-display</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="06_00_00_00_networking.html"class="toc-entry">Networking</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="06_00_00_00_networking.html"class="toc-entry">cuda-usocket-osc</a></li>
+<li class="toc-hidden toc-level-2"><a href="06_02_00_00_fudi.html"class="toc-entry">fudi</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="07_00_00_00_misc-packages.html"class="toc-entry">Misc Packages</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="07_00_00_00_misc-packages.html"class="toc-entry">ats-cuda</a></li>
+<li class="toc-level-2"><a href="07_02_00_00_cl-refs.html"class="toc-entry">cl-refs</a>
+<ul class="ul-toc-level-3">
+<li class="toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
+<li class="toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
+<li class="toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry toc-active">Defining relations</a></li>
+<li class="toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_03_01_00_loading-sfz-files.html"class="toc-entry">Loading sfz files</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_03_02_00_playing-sfz-events.html"class="toc-entry">Playing sfz events</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="07_04_00_00_cl-poolplayer.html"class="toc-entry">cl-poolplayer</a></li>
+<li class="toc-level-2"><a href="07_05_00_00_cl-plot.html"class="toc-entry">cl-plot</a></li>
+<li class="toc-level-2"><a href="07_06_00_00_orm-utils.html"class="toc-entry">orm-utils</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Packages</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="07_02_02_00_the-ref-object-class.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-org66293c4" class="outline-4">
+<h4 id="org66293c4">Defining relations</h4>
+<div class="outline-text-4" id="text-org66293c4">
+<p>
+<i>cl-refs</i> provides two ways to define a relation between
+ref-objects, or between a ref-object and some program logic,
+<a href="07_02_03_00_defining-relations.html#org1b6e7d8">make-computed</a> and <a href="07_02_03_00_defining-relations.html#org9bf2a92">watch</a>.
+</p>
+
+<h5>make-computed</h5>
+<p>
+<a id="07_02_03_00_defining-relations.html#org1b6e7d8"></a>
+</p>
+
+<p>
+This function combines creating a new ref-object with establishing
+a relation between the created object and one or more other
+ref-objects. It takes a function as argument. All ref-objects
+referenced in the body of that function using <i>get-val</i> will cause
+the newly created ref-object to update its value by calling the
+function whenever the value of any of these ref-objects is
+changed. <i>make-computed</i> returns the newly created ref-object.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">c1</span> <span class="org-rainbow-delimiters-depth-2">(</span>make-ref 1.0<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; c1</span>
+
+c1 <span class="org-comment">; =&gt; #&lt;ref 1.0&gt;</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">c2</span> <span class="org-rainbow-delimiters-depth-2">(</span>make-computed <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> <span class="org-rainbow-delimiters-depth-4">(</span>* 2 <span class="org-rainbow-delimiters-depth-5">(</span>get-val c1<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+
+c2 <span class="org-comment">; =&gt; #&lt;ref 2.0&gt;</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>get-val c2<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 2.0</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>set-val c1 12<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 12</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>get-val c2<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 24</span>
+
+<span class="org-comment-delimiter">;;; </span><span class="org-comment">NOTE: The other direction is undefined:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>set-val c2 30<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 30</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>get-val c1<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 12 !!!</span>
+</pre>
+</div>
+<p>
+Here is an example using two related ref-objects:
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">d1</span> <span class="org-rainbow-delimiters-depth-2">(</span>make-ref 1<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; d1</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">d2</span> <span class="org-rainbow-delimiters-depth-2">(</span>make-ref -4<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; d2</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">d3</span> <span class="org-rainbow-delimiters-depth-2">(</span>make-computed <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> <span class="org-rainbow-delimiters-depth-4">(</span>+ <span class="org-rainbow-delimiters-depth-5">(</span>get-val d1<span class="org-rainbow-delimiters-depth-5">)</span> <span class="org-rainbow-delimiters-depth-5">(</span>get-val d2<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; d3</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>get-val d3<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; -3</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>set-val d1 10<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 10</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>get-val d3<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 6</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>set-val d2 5<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 5</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>get-val d3<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 15</span>
+</pre>
+</div>
+<p>
+In case a two-way relation between ref-objects is needed,
+another function defining the reverse computation can be
+supplied as optional second argument to <i>make-computed</i>:
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp">      <span class="org-rainbow-delimiters-depth-1">(</span>setf c2 <span class="org-rainbow-delimiters-depth-2">(</span>make-computed
+                <span class="org-comment-delimiter">;; </span><span class="org-comment">function called to set c2</span>
+                <span class="org-comment-delimiter">;; </span><span class="org-comment">whenever any of the</span>
+                <span class="org-comment-delimiter">;; </span><span class="org-comment">contained ref-objects are</span>
+                <span class="org-comment-delimiter">;; </span><span class="org-comment">changed:</span>
+                <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> <span class="org-rainbow-delimiters-depth-4">(</span>* 2 <span class="org-rainbow-delimiters-depth-5">(</span>get-val c1<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+                 <span class="org-comment-delimiter">;; </span><span class="org-comment">function called whenever c2 gets changed using</span>
+                 <span class="org-comment-delimiter">;; </span><span class="org-comment">(set-val c2 val):</span>
+                <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">(</span>val<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span>set-val c1 <span class="org-rainbow-delimiters-depth-5">(</span>/ val 2<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">; </span><span class="org-comment">=&gt; #&lt;ref 24&gt;</span>
+
+      c2 <span class="org-comment">; =&gt; #&lt;ref 24&gt;</span>
+
+      <span class="org-rainbow-delimiters-depth-1">(</span>get-val c2<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 24</span>
+
+      <span class="org-rainbow-delimiters-depth-1">(</span>set-val c1 7<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 7</span>
+
+      <span class="org-rainbow-delimiters-depth-1">(</span>get-val c2<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 14</span>
+
+      <span class="org-comment-delimiter">;;; </span><span class="org-comment">Now the other direction works as well:</span>
+
+      <span class="org-rainbow-delimiters-depth-1">(</span>set-val c2 30<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 30</span>
+
+      <span class="org-rainbow-delimiters-depth-1">(</span>get-val c1<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 15</span>
+</pre>
+</div>
+<h5>watch</h5>
+<p>
+<a id="07_02_03_00_defining-relations.html#org9bf2a92"></a>
+</p>
+
+<p>
+Like <i>make-computed</i> also <i>watch</i> takes a function as
+argument. This function is called, whenever one or more
+ref-objects referenced in its body using <i>get-val</i> are changed. In
+that way, actions can be triggered and associated with the change
+of ref-objects<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>. Since actions can also involve changing
+other ref-objects, <i>watch</i> can be used in a similar fashion as
+<i>make-computed</i>.
+</p>
+
+<p>
+Note that the call to <i>watch</i> will trigger the execution of the
+supplied function once. This is necessary to register the function
+in the referenced ref-objects and to ensure the correct state of
+the application in case relations between ref-objects are defined
+within the function.
+</p>
+
+<p>
+<i>watch</i> returns a function to remove the action defined by the
+supplied function. It is crucial to capture this result in order
+to be able to later remove the established connections between
+variables and associated actions<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>.
+</p>
+
+<h5>Important Note</h5>
+
+<p>
+Calling the same watch expression twice will establish two
+independent functions which will always be called on change of any
+contained ref-object. If the result of <i>watch</i> wasn't captured,
+removing the defined function(s) is only possible by redefining
+all referenced objects with the result that any other relation
+previously established using <i>make-computed</i> or <i>watch</i> is
+referencing outdated ref-objects and will have to get
+redefined. Therefore it is not only advisable to capture the
+return value of all calls to watch, but also to put all
+definitions of ref-objects and their relations into a function or
+a piece of code reloadable at runtime to be able to reset all
+relations, preferably with additional code reestablishing a
+defined application state of all used ref-objects.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">e1</span> <span class="org-rainbow-delimiters-depth-2">(</span>make-ref 1<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; e1</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Variable to capture watch definitions:</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">unwatch</span> nil<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; unwatch</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>push <span class="org-rainbow-delimiters-depth-2">(</span>watch <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> <span class="org-rainbow-delimiters-depth-4">(</span>format t <span class="org-string">"e1 has changed to ~a~%"</span> <span class="org-rainbow-delimiters-depth-5">(</span>get-val e1<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span> unwatch<span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>set-val e1 40<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; 40</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">output in the REPL:</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">e1 has changed to 40</span>
+
+unwatch <span class="org-comment">; =&gt; (#&lt;function (lambda () :in watch) {1009EAD9DB}&gt;)</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">define another action to be taken:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>push
+ <span class="org-rainbow-delimiters-depth-2">(</span>watch
+  <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span>
+    <span class="org-rainbow-delimiters-depth-4">(</span>format t <span class="org-string">"another relation: e1 has changed to ~a~%"</span> <span class="org-rainbow-delimiters-depth-5">(</span>get-val e1<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span>
+ unwatch<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;;  </span><span class="org-comment">=&gt; (#&lt;function (lambda () :in watch) {100D3F59DB}&gt;</span>
+<span class="org-comment-delimiter">;;      </span><span class="org-comment">#&lt;function (lambda () :in watch) {1009EAD9DB}&gt;)</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">output in the REPL:</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">another relation: e1 has changed to 40</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>set-val e1 10<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; 10</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">output in the REPL:</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">another relation: e1 has changed to 10</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">e1 has changed to 10</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">clear all connections by calling the functions returned by the call</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">to #'watch:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>mapc #'funcall unwatch<span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>setf unwatch nil<span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>set-val e1 17<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; 17</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">No further output in the REPL.</span>
+
+</pre>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+In Lisp parlance this is the classic example of a
+<i>side-effect</i>.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+For people used to patcher based systems like <a href="https://en.wikipedia.org/wiki/Pure_Data">Pure Data</a> or
+<a href="https://en.wikipedia.org/wiki/Max_(software)">Max/MSP</a>, <i>watch</i> serves a similar purpose as patch cords in these
+systems. Calling the function returned by <i>watch</i> in that context is
+similar to removing a patch cord, although the analogy shouldn't be
+overstressed considering the significant differences between a
+graph-based message-passing paradigm in these systems and the
+structural layout of cl-ref/clamps.
+</p></div></div>
+
+
+</div>
+</div></div><nav id="nav-right"><a href="07_02_04_00_the-bang-object-class.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

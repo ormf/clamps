@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-06-08 So 16:38 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Packages</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/clamps.css" />
+<link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+<script src="../js/clamps-doc.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu" href="../overview/index.html">Overview</a>
+<a class="top-menu top-menu-active" href="./index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="02_02_00_00_clog-midi-controller.html"> clog-midi-controller </a>,&nbsp;Previous: <a accesskey="p" href="02_01_04_02_other-utility-functions.html"> Other Utility Functions </a>,&nbsp;Up: <a accesskey="u" href="02_01_04_00_midi-controllers.html"> MIDI Controllers </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_00_general.html"> General </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_00_00_general.html"class="toc-entry">General</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="01_00_00_00_general.html"class="toc-entry">Clamps Packages Overview</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_00_00_00_general.html"class="toc-entry">Package Naming</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_01_02_00_reading-the-documentation.html"class="toc-entry">Reading the Documentation</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="01_02_00_00_clamps.html"class="toc-entry">clamps</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_02_00_00_clamps.html"class="toc-entry">Symbols</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_02_00_startup.html"class="toc-entry">Startup</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_03_00_emacs-shortcuts.html"class="toc-entry">Emacs Shortcuts</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_04_00_gui.html"class="toc-entry">GUI</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_05_00_meter-display.html"class="toc-entry">Meter Display</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_00_00_midi.html"class="toc-entry">Midi</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
+<ul class="ul-toc-level-3">
+<li class="toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
+<li class="toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
+<li class="toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
+<ul class="ul-toc-level-4">
+<li class="toc-hidden toc-level-4"><a href="02_01_03_00_midi-input.html"class="toc-entry">Receiving and handling MIDI Input</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_02_example-using-​midi-cc-fns​.html"class="toc-entry">Example using *​midi-cc-fns​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_03_example-using-​midi-cc-state​.html"class="toc-entry">Example using *​midi-cc-state​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_04_example-using-incudine-responders.html"class="toc-entry">Example using Incudine responders</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_05_exercise.html"class="toc-entry">Exercise</a></li>
+</ul>
+</li>
+<li class="toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
+<ul class="ul-toc-level-4">
+<li class="toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
+<li class="toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
+<li class="toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry toc-active">Excursion: Closures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="02_02_00_00_clog-midi-controller.html"class="toc-entry">clog-midi-controller</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">CM Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">General</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_02_00_00_cm-incudine.html"class="toc-entry">cm-incudine</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_03_00_00_cm-fomus.html"class="toc-entry">cm-fomus</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_04_00_00_cm-sfz.html"class="toc-entry">cm-sfz</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_05_00_00_cm-svg.html"class="toc-entry">cm-svg</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="03_05_01_00_export-to-svg.html"class="toc-entry">Export to SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_02_00_import-from-svg.html"class="toc-entry">Import from SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_03_00_inkscape-playback.html"class="toc-entry">Inkscape Playback</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="03_06_00_00_cm-svg.rts.html"class="toc-entry">cm-svg.rts</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_07_00_00_cm-poolevt.html"class="toc-entry">cm-poolevt</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_08_00_00_cm-utils.html"class="toc-entry">cm-utils</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">Incudine Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">General Incudine Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_02_00_00_of-incudine-dsps.html"class="toc-entry">of-incudine-dsps</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_03_00_00_incudine-bufs.html"class="toc-entry">incudine-bufs</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_00_00_gui.html"class="toc-entry">Gui</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="05_00_00_00_gui.html"class="toc-entry">General GUI Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_02_00_00_clog-dsp-widgets.html"class="toc-entry">clog-dsp-widgets</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_03_00_00_ats-cuda-display.html"class="toc-entry">ats-cuda-display</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="06_00_00_00_networking.html"class="toc-entry">Networking</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="06_00_00_00_networking.html"class="toc-entry">cuda-usocket-osc</a></li>
+<li class="toc-hidden toc-level-2"><a href="06_02_00_00_fudi.html"class="toc-entry">fudi</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="07_00_00_00_misc-packages.html"class="toc-entry">Misc Packages</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="07_00_00_00_misc-packages.html"class="toc-entry">ats-cuda</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_02_00_00_cl-refs.html"class="toc-entry">cl-refs</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_03_01_00_loading-sfz-files.html"class="toc-entry">Loading sfz files</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_03_02_00_playing-sfz-events.html"class="toc-entry">Playing sfz events</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_04_00_00_cl-poolplayer.html"class="toc-entry">cl-poolplayer</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_05_00_00_cl-plot.html"class="toc-entry">cl-plot</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_06_00_00_orm-utils.html"class="toc-entry">orm-utils</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Packages</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="02_01_04_02_other-utility-functions.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-orgc75db70" class="outline-5">
+<h5 id="orgc75db70">Excursion: Closures</h5>
+<div class="outline-text-5" id="text-orgc75db70">
+<p>
+The definition of the watch functions in the <a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html#orgbd23869">NanoKONTROL2 example</a>
+contains a tricky part: The variable <i>i</i> of the <i>dolist</i> is bound
+to a symbol <i>n</i> in each iteration using a <i>let</i> expression in its
+body.
+</p>
+
+<p>
+This is necessary: If the <i>let</i> form is omitted and the variable
+<i>i</i> directly referenced in all 16 watched functions, it wouldn't
+work as expected: <i>i</i> would be dereferenced at the moment, when
+the lambda function gets <i>called</i> as an effect of moving a fader
+and not at the moment, the lambda form got <i>defined</i> in the
+context of the call to the watch function during the evaluation
+of the dolist.
+</p>
+
+<p>
+After the dolist has finished, the value of <i>i</i> is 8 and that
+will be the value seen in any of the functions defined by
+<i>watch</i>.  All functions dereference the same <i>i</i> when a fader is
+moved.
+</p>
+
+<p>
+Let's see this in action:
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">WARNING: Faulty implementation of binding watch functions in an</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">iteration:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">with-slots</span> <span class="org-rainbow-delimiters-depth-2">(</span>unwatch nk2-faders<span class="org-rainbow-delimiters-depth-2">)</span> <span class="org-rainbow-delimiters-depth-2">(</span>find-controller <span class="org-builtin">:nk2</span><span class="org-rainbow-delimiters-depth-2">)</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">dotimes</span> <span class="org-rainbow-delimiters-depth-3">(</span>i 8<span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>push <span class="org-rainbow-delimiters-depth-4">(</span>watch
+           <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> <span class="org-rainbow-delimiters-depth-6">(</span>msg <span class="org-builtin">:warn</span> <span class="org-rainbow-delimiters-depth-7">(</span>format nil <span class="org-string">"Knob ~a turned: ~a"</span> <span class="org-rainbow-delimiters-depth-8">(</span>1+ i<span class="org-rainbow-delimiters-depth-8">)</span>
+                                     <span class="org-rainbow-delimiters-depth-8">(</span>get-val <span class="org-rainbow-delimiters-depth-9">(</span>aref nk2-faders i<span class="org-rainbow-delimiters-depth-9">)</span><span class="org-rainbow-delimiters-depth-8">)</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>
+          unwatch<span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>push <span class="org-rainbow-delimiters-depth-4">(</span>watch
+           <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> <span class="org-rainbow-delimiters-depth-6">(</span>msg <span class="org-builtin">:warn</span> <span class="org-rainbow-delimiters-depth-7">(</span>format nil <span class="org-string">"Fader ~a moved: ~a"</span> <span class="org-rainbow-delimiters-depth-8">(</span>1+ i<span class="org-rainbow-delimiters-depth-8">)</span>
+                                     <span class="org-rainbow-delimiters-depth-8">(</span>get-val <span class="org-rainbow-delimiters-depth-9">(</span>aref nk2-faders <span class="org-rainbow-delimiters-depth-1">(</span>+ i 8<span class="org-rainbow-delimiters-depth-1">)</span><span class="org-rainbow-delimiters-depth-9">)</span><span class="org-rainbow-delimiters-depth-8">)</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>
+          unwatch<span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 1 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 1 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 2 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 2 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 3 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 3 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 4 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 4 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 5 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 5 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 6 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 6 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 7 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 7 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 8 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 8 moved: 0</span>
+
+</pre>
+</div>
+<p>
+When initializing the watch functions everything seems to work: On
+definition of the watch in the dolist iteration, the lambda
+function gets called once. This moment is called <i>compile-time</i>
+and at that moment, <i>i</i> has the correct value as can be seen in
+the REPL output above.
+</p>
+
+<p>
+But after the <i>dotimes</i> has finished, the variable <i>i</i> is bound to
+the value 8, which becomes evident when moving any fader at
+<i>run-time</i>:
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL when moving a fader:</span>
+
+clamps&gt;
+error: Invalid index 16 for <span class="org-rainbow-delimiters-depth-1">(</span>vector t 16<span class="org-rainbow-delimiters-depth-1">)</span>, should be a non-negative integer below 16.
+error: Invalid index 16 for <span class="org-rainbow-delimiters-depth-1">(</span>vector t 16<span class="org-rainbow-delimiters-depth-1">)</span>, should be a non-negative integer below 16.
+error: Invalid index 16 for <span class="org-rainbow-delimiters-depth-1">(</span>vector t 16<span class="org-rainbow-delimiters-depth-1">)</span>, should be a non-negative integer below 16.
+error: Invalid index 16 for <span class="org-rainbow-delimiters-depth-1">(</span>vector t 16<span class="org-rainbow-delimiters-depth-1">)</span>, should be a non-negative integer below 16.
+error: Invalid index 16 for <span class="org-rainbow-delimiters-depth-1">(</span>vector t 16<span class="org-rainbow-delimiters-depth-1">)</span>, should be a non-negative integer below 16.
+clamps&gt;
+
+</pre>
+</div>
+
+<p>
+The error occurs only, when a fader is moved, because their lambda
+functions use the index (+ 8 i) which is 16 in this faulty
+implementation and beyond the maximum index 15 of the fader array
+in the Nanoktl2 instance. When moving a knob, the output in the
+REPL will state that knob 9 has been turned (which doesn't exist)
+and the value reported will be the last value received from Fader
+1 because that is the Fader at index 8 of the array<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL when turning a knob:</span>
+
+clamps&gt;
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 9 turned: 0.0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 9 turned: 0.0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 9 turned: 0.0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 9 turned: 0.0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 9 turned: 0.0</span>
+clamps&gt;
+</pre>
+</div>
+
+<p>
+To avoid this situation, the <i>let</i> expression in the <a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html#orgbd23869">correct
+example</a> serves the purpose of using a new variable <i>n</i> in each
+iteration of the dolist to capture the value of <i>i</i> at the
+<i>compile-time</i> of the function so that dereferencing <i>n</i> at
+<i>run-time</i> will refer to the correct value.
+</p>
+
+<p>
+Capturing variable bindings of functions at compile-time for
+correct dereferencing at run-time uses so-called <a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)">closures</a>. It is
+very important to have a good understanding of this concept when
+working with clamps (or any dynamic system with functional
+properties).
+</p>
+
+<p>
+Without going into too much detail, following are some examples
+intended to clarify what is happening above. It is important to
+study the examples thoroughly until it is completely understood
+what is happening.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defparameter</span> <span class="org-variable-name">*my-fn*</span> nil<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; *my-fn*</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">example of a closure: The symbol i is bound outside of the function</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">body and the function dereferences its value, whenever it gets</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">called:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-2">(</span><span class="org-rainbow-delimiters-depth-3">(</span>i 3<span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span>setf *my-fn*
+        <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> i<span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;function (lambda ())</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall *my-fn*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 3</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">This is the same in the context of an iteration: The symbol i is</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">incremented on each iteration of the dotimes until it reaches the</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">value 8, which stops the iteration. In other words: After the</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">iteration has ended, i has the value 8. As the function</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">dereferences the value of i at the time the function gets called,</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">it returns the value 8:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">dotimes</span> <span class="org-rainbow-delimiters-depth-2">(</span>i 8<span class="org-rainbow-delimiters-depth-2">)</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> i<span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall *my-fn*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 8</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">The same again but showing, that i is never reaching the value 8</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">within the iteration:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">dotimes</span> <span class="org-rainbow-delimiters-depth-2">(</span>i 8<span class="org-rainbow-delimiters-depth-2">)</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span>print i<span class="org-rainbow-delimiters-depth-2">)</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> i<span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">output in the REPL:</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">0 </span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">1 </span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">2 </span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">3 </span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">4 </span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">5 </span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">6 </span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">7 </span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">As before, when calling *my-fn* it will return the value of i after</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">the iteration has finished:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall *my-fn*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 8</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Binding the symbol n to the value of i within the dotimes will</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">dereference the values of i during the loop:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">dotimes</span> <span class="org-rainbow-delimiters-depth-2">(</span>i 8<span class="org-rainbow-delimiters-depth-2">)</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-rainbow-delimiters-depth-4">(</span>n i<span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-5">()</span> n<span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">The let binds a new n with the current value of the outer i in each</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">iteration. When the iteration is done, *my-fn* has been</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">rebound/redefined 8 times to reference the new inner n</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">symbols. After the loop has finished, *my-fn* returns the value of</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">the last binding of n in the last loop iteration.</span>
+<span class="org-comment-delimiter">;;</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">In that iteration i had the value 7 and n was bound to that value,</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">so when n gets dereferenced later, it will evaluate to 7:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall *my-fn*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 7</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">For clarity: The let creates a new and different n on-the-fly on</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">each iteration. This might get clearer when spelling out the</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">8 iterations of the dotimes:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">block</span> nil
+  <span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-rainbow-delimiters-depth-4">(</span>i 0<span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>                       <span class="org-comment-delimiter">;; </span><span class="org-comment">start of the dotimes: i is 0</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-rainbow-delimiters-depth-5">(</span>n i<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>                     <span class="org-comment-delimiter">;; </span><span class="org-comment">a new n is bound to 0</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> n<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>incf i<span class="org-rainbow-delimiters-depth-3">)</span>                         <span class="org-comment-delimiter">;; </span><span class="org-comment">i is 1</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">if</span> <span class="org-rainbow-delimiters-depth-4">(</span>= i 8<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">return</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-rainbow-delimiters-depth-5">(</span>n i<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>                     <span class="org-comment-delimiter">;; </span><span class="org-comment">a new n is bound to 1</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> n<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>incf i<span class="org-rainbow-delimiters-depth-3">)</span>                         <span class="org-comment-delimiter">;; </span><span class="org-comment">i is 2</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">if</span> <span class="org-rainbow-delimiters-depth-4">(</span>= i 8<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">return</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-rainbow-delimiters-depth-5">(</span>n i<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>                     <span class="org-comment-delimiter">;; </span><span class="org-comment">a new n is bound to 2</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> n<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>incf i<span class="org-rainbow-delimiters-depth-3">)</span>                         <span class="org-comment-delimiter">;; </span><span class="org-comment">i is 3</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">if</span> <span class="org-rainbow-delimiters-depth-4">(</span>= i 8<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">return</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-rainbow-delimiters-depth-5">(</span>n i<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>                     <span class="org-comment-delimiter">;; </span><span class="org-comment">a new n is bound to 3</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> n<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>incf i<span class="org-rainbow-delimiters-depth-3">)</span>                         <span class="org-comment-delimiter">;; </span><span class="org-comment">i is 4</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">if</span> <span class="org-rainbow-delimiters-depth-4">(</span>= i 8<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">return</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-rainbow-delimiters-depth-5">(</span>n i<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>                     <span class="org-comment-delimiter">;; </span><span class="org-comment">a new n is bound to 4</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> n<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>incf i<span class="org-rainbow-delimiters-depth-3">)</span>                         <span class="org-comment-delimiter">;; </span><span class="org-comment">i is 5</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">if</span> <span class="org-rainbow-delimiters-depth-4">(</span>= i 8<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">return</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-rainbow-delimiters-depth-5">(</span>n i<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>                     <span class="org-comment-delimiter">;; </span><span class="org-comment">a new n is bound to 5</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> n<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>incf i<span class="org-rainbow-delimiters-depth-3">)</span>                         <span class="org-comment-delimiter">;; </span><span class="org-comment">i is 6</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">if</span> <span class="org-rainbow-delimiters-depth-4">(</span>= i 8<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">return</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-rainbow-delimiters-depth-5">(</span>n i<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>                     <span class="org-comment-delimiter">;; </span><span class="org-comment">a new n is bound to 6</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> n<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>incf i<span class="org-rainbow-delimiters-depth-3">)</span>                         <span class="org-comment-delimiter">;; </span><span class="org-comment">i is 7</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">if</span> <span class="org-rainbow-delimiters-depth-4">(</span>= i 8<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">return</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-rainbow-delimiters-depth-5">(</span>n i<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>                     <span class="org-comment-delimiter">;; </span><span class="org-comment">a new n is bound to 7</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>setf *my-fn* <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-6">()</span> n<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>  <span class="org-comment-delimiter">;; </span><span class="org-comment">last definition of *my-fn* which will get used</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>incf i<span class="org-rainbow-delimiters-depth-3">)</span>                         <span class="org-comment-delimiter">;; </span><span class="org-comment">i is 8</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">if</span> <span class="org-rainbow-delimiters-depth-4">(</span>= i 8<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">return</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>          <span class="org-comment-delimiter">;; </span><span class="org-comment">end of the dotimes</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall *my-fn*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 7</span>
+</pre>
+</div>
+
+<p>
+In the <a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html#orgbd23869">correct example</a>, two new watch function bindings are
+established in each of the 8 iterations. As in the example above,
+the <i>let</i> binds a new <i>symbol</i> n to the current <i>value</i> of the
+outer iteration variable i.
+</p>
+
+<p>
+It is crucial to understand, that n is not bound to the <i>symbol</i>
+i, but to its <i>value</i> because the <i>let</i> evaluates i, before
+binding n to it.
+</p>
+
+<p>
+Also it is crucial to understand that the different symbols <i>n</i> in
+the <i>let</i> forms above are actually different and are only valid
+and accessible within the body of the <i>let</i> in which they are
+bound (which is the main idea of <i>let</i> in the first place).
+</p>
+
+<p>
+Last not least it should be mentioned that it is not uncommon, to
+use the same symbol for the outer iteration and the inner let like
+this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">using an array of 8 functions for clarity:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defparameter</span> <span class="org-variable-name">*my-fns*</span> #<span class="org-rainbow-delimiters-depth-2">(</span>nil nil nil nil nil nil nil nil<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; *my-fns*</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">dotimes</span> <span class="org-rainbow-delimiters-depth-2">(</span>n 8<span class="org-rainbow-delimiters-depth-2">)</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-rainbow-delimiters-depth-4">(</span>n n<span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span>setf <span class="org-rainbow-delimiters-depth-4">(</span>aref *my-fns* n<span class="org-rainbow-delimiters-depth-4">)</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-5">()</span> n<span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall <span class="org-rainbow-delimiters-depth-2">(</span>aref *my-fns* 0<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 0</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall <span class="org-rainbow-delimiters-depth-2">(</span>aref *my-fns* 1<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 1</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall <span class="org-rainbow-delimiters-depth-2">(</span>aref *my-fns* 4<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 4</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall <span class="org-rainbow-delimiters-depth-2">(</span>aref *my-fns* 7<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 7</span>
+</pre>
+</div>
+<p>
+This is exactly the same as before: In the let, a new symbol <i>n</i>
+gets bound to the <i>value</i> of the outer symbol n in every
+iteration. In the lexical scope (the body) of the let, the new
+binding of n takes precedence over the outer n, so referencing n
+in the <i>aref</i> and in the <i>lambda</i> expression will dereference the
+new binding established in the <i>let</i>. This is called <i>shadowing</i>,
+or, in other words, the inner n <i>"shadows"</i> the outer n.
+</p>
+
+<p>
+Closures are such a powerful construct that they have become
+increasingly common in many programming languages and many books
+have been dedicated to their exploration<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>. But as in real
+life: With power comes responsibility and it should be mentioned
+that this power can come at the price of an overwhelming
+complexity, so it should be handled with care.
+</p>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+When such an error happens in practice, it is often quite
+puzzling what is at fault and such behaviour can be very hard to
+debug. Therefore it is extremely important to be aware of the reasons
+for such behaviour and to be alert when defining functions referencing
+variables outside of their scope, expecially in iterations.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+For examples see Dan Graham's famous book "On Lisp" or Doug
+Hoyte's "Let over Lambda".
+</p></div></div>
+
+
+</div>
+</div></div><nav id="nav-right"><a href="02_02_00_00_clog-midi-controller.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

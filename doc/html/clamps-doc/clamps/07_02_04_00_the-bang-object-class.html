@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-06-08 So 16:38 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Packages</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/clamps.css" />
+<link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+<script src="../js/clamps-doc.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu" href="../overview/index.html">Overview</a>
+<a class="top-menu top-menu-active" href="./index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="07_03_00_00_cl-sfz.html"> cl-sfz </a>,&nbsp;Previous: <a accesskey="p" href="07_02_03_00_defining-relations.html"> Defining relations </a>,&nbsp;Up: <a accesskey="u" href="07_02_00_00_cl-refs.html"> cl-refs </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_00_general.html"> General </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_00_00_general.html"class="toc-entry">General</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="01_00_00_00_general.html"class="toc-entry">Clamps Packages Overview</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_00_00_00_general.html"class="toc-entry">Package Naming</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_01_02_00_reading-the-documentation.html"class="toc-entry">Reading the Documentation</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="01_02_00_00_clamps.html"class="toc-entry">clamps</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_02_00_00_clamps.html"class="toc-entry">Symbols</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_02_00_startup.html"class="toc-entry">Startup</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_03_00_emacs-shortcuts.html"class="toc-entry">Emacs Shortcuts</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_04_00_gui.html"class="toc-entry">GUI</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_05_00_meter-display.html"class="toc-entry">Meter Display</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_00_00_midi.html"class="toc-entry">Midi</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
+<li class="toc-hidden toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
+<li class="toc-hidden toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
+<ul class="ul-toc-level-4">
+<li class="toc-hidden toc-level-4"><a href="02_01_03_00_midi-input.html"class="toc-entry">Receiving and handling MIDI Input</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_02_example-using-​midi-cc-fns​.html"class="toc-entry">Example using *​midi-cc-fns​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_03_example-using-​midi-cc-state​.html"class="toc-entry">Example using *​midi-cc-state​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_04_example-using-incudine-responders.html"class="toc-entry">Example using Incudine responders</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_05_exercise.html"class="toc-entry">Exercise</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
+<ul class="ul-toc-level-4">
+<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry">Excursion: Closures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="02_02_00_00_clog-midi-controller.html"class="toc-entry">clog-midi-controller</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">CM Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">General</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_02_00_00_cm-incudine.html"class="toc-entry">cm-incudine</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_03_00_00_cm-fomus.html"class="toc-entry">cm-fomus</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_04_00_00_cm-sfz.html"class="toc-entry">cm-sfz</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_05_00_00_cm-svg.html"class="toc-entry">cm-svg</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="03_05_01_00_export-to-svg.html"class="toc-entry">Export to SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_02_00_import-from-svg.html"class="toc-entry">Import from SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_03_00_inkscape-playback.html"class="toc-entry">Inkscape Playback</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="03_06_00_00_cm-svg.rts.html"class="toc-entry">cm-svg.rts</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_07_00_00_cm-poolevt.html"class="toc-entry">cm-poolevt</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_08_00_00_cm-utils.html"class="toc-entry">cm-utils</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">Incudine Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">General Incudine Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_02_00_00_of-incudine-dsps.html"class="toc-entry">of-incudine-dsps</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_03_00_00_incudine-bufs.html"class="toc-entry">incudine-bufs</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_00_00_gui.html"class="toc-entry">Gui</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="05_00_00_00_gui.html"class="toc-entry">General GUI Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_02_00_00_clog-dsp-widgets.html"class="toc-entry">clog-dsp-widgets</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_03_00_00_ats-cuda-display.html"class="toc-entry">ats-cuda-display</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="06_00_00_00_networking.html"class="toc-entry">Networking</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="06_00_00_00_networking.html"class="toc-entry">cuda-usocket-osc</a></li>
+<li class="toc-hidden toc-level-2"><a href="06_02_00_00_fudi.html"class="toc-entry">fudi</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="07_00_00_00_misc-packages.html"class="toc-entry">Misc Packages</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="07_00_00_00_misc-packages.html"class="toc-entry">ats-cuda</a></li>
+<li class="toc-level-2"><a href="07_02_00_00_cl-refs.html"class="toc-entry">cl-refs</a>
+<ul class="ul-toc-level-3">
+<li class="toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
+<li class="toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
+<li class="toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
+<li class="toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry toc-active">The bang-object class</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_03_01_00_loading-sfz-files.html"class="toc-entry">Loading sfz files</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_03_02_00_playing-sfz-events.html"class="toc-entry">Playing sfz events</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="07_04_00_00_cl-poolplayer.html"class="toc-entry">cl-poolplayer</a></li>
+<li class="toc-level-2"><a href="07_05_00_00_cl-plot.html"class="toc-entry">cl-plot</a></li>
+<li class="toc-level-2"><a href="07_06_00_00_orm-utils.html"class="toc-entry">orm-utils</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Packages</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="07_02_03_00_defining-relations.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-orgf8df821" class="outline-4">
+<h4 id="orgf8df821">The bang-object class</h4>
+<div class="outline-text-4" id="text-orgf8df821">
+<p>
+A bang-object is an extension to a ref-object by adding the option
+to trigger it. The inspiration for a bang object is an object
+which behaves like a button in a gui or on a hardware controller:
+In addition to the state of the button (on, off, flashing, etc.)
+which is captured in the value of its ref-object part, a button
+can be pressed. A button-press is realized by calling the <a href="../clamps-dict/trigger.html">trigger</a>
+function on an instance of the bang-object. Note that the
+triggered function is called without arguments and any value it
+returns is ignored by <a href="../clamps-dict/trigger.html">trigger</a>. It's called for its side-effect
+only.
+</p>
+
+<h5>creation function</h5>
+<p>
+<a id="07_02_04_00_the-bang-object-class.html#orgc2df755"></a>
+</p>
+
+<p>
+A bang-object gets created with the function <i>make-bang</i>. The
+optional arguments of the function are:
+</p>
+
+<ol class="org-ol">
+<li>A function of no arguments to be executed when calling <a href="../clamps-dict/trigger.html">trigger</a>
+with the created instance as argument.</li>
+
+<li>The initial value of the object, exactly like the argument to
+<a href="../clamps-dict/make-ref.html">make-ref</a>.</li>
+</ol>
+
+<p>
+Here is an example:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defparameter</span> <span class="org-variable-name">b1</span> <span class="org-rainbow-delimiters-depth-2">(</span>make-bang <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> <span class="org-rainbow-delimiters-depth-4">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Bang object b1 triggered"</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span> 1<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; b1</span>
+
+b1 <span class="org-comment">; =&gt; #&lt;bang 1&gt;</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>get-val b1<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 1</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>set-val b1 0<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 0</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>get-val b1<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; 0</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>trigger b1<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Bang object b1 triggered</span>
+</pre>
+</div>
+
+<p>
+When supplying <i>nil</i> as the trigger function argument to
+make-bang, no action is taken when calling trigger on the created
+instance.
+</p>
+
+<p>
+<a href="../clamps-dict/add-trigger-fn.html">add-trigger-fn</a> takes at least two arguments: An instance of a
+bang-object and one or more functions of no argument, to be
+executed when the object is triggered.
+</p>
+
+<p>
+Like <a href="../clamps-dict/w-y.html">watch</a> for the value part of a ref-object, <a href="../clamps-dict/add-trigger-fn.html">add-trigger-fn</a>
+returns a function of no arguments, which can be called to remove
+the added trigger-fn from the bang-object:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defparameter</span> <span class="org-variable-name">b1</span> <span class="org-rainbow-delimiters-depth-2">(</span>make-bang nil 0<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; b1</span>
+
+b1 <span class="org-comment">; =&gt; #&lt;bang 1&gt;</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>trigger b1<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">No output in the REPL</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defparameter</span> <span class="org-variable-name">*bang-unwatch-fn*</span> nil<span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>setf *bang-unwatch-fn* <span class="org-rainbow-delimiters-depth-2">(</span>add-trigger-fn b1 <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> <span class="org-rainbow-delimiters-depth-4">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Bang object b1 triggered"</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;;  </span><span class="org-comment">=&gt; #&lt;function (lambda () :in add-trigger-fn) {100B72647B}&gt;</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>trigger b1<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Bang object b1 triggered</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>funcall *bang-unwatch-fn*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>trigger b1<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">No output in the REPL</span>
+</pre>
+</div>
+</div>
+</div>
+</div><nav id="nav-right"><a href="07_03_00_00_cl-sfz.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

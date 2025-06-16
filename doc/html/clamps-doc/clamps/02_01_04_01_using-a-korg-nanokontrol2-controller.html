@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-06-08 So 16:38 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Packages</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/clamps.css" />
+<link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+<script src="../js/clamps-doc.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu" href="../overview/index.html">Overview</a>
+<a class="top-menu top-menu-active" href="./index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="02_01_04_02_other-utility-functions.html"> Other Utility Functions </a>,&nbsp;Previous: <a accesskey="p" href="02_01_04_00_midi-controllers.html"> MIDI Controllers </a>,&nbsp;Up: <a accesskey="u" href="02_01_04_00_midi-controllers.html"> MIDI Controllers </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_00_general.html"> General </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_00_00_general.html"class="toc-entry">General</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="01_00_00_00_general.html"class="toc-entry">Clamps Packages Overview</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_00_00_00_general.html"class="toc-entry">Package Naming</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_01_02_00_reading-the-documentation.html"class="toc-entry">Reading the Documentation</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="01_02_00_00_clamps.html"class="toc-entry">clamps</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_02_00_00_clamps.html"class="toc-entry">Symbols</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_02_00_startup.html"class="toc-entry">Startup</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_03_00_emacs-shortcuts.html"class="toc-entry">Emacs Shortcuts</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_04_00_gui.html"class="toc-entry">GUI</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_05_00_meter-display.html"class="toc-entry">Meter Display</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_00_00_midi.html"class="toc-entry">Midi</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
+<ul class="ul-toc-level-3">
+<li class="toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
+<li class="toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
+<li class="toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
+<ul class="ul-toc-level-4">
+<li class="toc-hidden toc-level-4"><a href="02_01_03_00_midi-input.html"class="toc-entry">Receiving and handling MIDI Input</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_02_example-using-​midi-cc-fns​.html"class="toc-entry">Example using *​midi-cc-fns​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_03_example-using-​midi-cc-state​.html"class="toc-entry">Example using *​midi-cc-state​*</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_04_example-using-incudine-responders.html"class="toc-entry">Example using Incudine responders</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_03_05_exercise.html"class="toc-entry">Exercise</a></li>
+</ul>
+</li>
+<li class="toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
+<ul class="ul-toc-level-4">
+<li class="toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry toc-active">Using a Korg NanoKONTROL2 Controller</a></li>
+<li class="toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
+<li class="toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry">Excursion: Closures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="02_02_00_00_clog-midi-controller.html"class="toc-entry">clog-midi-controller</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">CM Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">General</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_02_00_00_cm-incudine.html"class="toc-entry">cm-incudine</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_03_00_00_cm-fomus.html"class="toc-entry">cm-fomus</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_04_00_00_cm-sfz.html"class="toc-entry">cm-sfz</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_05_00_00_cm-svg.html"class="toc-entry">cm-svg</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="03_05_01_00_export-to-svg.html"class="toc-entry">Export to SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_02_00_import-from-svg.html"class="toc-entry">Import from SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_03_00_inkscape-playback.html"class="toc-entry">Inkscape Playback</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="03_06_00_00_cm-svg.rts.html"class="toc-entry">cm-svg.rts</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_07_00_00_cm-poolevt.html"class="toc-entry">cm-poolevt</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_08_00_00_cm-utils.html"class="toc-entry">cm-utils</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">Incudine Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">General Incudine Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_02_00_00_of-incudine-dsps.html"class="toc-entry">of-incudine-dsps</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_03_00_00_incudine-bufs.html"class="toc-entry">incudine-bufs</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_00_00_gui.html"class="toc-entry">Gui</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="05_00_00_00_gui.html"class="toc-entry">General GUI Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_02_00_00_clog-dsp-widgets.html"class="toc-entry">clog-dsp-widgets</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_03_00_00_ats-cuda-display.html"class="toc-entry">ats-cuda-display</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="06_00_00_00_networking.html"class="toc-entry">Networking</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="06_00_00_00_networking.html"class="toc-entry">cuda-usocket-osc</a></li>
+<li class="toc-hidden toc-level-2"><a href="06_02_00_00_fudi.html"class="toc-entry">fudi</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="07_00_00_00_misc-packages.html"class="toc-entry">Misc Packages</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="07_00_00_00_misc-packages.html"class="toc-entry">ats-cuda</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_02_00_00_cl-refs.html"class="toc-entry">cl-refs</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_03_01_00_loading-sfz-files.html"class="toc-entry">Loading sfz files</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_03_02_00_playing-sfz-events.html"class="toc-entry">Playing sfz events</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_04_00_00_cl-poolplayer.html"class="toc-entry">cl-poolplayer</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_05_00_00_cl-plot.html"class="toc-entry">cl-plot</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_06_00_00_orm-utils.html"class="toc-entry">orm-utils</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Packages</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="02_01_04_00_midi-controllers.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-org8bf4874" class="outline-5">
+<h5 id="org8bf4874">Using a Korg NanoKONTROL2 Controller</h5>
+<div class="outline-text-5" id="text-org8bf4874">
+</div>
+<ul class="org-ul">
+<li><a id="org685dfeb"></a>Preparation<br />
+<div class="outline-text-6" id="text-org685dfeb">
+<p>
+Restore the NanoKontrol2 to the factory defaults and set the
+<i>LED Mode</i> in the <i>Common</i> section of the <a href="https://www.korg.com/us/support/download/software/0/159/1354/">Korg Kontrol Editor</a>
+application to "External".
+</p>
+</div>
+</li>
+<li><a id="orgd7e81e4"></a>Initialization<br />
+<div class="outline-text-6" id="text-orgd7e81e4">
+<p>
+To initialize the controller, issue the <a href="../clamps-dict/add-midi-controller.html">add-midi-controller</a>
+method with the nanoktl2-midi class and a custom ID and
+optionally its channel as arguments:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">create an instance of a NanoKONTROL2 midi-controller with ID :nk2</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">using MIDI channel 1 and add it to the registry:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>add-midi-controller 'nanoktl2-midi <span class="org-builtin">:nk2</span> <span class="org-builtin">:chan</span> 1<span class="org-rainbow-delimiters-depth-1">)</span>
+</pre>
+</div>
+
+<p>
+If the NanoKONTROL2 hardware device is connected to the incudine
+in/output ports, it now can be used. For details about the slots
+and their layout, refer to <a href="../clamps-dict/nanoktl2-midi.html">nanoktl2-midi</a> in the Clamps
+Dictionary.
+</p>
+</div>
+</li>
+<li><a id="org581f436"></a>Adding Behaviour<br />
+<div class="outline-text-6" id="text-org581f436">
+<p>
+We can add behaviour to the instance by attaching <a href="../clamps-dict/w-y.html">watch</a>
+functions to the faders and knobs or <a href="../clamps-dict/trigger.html">trigger</a> functions to the
+buttons:
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org551f382"></a>Faders and Knobs<br />
+<div class="outline-text-7" id="text-org551f382">
+<div class="org-src-container">
+<pre class="src src-lisp" id="orgbd23869"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">with-slots</span> <span class="org-rainbow-delimiters-depth-2">(</span>unwatch nk2-faders<span class="org-rainbow-delimiters-depth-2">)</span> <span class="org-rainbow-delimiters-depth-2">(</span>find-controller <span class="org-builtin">:nk2</span><span class="org-rainbow-delimiters-depth-2">)</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">dotimes</span> <span class="org-rainbow-delimiters-depth-3">(</span>i 8<span class="org-rainbow-delimiters-depth-3">)</span>
+    <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-rainbow-delimiters-depth-5">(</span>n i<span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>push <span class="org-rainbow-delimiters-depth-5">(</span>watch
+             <span class="org-rainbow-delimiters-depth-6">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-7">()</span> <span class="org-rainbow-delimiters-depth-7">(</span>msg <span class="org-builtin">:warn</span> <span class="org-rainbow-delimiters-depth-8">(</span>format nil <span class="org-string">"Knob ~a turned: ~a"</span> <span class="org-rainbow-delimiters-depth-9">(</span>1+ n<span class="org-rainbow-delimiters-depth-9">)</span>
+                                       <span class="org-rainbow-delimiters-depth-9">(</span>get-val <span class="org-rainbow-delimiters-depth-1">(</span>aref nk2-faders n<span class="org-rainbow-delimiters-depth-1">)</span><span class="org-rainbow-delimiters-depth-9">)</span><span class="org-rainbow-delimiters-depth-8">)</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span>
+            unwatch<span class="org-rainbow-delimiters-depth-4">)</span>
+      <span class="org-rainbow-delimiters-depth-4">(</span>push <span class="org-rainbow-delimiters-depth-5">(</span>watch
+             <span class="org-rainbow-delimiters-depth-6">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-7">()</span> <span class="org-rainbow-delimiters-depth-7">(</span>msg <span class="org-builtin">:warn</span> <span class="org-rainbow-delimiters-depth-8">(</span>format nil <span class="org-string">"Fader ~a moved: ~a"</span> <span class="org-rainbow-delimiters-depth-9">(</span>1+ n<span class="org-rainbow-delimiters-depth-9">)</span>
+                                      <span class="org-rainbow-delimiters-depth-9">(</span>get-val <span class="org-rainbow-delimiters-depth-1">(</span>aref nk2-faders <span class="org-rainbow-delimiters-depth-2">(</span>+ n 8<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span><span class="org-rainbow-delimiters-depth-9">)</span><span class="org-rainbow-delimiters-depth-8">)</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span>
+            unwatch<span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+<span class="org-comment-delimiter">;;</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">output in the REPL:</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 1 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 1 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 2 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 2 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 3 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 3 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 4 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 4 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 5 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 5 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 6 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 6 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 7 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 7 moved: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Knob 8 turned: 0</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Fader 8 moved: 0</span>
+</pre>
+</div>
+
+<p>
+The output in the REPL signals that the watch function has been
+established for all knobs and faders.
+</p>
+
+<p>
+Moving a fader works like expected:
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp">clamps&gt; 
+warn: Fader 1 moved: 1.0
+warn: Fader 1 moved: 2.0
+warn: Fader 1 moved: 3.0
+warn: Fader 1 moved: 4.0
+warn: Fader 1 moved: 5.0
+warn: Fader 1 moved: 6.0
+warn: Fader 1 moved: 7.0
+warn: Fader 1 moved: 8.0
+warn: Fader 1 moved: 9.0
+&lt;...&gt;
+clamps&gt; 
+</pre>
+</div>
+
+<h5>Important Note</h5>
+<p>
+In the above <a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html#orgbd23869">Fader/Knob example</a>, it might not be obvious that
+the binding of <i>n</i> to <i>i</i> using the <i>let</i> in the body of the
+<i>dotimes</i> is crucial for this to work. If it isn't clear, why
+it wouldn't work to use <i>i</i> directly in the <i>lambda</i> forms of
+the <i>watch</i> expressions, refer to the section <a href="02_01_04_03_excursion-closures.html#orgc75db70">Excursion: Closures</a>. The section tries to shed some light on binding and
+the difference of <i>compile-time</i> vs. <i>run-time</i>. Knowing how to
+deal with closures is a recurring necessity when working with
+Clamps and a thorough understanding indispensible.
+</p>
+</div>
+</li>
+<li><a id="org897d925"></a>Buttons<br />
+<div class="outline-text-7" id="text-org897d925">
+<p>
+A button is inspired by a Gui element of a button, adding click
+events on the button. It is implemented in <a href="07_02_00_00_cl-refs.html#orgd5309ca">cl-refs</a> as a
+<a href="../clamps-dict/b.html">bang-object</a>, a ref-cell with an additional <a href="../clamps-dict/trigger.html">trigger</a> function,
+which ist invoked on a button press/click.
+</p>
+
+<p>
+To add an action to the button, use the function
+<a href="../clamps-dict/add-trigger-fn.html">add-trigger-fn</a>.
+</p>
+
+<p>
+Here is an example:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span>add-trigger-fn <span class="org-rainbow-delimiters-depth-2">(</span>tr-play <span class="org-rainbow-delimiters-depth-3">(</span>find-controller <span class="org-builtin">:nk2</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span> <span class="org-rainbow-delimiters-depth-2">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-3">()</span> <span class="org-rainbow-delimiters-depth-3">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"tr-play Button pressed."</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; nil</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span>trigger <span class="org-rainbow-delimiters-depth-2">(</span>tr-play <span class="org-rainbow-delimiters-depth-3">(</span>find-object <span class="org-builtin">:nk2</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">output in the REPL:</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: tr-play Button pressed.</span>
+</pre>
+</div>
+
+<p>
+This behaviour is automatically implemented in the
+<a href="../clamps-dict/h.html">handle-midi-in</a> method of a nanoktl2-midi instance: When
+pressing the tr-play button on the NanoKONTROL2 Hardware
+Controller, it will call the <a href="../clamps-dict/trigger.html">trigger</a> function on the tr-play
+slot of the instance and you should see the same message in the
+REPL as before:
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp">clamps&gt; 
+warn: tr-play Button pressed.
+clamps&gt; 
+</pre>
+</div>
+
+<p>
+The same result is achievd by calling <a href="../clamps-dict/trigger.html">trigger</a> with the
+bang-object as argument:      
+</p>
+
+<p>
+Removing the trigger functions from the button can be done using
+the function <a href="../clamps-dict/remove-all-triggers.html">remove-all-triggers</a>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span>remove-all-triggers <span class="org-rainbow-delimiters-depth-2">(</span>tr-play <span class="org-rainbow-delimiters-depth-3">(</span>find-controller <span class="org-builtin">:nk2</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+</pre>
+</div>
+
+<p>
+Like <a href="../clamps-dict/w-y.html">watch</a>, <a href="../clamps-dict/add-trigger-fn.html">add-trigger-fn</a> returns a function to remove the
+trigger function(s) from the ref-cell. Therefore you can also
+implement adding the trigger function to the nanoktl2-midi
+instance like this to be able to have a finer control over
+selectively adding and removing trigger functions for
+ref-cells:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">*unwatch-triggers*</span> nil<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>push <span class="org-rainbow-delimiters-depth-2">(</span>add-trigger-fn <span class="org-rainbow-delimiters-depth-3">(</span>tr-play <span class="org-rainbow-delimiters-depth-4">(</span>find-controller <span class="org-builtin">:nk2</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span> <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">()</span> <span class="org-rainbow-delimiters-depth-4">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"tr-play Button pressed."</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span>
+      *unwatch-triggers*<span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">;;  </span><span class="org-comment">=&gt; (#&lt;function (lambda () :in add-trigger-fn) {100A94123B}&gt;</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">remove the trigger function:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">progn</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span>map nil #'funcall *unwatch-triggers*<span class="org-rainbow-delimiters-depth-2">)</span>
+  <span class="org-rainbow-delimiters-depth-2">(</span>setf *unwatch-triggers* nil<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">; </span><span class="org-comment">=&gt; nil</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">abbreviation of the above expression:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>setf *unwatch-triggers*
+      <span class="org-rainbow-delimiters-depth-2">(</span>map nil #'funcall *unwatch-triggers*<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+<span class="org-comment-delimiter">; </span><span class="org-comment">=&gt; nil</span>
+</pre>
+</div>
+
+<h5>Note</h5>
+<p>
+As buttons are extended ref-cells, they also have a value slot
+which can be accessed and manipulated like any normal
+ref-cell. An application can be use this to capture the state
+of the button (on, off, flashing, etc.) in relation to, but
+independent from the button-press (trigger) action.
+</p>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div><nav id="nav-right"><a href="02_01_04_02_other-utility-functions.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-06-08 So 16:38 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Packages</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/clamps.css" />
+<link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+<script src="../js/clamps-doc.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu" href="../overview/index.html">Overview</a>
+<a class="top-menu top-menu-active" href="./index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="02_01_03_05_exercise.html"> Exercise </a>,&nbsp;Previous: <a accesskey="p" href="02_01_03_03_example-using-​midi-cc-state​.html"> Example using *​midi-cc-state​* </a>,&nbsp;Up: <a accesskey="u" href="02_01_03_00_midi-input.html"> MIDI Input </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_00_general.html"> General </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_00_00_general.html"class="toc-entry">General</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="01_00_00_00_general.html"class="toc-entry">Clamps Packages Overview</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_00_00_00_general.html"class="toc-entry">Package Naming</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_01_02_00_reading-the-documentation.html"class="toc-entry">Reading the Documentation</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="01_02_00_00_clamps.html"class="toc-entry">clamps</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="01_02_00_00_clamps.html"class="toc-entry">Symbols</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_02_00_startup.html"class="toc-entry">Startup</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_03_00_emacs-shortcuts.html"class="toc-entry">Emacs Shortcuts</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_04_00_gui.html"class="toc-entry">GUI</a></li>
+<li class="toc-hidden toc-level-3"><a href="01_02_05_00_meter-display.html"class="toc-entry">Meter Display</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_00_00_midi.html"class="toc-entry">Midi</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
+<ul class="ul-toc-level-3">
+<li class="toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
+<li class="toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
+<li class="toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
+<ul class="ul-toc-level-4">
+<li class="toc-level-4"><a href="02_01_03_00_midi-input.html"class="toc-entry">Receiving and handling MIDI Input</a></li>
+<li class="toc-level-4"><a href="02_01_03_02_example-using-​midi-cc-fns​.html"class="toc-entry">Example using *​midi-cc-fns​*</a></li>
+<li class="toc-level-4"><a href="02_01_03_03_example-using-​midi-cc-state​.html"class="toc-entry">Example using *​midi-cc-state​*</a></li>
+<li class="toc-level-4"><a href="02_01_03_04_example-using-incudine-responders.html"class="toc-entry toc-active">Example using Incudine responders</a></li>
+<li class="toc-level-4"><a href="02_01_03_05_exercise.html"class="toc-entry">Exercise</a></li>
+</ul>
+</li>
+<li class="toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
+<ul class="ul-toc-level-4">
+<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry">Excursion: Closures</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="02_02_00_00_clog-midi-controller.html"class="toc-entry">clog-midi-controller</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">CM Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="03_00_00_00_cm-extensions.html"class="toc-entry">General</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_02_00_00_cm-incudine.html"class="toc-entry">cm-incudine</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_03_00_00_cm-fomus.html"class="toc-entry">cm-fomus</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_04_00_00_cm-sfz.html"class="toc-entry">cm-sfz</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_05_00_00_cm-svg.html"class="toc-entry">cm-svg</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="03_05_01_00_export-to-svg.html"class="toc-entry">Export to SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_02_00_import-from-svg.html"class="toc-entry">Import from SVG</a></li>
+<li class="toc-hidden toc-level-3"><a href="03_05_03_00_inkscape-playback.html"class="toc-entry">Inkscape Playback</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="03_06_00_00_cm-svg.rts.html"class="toc-entry">cm-svg.rts</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_07_00_00_cm-poolevt.html"class="toc-entry">cm-poolevt</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_08_00_00_cm-utils.html"class="toc-entry">cm-utils</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">Incudine Extensions</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="04_00_00_00_incudine-extensions.html"class="toc-entry">General Incudine Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_02_00_00_of-incudine-dsps.html"class="toc-entry">of-incudine-dsps</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_03_00_00_incudine-bufs.html"class="toc-entry">incudine-bufs</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_00_00_gui.html"class="toc-entry">Gui</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="05_00_00_00_gui.html"class="toc-entry">General GUI Setup</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_02_00_00_clog-dsp-widgets.html"class="toc-entry">clog-dsp-widgets</a></li>
+<li class="toc-hidden toc-level-2"><a href="05_03_00_00_ats-cuda-display.html"class="toc-entry">ats-cuda-display</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="06_00_00_00_networking.html"class="toc-entry">Networking</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="06_00_00_00_networking.html"class="toc-entry">cuda-usocket-osc</a></li>
+<li class="toc-hidden toc-level-2"><a href="06_02_00_00_fudi.html"class="toc-entry">fudi</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="07_00_00_00_misc-packages.html"class="toc-entry">Misc Packages</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="07_00_00_00_misc-packages.html"class="toc-entry">ats-cuda</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_02_00_00_cl-refs.html"class="toc-entry">cl-refs</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_03_01_00_loading-sfz-files.html"class="toc-entry">Loading sfz files</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_03_02_00_playing-sfz-events.html"class="toc-entry">Playing sfz events</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_04_00_00_cl-poolplayer.html"class="toc-entry">cl-poolplayer</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_05_00_00_cl-plot.html"class="toc-entry">cl-plot</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_06_00_00_orm-utils.html"class="toc-entry">orm-utils</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Packages</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="02_01_03_03_example-using-​midi-cc-state​.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-org2a1c926" class="outline-5">
+<h5 id="org2a1c926">Example using Incudine responders</h5>
+<div class="outline-text-5" id="text-org2a1c926">
+<p>
+It is not required to rely on the infrastructure of Clamps to
+react to Midi input events. Incudine provides all necessary tools
+to set up your own MIDI input handlers, giving you even more
+flexibility<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>.
+</p>
+
+<p>
+Reacting to MIDI input is done by defining
+<i>responders</i>. Responders are functions called whenever MIDI input
+is received. The function <i>make-responder</i> takes the MIDI input
+stream and a function to be called whenever MIDI input is
+received on the stream and returns a MIDI responder.
+</p>
+
+<p>
+The function supplied to <i>make-responder</i> takes three arguments:
+The <i>status</i> byte, the <i>data1</i> byte and the <i>data2</i> byte. Each of
+these arguments takes an integer number in the range [0..127],
+the usual range for MIDI messages. The <i>status</i> byte contains the
+<i>type</i> of the MIDI message and the <i>channel number</i>. The
+information of the <i>data1</i> and <i>data2</i> parameters depends on the
+message type. In the case of MIDI CC messages, <i>data1</i> is the <i>CC
+number</i> and <i>data2</i> the <i>CC value</i>. In case of note-on or
+note-off messages, <i>data1</i> represents the <i>keynum</i> and <i>data2</i>
+the <i>velocity</i>.
+</p>
+
+<p>
+As the status byte is not straightforward to decode, CM provides
+utility functions called status-&gt;channel and status-&gt;opcode to
+extract the channel and opcode information from the status
+byte. status-&gt;opcode returns ist results as a keyword. <i>:cc</i> for
+CC messages and <i>:note-on</i> or <i>:note-off</i> for note
+messages<sup><a id="fnr.2" class="footref" href="#fn.2" role="doc-backlink">2</a></sup>.
+</p>
+
+<p>
+<i>recv-start</i> and <i>recv-stop</i> are functions of Incudine which
+start or suspend receiving MIDI messages on a particular MIDI
+input stream aupplied as argument to these functions. Both
+functions can get called at any time and will also work in the
+two first examples<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>.
+</p>
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">suspend receiving midi events</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>incudine:recv-stop *midi-in1*<span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;RECEIVER jackmidi:input-stream stopped&gt;</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">(re)start receiving midi events</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>recv-start *midi-in1*<span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;RECEIVER jackmidi:input-stream running&gt;</span>
+
+</pre>
+</div>
+
+
+<p>
+Below is an example how to achieve the behaviour of the first two
+examples. 
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">define a variable to store all responders:</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">*my-midi-responder*</span> nil<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; *my-midi-responder*</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>setf *my-midi-responder*
+ <span class="org-rainbow-delimiters-depth-2">(</span>make-responder
+  *midi-in1*
+  <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">(</span>st d1 d2<span class="org-rainbow-delimiters-depth-4">)</span>
+    <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-rainbow-delimiters-depth-6">(</span>channel <span class="org-rainbow-delimiters-depth-7">(</span>status-&gt;channel st<span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span>
+          <span class="org-rainbow-delimiters-depth-6">(</span>opcode <span class="org-rainbow-delimiters-depth-7">(</span>status-&gt;opcode st<span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span>
+      <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">case</span> channel
+        <span class="org-rainbow-delimiters-depth-6">(</span>1 <span class="org-rainbow-delimiters-depth-7">(</span><span class="org-keyword">case</span> opcode
+             <span class="org-rainbow-delimiters-depth-8">(</span><span class="org-builtin">:cc</span> <span class="org-rainbow-delimiters-depth-9">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-1">(</span><span class="org-rainbow-delimiters-depth-2">(</span>ccnum d1<span class="org-rainbow-delimiters-depth-2">)</span>
+                        <span class="org-rainbow-delimiters-depth-2">(</span>cc-val d2<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+                    <span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">case</span> ccnum
+                      <span class="org-rainbow-delimiters-depth-2">(</span>1 <span class="org-rainbow-delimiters-depth-3">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Received CC Value ~a on Midi Channel 1 and CC Number 1"</span>
+                               cc-val<span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span>
+                      <span class="org-rainbow-delimiters-depth-2">(</span>2 <span class="org-rainbow-delimiters-depth-3">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Received CC Value ~a on Midi Channel 1 and CC Number 2"</span>
+                               cc-val<span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span>
+                      <span class="org-rainbow-delimiters-depth-2">(</span>3 <span class="org-rainbow-delimiters-depth-3">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Received CC Value ~a on Midi Channel 1 and CC Number 3"</span>
+                               cc-val<span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span><span class="org-rainbow-delimiters-depth-9">)</span><span class="org-rainbow-delimiters-depth-8">)</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-comment-delimiter">;;  </span><span class="org-comment">=&gt; #S(#:responder</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">:receiver #&lt;RECEIVER jackmidi:input-stream running&gt;</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">:function #&lt;function (lambda</span>
+<span class="org-comment-delimiter">;;                          </span><span class="org-comment">(incudine::status incudine::data1 incudine::data2</span>
+<span class="org-comment-delimiter">;;                           </span><span class="org-comment">stream)</span>
+<span class="org-comment-delimiter">;;                        </span><span class="org-comment">:in</span>
+<span class="org-comment-delimiter">;;                        </span><span class="org-comment">incudine::midi-responder-wrapper) {10025E7C0B}&gt;)</span>
+
+
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">removing the responder</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>remove-responder *my-midi-responder*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; ; No value</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">If the message is always the same, the function can be simplified</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>setf *my-midi-responder*
+  <span class="org-rainbow-delimiters-depth-2">(</span>make-responder
+   *midi-in1*
+   <span class="org-rainbow-delimiters-depth-3">(</span><span class="org-keyword">lambda</span> <span class="org-rainbow-delimiters-depth-4">(</span>st d1 d2<span class="org-rainbow-delimiters-depth-4">)</span>
+     <span class="org-rainbow-delimiters-depth-4">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-rainbow-delimiters-depth-6">(</span>channel <span class="org-rainbow-delimiters-depth-7">(</span>status-&gt;channel st<span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span>
+           <span class="org-rainbow-delimiters-depth-6">(</span>opcode <span class="org-rainbow-delimiters-depth-7">(</span>status-&gt;opcode st<span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span>
+       <span class="org-rainbow-delimiters-depth-5">(</span><span class="org-keyword">case</span> opcode
+         <span class="org-rainbow-delimiters-depth-6">(</span><span class="org-builtin">:cc</span> <span class="org-rainbow-delimiters-depth-7">(</span><span class="org-keyword">let</span> <span class="org-rainbow-delimiters-depth-8">(</span><span class="org-rainbow-delimiters-depth-9">(</span>cc-num d1<span class="org-rainbow-delimiters-depth-9">)</span>
+                    <span class="org-rainbow-delimiters-depth-9">(</span>cc-val d2<span class="org-rainbow-delimiters-depth-9">)</span><span class="org-rainbow-delimiters-depth-8">)</span>
+                <span class="org-rainbow-delimiters-depth-8">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Received CC Value ~a on Midi Channel ~a and CC Number ~a"</span>
+                      cc-val channel cc-num<span class="org-rainbow-delimiters-depth-8">)</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #S(#:responder</span>
+<span class="org-comment-delimiter">;;   </span><span class="org-comment">:receiver #&lt;RECEIVER jackmidi:input-stream running&gt;</span>
+<span class="org-comment-delimiter">;;   </span><span class="org-comment">:function #&lt;function (lambda</span>
+<span class="org-comment-delimiter">;;                            </span><span class="org-comment">(incudine::status incudine::data1 incudine::data2</span>
+<span class="org-comment-delimiter">;;                             </span><span class="org-comment">stream)</span>
+<span class="org-comment-delimiter">;;                          </span><span class="org-comment">:in</span>
+<span class="org-comment-delimiter">;;                          </span><span class="org-comment">incudine::midi-responder-wrapper) {1002D4D76B}&gt;)</span>
+
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">remove the midi responder</span>
+
+<span class="org-rainbow-delimiters-depth-1">(</span>remove-responder *my-midi-responder*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; ; No value</span>
+
+</pre>
+</div>
+<p>
+All these methods have their advantages and disadvantages. The
+last example combines all MIDI input handling in one function
+which is compact and nice if there aren't too many responders to
+be used, but can become bloated if responding to many different
+messages. On the other hand, there is no need to just define one
+responder in Incudine. Different functionality can be distributed
+to different responders.
+</p>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1" role="doc-backlink">1</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+After all the MIDI input infrastructure of Clamps was built
+on top of Incudine's infrastructure.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2" role="doc-backlink">2</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+Be aware that most MIDI controllers and MIDI software don't
+send <i>:note-off</i> messages explicitely, but rather use a <i>:note-on</i>
+message with a velocity of <i>0</i> to denote a note off.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3" role="doc-backlink">3</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
+clamps' <a href="../clamps-dict/start-midi-receive.html">start-midi-receive</a> and <a href="../clamps-dict/stop-midi-receive.html">stop-midi-receive</a> are in fact merely wrappers around <i>recv-start</i> and <i>recv-stop</i>.
+</p></div></div>
+
+
+</div>
+</div></div><nav id="nav-right"><a href="02_01_03_05_exercise.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>
