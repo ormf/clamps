@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-09-04 Mi 17:34 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fomus</title>
+<meta name="author" content="David Psenicka" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/fomus.css" />
+<link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+<script src="../js/clamps-doc.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu" href="../overview/index.html">Overview</a>
+<a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu top-menu-active" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="05_07_01_methods.html"> Methods </a>,&nbsp;Previous: <a accesskey="p" href="05_06_02_accessors.html"> Accessors </a>,&nbsp;Up: <a accesskey="u" href="05_00_00_objects.html"> Objects </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_disclaimer.html"> Disclaimer </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_00_disclaimer.html"class="toc-entry">Disclaimer</a></li>
+<li class="toc-level-1"><a href="02_00_00_introduction.html"class="toc-entry">Introduction</a></li>
+<li class="toc-level-1"><a href="03_00_00_installation.html"class="toc-entry">Installation</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="03_00_00_installation.html"class="toc-entry">Downloading</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_02_00_compiling-loading.html"class="toc-entry">Compiling/Loading</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_03_00_installing-as-an-executable.html"class="toc-entry">Installing as an Executable</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_04_00_customizing-the-installation.html"class="toc-entry">Customizing the Installation</a></li>
+<li class="toc-hidden toc-level-2"><a href="03_05_00_simple-emacs-interface.html"class="toc-entry">Simple Emacs Interface</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="04_00_00_usage.html"class="toc-entry">Usage</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="04_01_00_interface-1.html"class="toc-entry">Interface 1</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_02_00_interface-2.html"class="toc-entry">Interface 2</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_03_00_text-file-interface.html"class="toc-entry">Text File Interface</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_04_00_common-music-interface.html"class="toc-entry">Common Music Interface</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_05_00_command-line-interface.html"class="toc-entry">Command Line Interface</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_06_00_chunks.html"class="toc-entry">Chunks</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_07_00_other-interface-functions.html"class="toc-entry">Other Interface Functions</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="04_07_00_other-interface-functions.html"class="toc-entry">list-fomus-settings</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_02_list-fomus-modules.html"class="toc-entry">list-fomus-modules</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_03_list-fomus-instruments.html"class="toc-entry">list-fomus-instruments</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_04_get-instr-syms.html"class="toc-entry">get-instr-syms</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_05_list-fomus-percussion.html"class="toc-entry">list-fomus-percussion</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_06_get-perc-syms.html"class="toc-entry">get-perc-syms</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_07_list-fomus-instrgroups.html"class="toc-entry">list-fomus-instrgroups</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_08_list-fomus-clefs.html"class="toc-entry">list-fomus-clefs</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_09_list-fomus-meas-divs.html"class="toc-entry">list-fomus-meas-divs</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_10_list-fomus-tuplet-divs.html"class="toc-entry">list-fomus-tuplet-divs</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_11_load-init-file.html"class="toc-entry">load-init-file</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_12_get-midi-instr.html"class="toc-entry">get-midi-instr</a></li>
+<li class="toc-hidden toc-level-3"><a href="04_07_13_marks.html"class="toc-entry">marks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_00_objects.html"class="toc-entry">Objects</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="05_01_00_class-part.html"class="toc-entry">Class Part</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_01_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_01_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_02_00_class-timesig.html"class="toc-entry">Class Timesig</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_02_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_02_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_03_00_class-timesig-repl.html"class="toc-entry">Class Timesig-repl</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_03_01_methods.html"class="toc-entry">Methods</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_04_00_class-keysig.html"class="toc-entry">Class Keysig</a></li>
+<li class="toc-level-2"><a href="05_05_00_class-note.html"class="toc-entry">Class Note</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_05_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_05_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_06_00_class-rest.html"class="toc-entry">Class Rest</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_06_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_06_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_07_00_class-mark.html"class="toc-entry toc-active">Class Mark</a>
+<ul class="ul-toc-level-3">
+<li class="toc-level-3"><a href="05_07_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-level-3"><a href="05_07_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_08_00_structure-instr.html"class="toc-entry">Structure Instr</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_08_01_methods.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_08_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+<li class="toc-level-2"><a href="05_09_00_structure-perc.html"class="toc-entry">Structure Perc</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="05_09_00_structure-perc.html"class="toc-entry">Methods</a></li>
+<li class="toc-hidden toc-level-3"><a href="05_09_02_accessors.html"class="toc-entry">Accessors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="06_00_00_settings.html"class="toc-entry">Settings</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="06_01_00_most-useful-fomus-settings.html"class="toc-entry">Most useful Fomus Settings</a></li>
+<li class="toc-hidden toc-level-2"><a href="06_02_00_complete-fomus-settings.html"class="toc-entry">Complete Fomus Settings</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="06_02_00_complete-fomus-settings.html"class="toc-entry">program settings</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_02_backend-options.html"class="toc-entry">backend options</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_03_global.html"class="toc-entry">global</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_04_objects.html"class="toc-entry">objects</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_05_parts.html"class="toc-entry">parts</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_06_time-signatures.html"class="toc-entry">time signatures</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_07_plugins.html"class="toc-entry">plugins</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_08_plugins-on-off.html"class="toc-entry">plugins on/off</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_09_quantizing.html"class="toc-entry">quantizing</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_10_staves.html"class="toc-entry">staves</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_11_ottavas.html"class="toc-entry">ottavas</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_12_accidentals.html"class="toc-entry">accidentals</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_13_cautionary-accidentals.html"class="toc-entry">cautionary accidentals</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_14_grace-notes.html"class="toc-entry">grace notes</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_15_measure-tuplet-divisions.html"class="toc-entry">measure/tuplet divisions</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_16_note-splitting-tying.html"class="toc-entry">note splitting/tying</a></li>
+<li class="toc-hidden toc-level-3"><a href="06_02_17_beams.html"class="toc-entry">beams</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="06_03_00_alphabetical-listing-of-settings.html"class="toc-entry">Alphabetical Listing of Settings</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="07_00_00_marks.html"class="toc-entry">Marks</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="07_01_00_fomus-marks.html"class="toc-entry">Fomus Marks</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="07_01_01_articulations.html"class="toc-entry">Articulations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_02_dynamics.html"class="toc-entry">Dynamics</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_03_tempo-duration.html"class="toc-entry">Tempo/Duration</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_04_ornamentations.html"class="toc-entry">Ornamentations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_05_effects.html"class="toc-entry">Effects</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_06_text.html"class="toc-entry">Text</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_07_notation.html"class="toc-entry">Notation</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_01_08_other.html"class="toc-entry">Other</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="07_02_00_timesig-properties.html"class="toc-entry">Timesig properties</a></li>
+<li class="toc-hidden toc-level-2"><a href="07_03_00_part-properties.html"class="toc-entry">Part Properties</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="08_00_00_outputs.html"class="toc-entry">Outputs</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="08_01_00_data.html"class="toc-entry">Data</a></li>
+<li class="toc-hidden toc-level-2"><a href="08_02_00_lilypond.html"class="toc-entry">Lilypond</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="08_02_01_alphabetical-listing-of-lilypond-options.html"class="toc-entry">Alphabetical Listing of LilyPond Options</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="08_03_00_musicxml.html"class="toc-entry">MusicXML</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="08_03_01_alphabetical-listing-of-musicxml-options.html"class="toc-entry">Alphabetical Listing of MusicXML Options</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="08_04_00_musicxml-for-sibelius.html"class="toc-entry">MusicXML for Sibelius</a></li>
+<li class="toc-hidden toc-level-2"><a href="08_05_00_musicxml-for-finale.html"class="toc-entry">MusicXML for Finale</a></li>
+<li class="toc-hidden toc-level-2"><a href="08_06_00_common-music-notation.html"class="toc-entry">Common Music Notation</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="08_06_01_alphabetical-listing-of-cmn-options.html"class="toc-entry">Alphabetical Listing of CMN Options</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="08_07_00_midi.html"class="toc-entry">MIDI</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="08_07_01_alphabetical-listing-of-midi-options.html"class="toc-entry">alphabetical listing of midi options</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="08_08_00_chunk.html"class="toc-entry">Chunk</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="09_00_00_initialization-file.html"class="toc-entry">Initialization File</a></li>
+<li class="toc-level-1"><a href="10_00_00_examples.html"class="toc-entry">Examples</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="10_01_00_lisp-examples.html"class="toc-entry">Lisp Examples</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="10_01_00_lisp-examples.html"class="toc-entry">Simple Example</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_02_staccato-and-accent-marks.html"class="toc-entry">Staccato and Accent Marks</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_03_quartertones.html"class="toc-entry">Quartertones</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_04_polyphony-with-slurs.html"class="toc-entry">Polyphony with Slurs</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_05_piano-chords.html"class="toc-entry">Piano Chords</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_06_quantizing-chords.html"class="toc-entry">Quantizing/Chords</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_07_mark-objects.html"class="toc-entry">Mark Objects</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_08_percussion-1.html"class="toc-entry">Percussion 1</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_09_percussion-2.html"class="toc-entry">Percussion 2</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_10_percussion-with-automatic-durations.html"class="toc-entry">Percussion with Automatic Durations</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_11_semi-orchestra-score.html"class="toc-entry">Semi-Orchestra Score</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_12_key-signatures.html"class="toc-entry">Key Signatures</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_01_13_chunks.html"class="toc-entry">Chunks</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="10_02_00_common-music-examples.html"class="toc-entry">Common Music Examples</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="10_02_00_common-music-examples.html"class="toc-entry">2 Part Polyphony</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_02_02_2-part-polyphony-fomus-chooses-the-voice.html"class="toc-entry">2 Part Polyphony (FOMUS Chooses the Voice)</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_02_03_3-part-polyphony.html"class="toc-entry">3 Part Polyphony</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_02_04_6-part-polyphony.html"class="toc-entry">6 Part Polyphony</a></li>
+</ul>
+</li>
+<li class="toc-hidden toc-level-2"><a href="10_03_00_text-input-file-examples.html"class="toc-entry">Text Input File Examples</a>
+<ul class="ul-toc-level-3">
+<li class="toc-hidden toc-level-3"><a href="10_03_01_text-input-commands-from-lisp.html"class="toc-entry">Text Input Commands (From Lisp)</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_02_text-input-commands-command-line.html"class="toc-entry">Text Input Commands (Command Line)</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_03_simple-text-input-example.html"class="toc-entry">Simple Text Input Example</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_04_staccato-and-accent-marks.html"class="toc-entry">Staccato and Accent Marks</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_05_percussion.html"class="toc-entry">Percussion</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_06_articulations.html"class="toc-entry">Articulations</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_07_more-percussion.html"class="toc-entry">More Percussion</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_08_overtone-series-using-quartertones.html"class="toc-entry">Overtone Series (using Quartertones)</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_09_marks-1.html"class="toc-entry">Marks 1</a></li>
+<li class="toc-hidden toc-level-3"><a href="10_03_10_marks-2.html"class="toc-entry">Marks 2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Fomus</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="05_06_02_accessors.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-section.objects8" class="outline-3">
+<h3 id="section.objects8">Class Mark</h3>
+<div class="outline-text-3" id="text-section.objects8">
+<p>
+the <code>mark</code> objects allow the user to specify marks outside of a <code>note</code>
+or <code>rest</code> class. marks designate extra information that to be applied to
+a <code>note</code> or <code>rest</code> object such as articulations, modifications like
+tremolos or harmonics, printed text, etc.. after voices and staff
+assignments have been established, information in the <code>mark</code> objects is
+dumped into the slots of <code>note</code> and <code>rest</code>
+objects according to the values in the and
+slots.
+</p>
+
+<p>
+there are several advantages to using <code>mark</code> objects as opposed to
+specifying marks in <code>note</code> or <code>rest</code> objects. one is that many markings
+(dynamics, for example) might only need to be attached to notes that are
+in one voice, such as the bottom voice of a particular staff. since
+voice assignments for notes might not be known until fomus decides them,
+<code>mark</code> objects are the only way of insuring that the marks occur in the
+right place. <code>mark</code> objects are also a convenient way of specifying
+marks for a range of parts, and make it easier to apply spanners such as
+slurs without having to juggle <code>note</code> objects around.
+</p>
+
+<p>
+<code>mark</code> objects are passed to fomus by including them either in the
+slot list of a <code>part</code> object or in the global
+<code>events</code> list. the behavior in either case is exactly the same as with
+<code>note</code> or <code>rest</code> objects.
+</p>
+</div>
+</div>
+</div><nav id="nav-right"><a href="05_07_01_methods.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-04-18 Fr 18:37 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Overview</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/overview.css" />
+<link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+<script src="../js/clamps-doc.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu top-menu-active" href="./index.html">Overview</a>
+<a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="01_02_why-clamps.html"> Why Clamps? </a>,&nbsp;Home: <a accesskey="h" href="01_00_introduction.html"> Introduction </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_introduction.html"class="toc-entry toc-active">Introduction</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="01_00_introduction.html"class="toc-entry toc-active">What is Clamps?</a></li>
+<li class="toc-level-2"><a href="01_02_why-clamps.html"class="toc-entry">Why Clamps?</a></li>
+<li class="toc-level-2"><a href="01_03_external-components-of-clamps.html"class="toc-entry">External components of Clamps</a></li>
+<li class="toc-level-2"><a href="01_04_internal-components-of-clamps.html"class="toc-entry">Internal Components of Clamps</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_installation.html"class="toc-entry">Installation</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="02_00_installation.html"class="toc-entry">clamps-install</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_first-steps.html"class="toc-entry">First Steps</a></li>
+<li class="toc-level-1"><a href="04_00_tools.html"class="toc-entry">Tools</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="04_00_tools.html"class="toc-entry">Online Help System</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_02_context-help.html"class="toc-entry">Context Help</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_03_finding-source-definitions.html"class="toc-entry">Finding Source Definitions</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_04_code-inspection.html"class="toc-entry">Code Inspection</a></li>
+<li class="toc-hidden toc-level-2"><a href="04_05_debugging-tools.html"class="toc-entry">Debugging Tools</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_.html"class="toc-entry"></a></li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Overview</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="" class="nav-left"><i class="angle-left-inactive"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-org4490357" class="outline-2">
+<h2 id="org4490357">Introduction</h2>
+<div class="outline-text-2" id="text-org4490357">
+</div>
+<div id="outline-container-org9ce8d1f" class="outline-3">
+<h3 id="org9ce8d1f">What is Clamps?</h3>
+<div class="outline-text-3" id="text-org9ce8d1f">
+<p>
+Clamps, the <i><b>C</b>​ommon <b>L</b>​isp <b>A</b>​ided <b>M</b>​usic <b>P</b>​roduction <b>S</b>​ystem</i>
+is an integrated environment for the production of music in the
+areas of algorithmic composition, electronic music and its
+performance. It can be used for non-realtime production of
+instrumental scores or fixed media, as a toolbox for music
+simulation or as a development environment in a broad field of
+applications like advanced DSP, realtime instruments, performances
+and installative work.
+</p>
+
+<p>
+In this regard it is comparable to other realtime and non-realtime
+music programming environments like <a href="https://en.wikipedia.org/wiki/Pure_Data">Pure Data</a>, <a href="https://en.wikipedia.org/wiki/Max_(software)">Max/MSP</a>, <a href="https://en.wikipedia.org/wiki/Csound">Csound</a>,
+<a href="https://en.wikipedia.org/wiki/SuperCollider">SuperCollider</a>, <a href="https://ccrma.stanford.edu/software/clm/">CLM</a>, <a href="https://commonmusic.sourceforge.net/">Common Music</a>, <a href="https://chuck.stanford.edu/">Chuck</a>, <a href="https://faust.grame.fr/">Faust</a>, <a href="https://www.composersdesktop.com/">CDP</a>, <a href="https://forum.ircam.fr/projects/detail/openmusic/">Open Music</a>,
+<a href="https://opusmodus.com/">OpusModus</a>, <a href="https://michael-edwards.org/sc/">Slippery Chicken</a> and <a href="https://www.music21.org/music21docs/">Music21</a>.
+</p>
+
+<p>
+Clamps is a collection of tools, developed over the course of some
+decades primarily for the artistic work of its author, biased by his
+conceptual and aesthetic ideas. It is put together and made public
+in the hope it might be useful for others, but &#x2014; like one of the
+integral characteristics of the beauty of Art in general &#x2014; without
+any explict or implicit warranty that it fits any purpose
+whatsoever.
+</p>
+
+<p>
+The Documentation of Clamps is split into five parts, accessible
+using the Top Menu:
+</p>
+
+<ul class="org-ul">
+<li>The <a href="01_00_introduction.html#org4490357">Overview</a> explains the raison d'etre of Clamps and gives a
+short overview of its components, followed by installation
+instructions, a short primer and an introduction into tools
+available when working with Common Lisp in Emacs.</li>
+</ul>
+
+
+<ul class="org-ul">
+<li>The <a href="../clamps/index.html">Clamps Packages</a> section gives a more detailed introduction
+with examples into the <a href="01_04_internal-components-of-clamps.html#org5815036">internal components</a> specifically written
+for Clamps. The <a href="01_03_external-components-of-clamps.html#org3d6175b">external components</a> which make up a large part of
+the functionality of Clamps, are not documented here as they are
+well documented in their own respective documention available
+online.</li>
+</ul>
+
+
+<ul class="org-ul">
+<li>The <a href="../cm-dict/index.html">CM Dictionary</a> is part of the Common Lisp version of Common
+Music and is integrated into the Emacs/Lisp interface with online
+symbol lookup using the <i>&lt;C-c C-d c&gt;</i> keyboard shortcut on any of
+its entries. It is included here because Clamps extends the symbol
+lookup with the symbols added by Clamps in the <a href="../clamps-dict/index.html">Clamps Dictionary</a>,
+providing a seemless integration.</li>
+</ul>
+
+
+<ul class="org-ul">
+<li>The <a href="../clamps-dict/index.html">Clamps Dictionary</a> is inspired by and extends the <a href="../cm-dict/index.html">CM Dictionary</a>
+with the added symbols of Clamps. The entries of this dictionary
+are linked in the Emacs Lisp Interface with the same <i>&lt;C-c C-d c&gt;</i>
+keyboard shortcut as the CM Dictionary.</li>
+</ul>
+
+
+<ul class="org-ul">
+<li><a href="../fomus/index.html">Fomus</a> is a reproduction of the original documentation of <a href="https://fomus.common-lisp.dev/">FOMUS</a>,
+added here for convenience.</li>
+</ul>
+
+<h4>Note</h4>
+<p>
+This documentation serves as a reference manual for the regular user
+and not as a step by step introduction or tutorial into the
+system. These topics are or will be covered in seperate
+publications. Knowledge of Common Lisp, the Emacs Editor and the
+basics of Common Music, Incudine or GUI programming are required to
+take full advantage of this documentation.
+</p>
+
+<h4>Acknowledgements</h4>
+<p>
+Clamps would not have been possible without the tremendous work put
+into Incudine by Tito Latini, Common Music by Rick Taube, FOMUS by
+David Psenicka, CLOG by David Botton, ATS by Juan Pampin and of
+course Common Lisp by innumerable people, who helped building this
+amazing programming language with all its extensions over the last
+65+ years. Making all their work available to the public using an
+open source license provides the basis for being able to extend
+it. It can't be expressed enough how grateful and privileged I feel
+having been able to use the results of their work and benefit from
+them throughout my artistic career. In that sense making Clamps
+available to the public is my contribution intended to pay back to
+the community.
+</p>
+
+<p>
+Orm Finnendahl, August 2024
+</p>
+</div>
+</div>
+</div>
+</div><nav id="nav-right"><a href="01_02_why-clamps.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>

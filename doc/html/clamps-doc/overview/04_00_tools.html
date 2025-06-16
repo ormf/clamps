@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2025-04-18 Fr 18:37 -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clamps Overview</title>
+<meta name="author" content="Orm Finnendahl" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="../css/overview.css" />
+<link rel="stylesheet" type="text/css" href="../css/htmlize.css" />
+<link rel="stylesheet" type="text/css" href="../css/themes.css" />
+<link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+<script src="./pagefind/pagefind-ui.js"></script>
+<script src="../js/clamps-doc.js"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<a class="top-menu top-menu-active" href="./index.html">Overview</a>
+<a class="top-menu" href="../clamps/index.html">Clamps Packages</a>
+<a class="top-menu" href="../cm-dict/index.html">CM Dictionary</a>
+<a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
+<a class="top-menu" href="../fomus/index.html">Fomus</a>
+</div>
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="04_02_context-help.html"> Context Help </a>,&nbsp;Previous: <a accesskey="p" href="03_00_first-steps.html"> First Steps </a>,&nbsp;Home: <a accesskey="h" href="01_00_introduction.html"> Introduction </a></div><div id="content" class="content">
+<nav id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul class="ul-toc-level-1">
+<li class="toc-level-1"><a href="01_00_introduction.html"class="toc-entry">Introduction</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="01_00_introduction.html"class="toc-entry">What is Clamps?</a></li>
+<li class="toc-hidden toc-level-2"><a href="01_02_why-clamps.html"class="toc-entry">Why Clamps?</a></li>
+<li class="toc-hidden toc-level-2"><a href="01_03_external-components-of-clamps.html"class="toc-entry">External components of Clamps</a></li>
+<li class="toc-hidden toc-level-2"><a href="01_04_internal-components-of-clamps.html"class="toc-entry">Internal Components of Clamps</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="02_00_installation.html"class="toc-entry">Installation</a>
+<ul class="ul-toc-level-2">
+<li class="toc-hidden toc-level-2"><a href="02_00_installation.html"class="toc-entry">clamps-install</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="03_00_first-steps.html"class="toc-entry">First Steps</a></li>
+<li class="toc-level-1"><a href="04_00_tools.html"class="toc-entry toc-active">Tools</a>
+<ul class="ul-toc-level-2">
+<li class="toc-level-2"><a href="04_00_tools.html"class="toc-entry toc-active">Online Help System</a></li>
+<li class="toc-level-2"><a href="04_02_context-help.html"class="toc-entry">Context Help</a></li>
+<li class="toc-level-2"><a href="04_03_finding-source-definitions.html"class="toc-entry">Finding Source Definitions</a></li>
+<li class="toc-level-2"><a href="04_04_code-inspection.html"class="toc-entry">Code Inspection</a></li>
+<li class="toc-level-2"><a href="04_05_debugging-tools.html"class="toc-entry">Debugging Tools</a></li>
+</ul>
+</li>
+<li class="toc-level-1"><a href="05_00_.html"class="toc-entry"></a></li>
+</ul>
+</div>
+</nav>
+<header>
+<h1 class="title">Clamps Overview</h1>
+</header><div id="page-main-body"><nav id="nav-left"><a href="03_00_first-steps.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-org1bf215d" class="outline-2">
+<h2 id="org1bf215d">Tools</h2>
+<div class="outline-text-2" id="text-org1bf215d">
+</div>
+<div id="outline-container-orgc7a9ef2" class="outline-3">
+<h3 id="orgc7a9ef2">Online Help System</h3>
+<div class="outline-text-3" id="text-orgc7a9ef2">
+<p>
+Clamps comes with a couple of online help systems explained below.
+</p>
+</div>
+<div id="outline-container-org7c4e65d" class="outline-4">
+<h4 id="org7c4e65d">Emacs</h4>
+<div class="outline-text-4" id="text-org7c4e65d">
+<p>
+The Emacs editor can appear quite strange and intimidating,
+especially for novice users. For anyone not comfortable with
+Emacs, studying the <i>Emacs Tutorial</i>, available under the Emacs
+<i>Help</i> Menu is strongly recommended and well worth the time spent.
+</p>
+</div>
+</div>
+<div id="outline-container-org93e8d7f" class="outline-4">
+<h4 id="org93e8d7f">Common Lisp Hyperspec</h4>
+<div class="outline-text-4" id="text-org93e8d7f">
+<p>
+Being in a Lisp Mode buffer or the REPL, the documentation of all
+symbols and special forms of the Common Lisp Language Standard can
+be accessed using the key combination <i>&lt;C-c C-d h&gt;</i>. Pressing
+these keys with the cursor positioned directly after the
+expression will open a browser window with a page of the <a href="https://www.lispworks.com/documentation/HyperSpec/Front/index.htm">Common
+Lisp HyperSpec</a> showing the documentation of the symbol. A local
+copy of the HyperSpec gets automatically installed with the
+installation of Clamps using the <a href="https://github.com/ormf/clamps-install">clamps-install</a> repository.
+</p>
+</div>
+</div>
+<div id="outline-container-orgc36798e" class="outline-4">
+<h4 id="orgc36798e">Cltl2</h4>
+<div class="outline-text-4" id="text-orgc36798e">
+<p>
+Cltl2 is the language standard of Common Lisp, finalized
+in 1990. The Common Lisp HyperSpec has been derived from the
+online documentation of Cltl2. Although many users prefer the
+HyperSpec, sometimes it might be desirable to study the original,
+commented standard.
+</p>
+
+<p>
+To that end the key combination <i>&lt;C-c C-d l&gt;</i> will lookup a symbol
+in a local copy of Cltl2, like the HyperSpec downloaded by the
+clamps installation and stored in
+<i>$HOME​/​<i>.config/common-lisp/cltl2</i></i>.
+</p>
+</div>
+</div>
+<div id="outline-container-orga43b097" class="outline-4">
+<h4 id="orga43b097">Common Music/Clamps</h4>
+<div class="outline-text-4" id="text-orga43b097">
+<p>
+Online documentation of symbols of Common Music or Clamps can be
+accessed by pressing the key combination <i>&lt;C-c C-d c&gt;</i>. Depending
+on the symbol this will open a local page of the <a href="../cm-dict/index.html">Common Music
+Dictionary</a> or <a href="../clamps-dict/index.html">Clamps Dictionary</a>, which is integrated in the
+browser-based clamps documentatiion.
+</p>
+</div>
+</div>
+<div id="outline-container-Incudine-Help" class="outline-4">
+<h4 id="Incudine-Help">Incudine</h4>
+<div class="outline-text-4" id="text-Incudine-Help">
+<p>
+Incudine has different formats to get help. It is available in the
+Internet at the <a href="https://incudine.sourceforge.net/">Incudine Home Page</a>. Local documentation can be
+generated in different formats, like <i><a href="https://en.wikipedia.org/wiki/Texinfo">texinfo</a></i>, <i>html</i> or any
+output format supported by Texinfo depending on the user's
+preferences. As Emacs has a builtin <i>info-mode</i> for dealing with
+Texinfo files this can be a viable online help option for adept
+Emacs users.
+</p>
+</div>
+</div>
+</div>
+</div>
+</div><nav id="nav-right"><a href="04_02_context-help.html" class="nav-right"><i class="angle-right"></i></a></nav></div></div>
+</body>
+</html>
