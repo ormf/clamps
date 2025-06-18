@@ -1,7 +1,10 @@
 *~
 #*
 \.#*
+!doc/html/clamps
+!doc/*
 doc/#*
+!doc/html/*
 *.fasl
 clamps
 init-clamps.lisp

@@ -407,3 +407,20 @@ evt-time
 "
   (sv obj :amplitude))
 
+(defmacro clamps-bounce-to-disk ((output-filename
+                                  &key input-filename
+                                    (channels *number-of-output-bus-channels*)
+                                    duration (pad 2) (sample-rate *sample-rate*)
+                                    header-type data-format metadata)
+                                 &body body)
+  "Wrapper around incudine:bounce-to-disk, temporarily setting clamps'
+*​standard-output-group​* to 0."
+  `(let ((of-incudine-dsps::*standard-output-group* 0))
+     (bounce-to-disk (,output-filename
+                      :input-filename ,input-filename
+                      :channels ,channels
+                      :duration ,duration :pad ,pad
+                      :sample-rate ,sample-rate
+                      :header-type ,header-type :data-format ,data-format
+                      :metadata ,metadata)
+       ,@body)))

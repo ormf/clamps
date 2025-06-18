@@ -165,7 +165,7 @@
 ** add-midi-controller
    Function
    #+BEGIN_SRC lisp
-     (add-midi-controller class id &rest args)
+     (add-midi-controller class #:id &rest args)
    #+END_SRC
    Register a MIDI controller of class /class/ with ID /id/ and optional
    initialization argumens /args/.
@@ -329,6 +329,9 @@
    In addition to the [[d700ft][d700ft]] slots, the asparion class defines the
    following slots with accessor methods of the same name and initargs
    being the keywords of the slot symbol:
+   
+   NOTE: The :midi-ports keyword argument is mandatory, as the instance
+   relies on it to initialize its slots and behaviours.
 *** Arguments
     | =midi-ports= | List of Keywords denoting the ids of the Midi Ports of the D700(FT) units.                           |
     | =units=      | List containing the instances of the [[d700][d700]]/[[d700ft][d700ft]] units. Autocreated, therefore no accessor function. |
@@ -876,6 +879,13 @@
     - [[clamps-gui-root][clamps-gui-root]]
     - [[gui][gui]]
     - [[meters][meters]]
+** clamps-bounce-to-disk
+   Macro
+   #+BEGIN_SRC lisp
+     (clamps-bounce-to-disk (output-filename &key input-filename (channels *number-of-output-bus-channels*) duration (pad 2) (sample-rate *sample-rate*) header-type data-format metadata) &body body)
+   #+END_SRC
+   Wrapper around incudine:bounce-to-disk, temporarily setting clamps'
+   *​​standard-output-group​​* to 0.
 ** clamps-buffer-load
    Function
    #+BEGIN_SRC lisp
@@ -1955,7 +1965,7 @@
 ** find-controller
    Function
    #+BEGIN_SRC lisp
-     (find-controller id)
+     (find-controller #:id)
    #+END_SRC
    Return MIDI controller instance with ID /id/ or /nil/ if not
    registered.
@@ -3357,7 +3367,7 @@
 ** midi-port-input
    Function
    #+BEGIN_SRC lisp
-     (midi-port-input id)
+     (midi-port-input #:id)
    #+END_SRC
    Return the jackmidi input stream of midi-port /id/.
 *** Arguments
@@ -3376,7 +3386,7 @@
 ** midi-port-output
    Function
    #+BEGIN_SRC lisp
-     (midi-port-output id)
+     (midi-port-output #:id)
    #+END_SRC
    Return the jackmidi output stream of midi-port /id/.
 *** Arguments
@@ -4686,7 +4696,7 @@
 ** remove-midi-controller
    Function
    #+BEGIN_SRC lisp
-     (remove-midi-controller id)
+     (remove-midi-controller #:id)
    #+END_SRC
    Unregister and delete the instance of a midi controller with ID /id/.
 *** Arguments
@@ -4857,7 +4867,7 @@
    #+BEGIN_SRC lisp
      (rotary-colors object)
    #+END_SRC
-   RGB colors of the 8 rotary buttons
+   RGB colors of the 8 rotary buttons.
 ** rotary-led-modes
    Generic Function
    #+BEGIN_SRC lisp
@@ -5316,6 +5326,13 @@
       (splice '((0 1) (4 7) (7 2) (0 3) (4 5) (1 7)) :key #'second)
        ; => (((0 1)) ((4 7) (1 7)) ((7 2)) ((0 3)) ((4 5)))
     #+END_SRC
+** *​standard-output-group​*
+   :PROPERTIES:
+   :CUSTOM_ID: standard-output-group
+   :END:
+   Variable
+
+   standard group for output.
 ** standard-pitch
    Function
    #+BEGIN_SRC lisp
@@ -5794,9 +5811,8 @@
    #+BEGIN_SRC lisp
      (update-hw-state instance)
    #+END_SRC
-   Set the state of the hardware of [[midi-controller][midi-controller]] /instance/
-   according to [[#midi-cc-state][*​​midi-cc-state​​*]] by sending all 128 cc values of the
-   controllers midi-channel to the midi-controller's midi output.
+   Delegate updating of the state of the controller hardware to the units
+   of the asparion instance.
 ** update-preset-buttons
    Function
    #+BEGIN_SRC lisp
@@ -5851,7 +5867,7 @@
    #+BEGIN_SRC lisp
      (vu-meters object)
    #+END_SRC
-   labels of strips in gui
+   labels of strips in gui.
 * W-Y
 ** watch
    Function

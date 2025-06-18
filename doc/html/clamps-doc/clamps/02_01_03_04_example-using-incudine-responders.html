@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-06-08 So 16:38 -->
+<!-- 2024-10-01 Di 09:24 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Packages</title>
@@ -50,7 +50,7 @@
 <ul class="ul-toc-level-2">
 <li class="toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
 <ul class="ul-toc-level-3">
-<li class="toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
+<li class="toc-level-3"><a href="02_01_01_00_opening-midi-ports.html"class="toc-entry">Opening MIDI Ports</a></li>
 <li class="toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
 <li class="toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
 <ul class="ul-toc-level-4">
@@ -63,7 +63,7 @@
 </li>
 <li class="toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
 <ul class="ul-toc-level-4">
-<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-nanokontrol2-controller.html"class="toc-entry">Using a NanoKONTROL2 Controller</a></li>
 <li class="toc-hidden toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
 <li class="toc-hidden toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry">Excursion: Closures</a></li>
 </ul>
@@ -119,7 +119,6 @@
 <li class="toc-hidden toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
-<li class="toc-hidden toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
 </ul>
 </li>
 <li class="toc-hidden toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
@@ -139,9 +138,9 @@
 <header>
 <h1 class="title">Clamps Packages</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="02_01_03_03_example-using-​midi-cc-state​.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-org2a1c926" class="outline-5">
-<h5 id="org2a1c926">Example using Incudine responders</h5>
-<div class="outline-text-5" id="text-org2a1c926">
+<div id="page-text-body"><div id="outline-container-org401e91d" class="outline-5">
+<h5 id="org401e91d">Example using Incudine responders</h5>
+<div class="outline-text-5" id="text-org401e91d">
 <p>
 It is not required to rely on the infrastructure of Clamps to
 react to Midi input events. Incudine provides all necessary tools
@@ -187,18 +186,18 @@ functions can get called at any time and will also work in the
 two first examples<sup><a id="fnr.3" class="footref" href="#fn.3" role="doc-backlink">3</a></sup>.
 </p>
 <div class="org-src-container">
-<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">suspend receiving midi events</span>
-
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">suspend receiving midi events
+</span>
 <span class="org-rainbow-delimiters-depth-1">(</span>incudine:recv-stop *midi-in1*<span class="org-rainbow-delimiters-depth-1">)</span>
 
-<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;RECEIVER jackmidi:input-stream stopped&gt;</span>
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">(re)start receiving midi events</span>
-
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;RECEIVER jackmidi:input-stream stopped&gt;
+</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">(re)start receiving midi events
+</span>
 <span class="org-rainbow-delimiters-depth-1">(</span>recv-start *midi-in1*<span class="org-rainbow-delimiters-depth-1">)</span>
 
-<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;RECEIVER jackmidi:input-stream running&gt;</span>
-
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #&lt;RECEIVER jackmidi:input-stream running&gt;
+</span>
 </pre>
 </div>
 
@@ -209,10 +208,10 @@ examples.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">define a variable to store all responders:</span>
-
-<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">*my-midi-responder*</span> nil<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; *my-midi-responder*</span>
-
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">define a variable to store all responders:
+</span>
+<span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">defvar</span> <span class="org-variable-name">*my-midi-responder*</span> nil<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; *my-midi-responder*
+</span>
 <span class="org-rainbow-delimiters-depth-1">(</span>setf *my-midi-responder*
  <span class="org-rainbow-delimiters-depth-2">(</span>make-responder
   *midi-in1*
@@ -231,22 +230,22 @@ examples.
                       <span class="org-rainbow-delimiters-depth-2">(</span>3 <span class="org-rainbow-delimiters-depth-3">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Received CC Value ~a on Midi Channel 1 and CC Number 3"</span>
                                cc-val<span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span><span class="org-rainbow-delimiters-depth-9">)</span><span class="org-rainbow-delimiters-depth-8">)</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
 
-<span class="org-comment-delimiter">;;  </span><span class="org-comment">=&gt; #S(#:responder</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">:receiver #&lt;RECEIVER jackmidi:input-stream running&gt;</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">:function #&lt;function (lambda</span>
-<span class="org-comment-delimiter">;;                          </span><span class="org-comment">(incudine::status incudine::data1 incudine::data2</span>
-<span class="org-comment-delimiter">;;                           </span><span class="org-comment">stream)</span>
-<span class="org-comment-delimiter">;;                        </span><span class="org-comment">:in</span>
-<span class="org-comment-delimiter">;;                        </span><span class="org-comment">incudine::midi-responder-wrapper) {10025E7C0B}&gt;)</span>
+<span class="org-comment-delimiter">;;  </span><span class="org-comment">=&gt; #S(#:responder
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">:receiver #&lt;RECEIVER jackmidi:input-stream running&gt;
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">:function #&lt;function (lambda
+</span><span class="org-comment-delimiter">;;                          </span><span class="org-comment">(incudine::status incudine::data1 incudine::data2
+</span><span class="org-comment-delimiter">;;                           </span><span class="org-comment">stream)
+</span><span class="org-comment-delimiter">;;                        </span><span class="org-comment">:in
+</span><span class="org-comment-delimiter">;;                        </span><span class="org-comment">incudine::midi-responder-wrapper) {10025E7C0B}&gt;)
+</span>
 
 
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">removing the responder</span>
-
-<span class="org-rainbow-delimiters-depth-1">(</span>remove-responder *my-midi-responder*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; ; No value</span>
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">If the message is always the same, the function can be simplified</span>
-
+<span class="org-comment-delimiter">;; </span><span class="org-comment">removing the responder
+</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>remove-responder *my-midi-responder*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; ; No value
+</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">If the message is always the same, the function can be simplified
+</span>
 <span class="org-rainbow-delimiters-depth-1">(</span>setf *my-midi-responder*
   <span class="org-rainbow-delimiters-depth-2">(</span>make-responder
    *midi-in1*
@@ -259,19 +258,19 @@ examples.
                 <span class="org-rainbow-delimiters-depth-8">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Received CC Value ~a on Midi Channel ~a and CC Number ~a"</span>
                       cc-val channel cc-num<span class="org-rainbow-delimiters-depth-8">)</span><span class="org-rainbow-delimiters-depth-7">)</span><span class="org-rainbow-delimiters-depth-6">)</span><span class="org-rainbow-delimiters-depth-5">)</span><span class="org-rainbow-delimiters-depth-4">)</span><span class="org-rainbow-delimiters-depth-3">)</span><span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span>
 
-<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #S(#:responder</span>
-<span class="org-comment-delimiter">;;   </span><span class="org-comment">:receiver #&lt;RECEIVER jackmidi:input-stream running&gt;</span>
-<span class="org-comment-delimiter">;;   </span><span class="org-comment">:function #&lt;function (lambda</span>
-<span class="org-comment-delimiter">;;                            </span><span class="org-comment">(incudine::status incudine::data1 incudine::data2</span>
-<span class="org-comment-delimiter">;;                             </span><span class="org-comment">stream)</span>
-<span class="org-comment-delimiter">;;                          </span><span class="org-comment">:in</span>
-<span class="org-comment-delimiter">;;                          </span><span class="org-comment">incudine::midi-responder-wrapper) {1002D4D76B}&gt;)</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">=&gt; #S(#:responder
+</span><span class="org-comment-delimiter">;;   </span><span class="org-comment">:receiver #&lt;RECEIVER jackmidi:input-stream running&gt;
+</span><span class="org-comment-delimiter">;;   </span><span class="org-comment">:function #&lt;function (lambda
+</span><span class="org-comment-delimiter">;;                            </span><span class="org-comment">(incudine::status incudine::data1 incudine::data2
+</span><span class="org-comment-delimiter">;;                             </span><span class="org-comment">stream)
+</span><span class="org-comment-delimiter">;;                          </span><span class="org-comment">:in
+</span><span class="org-comment-delimiter">;;                          </span><span class="org-comment">incudine::midi-responder-wrapper) {1002D4D76B}&gt;)
+</span>
 
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">remove the midi responder</span>
-
-<span class="org-rainbow-delimiters-depth-1">(</span>remove-responder *my-midi-responder*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; ; No value</span>
-
+<span class="org-comment-delimiter">;; </span><span class="org-comment">remove the midi responder
+</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>remove-responder *my-midi-responder*<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; ; No value
+</span>
 </pre>
 </div>
 <p>

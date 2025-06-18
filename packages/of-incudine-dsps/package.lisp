@@ -5,7 +5,8 @@
   (:nicknames #:oid)
   (:shadowing-import-from #:incudine #:GROUP)
   (:shadow #:clip)
-  (:export #:BUFFER-RECORD
+  (:export #:*STANDARD-OUTPUT-GROUP*
+           #:BUFFER-RECORD
            #:ENVELOPE*
            #:LINE*
            #:PHASOR*

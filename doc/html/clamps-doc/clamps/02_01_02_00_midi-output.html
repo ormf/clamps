@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-06-08 So 16:38 -->
+<!-- 2024-10-01 Di 09:24 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Packages</title>
@@ -22,7 +22,7 @@
 <a class="top-menu" href="../clamps-dict/index.html">Clamps Dictionary</a>
 <a class="top-menu" href="../fomus/index.html">Fomus</a>
 </div>
-<div id="org-div-nav-menu">Next: <a accesskey="n" href="02_01_03_00_midi-input.html"> MIDI Input </a>,&nbsp;Previous: <a accesskey="p" href="02_01_01_00_midi-ports.html"> MIDI Ports </a>,&nbsp;Up: <a accesskey="u" href="02_00_00_00_midi.html"> cl-midictl </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_00_general.html"> General </a></div><div id="content" class="content">
+<div id="org-div-nav-menu">Next: <a accesskey="n" href="02_01_03_00_midi-input.html"> MIDI Input </a>,&nbsp;Previous: <a accesskey="p" href="02_01_01_00_opening-midi-ports.html"> Opening MIDI Ports </a>,&nbsp;Up: <a accesskey="u" href="02_00_00_00_midi.html"> cl-midictl </a>,&nbsp;Home: <a accesskey="h" href="01_00_00_00_general.html"> General </a></div><div id="content" class="content">
 <nav id="table-of-contents" role="doc-toc">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
@@ -50,7 +50,7 @@
 <ul class="ul-toc-level-2">
 <li class="toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
 <ul class="ul-toc-level-3">
-<li class="toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
+<li class="toc-level-3"><a href="02_01_01_00_opening-midi-ports.html"class="toc-entry">Opening MIDI Ports</a></li>
 <li class="toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry toc-active">MIDI Output</a></li>
 <li class="toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
 <ul class="ul-toc-level-4">
@@ -63,7 +63,7 @@
 </li>
 <li class="toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
 <ul class="ul-toc-level-4">
-<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-nanokontrol2-controller.html"class="toc-entry">Using a NanoKONTROL2 Controller</a></li>
 <li class="toc-hidden toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
 <li class="toc-hidden toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry">Excursion: Closures</a></li>
 </ul>
@@ -119,7 +119,6 @@
 <li class="toc-hidden toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
-<li class="toc-hidden toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
 </ul>
 </li>
 <li class="toc-hidden toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
@@ -138,10 +137,10 @@
 </nav>
 <header>
 <h1 class="title">Clamps Packages</h1>
-</header><div id="page-main-body"><nav id="nav-left"><a href="02_01_01_00_midi-ports.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-orgf6a5ade" class="outline-4">
-<h4 id="orgf6a5ade">MIDI Output</h4>
-<div class="outline-text-4" id="text-orgf6a5ade">
+</header><div id="page-main-body"><nav id="nav-left"><a href="02_01_01_00_opening-midi-ports.html" class="nav-left"><i class="angle-left"></i></a></nav>
+<div id="page-text-body"><div id="outline-container-orgbc2e81f" class="outline-4">
+<h4 id="orgbc2e81f">MIDI Output</h4>
+<div class="outline-text-4" id="text-orgbc2e81f">
 <p>
 Once the ports have been opened and an external program or
 hardware device has been connected to Incudine's JACK ports,
@@ -150,14 +149,14 @@ program/device:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">Send a midi note with keynum 60 and duration 0.5 seconds to Incudine's Midi Output</span>
-
+<pre class="src src-lisp"><span class="org-comment-delimiter">;; </span><span class="org-comment">Send a midi note with keynum 60 and duration 0.5 seconds to Incudine's Midi Output
+</span>
 <span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">in-package</span> <span class="org-builtin">:clamps</span><span class="org-rainbow-delimiters-depth-1">)</span>
 
-<span class="org-rainbow-delimiters-depth-1">(</span>output <span class="org-rainbow-delimiters-depth-2">(</span>new midi<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; ; No values</span>
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Send 10 midi events with random keynums:</span>
-
+<span class="org-rainbow-delimiters-depth-1">(</span>output <span class="org-rainbow-delimiters-depth-2">(</span>new midi<span class="org-rainbow-delimiters-depth-2">)</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; ; No values
+</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Send 10 midi events with random keynums:
+</span>
 <span class="org-rainbow-delimiters-depth-1">(</span><span class="org-keyword">loop</span>
   repeat 10
   for time from 0 by 0.1

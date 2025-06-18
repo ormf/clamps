@@ -23,6 +23,9 @@
 (unless (boundp 'cl-user:*sfile-path*)
   (defparameter cl-user:*sfile-path* nil))
 
+(defparameter *standard-output-group* 200
+  "standard group for output.")
+
 (defvar *standard-pitch* 440.0
   "Reference tuning frequency for middle A, setfable.")
 
@@ -155,5 +158,5 @@ lsample
            (out1 (or out1 0))
            (out2 (or out2 (1+ out1))))
       (if oneshot
-        (play-buffer* buffer oid:*env1* duration (+ amp ampdb) rate pan startpos out1 out2 :tail 200)
-        (play-buffer-loop* buffer oid:*env1* duration (+ amp ampdb) rate pan loopstart loopend startpos out1 out2 :tail 200)))))
+        (play-buffer* buffer oid:*env1* duration (+ amp ampdb) rate pan startpos out1 out2 :tail *standard-output-group*)
+        (play-buffer-loop* buffer oid:*env1* duration (+ amp ampdb) rate pan loopstart loopend startpos out1 out2 :tail *standard-output-group*)))))

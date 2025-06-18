@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-06-08 So 16:38 -->
+<!-- 2024-10-01 Di 09:24 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Packages</title>
@@ -50,7 +50,7 @@
 <ul class="ul-toc-level-2">
 <li class="toc-hidden toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
 <ul class="ul-toc-level-3">
-<li class="toc-hidden toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
+<li class="toc-hidden toc-level-3"><a href="02_01_01_00_opening-midi-ports.html"class="toc-entry">Opening MIDI Ports</a></li>
 <li class="toc-hidden toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
 <li class="toc-hidden toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
 <ul class="ul-toc-level-4">
@@ -63,7 +63,7 @@
 </li>
 <li class="toc-hidden toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
 <ul class="ul-toc-level-4">
-<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-nanokontrol2-controller.html"class="toc-entry">Using a NanoKONTROL2 Controller</a></li>
 <li class="toc-hidden toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
 <li class="toc-hidden toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry">Excursion: Closures</a></li>
 </ul>
@@ -119,7 +119,6 @@
 <li class="toc-hidden toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
-<li class="toc-hidden toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
 </ul>
 </li>
 <li class="toc-hidden toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
@@ -139,9 +138,9 @@
 <header>
 <h1 class="title">Clamps Packages</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="01_00_00_00_general.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-orgbe9b9f5" class="outline-4">
-<h4 id="orgbe9b9f5">Reading the Documentation</h4>
-<div class="outline-text-4" id="text-orgbe9b9f5">
+<div id="page-text-body"><div id="outline-container-orga82e4cf" class="outline-4">
+<h4 id="orga82e4cf">Reading the Documentation</h4>
+<div class="outline-text-4" id="text-orga82e4cf">
 <p>
 The Clamps Packages Documentation aims to explain the concepts of
 the different parts of Clamps with some examples. For that reason,
@@ -172,8 +171,8 @@ or even consult the source code.
 Due to this open concept there is no preferred sequence to read
 the Clamps Packages Documentation. Nevertheless, some parts depend
 on the knowledge of other parts of the documentation. As an
-example, the <a href="03_04_00_00_cm-sfz.html#org33463a0">cm-sfz</a> part can only be understood, when the concept
-of the <a href="07_03_00_00_cl-sfz.html#org6f9c9a4">cl-sfz</a> package is known.
+example, the <a href="03_04_00_00_cm-sfz.html#org5741181">cm-sfz</a> part can only be understood, when the concept
+of the <a href="07_03_00_00_cl-sfz.html#org4aa9ee4">cl-sfz</a> package is known.
 </p>
 
 <p>
@@ -186,7 +185,7 @@ reading path from this graph according to personal preferences and
 interests.
 </p>
 
-<figure id="orgca66631">
+<figure id="orgc970dda">
 <img src="./img/clamps-dependencies.svg" alt="clamps-dependencies.svg" class="org-svg" width="100%" />  
 
 <figcaption><span class="figure-number">Figure 1: </span>Dependencies between clamps packages</figcaption>

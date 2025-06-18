@@ -548,6 +548,17 @@ set-val
 watch
 "
         ))
+      (clamps:clamps-bounce-to-disk
+       (macro
+        ((output-filename
+          &key input-filename
+          (channels *number-of-output-bus-channels*)
+          duration (pad 2) (sample-rate *sample-rate*)
+          header-type data-format metadata)
+         &body body)
+          "Wrapper around incudine:bounce-to-disk, temporarily setting clamps'
+*​standard-output-group​* to 0."
+        ))
       (clamps:set-bpm
        (function
         (bpm)

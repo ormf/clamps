@@ -22,7 +22,8 @@
   (:export cl-user:clamps
            standard-pitch
            svg-gui-root
-
+           clamps-bounce-to-disk
+           
            evt-amp
            evt-duration
            evt-keynum
@@ -77,6 +78,7 @@
            cl-midictl:set-marker orm-utils:combinations export-svg
            orm-utils:with-curr-dir plot-2d
            orm-utils:differentiate of-incudine-dsps:buffer-loop-play*
+           of-incudine-dsps:*standard-output-group*
            orm-utils:m-exp-rd-rev-fn orm-utils:map-params
            of-incudine-dsps:play-buffer-stretch-env-out orm-utils:make-quantlist
            set-basedir clamps-base-url orm-utils:slurp

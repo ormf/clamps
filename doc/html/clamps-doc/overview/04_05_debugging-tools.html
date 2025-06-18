@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-04-18 Fr 18:37 -->
+<!-- 2024-10-01 Di 09:24 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Overview</title>
@@ -57,13 +57,13 @@
 <header>
 <h1 class="title">Clamps Overview</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="04_04_code-inspection.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-org1f256f9" class="outline-3">
-<h3 id="org1f256f9">Debugging Tools</h3>
-<div class="outline-text-3" id="text-org1f256f9">
+<div id="page-text-body"><div id="outline-container-org6dec865" class="outline-3">
+<h3 id="org6dec865">Debugging Tools</h3>
+<div class="outline-text-3" id="text-org6dec865">
 </div>
-<div id="outline-container-org039a11c" class="outline-4">
-<h4 id="org039a11c">Logging</h4>
-<div class="outline-text-4" id="text-org039a11c">
+<div id="outline-container-org3eac7c0" class="outline-4">
+<h4 id="org3eac7c0">Logging</h4>
+<div class="outline-text-4" id="text-org3eac7c0">
 <p>
 To obtain information about the state of the program while it is
 running, Incudine implements a logging mechanism which is imported
@@ -83,28 +83,28 @@ it will be printed in the REPL, otherwise the msg command doesn't
 produce any output:
 </p>
 <div class="org-src-container">
-<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span>logger-level<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; :warn</span>
-
-<span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Warning"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
-
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Warning</span>
-
-<span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:error</span> <span class="org-string">"Error"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">error: Error</span>
-
-<span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:info</span> <span class="org-string">"Info"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">No Output in the REPL!</span>
-
-<span class="org-rainbow-delimiters-depth-1">(</span>setf <span class="org-rainbow-delimiters-depth-2">(</span>logger-level<span class="org-rainbow-delimiters-depth-2">)</span> <span class="org-builtin">:info</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; :info</span>
-<span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:info</span> <span class="org-string">"Info"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Info</span>
-
-<span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:error</span> <span class="org-string">"Error"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:</span>
-<span class="org-comment-delimiter">;; </span><span class="org-comment">error: Error</span>
+<pre class="src src-lisp"><span class="org-rainbow-delimiters-depth-1">(</span>logger-level<span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; :warn
+</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:warn</span> <span class="org-string">"Warning"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil
+</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">warn: Warning
+</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:error</span> <span class="org-string">"Error"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">error: Error
+</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:info</span> <span class="org-string">"Info"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">No Output in the REPL!
+</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>setf <span class="org-rainbow-delimiters-depth-2">(</span>logger-level<span class="org-rainbow-delimiters-depth-2">)</span> <span class="org-builtin">:info</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; :info
+</span><span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:info</span> <span class="org-string">"Info"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">Info
+</span>
+<span class="org-rainbow-delimiters-depth-1">(</span>msg <span class="org-builtin">:error</span> <span class="org-string">"Error"</span><span class="org-rainbow-delimiters-depth-1">)</span> <span class="org-comment">; =&gt; nil
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">Output in the REPL:
+</span><span class="org-comment-delimiter">;; </span><span class="org-comment">error: Error</span>
 </pre>
 </div>
 <p>
@@ -116,9 +116,9 @@ setting the <i>*​logger-stream​*</i> special variable.
 </p>
 </div>
 </div>
-<div id="outline-container-orge2c6de1" class="outline-4">
-<h4 id="orge2c6de1">The Sly Debugger</h4>
-<div class="outline-text-4" id="text-orge2c6de1">
+<div id="outline-container-org9f1fd4e" class="outline-4">
+<h4 id="org9f1fd4e">The Sly Debugger</h4>
+<div class="outline-text-4" id="text-org9f1fd4e">
 <p>
 Common Lisp has a unique mechanism for error recovery called
 <i>Condition System</i><sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a></sup>. Whenever an error is encountered, emacs
@@ -126,7 +126,7 @@ opens a new Buffer similar to the one shown below.
 </p>
 
 
-<figure id="org0e1b1db">
+<figure id="orgb4a8634">
 <img src="./img/sly-debug.png" alt="sly-debug.png" width="80%" />
 
 <figcaption><span class="figure-number">Figure 3: </span>The Sly Debugger</figcaption>
@@ -159,9 +159,9 @@ error.
 </p>
 </div>
 </div>
-<div id="outline-container-orge8caa03" class="outline-4">
-<h4 id="orge8caa03">Internet Resources</h4>
-<div class="outline-text-4" id="text-orge8caa03">
+<div id="outline-container-org5a77a40" class="outline-4">
+<h4 id="org5a77a40">Internet Resources</h4>
+<div class="outline-text-4" id="text-org5a77a40">
 <p>
 It is beyound the scope of this reference to give a detailed
 introduction into all debugging and inspection options in a mature
