@@ -152,4 +152,4 @@ rts
     (funcall #'clampscall :clamps-start
              :num-midi-ports num-midi-ports :gui-base gui-base :qsynth qsynth :open-gui open-gui)))
 
-(export '(*sfz-preset-lookup* *sfz-file-path* *sfile-path* *ats-file-path* set-clamps-doc-root *clamps-doc-root* clamps clamps-no-gui clamps-image-start) 'cl-user)
+(export '(*sfz-preset-lookup* *sfz-file-path* *sfile-path* *ats-file-path* set-clamps-doc-root *clamps-doc-root* *num-midi-ports* clamps clamps-no-gui clamps-image-start) 'cl-user)

@@ -23,6 +23,7 @@
            standard-pitch
            svg-gui-root
            clamps-bounce-to-disk
+           *num-midi-ports*
            
            evt-amp
            evt-duration

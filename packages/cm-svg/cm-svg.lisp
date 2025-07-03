@@ -740,7 +740,7 @@ svg element."
                                        :group? nil :layer? nil)))))
 
 |#
-
+(* (/ 4 (- (log 9 2) (log 8 2))) 3) ; => 70.6194
 
 (defmethod import-events ((file svg-file) &key (x-offset 0)
                                             (seq t) layer (x-scale 1/32)
