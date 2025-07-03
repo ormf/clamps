@@ -143,4 +143,36 @@ pitch_keycenter=~a~%~%" name lokey hikey key)))))
 (write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-pp" "bassoboe-pp")
 (write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-f" "bassoboe-f")
 
+(find-files-matching (format nil "~a/samples/orig" dir) template)
+
+
+
+|#
+
+(defparameter *sol-pitch-template* "-*([^-]+).+$")
+
+(defun sol-parse-pitch (filename template)
+  (parse-pitch (cl-ppcre:regex-replace *sol-pitch-template* (subseq filename (length template)) "\\1")))
+
+(defun sol-prepend-pitch (filename template)
+  (format nil "~3,'0d-~a" (sol-parse-pitch filename template) filename))
+
+(defun sol->sfz (dir name template)
+  (uiop:run-program (format nil "mkdir -p ~a/samples/orig/" dir) :ignore-error-status t)
+  (dolist (file (find-files-matching (format nil "~a/samples/" dir) template))
+    (uiop:run-program (format nil "mv ~a ~a/samples/orig/" file dir)))
+  (dolist (file (find-files-matching (format nil "~a/samples/orig/" dir) template))
+    (uiop:run-program (format nil "cp ~a ~a/samples/~a" file dir
+                              (sol-prepend-pitch (file-namestring file) template))))
+  (write-sfz dir name template))
+
+#|
+
+;;; Example call: first copy the sol directory in question into the locations below.
+
+(loop for (dir template) in '(("~/work/snd/sfz/violin/artificial-harmonic/" "Vn-art-harm")
+                              ("~/work/snd/sfz/viola/artificial-harmonic/" "Va-art-harm")
+                              ("~/work/snd/sfz/violoncello/artificial-harmonic/" "Vc-art-harm")
+                              ("~/work/snd/sfz/doublebass/artificial-harmonic/" "Cb-art-harm"))
+      do (sol->sfz dir (string-downcase template) template))
 |#
