@@ -176,3 +176,31 @@ pitch_keycenter=~a~%~%" name lokey hikey key)))))
                               ("~/work/snd/sfz/doublebass/artificial-harmonic/" "Cb-art-harm"))
       do (sol->sfz dir (string-downcase template) template))
 |#
+
+(loop for (dir template) in '(("~/work/snd/sfz/violin/artificial-harmonic/" "Vn-art-harm")
+                              ("~/work/snd/sfz/viola/artificial-harmonic/" "Va-art-harm")
+                              ("~/work/snd/sfz/violoncello/artificial-harmonic/" "Vc-art-harm")
+                              ("~/work/snd/sfz/doublebass/artificial-harmonic/" "Cb-art-harm"))
+      do (sol->sfz dir (string-downcase template) template))
+
+(let ((base "vn-art-harm"))
+  (dolist (string '("1c" "2c" "3c" "4c"))
+    (write-sfz "~/work/snd/sfz/violin/artificial-harmonic/" (format nil "~a-~a" base string) string)))
+(let ((base "va-art-harm"))
+  (dolist (string '("1c" "2c" "3c" "4c"))
+    (write-sfz "~/work/snd/sfz/viola/artificial-harmonic/" (format nil "~a-~a" base string) string)))
+
+(let ((base "vc-art-harm"))
+  (dolist (string '("1c" "2c" "3c" "4c"))
+    (write-sfz "~/work/snd/sfz/violoncello/artificial-harmonic/" (format nil "~a-~a" base string) string)))
+
+(let ((base "cb-art-harm"))
+  (dolist (string '("1c" "2c" "3c" "4c"))
+    (write-sfz "~/work/snd/sfz/doublebass/artificial-harmonic/" (format nil "~a-~a" base string) string)))
+
+(dolist (dir '("~/work/snd/sfz/violin/artificial-harmonic/"
+               "~/work/snd/sfz/viola/artificial-harmonic/"
+               "~/work/snd/sfz/violoncello/artificial-harmonic/"
+               "~/work/snd/sfz/doublebass/artificial-harmonic/"))
+  (dolist (template '("1c" "2c" "3c" "4c"))
+    (sol->sfz dir (string-downcase template) template)))

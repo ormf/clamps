@@ -1551,13 +1551,14 @@ v-collect
 |#
 
 (defun call/collecting (f n &optional (tail '()))
-  "Call function /f/ /n/ times, with idx [0..n-1] as argument,
-collecting its results. Return results with /tail/ appended.
+  "Call function /f/ /n/ times, if n is a number with idx [0..n-1] as
+argument, or on all elements of n if n is a list, collecting its
+results. Return results with /tail/ appended.
 
 @Arguments
 
 f - Function of one argument (an integer in the range [0..n])
-n - Positive integer
+n - Positive integer or a list
 tail - A list collected into by prepending to it
 
 @Examples
@@ -1570,8 +1571,11 @@ tail - A list collected into by prepending to it
 v-collect
 "
   (let ((c (make-collector)))
-    (dotimes (i n (collector-contents c tail))
-      (collect-into c (funcall f i)))))
+    (typecase n
+      (number (dotimes (i n (collector-contents c tail))
+                (collect-into c (funcall f i))))
+      (cons (dolist (i n (collector-contents c tail))
+                (collect-into c (funcall f i)))))))
 
 (defmacro v-collect ((v n &optional (tail '())) &rest body)
   "Return a list of /n/ elems prepended to /tail/ by evaluating /body/
