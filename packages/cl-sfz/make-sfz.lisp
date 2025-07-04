@@ -133,22 +133,6 @@ pitch_keycenter=~a~%~%" name lokey hikey key)))))
               (uiop:run-program (format nil "sed -i.bup 's/volume=-*[0-9]\\+/volume=0/g' ~a" file)))
             (normalize-files (format nil "/home/orm/work/snd/sfz/~a/~a/" instr type))))))
 
-#|
-
- Beispiel:
-
-;;; Zuvor darauf achten, dass von jeder Tonhöhe nur 1 Datei vorhanden
-;;; ist!
-
-(write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-pp" "bassoboe-pp")
-(write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-f" "bassoboe-f")
-
-(find-files-matching (format nil "~a/samples/orig" dir) template)
-
-
-
-|#
-
 (defparameter *sol-pitch-template* "-*([^-]+).+$")
 
 (defun sol-parse-pitch (filename template)
@@ -168,6 +152,17 @@ pitch_keycenter=~a~%~%" name lokey hikey key)))))
 
 #|
 
+ Beispiel:
+
+;;; Zuvor darauf achten, dass von jeder Tonhöhe nur 1 Datei vorhanden
+;;; ist!
+
+(write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-pp" "bassoboe-pp")
+(write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-f" "bassoboe-f")
+
+(find-files-matching (format nil "~a/samples/orig" dir) template)
+
+
 ;;; Example call: first copy the sol directory in question into the locations below.
 
 (loop for (dir template) in '(("~/work/snd/sfz/violin/artificial-harmonic/" "Vn-art-harm")
@@ -175,7 +170,6 @@ pitch_keycenter=~a~%~%" name lokey hikey key)))))
                               ("~/work/snd/sfz/violoncello/artificial-harmonic/" "Vc-art-harm")
                               ("~/work/snd/sfz/doublebass/artificial-harmonic/" "Cb-art-harm"))
       do (sol->sfz dir (string-downcase template) template))
-|#
 
 (loop for (dir template) in '(("~/work/snd/sfz/violin/artificial-harmonic/" "Vn-art-harm")
                               ("~/work/snd/sfz/viola/artificial-harmonic/" "Va-art-harm")
@@ -204,3 +198,36 @@ pitch_keycenter=~a~%~%" name lokey hikey key)))))
                "~/work/snd/sfz/doublebass/artificial-harmonic/"))
   (dolist (template '("1c" "2c" "3c" "4c"))
     (sol->sfz dir (string-downcase template) template)))
+
+
+
+(let ((base "vn-art-harm"))
+  (dolist (string '("1c" "2c" "3c" "4c"))
+    (write-sfz "~/work/snd/sfz/violin/artificial-harmonic/" (format nil "~a-~a" base string) string)))
+(let ((base "va-art-harm"))
+  (dolist (string '("1c" "2c" "3c" "4c"))
+    (write-sfz "~/work/snd/sfz/viola/artificial-harmonic/" (format nil "~a-~a" base string) string)))
+
+(let ((base "vc-art-harm"))
+  (dolist (string '("1c" "2c" "3c" "4c"))
+    (write-sfz "~/work/snd/sfz/violoncello/artificial-harmonic/" (format nil "~a-~a" base string) string)))
+
+(let ((base "cb-art-harm"))
+  (dolist (string '("1c" "2c" "3c" "4c"))
+    (write-sfz "~/work/snd/sfz/doublebass/artificial-harmonic/" (format nil "~a-~a" base string) string)))
+
+(dolist (dir '("~/work/snd/sfz/violin/artificial-harmonic/"
+               "~/work/snd/sfz/viola/artificial-harmonic/"
+               "~/work/snd/sfz/violoncello/artificial-harmonic/"
+               "~/work/snd/sfz/doublebass/artificial-harmonic/"))
+  (dolist (template '("1c" "2c" "3c" "4c"))
+    (sol->sfz dir (string-downcase template) template)))
+
+
+(loop for (dir template) in '(("~/work/snd/sfz/violin/ponticello/" "Vn-pont")
+                              ("~/work/snd/sfz/viola/ponticello/" "Va-pont")
+                              ("~/work/snd/sfz/violoncello/ponticello/" "Vc-pont")
+                              ("~/work/snd/sfz/doublebass/ponticello/" "Cb-pont"))
+      do (sol->sfz dir (string-downcase template) template))
+
+|#

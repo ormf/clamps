@@ -20,6 +20,35 @@
 
 (in-package :cl-sfz)
 
+;;; Beispiel für sol Dateien:
+
+(loop for (dir template) in '(("~/work/snd/sfz/violin/ponticello/" "Vn-pont")
+                              ("~/work/snd/sfz/viola/ponticello/" "Va-pont")
+                              ("~/work/snd/sfz/violoncello/ponticello/" "Vc-pont")
+                              ("~/work/snd/sfz/doublebass/ponticello/" "Cb-pont"))
+      do (sol->sfz dir (string-downcase template) template))
+
+(loop for (dir template) in '(("~/work/snd/sfz/violin/tasto/" "Vn-tasto")
+                              ("~/work/snd/sfz/viola/tasto/" "Va-tasto")
+                              ("~/work/snd/sfz/violoncello/tasto/" "Vc-tasto")
+                              ("~/work/snd/sfz/doublebass/tasto/" "Cb-tasto"))
+      do (sol->sfz dir (string-downcase template) template))
+
+(loop for (dir template) in '(("~/work/snd/sfz/violin/ponticello/" "Vn-pont")
+                              ("~/work/snd/sfz/viola/ponticello/" "Va-pont")
+                              ("~/work/snd/sfz/violoncello/ponticello/" "Vc-pont")
+                              ("~/work/snd/sfz/doublebass/ponticello/" "Cb-pont"))
+      do (dolist (string '("1c" "2c" "3c" "4c"))
+           (write-sfz dir (format nil "~(~a-~a~)" template string) string)))
+
+(loop for (dir template) in '(("~/work/snd/sfz/violin/tasto/" "Vn-tasto")
+                              ("~/work/snd/sfz/viola/tasto/" "Va-tasto")
+                              ("~/work/snd/sfz/violoncello/tasto/" "Vc-tasto")
+                              ("~/work/snd/sfz/doublebass/tasto/" "Cb-tasto"))
+      do (dolist (string '("1c" "2c" "3c" "4c"))
+           (write-sfz dir (format nil "~(~a-~a~)" template string) string)))
+
+
 #|
 
 - einen Ordner mit Instrumentennamen vorbereiten, in dem sich
@@ -36,7 +65,6 @@ Anschließend werden sfz Dateien folgendermaßen generiert:
 (write-sfz "~/work/snd/sfz/bassoboe" "bassoboe-f" "bassoboe-f")
 
 
-(dolist '()
 
 (dolist (dir (uiop/driver:subdirectories (pathname "~/work/snd/sfz/EiersheimerOrgel/")))
   (let ((dirname  (first (last (pathname-directory dir)))))
