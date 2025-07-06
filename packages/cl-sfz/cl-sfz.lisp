@@ -493,13 +493,15 @@ loaded it will get loaded before playback starts.
 The setting of <<standard-pitch>> is taken into account!
 "
   (let ((map (get-sfz-preset preset)))
-    (if map 
+    (if (and map (aref map (round pitch))) 
         (let* ((lsample (random-elem (aref map (round pitch)))))
           (play-lsample lsample pitch db dur
                         :pan pan :startpos startpos
                         :oneshot (if osp oneshot (lsample-oneshot lsample))
                         :out1 out1 :out2 out2))
-        (error "preset ~S not found!" preset))))
+        (error (if map
+                   (format nil "pitch ~d of preset ~S not present!" (round pitch) preset)
+                   (format nil "preset ~S doesn't exist!" preset))))))
 
 ;;; (play-sfz 60 0 1 :pan 0 :out1 0)
 #|

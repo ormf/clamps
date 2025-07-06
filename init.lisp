@@ -76,9 +76,6 @@ calling (clamps) in such cases."
       (slynk:eval-in-emacs `(setq *common-music-doc-root* ,url))
       (setf *reinit-clamps-doc* t)))
 
-(load (merge-pathnames ".clampsinit.lisp" (user-homedir-pathname))
-      :if-does-not-exist nil)
-
 (defun clamps-image-start ()
   (setf *package* (find-package :cl-user)))
 
@@ -86,7 +83,8 @@ calling (clamps) in such cases."
   "Start Clamps including the Gui. This function can be called from the
 /:cl-user/ package.
 
-Apart from starting the webserver for the Gui, the function also:
+After loading ~/.clampsinit part and starting the webserver for the
+Gui, the function also:
 
 - Starts the OSC responder for Inkscape.
 - Starts the realtime engine and sets up MIDI ports and receivers by calling <<rts>>.
@@ -126,6 +124,8 @@ clamps-start
 clamps-gui-root
 rts
 "
+  (load (merge-pathnames ".clampsinit.lisp" (user-homedir-pathname))
+      :if-does-not-exist nil)
   (flet ((clampscall (fn &rest args)
            (apply (find-symbol (string fn) :clamps) args))
          (cmvar (var)

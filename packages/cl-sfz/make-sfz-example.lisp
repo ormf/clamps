@@ -49,6 +49,19 @@
            (write-sfz dir (format nil "~(~a-~a~)" template string) string)))
 
 
+(loop for (dir template) in '(("~/work/snd/sfz/violin/tasto/" "Vn-tasto"))
+      do (sol->sfz dir (string-downcase template) template))
+
+(loop for (dir template) in '(("~/work/snd/sfz/violin/tasto/" "Vn-tasto"))
+      do (dolist (string '("1c" "2c" "3c" "4c"))
+           (write-sfz dir (format nil "~(~a-~a~)" template string) string)))
+
+(loop for (dir template) in '(("~/work/snd/sfz/violin/artificial-harmonic/" "Vn-art-harm"))
+      do (progn
+           (sol->sfz dir (string-downcase template) template)
+           (dolist (string '("1c" "2c" "3c" "4c"))
+             (write-sfz dir (format nil "~(~a-~a~)" template string) string))))
+
 #|
 
 - einen Ordner mit Instrumentennamen vorbereiten, in dem sich
