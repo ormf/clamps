@@ -78,7 +78,7 @@ clamps-base-url
     nil))
 
 (defun start-browser-play ()
-;;;  (format t "starting!~%")
+  (incudine.util:msg :warn "starting!~%")
   (when (and atsd.amod atsd.fmod)
     (if (ats-sound-bands atsd.sound)
         (incudine::sin-noi-rtc-synth* (float (or (first (get-val atsd.mousepos)) 0.0) 1.0d0) atsd.sound
