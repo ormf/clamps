@@ -86,7 +86,7 @@
   (mapcar (lambda (key) (list (make-keyword (format nil "~afn" key))
                          (intern (format nil "~:@(~afn~)" key))
                          key ))
-          '(:buffer :transp :amp :dy :start :end :stretch
+          '(:lsample :transp :amp :dy :start :end :stretch
             :wwidth :attack :release :pan :out1 :out2))
   "List of all param-fn keywords, param-fn symbols and param keywords.")
 
@@ -94,7 +94,7 @@
   (let ((hash-table (make-hash-table)))
     (loop for (key val) on
           '(:dtimefn 0.3
-            :bufferfn nil
+            :lsamplefn (and (boundp lsample) lsample)
             :transpfn 60
             :ampfn 0
             :dyfn 0
@@ -156,17 +156,23 @@ same syntax as an argument of let."
                                     (declare (ignorable x dur args))
                                     ,outer-form))
                                 x dur args)
-                               ,(getf form :dtimefn (gethash :dtimfn *default-param-fns*)))))))
+                               ,(getf form :dtimefn (gethash :dtimefn *default-param-fns*)))))))
 
 (defun params-fn-form (form)
-  "Return the lambda form for the parmas-fn from /form/ as a quoted list."
+  "Return the lambda form for the params-fn from /form/ as a quoted list."
   `(lambda (x dur &rest args)
      (let* ,(getf form :bindings)
        (declare (ignorable ,@(binding-syms (getf form :bindings))))
        (labels ,(get-param-fns form)
-         (list ,@(loop
-                   for (fnkey fnsym key) in *param-lookup*
-                   append `(,key (,fnsym x dur args))))))))
+         (let ((lsample (lsamplefn x dur args)))
+           (append `(:lsample ,lsample :buffer ,(lsample-buffer lsample))
+                   (list
+                    ,@(loop
+                      for (fnkey fnsym key) in (remove-if (lambda (x) (member x '(:buffer :lsample)))
+                                                          *param-lookup*
+                                                          :key #'third)
+
+                      append `(,key (,fnsym x dur args))))))))))
 
 (defmacro digest-form-to-preset (preset-no form)
   "A call to this macro will trigger compiling the dtime-fn and params-fn
@@ -321,7 +327,8 @@ curr-preset.lisp buffer."
             (in-package :cl-poolplayer)
             (defparameter slynk::*send-counter* 0)
             (preset->digest-string ref))
-         ,*curr-preset-no*) t)
+         ,*curr-preset-no*)
+       t)
       (slynk::eval-in-emacs
        `(save-excursion
          (switch-to-buffer (get-buffer "curr-preset.lisp"))) t)))
