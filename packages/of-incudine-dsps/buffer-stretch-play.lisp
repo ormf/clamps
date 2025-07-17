@@ -653,7 +653,7 @@ play-buffer-loop*
 play-buffer-stretch*
 play-lsample
 "  (:defaults (incudine:incudine-missing-arg "BUFFER")
-             (incudine:incudine-missing-arg "ENV")
+             *env1*
              0 0 0 0 1 137 0 0.01 0 0 1)
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))

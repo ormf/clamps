@@ -119,12 +119,21 @@ poolplayer-preset in a list. The list is used in digest-form-to-preset
 for labels bindings. If /form/ doesn't contain an entry for the
 param-fn, it is retrieved from *default-param-fns*."
   (loop for (fnkey fnsym key) in *param-lookup*
-        collect `(,fnsym (x &optional dur &rest args)
+        collect `(,fnsym (x &optional dur args)
                          (declare (ignorable x dur args )
                                   (type (or null number) dur))
-                         ,(getf form fnkey (gethash fnkey *default-param-fns*)))))
+                         (let ((outer-form (getf args ,fnkey)))
+                           (if outer-form
+                               (funcall
+                                (eval
+                                 `(lambda (x &optional dur args)
+                                    (declare (ignorable x dur args))
+                                    ,outer-form))
+                                x dur args)
+                               ,(getf form fnkey (gethash fnkey *default-param-fns*)))))))
 
 ;;; (get-param-fns '(:transpfn 0 :ampfn (n-lin x 0 -12)))
+
 
 (defun binding-syms (bindings)
   "Return the binding symbols of /bindings/ in a list. /bindings/ has the
@@ -139,7 +148,15 @@ same syntax as an argument of let."
      (let* ,(getf form :bindings)
        (declare (ignorable ,@(binding-syms (getf form :bindings)))
                 (type (or null number) dur))
-       ,(getf form :dtimefn (gethash :dtimefn *default-param-fns*)))))
+       (let ((outer-form (getf args :dtimefn)))
+                           (if outer-form
+                               (funcall
+                                (eval
+                                 `(lambda (x &optional dur args)
+                                    (declare (ignorable x dur args))
+                                    ,outer-form))
+                                x dur args)
+                               ,(getf form :dtimefn (gethash :dtimfn *default-param-fns*)))))))
 
 (defun params-fn-form (form)
   "Return the lambda form for the parmas-fn from /form/ as a quoted list."

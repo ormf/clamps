@@ -54,6 +54,7 @@ is before the end time of the player's life cycle or end is
 nil. Otherwise it just sets the 'playing slot of the player to nil and
 returns."
   (with-slots (playing preset id start end dur) player
+;;;    (break "perform")
     (let* ((x (normalize-x time end dur))
            (prst (aref *poolplayer-presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
            (params (apply (params-fn prst) x dur args)))
@@ -63,7 +64,7 @@ returns."
           (incf (getf params :amp) *master-amp-db*)
           (incudine.util:msg :info "~S" params)
           (dolist (key '(:lsample :keynum :dy :snd-id :adjust-stretch)) (remf params key))
-;;;            (incudine.util:msg :info "~S" params)
+            (incudine.util:msg :info "~S" params)
           (apply #'of-incudine-dsps::play-buffer-stretch-env-pan-out* :head 200 params)
           (if (and dur (> next end))
               (setf playing nil)
