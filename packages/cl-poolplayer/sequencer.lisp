@@ -113,7 +113,7 @@ removing it from *sequences*."
   (mapcar (lambda (s-player) (seq-player-fn s-player))
           *sequences*))
 
-(defun playfn (preset params)
+(defun playfn (preset &optional params)
   (lambda (dur) (apply #'preset-play
                   (make-instance 'eventplayer) preset dur params)))
 

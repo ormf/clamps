@@ -457,6 +457,7 @@
            cl-poolplayer:value-fn cl-poolplayer:*outseq8* cl-poolplayer:p4
            cl-poolplayer:save-poolplayer-presets
            cl-poolplayer:*poolplayer-presets-file*
+           cl-poolplayer:digest-form-to-preset
            cl-poolplayer:digest-poolplayer-preset cl-poolplayer:g4
            cl-poolplayer:*circle-cw* cl-poolplayer:make-p-song
            cl-poolplayer:npreset-play cl-poolplayer:set-poolplayer-preset-form

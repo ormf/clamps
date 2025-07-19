@@ -94,7 +94,7 @@
   (let ((hash-table (make-hash-table)))
     (loop for (key val) on
           '(:dtimefn 0.3
-            :lsamplefn (and (boundp lsample) lsample)
+            :lsamplefn lsample
             :transpfn 60
             :ampfn 0
             :dyfn 0
@@ -158,6 +158,7 @@ same syntax as an argument of let."
                                 x dur args)
                                ,(getf form :dtimefn (gethash :dtimefn *default-param-fns*)))))))
 
+#|
 (defun params-fn-form (form)
   "Return the lambda form for the params-fn from /form/ as a quoted list."
   `(lambda (x dur &rest args)
@@ -173,6 +174,18 @@ same syntax as an argument of let."
                                                           :key #'third)
 
                       append `(,key (,fnsym x dur args))))))))))
+|#
+
+(defun params-fn-form (form)
+  "Return the lambda form for the params-fn from /form/ as a quoted list."
+  `(lambda (x dur &rest args)
+     (let* ,(getf form :bindings)
+       (declare (ignorable ,@(binding-syms (getf form :bindings))))
+       (labels ,(get-param-fns form)
+         (list
+          ,@(loop
+              for (fnkey fnsym key) in *param-lookup*
+              append `(,key (,fnsym x dur args))))))))
 
 (defmacro digest-form-to-preset (preset-no form)
   "A call to this macro will trigger compiling the dtime-fn and params-fn

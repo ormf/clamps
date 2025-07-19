@@ -38,7 +38,7 @@
                                   (getf (cdr new) :lsample)))))
                  (remf (cdr new) :buffer)
                  (remf (cdr new) :transp)
-                 (setf (getf (cdr new) :amp) (ou:db->amp (getf (cdr new) :amp)))
+;;;                 (setf (getf (cdr new) :amp) (ou:db->amp (getf (cdr new) :amp)))
                  (apply #'make-instance 'poolevt :time time :keynum keynum (cdr new))))
              seq)
      (namestring file))))
