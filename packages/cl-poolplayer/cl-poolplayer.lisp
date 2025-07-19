@@ -48,8 +48,6 @@ between start and end-time."
 
 ;;; perform routine:
 
-
-
 (defun perform (player time args)
   "central (tail call) recursive perform routine used by
 #'preset-play: It calculates params according to the preset definition
@@ -77,19 +75,17 @@ returns."
               (setf playing nil)
               (at next #'perform player next args)))))))
 
-
 (defun stop (p)
   (sv p :playing nil))
 
-;;; (defgeneric preset-play (player preset dur &rest args))
-
 (defun preset-play (&rest args)
-  (let ((time (or (getf args :time) (now)))
+  (let ((time (getf args :time (now)))
         (dur (getf args :dur))
         (preset (getf args :preset 0))
-        (player (or (getf args :player) (make-instance 'eventplayer))))
+        (player (or (getf args :player) (make-eventplayer))))
     (cm::sv player
         :playing t
+      :start-time time
       :end (if dur (+ time dur))
       :dur dur
       :preset preset)

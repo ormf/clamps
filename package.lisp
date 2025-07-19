@@ -466,8 +466,8 @@
            cl-poolplayer:p-song-beforefn cl-poolplayer:perform
            cl-poolplayer:serialize-score cl-poolplayer:distributed-play
            cl-poolplayer:*poolplayer-events* cl-poolplayer:collect-pool
-           cl-poolplayer:cm-collect cl-poolplayer:eventplotter
-           cl-poolplayer:*outseq13* cl-poolplayer:eventplayer
+           cl-poolplayer:cm-collect cl-poolplayer:make-eventplayer
+           cl-poolplayer:*outseq13*
            cl-poolplayer:load-poolplayer-presets cl-poolplayer:init-poolplayer
            cl-poolplayer:previous-poolplayer-preset cl-poolplayer:args
            cl-poolplayer:expand-arg-forms cl-poolplayer:x
@@ -661,6 +661,7 @@
   
   (:shadowing-import-from #:ou #:range)
   (:shadowing-import-from #:cl-plot #:plot)
+  (:shadowing-import-from #:cl-poolplayer #:make-eventplayer)
   (:use #:incudine
         #:incudine.util
         #:cl-midictl

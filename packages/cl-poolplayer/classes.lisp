@@ -20,19 +20,12 @@
 
 (in-package :cl-poolplayer)
 
-(defclass eventplayer ()
-  ((playing :accessor :playing :initform t :initarg :playing)
-   (id :accessor :id :initform nil :initarg :id)
-   (dur :accessor :dur :initform 3 :initarg :dur)
-   (end :accessor :end :initform 0 :initarg :end)
-   (time :accessor :time :initform 0 :initarg :time)
-   (preset :accessor :preset :initform 1 :initarg :preset)
-   (play-fn :accessor :play-fn :initform nil :initarg :play-fn)))
-
-(defclass eventplotter ()
-  ((playing :accessor :playing :initform t :initarg :playing)
-   (dur :accessor :dur :initform 3 :initarg :dur)
-   (end :accessor :end :initform 0 :initarg :end)
-   (time :accessor :time :initform 0 :initarg :time)
-   (preset :accessor :preset :initarg :preset)))
-
+(defstruct (eventplayer (:conc-name nil))
+  "struct containing the state of an eventplayer."
+  (playing t)
+  (id nil)
+  (dur 3)
+  (end 0)
+  (start-time 0)
+  (preset 0)
+  (play-fn nil))
