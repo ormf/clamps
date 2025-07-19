@@ -65,7 +65,7 @@
                      :outfn #'my-out
                      :dtimefn (lambda (x) (r-exp (n-exp x 0.03 0.3) (n-exp x 0.03 6)))))
             (repeat (+ 9 (random 4)))
-            (players (loop for i below repeat collect (make-instance 'eventplayer))))
+            (players (loop for i below repeat collect (make-eventplayer))))
        (labels ((recurse-fn (time idx p)
                   (if (< idx repeat)
                       (let* ((duration (n-exp (/ idx (1- repeat)) (/ dur 5) dur))

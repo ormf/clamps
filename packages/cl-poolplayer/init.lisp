@@ -29,4 +29,4 @@
                             :initial-contents
                             (loop
                               for x below 16
-                              collect (make-instance 'eventplayer))))
+                              collect (make-eventplayer))))

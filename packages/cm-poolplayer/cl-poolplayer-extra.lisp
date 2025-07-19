@@ -20,6 +20,7 @@
 
 (in-package :cl-poolplayer)
 
+#|
 (defun cm-collect-song (p-song &key (amp 0) (delay 0))
   "generate a time-sorted seq of cm::poolevt instances by collecting
 param lists of the events using the p-song-playfn with an 'eventplotter
@@ -45,6 +46,7 @@ player-type and supplying them to make-instance of the poolevt."
                       :time (+ start-time delay)
                       :player-type 'eventplotter))
      #'< :key (lambda (x) (cm::sv x :time)))))
+|#
 
 (defmacro collecting-cm (&rest body)
   `(let ((*events* '())
@@ -57,4 +59,4 @@ player-type and supplying them to make-instance of the poolevt."
               *events*)
       #'< :key (lambda (x) (sv x cm::time)))))
 
-(export '(cm-collect-song collecting-cm) 'cl-poolplayer)
+(export '(collecting-cm) 'cl-poolplayer)

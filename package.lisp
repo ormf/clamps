@@ -458,7 +458,7 @@
            cl-poolplayer:save-poolplayer-presets
            cl-poolplayer:*poolplayer-presets-file*
            cl-poolplayer:digest-form-to-preset
-           cl-poolplayer:digest-poolplayer-preset cl-poolplayer:g4
+           cl-poolplayer:g4
            cl-poolplayer:*circle-cw* cl-poolplayer:make-p-song
            cl-poolplayer:npreset-play cl-poolplayer:set-poolplayer-preset-form
            cl-poolplayer:stereo-out cl-poolplayer:dtime-dev
@@ -477,7 +477,7 @@
            cl-poolplayer:buf-idx cl-poolplayer:g3 cl-poolplayer:get-dtime-fn
            cl-poolplayer:play-song cl-poolplayer:p-song-name
            cl-poolplayer:fig12-out cl-poolplayer:fn-digest-poolplayer-preset
-           cl-poolplayer:load-poolplayer-sounds cl-poolplayer:cm-collect-song
+           cl-poolplayer:load-poolplayer-sounds
            cl-poolplayer:get-dtime-fn-no-x
            svg-import-export:add-svg-attr-props-to-quote
            svg-import-export:print-head-to-stream svg-import-export:opacity
@@ -636,9 +636,8 @@
                           #:set-on-new-window)
 
   (:shadowing-import-from #:of-incudine-dsps #:clip)
-  (:shadowing-import-from #:cl-poolplayer #:args)
+  ;;  (:shadowing-import-from #:cl-poolplayer #:args #:make-eventplayer #:digest-form-to-preset)
 
-  (:use #:cl #:cl-user #:cm #:of-incudine-dsps #:ou)
   (:shadow #:buffer #:buffer-frames
            #:buffer-sample-rate
            #:node #:bus
@@ -661,13 +660,15 @@
   
   (:shadowing-import-from #:ou #:range)
   (:shadowing-import-from #:cl-plot #:plot)
-  (:shadowing-import-from #:cl-poolplayer #:make-eventplayer)
-  (:use #:incudine
+  (:use #:cl
+        #:cl-user
+        #:incudine
+        #:cl-poolplayer
         #:incudine.util
         #:cl-midictl
         #:of-incudine-dsps
         #:incudine-bufs
-        #:cl #:cl-refs
+        #:cl-refs
         #:cl-sfz
         #:clog-dsp-widgets
         #:ats-cuda
@@ -677,3 +678,4 @@
         #:orm-utils
         #:clog-dsp-widgets
         ))
+
