@@ -113,9 +113,12 @@ removing it from *sequences*."
   (mapcar (lambda (s-player) (seq-player-fn s-player))
           *sequences*))
 
-(defun playfn (preset &optional params)
+#|
+
+(defun playfn (preset-no &optional params)
   (lambda (dur) (apply #'preset-play
-                  (make-instance 'eventplayer) preset dur params)))
+                  (make-eventplayer :preset-no preset-no :dur dur params))))
+|#
 
 (defmacro def-seq (name pool &key dtimefn)
   (let ((dtfn (gensym "dtimefn")))

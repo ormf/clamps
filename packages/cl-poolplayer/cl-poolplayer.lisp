@@ -25,7 +25,7 @@
 (defparameter *poolplayer-events* nil
   "global storage for recording")
 
-(defparameter *recording* nil
+(defparameter *poolplayer-recording-p* nil
   "flag to indicate recording of events.")
 
 (defun normalize-x (curr-time end-time dur)
@@ -56,18 +56,18 @@ then reschedules itself in case the calculated time for the next event
 is before the end time of the player's life cycle or end is
 nil. Otherwise it just sets the 'playing slot of the player to nil and
 returns."
-  (with-slots (playing preset id start end dur) player
+  (with-slots (playing preset-no id start end dur) player
     (let* ((x (normalize-x time end dur))
-           (prst (aref *poolplayer-presets* (if (= -1 preset) *curr-preset-no* preset))) ;;; if preset is -1 use *curr-preset*
+           (prst (aref *poolplayer-presets* (if (= -1 preset-no) *curr-poolplayer-preset-no* preset))) ;;; if preset-no is -1 use *curr-preset*
            (params (apply (params-fn prst) x dur args)))
-;;;        (break "preset-no: ~a, prst: ~a" preset prst)
+;;;        (break "preset-no: ~a, prst: ~a" preset-no prst)
       (when playing
         (let* ((next (+ time (apply (dtime-fn prst) x dur args))))
           (incf (getf params :amp) *master-amp-db*)
           (setf params (list* :buffer (lsample-buffer (getf params :lsample)) params))
           (incudine.util:msg :info "~S" params)
           (dolist (key '(:adjust-stretch :dy)) (remf params key))
-          (when *recording* (push (cons time (copy-seq params)) *poolplayer-events*))
+          (when *poolplayer-recording-p* (push (cons time (copy-seq params)) *poolplayer-events*))
           (dolist (key '(:lsample :keynum :adjust-stretch)) (remf params key))
           (incudine.util:msg :info "~S" params)
           (apply #'of-incudine-dsps::play-buffer-stretch-env-pan-out* :head 200 params)
@@ -81,13 +81,13 @@ returns."
 (defun preset-play (&rest args)
   (let ((time (getf args :time (now)))
         (dur (getf args :dur))
-        (preset (getf args :preset 0))
+        (preset-no (getf args :preset-no 0))
         (player (or (getf args :player) (make-eventplayer))))
     (cm::sv player
         :playing t
       :start-time time
       :end (if dur (+ time dur))
       :dur dur
-      :preset preset)
+      :preset-no preset-no)
     (funcall #'perform player time args)
     player))

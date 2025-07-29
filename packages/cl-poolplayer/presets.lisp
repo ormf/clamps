@@ -52,7 +52,7 @@
 
 
 (defparameter *curr-poolplayer-preset-no* 0)
-(defparameter *curr-preset-no* 0)
+;;; (defparameter *curr-preset-no* 0)
 (defparameter *max-poolplayer-preset-no* 99)
 
 
@@ -119,17 +119,17 @@ poolplayer-preset in a list. The list is used in digest-form-to-preset
 for labels bindings. If /form/ doesn't contain an entry for the
 param-fn, it is retrieved from *default-param-fns*."
   (loop for (fnkey fnsym key) in *param-lookup*
-        collect `(,fnsym (x &optional dur args)
-                         (declare (ignorable x dur args )
+        collect `(,fnsym (x &optional dtime dur args)
+                         (declare (ignorable x dtime dur args )
                                   (type (or null number) dur))
                          (let ((outer-form (getf args ,fnkey)))
                            (if outer-form
                                (funcall
                                 (eval
-                                 `(lambda (x &optional dur args)
-                                    (declare (ignorable x dur args))
+                                 `(lambda (x &optional dtime dur args)
+                                    (declare (ignorable x dtime dur args))
                                     ,outer-form))
-                                x dur args)
+                                x dtime dur args)
                                ,(getf form fnkey (gethash fnkey *default-param-fns*)))))))
 
 ;;; (get-param-fns '(:transpfn 0 :ampfn (n-lin x 0 -12)))
@@ -178,14 +178,14 @@ same syntax as an argument of let."
 
 (defun params-fn-form (form)
   "Return the lambda form for the params-fn from /form/ as a quoted list."
-  `(lambda (x dur &rest args)
+  `(lambda (x dtime total-dur &rest args)
      (let* ,(getf form :bindings)
        (declare (ignorable ,@(binding-syms (getf form :bindings))))
        (labels ,(get-param-fns form)
          (list
           ,@(loop
               for (fnkey fnsym key) in *param-lookup*
-              append `(,key (,fnsym x dur args))))))))
+              append `(,key (,fnsym x dtime total-dur args))))))))
 
 (defmacro digest-form-to-preset (preset-no form)
   "A call to this macro will trigger compiling the dtime-fn and params-fn
@@ -296,15 +296,11 @@ the *poolplayer-preset* with index /preset-no/."
      t)))
 
 #+slynk
-(defun define-elisp-code (&key (basedir (asdf:system-source-directory :cl-poolplayer)))
+(defun define-poolplayer-elisp-code (&key (basedir (asdf:system-source-directory :cl-poolplayer)))
   (let ((slynk::*emacs-connection* *emcs-conn*))
     (slynk::eval-in-emacs
      `(progn
-        (setq poolplayer-preset-file
-              ,(namestring
-                (merge-pathnames
-                 "curr-preset.lisp"
-                 basedir)))
+        (setq poolplayer-preset-file "/tmp/curr-preset.lisp")
         (find-file poolplayer-preset-file)
         (set-window-dedicated-p (get-buffer-window "curr-preset.lisp" t) t)
         (load ,(namestring
@@ -340,7 +336,7 @@ curr-preset.lisp buffer."
             (in-package :cl-poolplayer)
             (defparameter slynk::*send-counter* 0)
             (preset->digest-string ref))
-         ,*curr-preset-no*)
+         ,*curr-poolplayer-preset-no*)
        t)
       (slynk::eval-in-emacs
        `(save-excursion
@@ -352,7 +348,7 @@ the *curr-preset* to 0 and display it in emacs buffer."
   (setf *poolplayer-presets-file*
         (namestring presets-file))
   (load-poolplayer-presets)
-  (setf *curr-preset-no* 0)
+  (setf *curr-poolplayer-preset-no* 0)
   (uiop:run-program "/usr/bin/touch /tmp/curr-preset.lisp")
   (cl-poolplayer::define-elisp-code :basedir (pathname "/tmp/")))
 

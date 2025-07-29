@@ -37,13 +37,13 @@ Common Lisp's #'map."
     `(let ((,idx -1))
        (map ,result-type (lambda (elem) (funcall ,fn (incf ,idx) elem)) ,data))))
 
-(defun construct-plot-command (&key region (grid t) (header *gnuplot-header*) (options *gnuplot-options*) &allow-other-keys)
+(defun construct-plot-command (&key region (grid t) (header *gnuplot-header*) (options *gnuplot-options*) (3d nil) &allow-other-keys)
   "Helper function to construct the gnuplot command with a given
 header, options and a grid flag."
   (concatenate 'string
                (if grid (format nil "set grid xtics lt 1 lc rgb \"#bbbbbb\";set grid ytics lt 1 lc rgb \"#bbbbbb\";~%") "")
                (if header (format nil "~a~%" header) "")
-               "plot "
+               (if 3d "splot " "plot ")
                (if region (format nil "[~{~,2f~^:~}] " region) "")
                "'<cat' "
                options))
@@ -54,7 +54,7 @@ header, options and a grid flag."
          (apply #'construct-plot-command :region region args))
    :input :stream))
 
-(defgeneric plot (data &rest args &key region header options grid &allow-other-keys)
+(defgeneric plot (data &rest args &key region header options grid 3d &allow-other-keys)
   (:documentation "Plot /obj/ using <<http://www.gnuplot.info/><GnuPlot>>.
 
 @Arguments
@@ -87,7 +87,7 @@ the plot command.
 
 @Examples-nosrc
 #+BEGIN_SRC lisp
-(iplot '(5 4 6 1 9)) ; => (5 4 6 1 9)
+(plot '(5 4 6 1 9)) ; => (5 4 6 1 9)
 #+END_SRC
 #+attr_html: :width 50%
 #+CAPTION: output of (plot '(5 4 6 1 9))
@@ -208,6 +208,7 @@ an external dataset."
                          (get-first-min-max data))))
     (with-gnuplot-instance (out . args)
       (map-indexed nil (lambda (idx x)
+                         (format t "~& ~a ~a" idx x)
                          (format out "~{~,4f~^ ~}~%"
                                  (multiple-value-list (funcall data-fn idx x))))
                    data))

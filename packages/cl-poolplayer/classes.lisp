@@ -27,5 +27,5 @@
   (dur 3)
   (end 0)
   (start-time 0)
-  (preset 0)
+  (preset-no 0)
   (play-fn nil))
