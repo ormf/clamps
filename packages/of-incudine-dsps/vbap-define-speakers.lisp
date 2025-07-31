@@ -33,6 +33,18 @@
 (defvar *vbap* nil
   "Variable containing the vbap data for the current speaker setup.")
 
+(deftype v3 () '(vector float 3))
+
+(defmacro empty-float-vector (dim &optional (initial-contents (loop repeat dim collect 0.0)))
+  `(make-array ,dim :element-type 'float :initial-contents ',initial-contents))
+
+(defmacro empty-v3-array (num)
+  `(make-array ,num
+               :element-type 'v3
+               :initial-contents (loop
+                                   repeat ,num
+                                   collect (empty-float-vector 3))))
+
 ;;; structs for vbap data
 
 (defstruct vbap
@@ -43,7 +55,10 @@
   (spread-base (make-array 3 :initial-contents '(0.0 1.0 0.0)))
   (ls-gains)
   (tmp-gains)
-  (vbap-data))
+  (vbap-data)
+  (vscartdir (empty-float-vector 3))
+  (spreaddir (empty-v3-array 16))
+  (spreadbase (empty-v3-array 16)))
 
 (defstruct vbap-data
   (dimen)
@@ -521,9 +536,6 @@ distance."
 
 ;;; (replace-when (< (aref gtmp j) small-g))
 
-(defmacro empty-float-vector (dim &optional (initial-contents (loop repeat dim collect 0.0)))
-  `(make-array ,dim :element-type 'float :initial-contents ',initial-contents))
-
 (defun rms (gains)
   (sqrt (loop for i below 3 summing (sqr (aref gains i)))))
 
@@ -558,7 +570,7 @@ distance."
                       (v-collect (i num-speakers) 0.0)))
     vbap))
 
-(deftype v3 () '(vector float 3))
+
 
 (defmacro normalize-vector (v1)
   "Modify coordinates of 3D vector v1 to a unit length vector in
@@ -735,12 +747,7 @@ degree."
       (dotimes (i dim)
         (incf (aref tmp-gains (1- (aref ls i))) (aref g i))))))
 
-(defmacro empty-v3-array (num)
-  `(make-array ,num
-               :element-type 'v3
-               :initial-contents (loop
-                                   repeat ,num
-                                   collect (empty-float-vector 3))))
+
 
 #|
 
@@ -847,105 +854,117 @@ degree."
           )))))
 |#
 
-(let* ((vscartdir (empty-float-vector 3))
-       (spreaddir (empty-v3-array 16))
-       (spreadbase (empty-v3-array 16)))
-  (defun calc-vbap (vbap)
-    "Non consing calculation of vbap gains with given azi, ele and spread."
-    (let* ((azi (get-val (vbap-azi vbap)))
-           (ele (get-val (vbap-ele vbap)))
-           (spread (get-val (vbap-spread vbap)))
-           (spread-base (vbap-spread-base vbap))
-           (vbap-data (vbap-vbap-data vbap))
-           (num-speakers (vbap-data-num-speakers vbap-data))
-           (tmp-gains (vbap-tmp-gains vbap))
-           (ls-gains (vbap-ls-gains vbap)))
-      (declare (type v3 vscartdir))
-      (dotimes (i num-speakers)
-        (setf (aref tmp-gains i) 0.0))
-      (angle-to-cart azi ele vscartdir)
-      (dotimes (i (vbap-data-num-speakers (vbap-vbap-data vbap)))
-        (map '() (lambda (tmp-gain) (setf tmp-gain 0.0)) tmp-gains))
-      (vbap vbap vscartdir)
-      (when (> spread 0)
-        (case (vbap-data-dimen vbap-data)
-          (3
-           (setf (aref spread-base 0) 0.0)
-           (setf (aref spread-base 1) 1.0)
-           (setf (aref spread-base 2) 0.0)
+;;; vscartdir, spreaddir and spreadbase are global variables for
+;;; calc-vbap which get assigned only once to avoid reinitialization
+;;; and reassignment on each call to calc-vbap. Be aware that this is
+;;; not multithread-safe and will likely be replaced with another
+;;; mechanism in the future.
+
+
+
+(defun calc-vbap (vbap)
+  "Non consing calculation of vbap gains with given azi, ele and spread."
+  (let* ((azi (float (get-val (vbap-azi vbap))))
+         (ele (float (get-val (vbap-ele vbap))))
+         (spread (float (get-val (vbap-spread vbap))))
+         (spread-base (vbap-spread-base vbap))
+         (vbap-data (vbap-vbap-data vbap))
+         (num-speakers (vbap-data-num-speakers vbap-data))
+         (tmp-gains (vbap-tmp-gains vbap))
+         (vscartdir (vbap-vscartdir vbap))
+         (spreaddir (vbap-spreaddir vbap))
+         (spreadbase (vbap-spreadbase vbap))
+         (ls-gains (vbap-ls-gains vbap)))
+    (declare
+     (type float azi ele spread)
+     (type v3 spread-base vscartdir)
+     (type (simple-array float) tmp-gains)
+     (type (simple-array v3) spreaddir spreadbase))
+    (dotimes (i num-speakers)
+      (setf (aref tmp-gains i) 0.0))
+    (angle-to-cart azi ele vscartdir)
+    (dotimes (i (vbap-data-num-speakers (vbap-vbap-data vbap)))
+      (map '() (lambda (tmp-gain) (setf tmp-gain 0.0)) tmp-gains))
+    (vbap vbap vscartdir)
+    (when (> spread 0)
+      (case (vbap-data-dimen vbap-data)
+        (3
+         (setf (aref spread-base 0) 0.0)
+         (setf (aref spread-base 1) 1.0)
+         (setf (aref spread-base 2) 0.0)
 ;;;           (incudine.util:msg :warn "spread-base: ~a" spread-base)
-           (new-spread-dir vbap (aref spreaddir 0) vscartdir spread-base)
+         (new-spread-dir vbap (aref spreaddir 0) vscartdir spread-base)
 ;;;           (incudine.util:msg :warn "spreaddir0: ~a" (aref spreaddir 0))
 ;;;           (incudine.util:msg :warn "vscarddir: ~a" vscartdir)
-           (new-spread-base vbap (aref spreaddir 0) vscartdir)
+         (new-spread-base vbap (aref spreaddir 0) vscartdir)
 ;;;           (incudine.util:msg :warn "spread-base: ~a" spread-base)
-           (v3-unq-cross-prod spread-base vscartdir (aref spreadbase 1))
+         (v3-unq-cross-prod spread-base vscartdir (aref spreadbase 1))
 ;;;           (incudine.util:msg :warn "spreadbase1: ~a" (aref spreadbase 1))
-           (v3-unq-cross-prod (aref spreadbase 1) vscartdir (aref spreadbase 2))
+         (v3-unq-cross-prod (aref spreadbase 1) vscartdir (aref spreadbase 2))
 ;;;           (incudine.util:msg :warn "spreadbase2: ~a" (aref spreadbase 2))
-           (v3-unq-cross-prod (aref spreadbase 2) vscartdir (aref spreadbase 3))
+         (v3-unq-cross-prod (aref spreadbase 2) vscartdir (aref spreadbase 3))
 ;;;           (incudine.util:msg :warn "spreadbase3: ~a" (aref spreadbase 3))
-           
-           (new-half-angle (aref spreadbase 4) spread-base (aref spreadbase 1))
+         
+         (new-half-angle (aref spreadbase 4) spread-base (aref spreadbase 1))
 ;;;           (incudine.util:msg :warn "spreadbase4: ~a" (aref spreadbase 4))
-           (new-half-angle (aref spreadbase 5) (aref spreadbase 1) (aref spreadbase 2))
+         (new-half-angle (aref spreadbase 5) (aref spreadbase 1) (aref spreadbase 2))
 ;;;           (incudine.util:msg :warn "spreadbase5: ~a" (aref spreadbase 5))
-           (new-half-angle (aref spreadbase 6) (aref spreadbase 2) (aref spreadbase 3))
+         (new-half-angle (aref spreadbase 6) (aref spreadbase 2) (aref spreadbase 3))
 ;;;           (incudine.util:msg :warn "spreadbase6: ~a" (aref spreadbase 6))
 ;;;           (incudine.util:msg :warn "spread-base: ~a" spread-base)
-           (new-half-angle (aref spreadbase 7) (aref spreadbase 3) spread-base)
+         (new-half-angle (aref spreadbase 7) (aref spreadbase 3) spread-base)
 ;;;           (incudine.util:msg :warn "spreadbase7: ~a" (aref spreadbase 7))
 
-           (new-half-angle (aref spreadbase 8) vscartdir spread-base)
+         (new-half-angle (aref spreadbase 8) vscartdir spread-base)
 ;;;           (incudine.util:msg :warn "spreadbase8: ~a" (aref spreadbase 8))
-           (new-half-angle (aref spreadbase 9) vscartdir (aref spreadbase 1))
+         (new-half-angle (aref spreadbase 9) vscartdir (aref spreadbase 1))
 ;;;           (incudine.util:msg :warn "spreadbase9: ~a" (aref spreadbase 9))
-           (new-half-angle (aref spreadbase 10) vscartdir (aref spreadbase 2))
+         (new-half-angle (aref spreadbase 10) vscartdir (aref spreadbase 2))
 ;;;           (incudine.util:msg :warn "spreadbase10: ~a" (aref spreadbase 10))
-           (new-half-angle (aref spreadbase 11) vscartdir (aref spreadbase 3))
+         (new-half-angle (aref spreadbase 11) vscartdir (aref spreadbase 3))
 ;;;           (incudine.util:msg :warn "spreadbase11: ~a" (aref spreadbase 11))
 
-           (new-half-angle (aref spreadbase 12) vscartdir (aref spreadbase 8))
+         (new-half-angle (aref spreadbase 12) vscartdir (aref spreadbase 8))
 ;;;           (incudine.util:msg :warn "spreadbase12: ~a" (aref spreadbase 12))
-           (new-half-angle (aref spreadbase 13) vscartdir (aref spreadbase 9))
+         (new-half-angle (aref spreadbase 13) vscartdir (aref spreadbase 9))
 ;;;           (incudine.util:msg :warn "spreadbase13: ~a" (aref spreadbase 13))
-           (new-half-angle (aref spreadbase 14) vscartdir (aref spreadbase 10))
+         (new-half-angle (aref spreadbase 14) vscartdir (aref spreadbase 10))
 ;;;           (incudine.util:msg :warn "spreadbase14: ~a" (aref spreadbase 14))
-           (new-half-angle (aref spreadbase 15) vscartdir (aref spreadbase 11))
+         (new-half-angle (aref spreadbase 15) vscartdir (aref spreadbase 11))
 ;;;           (incudine.util:msg :warn "spreadbase15: ~a" (aref spreadbase 15))
-           (additive-vbap vbap (aref spreaddir 0))
-           (loop for i from 1 to 15
-                 do (progn
-                      (new-spread-dir vbap (aref spreaddir i) vscartdir (aref spreadbase i))
+         (additive-vbap vbap (aref spreaddir 0))
+         (loop for i from 1 to 15
+               do (progn
+                    (new-spread-dir vbap (aref spreaddir i) vscartdir (aref spreadbase i))
 ;;;                      (incudine.util:msg :warn "spreaddir~d: ~a" i (aref spreaddir i))
-                      (additive-vbap vbap (aref spreaddir i)))))
-          (2
-           (progn
-             (angle-to-cart (- azi spread) 0 (aref spreaddir 0))
-             (angle-to-cart (- azi (/ spread 2)) 0 (aref spreaddir 1))
-             (angle-to-cart (- azi (/ spread 4)) 0 (aref spreaddir 2))
-             (angle-to-cart (+ azi (/ spread 4)) 0 (aref spreaddir 3))
-             (angle-to-cart (+ azi (/ spread 2)) 0 (aref spreaddir 4))
-             (angle-to-cart (+ azi spread) 0 (aref spreaddir 5))
+                    (additive-vbap vbap (aref spreaddir i)))))
+        (2
+         (progn
+           (angle-to-cart (- azi spread) 0 (aref spreaddir 0))
+           (angle-to-cart (- azi (/ spread 2)) 0 (aref spreaddir 1))
+           (angle-to-cart (- azi (/ spread 4)) 0 (aref spreaddir 2))
+           (angle-to-cart (+ azi (/ spread 4)) 0 (aref spreaddir 3))
+           (angle-to-cart (+ azi (/ spread 2)) 0 (aref spreaddir 4))
+           (angle-to-cart (+ azi spread) 0 (aref spreaddir 5))
 ;;;             (incudine.util:msg :warn "spreaddir: ~a" (subseq spreaddir 0 6))
-             (map '() (lambda (tmp-gain) (setf tmp-gain 0.0)) tmp-gains)
+           (map '() (lambda (tmp-gain) (setf tmp-gain 0.0)) tmp-gains)
 ;;;             (vbap vbap vscartdir)
-             (dotimes (i 6)               
-               (additive-vbap vbap (aref spreaddir i))
+           (dotimes (i 6)               
+             (additive-vbap vbap (aref spreaddir i))
 ;;;               (incudine.util:msg :warn "tmp-gains: ~a" tmp-gains)
-)))))
-      (when (> spread 70)
+             )))))
+    (when (> spread 70)
 ;;;               (incudine.util:msg :warn "tmp-gains-before: ~a" tmp-gains)
-        (let ((gain-add (* (/ (- spread 70) 30) (/ (- spread 70) 30) 10)))
-          (dotimes (i num-speakers) (incf (aref tmp-gains i) gain-add))
-          ;; (incudine.util:msg :warn "tmp-gains-after: ~a" tmp-gains)
-          ))
-      (let ((power (sqrt (loop for tmp-gain across tmp-gains summing (sqr tmp-gain)))))
-        ;; (incudine.util:msg :warn "power: ~a ~a" power tmp-gains)
-        (unless (zerop power)
-          (dotimes (i num-speakers) (set-val (aref ls-gains i) (float (/ (aref tmp-gains i) power) 1.0)))
-          ;; (incudine.util:msg :warn "ls-gains: ~a" ls-gains)
-          )))))
+      (let ((gain-add (* (/ (- spread 70) 30) (/ (- spread 70) 30) 10)))
+        (dotimes (i num-speakers) (incf (aref tmp-gains i) gain-add))
+        ;; (incudine.util:msg :warn "tmp-gains-after: ~a" tmp-gains)
+        ))
+    (let ((power (sqrt (loop for tmp-gain across tmp-gains summing (sqr tmp-gain)))))
+      ;; (incudine.util:msg :warn "power: ~a ~a" power tmp-gains)
+      (unless (zerop power)
+        (dotimes (i num-speakers) (set-val (aref ls-gains i) (float (/ (aref tmp-gains i) power) 1.0)))
+        ;; (incudine.util:msg :warn "ls-gains: ~a" ls-gains)
+        ))))
 
 
 
