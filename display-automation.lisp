@@ -21,7 +21,7 @@
 (in-package :cl-user)
 
 (defpackage #:clamps.svgd
-  (:use #:cl)
+  (:use #:cl #:clog-dsp-widgets)
   (:export #:shift #:cursor-pos #:width #:scale #:seq #:inverse #:timescale
            #:piano-roll #:staff-systems #:bar-lines #:idx #:data #:svg-file
            #:transport #:auto-return #:play-watch #:data-watch #:timescale-watch
@@ -73,7 +73,7 @@ arg2 - Number denoting the bets per minute.
     (/ 15/4 (* rh bpm))))
 
 
-(in-package :cm)
+(in-package :clamps)
 
 ;;; (export 'sfz 'cm)
 
@@ -157,7 +157,7 @@ arg2 - Number denoting the bets per minute.
 
 (defun init-svg-display ()
   "(re)initalize all ref-objects."
-  (clear-bindings)
+  (clog-dsp-widgets:clear-bindings)
   (when clamps.svgd:play-watch (funcall clamps.svgd:play-watch))
   (when clamps.svgd:data-watch (funcall clamps.svgd:data-watch))
   (setf clamps.svgd:cursor-pos (make-ref 0.5))
@@ -380,7 +380,7 @@ svg-gui-path
 
 (init-svg-display)
 
-(export '(svg-display) 'cm)
+;;;(export '(svg-display) 'cm)
 
 #|
 

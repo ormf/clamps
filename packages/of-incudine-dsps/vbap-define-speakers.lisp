@@ -56,9 +56,13 @@
   (ls-gains)
   (tmp-gains)
   (vbap-data)
-  (vscartdir (empty-float-vector 3))
-  (spreaddir (empty-v3-array 16))
-  (spreadbase (empty-v3-array 16)))
+  (vscartdir (empty-float-vector 3)) ;;; used when calculating gains
+  (spreaddir (empty-v3-array 16)) ;;; used when calculating gains
+  (spreadbase (empty-v3-array 16)) ;;; used when calculating gains in calc-vbap
+  (gtmp (empty-float-vector 3)) ;;; used in vbap and additive-vbap
+  (curr-gain (empty-float-vector 3)) ;;; used in vbap and additive-vbap
+  (tmp-ls (make-array 3 :element-type 'fixnum :initial-contents '(0 0 0))) ;;; used in vbap and additive-vbap
+  )
 
 (defstruct vbap-data
   (dimen)
@@ -590,9 +594,9 @@ degree."
 
 (defun new-spread-dir (vbap spreaddir vscartdir spreadbase)
   (let* ((gamma (get-angle vscartdir spreadbase))
-         (azi (get-val (vbap-azi vbap)))
-;;;         (ele (get-val (vbap-ele vbap)))
-         (spread (get-val (vbap-spread vbap)))
+         (azi (getter (vbap-azi vbap)))
+;;;         (ele (getter (vbap-ele vbap)))
+         (spread (getter (vbap-spread vbap)))
          )
     (when (< (abs gamma) 1)
       (angle-to-cart (+ 90 azi) 0 spreadbase)
@@ -616,7 +620,7 @@ degree."
       )))
 
 (defun new-spread-base (vbap spreaddir vscarddir)
-  (let ((d (cos (* +atorad+ (get-val (vbap-spread vbap))))))
+  (let ((d (cos (* +atorad+ (getter (vbap-spread vbap))))))
     (setf (aref (vbap-spread-base vbap) 0) (- (aref spreaddir 0) (* d (aref vscarddir 0))))
     (setf (aref (vbap-spread-base vbap) 1) (- (aref spreaddir 1) (* d (aref vscarddir 1))))
     (setf (aref (vbap-spread-base vbap) 2) (- (aref spreaddir 2) (* d (aref vscarddir 2)))))
@@ -629,17 +633,15 @@ degree."
      (setf (aref ,v1 2) (/ (+ (aref ,v2 2) (aref ,v3 2)) 2.0))))
 
 (defun vbap (vbap spreaddir)
-  (declare (type v3 spreaddir)
-           (ignorable vbap spreaddir))
-
+  (declare (type v3 spreaddir))
   (let* ((global-sm-g most-negative-single-float)
          (global-neg-g-am 3)
+         (gtmp (vbap-gtmp vbap))
+         (g (vbap-curr-gain vbap))
+         (ls (vbap-tmp-ls vbap))
          (vbap-data (vbap-vbap-data vbap))
          (ls-set-data (vbap-data-ls-set-data vbap-data))
          (dim (vbap-data-dimen vbap-data))
-         (gtmp (empty-float-vector 3))
-         (g (empty-float-vector 3))
-         (ls (make-array 3 :element-type 'fixnum :initial-contents '(0 0 0)))
          (tmp-gains (vbap-tmp-gains vbap))
          winner-set
          gains-modified)
@@ -661,10 +663,8 @@ degree."
                (setf global-neg-g-am local-neg-g-am)
                (setf winner-set ls-set)
                (dotimes (i dim)
-;;;                 (incudine.util:msg :warn "~a: ~a" i (aref gtmp i))
                  (setf (aref ls i) (aref (vbap-ls-set-speakers ls-set) i))
                  (setf (aref g i) (aref gtmp i))
-;;;                 (incudine.util:msg :warn "~a: ~a" i (aref g i))
                  )
                (when (= dim 2)
                  (setf (aref g 2) 0.0)
@@ -673,10 +673,6 @@ degree."
     (dotimes (i dim) (when (< (aref g i) -0.01)
                        (setf (aref g i) 0.0001)
                        (setf gains-modified t)))
-    ;; (incudine.util:msg :warn "main: ~5,2f, ~5,2f, ~5,2f"
-    ;;                    (aref spreaddir 0)
-    ;;                    (aref spreaddir 1)
-    ;;                    (aref spreaddir 2))
     (when gains-modified
       (let ((new-cartdir (empty-float-vector 3))
             (new-angle-dir (empty-float-vector 3)))
@@ -687,9 +683,9 @@ degree."
         (if (= dim 2)
             (setf (aref new-cartdir 2) 0))
         (cart-to-angle new-cartdir new-angle-dir)
-        (set-val (vbap-azi vbap) (aref new-angle-dir 0))
-        (set-val (vbap-ele vbap) (aref new-angle-dir 1))))
-      
+        (setter (vbap-azi vbap) (aref new-angle-dir 0))
+        (setter (vbap-ele vbap) (aref new-angle-dir 1))))
+    
     ;; (incudine.util:msg :warn ": ~a" g)
     (normalize-vector g)
     ;; (incudine.util:msg :warn "g: ~a" g)
@@ -706,9 +702,9 @@ degree."
          (vbap-data (vbap-vbap-data vbap))
          (ls-set-data (vbap-data-ls-set-data vbap-data))
          (dim (vbap-data-dimen vbap-data))
-         (gtmp (empty-float-vector 3))
-         (g (empty-float-vector 3))
-         (ls (make-array 3 :element-type 'fixnum :initial-contents '(0 0 0)))
+         (gtmp (vbap-gtmp vbap))
+         (g (vbap-curr-gain vbap))
+         (ls (vbap-tmp-ls vbap))
          (tmp-gains (vbap-tmp-gains vbap))
          gains-modified)
 ;;;    (incudine.util:msg :warn "add: ~a" spreaddir)
@@ -756,9 +752,9 @@ degree."
        (spreadbase (empty-v3-array 16)))
   (defun calc-vbap (vbap)
     "Non consing calculation of vbap gains with given azi, ele and spread."
-    (let* ((azi (get-val (vbap-azi vbap)))
-           (ele (get-val (vbap-ele vbap)))
-           (spread (get-val (vbap-spread vbap)))
+    (let* ((azi (getter (vbap-azi vbap)))
+           (ele (getter (vbap-ele vbap)))
+           (spread (getter (vbap-spread vbap)))
            (spread-base (vbap-spread-base vbap))
            (vbap-data (vbap-vbap-data vbap))
            (num-speakers (vbap-data-num-speakers vbap-data))
@@ -849,7 +845,7 @@ degree."
       (let ((power (sqrt (loop for tmp-gain across tmp-gains summing (sqr tmp-gain)))))
         ;; (incudine.util:msg :warn "power: ~a ~a" power tmp-gains)
         (unless (zerop power)
-          (dotimes (i num-speakers) (set-val (aref ls-gains i) (float (/ (aref tmp-gains i) power) 1.0)))
+          (dotimes (i num-speakers) (setter (aref ls-gains i) (float (/ (aref tmp-gains i) power) 1.0)))
           (incudine.util:msg :warn "ls-gains: ~a" ls-gains)
           )))))
 |#
@@ -864,9 +860,9 @@ degree."
 
 (defun calc-vbap (vbap)
   "Non consing calculation of vbap gains with given azi, ele and spread."
-  (let* ((azi (float (get-val (vbap-azi vbap))))
-         (ele (float (get-val (vbap-ele vbap))))
-         (spread (float (get-val (vbap-spread vbap))))
+  (let* ((azi (float (getter (vbap-azi vbap))))
+         (ele (float (getter (vbap-ele vbap))))
+         (spread (float (getter (vbap-spread vbap))))
          (spread-base (vbap-spread-base vbap))
          (vbap-data (vbap-vbap-data vbap))
          (num-speakers (vbap-data-num-speakers vbap-data))
@@ -880,6 +876,7 @@ degree."
      (type v3 spread-base vscartdir)
      (type (simple-array float) tmp-gains)
      (type (simple-array v3) spreaddir spreadbase))
+;;;    (incudine.util:msg :warn "calc-vbap")
     (dotimes (i num-speakers)
       (setf (aref tmp-gains i) 0.0))
     (angle-to-cart azi ele vscartdir)
@@ -962,7 +959,7 @@ degree."
     (let ((power (sqrt (loop for tmp-gain across tmp-gains summing (sqr tmp-gain)))))
       ;; (incudine.util:msg :warn "power: ~a ~a" power tmp-gains)
       (unless (zerop power)
-        (dotimes (i num-speakers) (set-val (aref ls-gains i) (float (/ (aref tmp-gains i) power) 1.0)))
+        (dotimes (i num-speakers) (setter (aref ls-gains i) (float (/ (aref tmp-gains i) power) 1.0)))
         ;; (incudine.util:msg :warn "ls-gains: ~a" ls-gains)
         ))))
 

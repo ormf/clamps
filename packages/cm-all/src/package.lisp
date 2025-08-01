@@ -31,12 +31,12 @@
                   'cl-midictl)
 
 (use-package '(
+               #:cl-refs
                #:incudine
                #:cl-midictl
                #:incudine-bufs
                #:of-incudine-dsps
                #:cl
-               #:cl-refs
                #:cl-sfz
                #:clog-dsp-widgets
                #:ats-cuda

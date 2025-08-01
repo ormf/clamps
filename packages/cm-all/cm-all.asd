@@ -10,6 +10,7 @@
   :version "0.0.1"
   :serial t
   :depends-on (
+               #:cl-refs
                #:incudine
                #:of-incudine-dsps
                #:incudine-bufs
@@ -18,7 +19,6 @@
                #:cl-plot
                #:incudine-plot
                #:cl-ppcre
-               #:cl-refs
                #:cl-sfz
                #:cm
                #:cm-sfz

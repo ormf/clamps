@@ -22,7 +22,7 @@
 
 (shadow '(start trigger) 'cm)
 ;;; (shadowing-import '(trigger) 'cl-refs)
-;;; (shadowing-import '(start) 'clog-dsp-widgets)
+(shadowing-import '(clear-bindings) 'clog-dsp-widgets)
 (use-package '(#:cl-refs #:clog-dsp-widgets))
 
 (export '(svg-display svg->browser) 'cm)

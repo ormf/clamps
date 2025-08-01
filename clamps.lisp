@@ -201,7 +201,7 @@ clamps-gui-root
     ;;    (clog:set-on-new-window #'clog::clamps-gui :path "/" :boot-file "/start.html")
     (setf (fdefinition 'clog-dsp-widgets::on-new-window) #'clog::clamps-gui)
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters")
-    (clog:set-on-new-window  #'cm:svg-display :path "/svg-display")
+    (clog:set-on-new-window  #'svg-display :path "/svg-display")
     (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display")
     (progn (sleep 0.5) (clog-dsp-widgets:start-gui :gui-base (namestring dir) :port port :open open))))
 
@@ -354,7 +354,7 @@ Image.
 "  (setf incudine.util:*logger-stream* *error-output*))
 
 (defparameter *sly-connected-hooks*
-  (list #'cm::install-standard-sly-hooks #'cm::reset-logger-stream))
+  (list #'clamps::install-standard-sly-hooks #'clamps::reset-logger-stream))
 
 (defun cl-user::call-sly-connected-hooks ()
   (dolist (fn *sly-connected-hooks*) (funcall fn)))

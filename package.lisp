@@ -30,6 +30,7 @@
            evt-keynum
            evt-time
 
+           imsg
            set-page-dimensions
            ats-cuda:load-ats
            ats-cuda:save-ats
@@ -175,7 +176,10 @@
            clog-midi-controller:nanoktl2-preset-gui orm-utils:db->amp
            orm-utils:do-proplist/collecting clog-dsp-widgets:levelmeter-full-gui
            cl-midictl:start-midi-receive orm-utils:r-getf orm-utils:partition-seq
-           cl-refs:get-val orm-utils:n-lin-dev
+           cl-refs:get-val
+           cl-refs:getter
+           cl-refs:setter
+           orm-utils:n-lin-dev
            of-incudine-dsps:play-lsample orm-utils:with-exp-midi-fn
            transform clog-dsp-widgets:node-group
            orm-utils:memorize-random-state cl-sfz:play-sfz-loop
@@ -258,9 +262,9 @@
            cm:accumulation cm:log-axis cm:plotter-data cm:pattern? cm:sv
            common-lisp-user:cm cm:samps->time cm:*loudest* cm:markov
            cm:midi-file-print cm:poolevt-pan cm:export-poolplayer-events
-           cm:scale-max cm:imsg cm:process cm:midi-channel-pressure
+           cm:scale-max cm:process cm:midi-channel-pressure
            cm:sampleevt-out cm:prime-form cm:color->chan cm:ransegs cm:recv?
-           cm:restart-qsynth cm:cd
+           cm:cd
            cm:pwd cm:secs->samps
            cm:rt-wait cm:defprocess cm:midi-system-event cm:insert-object cm:note
            cm:false cm:transpose-evt cm:set-clm-output-hook! cm:interp
@@ -268,11 +272,13 @@
            cm:opacity->db cm:vary cm:set-sco-output-hook! cm:scale<=
            cm:poolevt-end cm:chord-derive cm:copier cm:odds cm:*fudi.in*
            cm:time->vstime-fn cm:play-curr cm:time->speed-fn cm:pval
-           cm:reset-logger-stream cm:cm-version cm:sfz-dur cm:play-fn
+           cm:cm-version cm:sfz-dur cm:play-fn
            cm:sfz-keynum cm:rt-proc cm:zero-shift cm:line cm:midi-key-pressure
            cm:amplitude cm:scale> cm:power cm:display cm:pitch-bend
            cm:sampleevt-amp cm:add-recreation-fn cm:plotter cm:plotter-redraw
-           cm:reinit-midi cm:time->samps cm:status->channel cm:poolevt
+;;;           cm:reinit-midi
+
+           cm:time->samps cm:status->channel cm:poolevt
            cm:permutation cm:poolevt-buffer-idx cm:transpose cm:write-event
            cm:args cm:preset cm:stop cm:region cm:find-object cm:pickl
            cm:cents->scaler cm:thunk cm:*midi-out1* cm:rescale cm:incudine-output
@@ -282,14 +288,17 @@
            cm:note-off cm:midi-file cm:cmn-file cm:poolevt-wwidth cm:doeach
            cm:midi-note-on cm:drunk-traverse cm:make-mm-mask cm:subcontainers
            cm:sc-file cm:vstime->speed-fn cm:set-midi-output-hook! cm:scale<
-           cm:start-cm-all cm:sprout cm:pick cm:rewrite-generation cm:svg->cm
+;;;           cm:start-cm-all
+           cm:sprout cm:pick cm:rewrite-generation cm:svg->cm
            cm:player-stop cm:jackmidi-input-stream
            cm:stop-inkscape-osc
            cm:restart-inkscape-osc
            cm:recv-set! cm:svg->sfz cm:scaler->cents cm:sv* cm:save-object
            cm:lookup cm:play-svg cm:io cm:map-subobjects cm:svg-lines->cm
            cm:midi-key-signature cm:cycle
-           cm:poolevt-release cm:at cm:now cm:axis cm:install-standard-sly-hooks
+           cm:poolevt-release cm:at cm:now cm:axis
+;;;           cm:install-standard-sly-hooks cm:jack-connect-qsynth cm:call-sly-connected-hooks cm:*mt-out01* cm:*sly-connected-hooks*
+
            cm:wait-until cm:plotter-close cm:seq cm:point cm:chan->color
            cm:scale-amp cm:poolevt-attack cm:output cm:player-mute cm:wait
            cm:midi-write-message
@@ -305,18 +314,19 @@
            cm:defaxis cm:join cm:midi-connections cm:*fudi-out* cm:midi-eot
            cm:calc-dur cm:date-and-time cm:eod? cm:*midi-in1*
            cm:+ml-opcode-mask+ cm:sv+ cm:player-pause cm:best-normal-form
-           cm:shell cm:jack-connect-qsynth cm:defobject cm:*beat* cm:mode
+           cm:shell
+           cm:defobject cm:*beat* cm:mode
            cm:remove-receiver!
 ;;; cm:value
            cm:rts cm:sampleevt-start
            cm:status->opcode cm:make-mt-stream cm:cmn cm:tendency cm:sfz
            cm:decode-interval cm:hertz cm:object->cmn cm:rhythm cm:explsegs
-           cm:midi cm:play cm:call-sly-connected-hooks cm:player-cont
-           cm:*mt-out01* cm:true cm:audio-file cm:*rts-out* cm:between
+           cm:midi cm:play cm:player-cont
+           cm:true cm:audio-file cm:*rts-out* cm:between
            cm:fm-spectrum cm:fit cm:all-notes-off cm:rts-hush
            cm:add-rts-hush-hook cm:remove-all-rts-hush-hooks cm:show-rts-hush-hooks
            cm:midi-sequencer-event
-           cm:*sly-connected-hooks* cm:sfz-startpos cm:graph cm:cmio cm:send-fudi
+           cm:sfz-startpos cm:graph cm:cmio cm:send-fudi
            cm:fudi-output-stream cm:player-solo cm:rt-sprout
            cm:list-named-objects cm:scale= cm:midi-time-signature
            cm:svg->sampleevt cm:map-pattern-data cm:*rt-scale* cm:dumposc
@@ -662,13 +672,13 @@
   (:shadowing-import-from #:cl-plot #:plot)
   (:use #:cl
         #:cl-user
+        #:cl-refs
         #:incudine
         #:cl-poolplayer
         #:incudine.util
         #:cl-midictl
         #:of-incudine-dsps
         #:incudine-bufs
-        #:cl-refs
         #:cl-sfz
         #:clog-dsp-widgets
         #:ats-cuda

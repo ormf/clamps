@@ -193,7 +193,7 @@
 (define-vug env-levelmultiinmeter ((in channel-number) (num channel-number)
                                    (freq fixnum) (refs (simple-array cl-refs:ref-object))
                                    (periods channel-number))
-  (:defaults +sample-zero+ 1 10 nil 2)
+  (:defaults 0 1 10 nil 2)
   (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
          (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
          (sums (make-frame (* num periods) :zero-p t))

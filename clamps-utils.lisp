@@ -425,3 +425,11 @@ evt-time
                       :header-type ,header-type :data-format ,data-format
                       :metadata ,metadata)
        ,@body)))
+
+(defmacro imsg (type format-control &rest format-arguments)
+  "Produce a formatted log message controlled by FORMAT-CONTROL and
+FORMAT-ARGUMENTS.
+
+TYPE should be one of ERROR, WARN, INFO or DEBUG."
+  `(incudine.util::%msg ',(incudine::ensure-symbol type "INCUDINE.UTIL")
+         ,format-control (list ,@format-arguments)))

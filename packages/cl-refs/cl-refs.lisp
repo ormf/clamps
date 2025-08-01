@@ -174,6 +174,31 @@ watch
     (pushnew ref (ref-dependencies *curr-ref*)))
   (ref-value ref))
 
+(defun getter (ref)
+  "more generic than get-val: Get the value of /ref/ using an appropriate
+getter fn depending on type of ref.
+
+@Arguments
+ref - An instance of <<ref-object>> or anything can be called on
+value - Any value of any type to be set.
+force - A boolean indicating to set the value even if it is eql to
+the previous value of the ref-object.
+
+@See-also
+bang-object
+getter
+get-val
+make-computed
+make-ref
+ref-object
+set-val
+watch
+"
+  (typecase ref
+    (ref-object (get-val ref))
+    (otherwise ref)))
+
+
 (defun make-bang (&optional fn val)
   "create and return a <<bang-object>> instance with trigger-fns set to /fn/
 and its ref-value set to /val/.
@@ -240,6 +265,30 @@ trigger
          (setf cl-refs::*curr-ref* ,tempvar)
          ,@body))))
 |#
+
+(defun setter (ref value &key (force nil))
+  "more generic than set-val: Set the value of /ref/ to
+/value/ using an appropriate setter fn depending on type of ref
+
+@Arguments
+ref - An instance of <<ref-object>> or anything setf can be called on
+value - Any value of any type to be set.
+force - A boolean indicating to set the value even if it is eql to
+the previous value of the ref-object.
+
+@See-also
+bang-object
+getter
+get-val
+make-computed
+make-ref
+ref-object
+set-val
+watch
+"
+  (typecase ref
+    (ref-object (set-val ref value :force force))
+    (otherwise (setf ref value))))
 
 (defmacro with-unwatched (bindings &body body)
   "all #'get-val forms contained in bindings are not watched."

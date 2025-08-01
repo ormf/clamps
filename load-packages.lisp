@@ -27,13 +27,13 @@
 
 (dolist (system '(:orm-utils
                   :cuda-usocket-osc
+                  :cl-refs
                   :ats-cuda-display
                   :fudi
                   :of-incudine-dsps
                   :incudine-bufs
                   :cl-plot
                   :incudine-plot
-                  :cl-refs
                   :cl-sfz
                   :svg-import-export
                   :cm-sfz
@@ -47,7 +47,7 @@
                   :cm-utils
                   :clog-dsp-widgets
                   :clog-midi-controller
-                  :cm-all
+;;;                  :cm-all
                   ))
   (format t "~&loading ~a~%" system)
   (asdf:operate 'asdf:load-op system))
