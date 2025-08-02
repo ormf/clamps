@@ -62,6 +62,7 @@ A lsample contains the following slots, accessible using the functions
 =amp= -- Amplitude of recorded sample in dB, defaulting to /+​sample-zero​+/.
 
 @See-also
+poolevt
 sfz
 "
   name

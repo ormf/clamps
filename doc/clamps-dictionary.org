@@ -2822,6 +2822,7 @@
     =amp= -- Amplitude of recorded sample in dB, defaulting to /+​sample-zero​+/.
     
 *** See also
+    - [[poolevt][poolevt]]
     - [[sfz][sfz]]
 ** lsample-dur
    Function
@@ -6089,9 +6090,9 @@
 *** Arguments
     | =in-bus-idx= | Non-negative Integer denoting the Input Bus index. |
     | =vbap= | initialized Vbap Struct. |
-    | =azi= | Number denoting azimuth in the range [-360..360]. |
-    | =ele= | Number denoting elevation (3D only) in the range [-360..360]. |
-    | =spread= | Number denoting spread in degrees in the range [0..100]. |
+    | =azi= | Number denoting azimuth in degrees. |
+    | =ele= | Number denoting elevation (3D only) in degrees. |
+    | =spread= | Number denoting spread in degrees. Will be clipped to the range [0..100]. |
 
 *** See also
     - [[calc-vbap][calc-vbap]]
@@ -6151,18 +6152,19 @@
    Distribute bus signal to the physical outlets using vbap/mdap with a
    pair of two vbaps with distinct ele/azi/spread values and a pan value
    to interpolate between them. This enables panning between disjunct
-   speakers/directions. Works with any blocksize.
+   speakers/directions. The two provided vbaps should use the same
+   speaker-setup. Works with any blocksize.
 *** Arguments
     | =in-bus-idx= | Non-negative Integer denoting the Input Bus index. |
-    | =vbap1= | initialized Vbap Struct. |
-    | =vbap2= | initialized Vbap Struct. |
-    | =azi1= | Number denoting azimuth in the range [-360..360]. |
-    | =ele1= | Number denoting elevation (3D only) in the range [-360..360]. |
-    | =spread1= | Number denoting spread in degrees in the range [0..100]. |
-    | =azi2= | Number denoting azimuth in the range [-360..360]. |
-    | =ele2= | Number denoting elevation (3D only) i the range [-360..360]. |
-    | =spread2= | Number denoting spread in degrees in the range [0..100]. |
-    | =pan= | Number denoting the interpolation between vbap1 and vbap2 in the range [0..1] |
+    | =vbap1= | initialized Vbap Struct for first direction. |
+    | =vbap2= | initialized Vbap Struct for second direction. |
+    | =azi1= | Number denoting azimuth in degrees of first direction. |
+    | =ele1= | Number denoting elevation (3D only) in degrees of first direction. |
+    | =spread1= | Number denoting spread in degrees of first direction. Will be clipped to the range [0..100]. |
+    | =azi2= | Number denoting azimuth in degrees of second direction. |
+    | =ele2= | Number denoting elevation (3D only) in degrees of second direction. |
+    | =spread2= | Number denoting spread in degrees of second direction. Will be clipped to the range [0..100]. |
+    | =pan= | Number denoting the interpolation between direction1 and direction2 in the range [0..1]. |
 
 *** See also
     - [[calc-vbap][calc-vbap]]

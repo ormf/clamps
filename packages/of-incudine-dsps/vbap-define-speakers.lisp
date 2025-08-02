@@ -979,6 +979,7 @@ vbap-bus
               (when (or (< (vbap-ele vbap) -180) (> (vbap-ele vbap) 180))
                 (- (mod (+ (vbap-ele vbap) 180) 360) 180))
               0.0))
+    (setf (vbap-spread vbap) (ou:clip (vbap-spread vbap) 0 100))
     (angle-to-cart azi ele vscartdir)
     (dotimes (i (vbap-data-num-speakers (vbap-vbap-data vbap)))
       (map '() (lambda (tmp-gain) (setf tmp-gain 0.0)) tmp-gains))
