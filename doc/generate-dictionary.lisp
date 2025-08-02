@@ -658,14 +658,13 @@ set-tempo
 
 (defparameter *clamps-symbols-to-ignore*
   '(orm-utils:param-exp-func
-    of-incudine-dsps:abs-path
+    clamps:abs-path
 ;;    of-incudine-dsps:buffer-loop-play*
 ;;    of-incudine-dsps:buffer-play*
     of-incudine-dsps:play-buffer-stretch
     of-incudine-dsps:play-buffer-stretch-out
     of-incudine-dsps:play-buffer-stretch-env-out
     of-incudine-dsps:play-buffer-stretch-env-pan-out
-    of-incudine-dsps:abs-path
     of-incudine-dsps:*keynum-offset*
     orm-utils:defconst
     orm-utils::while
