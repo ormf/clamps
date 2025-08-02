@@ -266,7 +266,7 @@ trigger
          ,@body))))
 |#
 
-(defun setter (ref value &key (force nil))
+(defmacro setter (ref value &key (force nil))
   "more generic than set-val: Set the value of /ref/ to
 /value/ using an appropriate setter fn depending on type of ref
 
@@ -286,9 +286,9 @@ ref-object
 set-val
 watch
 "
-  (typecase ref
-    (ref-object (set-val ref value :force force))
-    (otherwise (setf ref value))))
+  `(typecase ,ref
+     (ref-object (set-val ,ref ,value :force ,force))
+     (otherwise (setf ,ref ,value))))
 
 (defmacro with-unwatched (bindings &body body)
   "all #'get-val forms contained in bindings are not watched."

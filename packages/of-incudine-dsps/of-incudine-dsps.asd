@@ -14,5 +14,6 @@
                (:file "levelmeter")
                (:file "basic-dsps")
                (:file "vbap-define-speakers")
+               (:file "vbap-dsps")
                ))
 

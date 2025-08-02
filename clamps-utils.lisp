@@ -18,8 +18,54 @@
 ;;;
 ;;; **********************************************************************
 
+(in-package :incudine)
 
 (in-package :clamps)
+
+(defgeneric clamps-dump (node &key stream control-list))
+(defmethod clamps-dump ((obj incudine:node) &key (stream *logger-stream*) (control-list t))
+  (declare (type stream stream))
+  (let ((indent 0)
+        (indent-incr 4)
+        (last-list nil)
+        (last (incudine::find-last-node obj)))
+    (declare (type incudine::non-negative-fixnum indent indent-incr)
+             #.*standard-optimize-settings*)
+    (fresh-line stream)
+    (flet ((inc-indent (n)
+             (unless (symbolp (incudine::node-last n))
+               (incf indent indent-incr)
+               (push (incudine::find-last-node n) last-list)))
+           (dec-indent (n)
+             (loop while (eq n (car last-list)) do
+               (pop last-list)
+               (decf indent indent-incr)))
+           (indent-line ()
+             (do ((i 0 (1+ i)))
+                 ((= i indent))
+               (declare (type incudine::non-negative-fixnum i))
+               (princ " " stream))))
+      (incudine::dograph (n obj)
+        (indent-line)
+        (cond ((group-p n)
+               (dec-indent n)
+               (format stream "group ~D~@[ ~A~]~@[ (pause)~]~%"
+                       (node-id n) (node-name n) (incudine::node-pause-p n))
+               (inc-indent n))
+              (t (if control-list
+                     (progn
+                       (format stream "node ~D~@[ (pause)~]~%" (node-id n)
+                               (incudine::node-pause-p n))
+                       (indent-line)
+                       (reduce-warnings
+                         (format stream "  ~A~{ ~A~}~%"
+                                 (node-name n) (control-list n))))
+                     (format stream "node ~D~@[ (pause)~]: ~A~%" (node-id n)
+                             (incudine::node-pause-p n)
+                             (node-name n)))
+                 (dec-indent n)))
+        (when (eq n last) (return)))
+      (force-output stream))))
 
 (defparameter %clamps-version% 1)
 
@@ -142,7 +188,7 @@ TYPE should be one of ERROR, WARN, INFO or DEBUG."
         'cm)
 |#
 
-(defun clamps:idump (&optional (node 0))
+(defun idump (&rest args)
   "Dump all active dsps of /node/ to the /incudine:*​logger-stream​*/
 output.
 
@@ -150,16 +196,21 @@ output.
 
 node - Either a Non Negative Integer denoting the id of the node or an
 /incudine:node/ Instance.
+:control-list - flag indicating whether to output the control-list of the dsps.
 
 @Note
 If calling idump doesn't produce any output although dsps are running,
 reset the logger-stream using <<reset-logger-stream>>.
 "
-  (unless incudine.util:*logger-stream*
-    (reset-logger-stream))
-  (dump (if (numberp node)
-            (incudine:node node)
-            node)))
+  (let ((node (if (numberp (first args)) (pop args) 0))
+        (control-list (getf args :control-list nil)))
+    (unless incudine.util:*logger-stream*
+      (setf incudine.util:*logger-stream* *error-output*))
+    (clamps-dump (if (numberp node)
+              (incudine:node node)
+              node)
+          :control-list control-list)))
+
 
 (defun clamps:set-tempo (bpm)
   "Set the tempo in beats per minute for both, CM and Incudine.
@@ -433,3 +484,4 @@ FORMAT-ARGUMENTS.
 TYPE should be one of ERROR, WARN, INFO or DEBUG."
   `(incudine.util::%msg ',(incudine::ensure-symbol type "INCUDINE.UTIL")
          ,format-control (list ,@format-arguments)))
+

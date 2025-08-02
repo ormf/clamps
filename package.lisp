@@ -30,6 +30,10 @@
            evt-keynum
            evt-time
 
+           sfz->lsample
+           abs-path
+           get-keynum
+           
            imsg
            set-page-dimensions
            ats-cuda:load-ats
@@ -74,15 +78,14 @@
            cl-midictl:midi->inc
            orm-utils:call/collecting
            clog-dsp-widgets:levelmeter cl-midictl:nanoktl2-midi
-           of-incudine-dsps:restore-envs orm-utils:m-lin
+            orm-utils:m-lin
            cl-midictl:stop-midi-receive orm-utils:let-default
            clog-dsp-widgets:create-grid orm-utils:count-elements cl-refs:copy-ref
            cl-midictl:set-marker orm-utils:combinations export-svg
            orm-utils:with-curr-dir plot-2d
-           orm-utils:differentiate of-incudine-dsps:buffer-loop-play*
-           of-incudine-dsps:*standard-output-group*
+           orm-utils:differentiate
            orm-utils:m-exp-rd-rev-fn orm-utils:map-params
-           of-incudine-dsps:play-buffer-stretch-env-out orm-utils:make-quantlist
+           orm-utils:make-quantlist
            set-basedir clamps-base-url orm-utils:slurp
            orm-utils:parse-proplist orm-utils:m-exp-fn
            orm-utils:r-lin-dev orm-utils:r-exp-dev clog-dsp-widgets:clog-dsp-widgets-initialize
@@ -186,7 +189,7 @@
            of-incudine-dsps:play-buffer-stretch-env-pan-out add-elements
            orm-utils:calcsndbytes cl-sfz:load-sfz-preset common-lisp:open
            orm-utils:path-find-file clog-dsp-widgets:find-dsp ftom
-           of-incudine-dsps:sfz->lsample orm-utils:do-repeated cl-midictl:pulse
+            orm-utils:do-repeated cl-midictl:pulse
            orm-utils:n-exp-dev make-osc-receiver svg-gui-path
            orm-utils:mapply clog-dsp-widgets:create-o-toggle
            incudine-bufs:remove-buffer incudine-bufs:clamps-buffer-load
@@ -227,7 +230,7 @@
            orm-utils:with-shadowed-variable clog-dsp-widgets:create-o-knob
            clamps-restart-gui cl-refs:watch common-lisp-user:clamps
            cl-midictl:remove-midi-controller orm-utils:rotate
-           orm-utils:make-adjustable-string of-incudine-dsps:get-keynum
+           orm-utils:make-adjustable-string 
            ;; cm:group
            cl-midictl:remove-all-channel-midi-cc-fns cm::repeat
            cm:cd orm-utils:fibonacci orm-utils:file-string
@@ -377,7 +380,7 @@
            of-incudine-dsps:lsample-name of-incudine-dsps:lsample-loopstart
            of-incudine-dsps:play-buffer-stretch*
            of-incudine-dsps:make-lsample
-           of-incudine-dsps:get-keynum of-incudine-dsps:lsample-amp
+           of-incudine-dsps:lsample-amp
            of-incudine-dsps:lsample-buffer incudine.vug:counter
            of-incudine-dsps:play-buffer-stretch-out of-incudine-dsps:make-oasr
            of-incudine-dsps:lsample-loopend
@@ -389,10 +392,25 @@
            of-incudine-dsps:play-buffer-stretch of-incudine-dsps:line*
            of-incudine-dsps:phasor* of-incudine-dsps:restore-envs
            of-incudine-dsps:phasor-loop*
-           of-incudine-dsps:abs-path of-incudine-dsps:lsample
+            of-incudine-dsps:lsample
            of-incudine-dsps:*env1* of-incudine-dsps:envelope*
-           of-incudine-dsps:sfz->lsample of-incudine-dsps:osc~
+           of-incudine-dsps:osc~
            of-incudine-dsps:buffer-record of-incudine-dsps:lsample-keynum incudine-bufs:add-buffer
+           of-incudine-dsps:restore-envs
+           of-incudine-dsps:buffer-loop-play*
+           of-incudine-dsps:vbap-bus
+           of-incudine-dsps:vbap-pair-bus
+           of-incudine-dsps:vbap of-incudine-dsps:vbap-azi of-incudine-dsps:vbap-ele  of-incudine-dsps:vbap-spread  of-incudine-dsps:vbap-lsdirections  of-incudine-dsps:vbap-ls-gains  of-incudine-dsps:vbap-vbap-data
+           of-incudine-dsps:vbap-data of-incudine-dsps:vbap-data-dimen of-incudine-dsps:vbap-data-num-speakers of-incudine-dsps:vbap-data-num-ls-sets of-incudine-dsps:vbap-data-ls-set-data
+           of-incudine-dsps:vbap-ls-set of-incudine-dsps:vbap-ls-set-speakers of-incudine-dsps:vbap-ls-set-inv_matrix of-incudine-dsps:vbap-ls-set-matrix
+           of-incudine-dsps:calc-vbap
+           of-incudine-dsps:init-vbap
+           of-incudine-dsps:init-vbap-pair
+
+           of-incudine-dsps:*standard-output-group*
+           of-incudine-dsps:play-buffer-stretch-env-out
+
+
            incudine-bufs:remove-all-buffers incudine-bufs:remove-buffer
            orm-utils:path-find-file
            incudine-bufs:ensure-buffer incudine-bufs:buffer-id

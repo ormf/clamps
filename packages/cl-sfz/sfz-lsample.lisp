@@ -18,7 +18,7 @@
 ;;;
 ;;; **********************************************************************
 
-(in-package :of-incudine-dsps)
+(in-package :cl-sfz)
 
 (defun abs-path (sample-path sfz-file-path)
   "Return the full path of a sample entry in a sfz file.
@@ -34,7 +34,7 @@ sfz->lsample
   (merge-pathnames sample-path sfz-file-path))
 
 (defun get-keynum (entry)
-  (sample (- (or (getf entry :pitch-keycenter) 60) (/ (or (getf entry :tune) 0) 100))))
+  (incudine::sample (- (or (getf entry :pitch-keycenter) 60) (/ (or (getf entry :tune) 0) 100))))
 
 (defun sfz->lsample (sfz-entry dir &key oneshot)
   "Convert an entry of a sfz file into a lsample.
@@ -55,9 +55,9 @@ lsample
      :buffer buffer
      :oneshot oneshot
      :keynum (get-keynum sfz-entry)
-     :amp (incudine::sample (getf sfz-entry :volume 0))
-     :loopstart (sample (or (getf sfz-entry :loop-start) 0))
-     :loopend (sample (or (getf sfz-entry :loop-end) (buffer-frames buffer))))))
+     :amp (incudine.util:sample (getf sfz-entry :volume 0))
+     :loopstart (incudine.util:sample (or (getf sfz-entry :loop-start) 0))
+     :loopend (incudine.util:sample (or (getf sfz-entry :loop-end) (buffer-frames buffer))))))
 
 (declaim (inline get-lsample))
 (defun get-lsample (keynum map)

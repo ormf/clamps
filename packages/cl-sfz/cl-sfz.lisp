@@ -155,7 +155,7 @@ file - String or Pathname of the sfz file.
   (let ((keynum-array (make-array 128 :adjustable nil :element-type 'list :initial-element nil))
         (sfz-file-path (pathname file)))
     (dolist (entry (reverse (remove nil (parse-sfz file))))
-      (setf (getf entry :lsample) (oid:sfz->lsample entry sfz-file-path :oneshot oneshot))
+      (setf (getf entry :lsample) (sfz->lsample entry sfz-file-path :oneshot oneshot))
       (push-keynums entry keynum-array))
     keynum-array))
 
@@ -188,7 +188,7 @@ sfz-preset-loaded?
            (list (apply #'min keynums) (apply #'max keynums)))
          (error "can't find sfz preset: ~S" ref)))
     (otherwise
-     (let ((keynums (mapcar #'oid:get-keynum (parse-sfz ref))))
+     (let ((keynums (mapcar #'get-keynum (parse-sfz ref))))
        (list (round (apply #'min keynums)) (round (apply #'max keynums)))))))
 
 (defun sfz-table-get-range (preset)

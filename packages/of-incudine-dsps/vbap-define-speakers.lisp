@@ -48,9 +48,9 @@
 ;;; structs for vbap data
 
 (defstruct vbap
-  (azi (make-ref 0))
-  (ele (make-ref 0))
-  (spread (make-ref 0))
+  (azi 0.0)
+  (ele 0.0)
+  (spread 0.0)
   (ls-directions nil)
   (spread-base (make-array 3 :initial-contents '(0.0 1.0 0.0)))
   (ls-gains)
@@ -555,26 +555,82 @@ distance."
   (let ((length (rms v3)))
     (dotimes (i 3) (setf (aref v3 i) (/ (aref v3 i) length)))))
 
-
 (defun init-vbap (speaker-data &key azi ele spread)
-  "Return vbap struct initialized with speaker-data."
+  "Return an intialized vbap struct, ready to use. The function will
+calculate all speaker sets and their matrices and put them into the
+~vbap-data~ slot of the struct.
+
+@Arguments
+speaker-data - List of the azimuths of all speakers for 2D setup, or of lists of (azimuth elevation) for 3D setups.
+
+@Examples
+
+;;; 8 Speaker sourround 2D setup with center speaker:
+
+(init-vbap '(-45 0 45 90 135 180 -135 -90))
+
+;;; 8 Speaker sourround 3D setup with center speaker and every second
+;;; speaker at 45 degrees elevation:
+
+(init-vbap '((-45 0) (0 45) (45 0) (90 45) (135 0) (180 45) (-135 0) (-90 45)))
+
+@See-also
+calc-vbap
+init-vbap-pair
+vbap-bus"
   (let* ((num-speakers (length speaker-data))
          (vbap (make-vbap
                 :ls-directions speaker-data
                 :vbap-data (speaker->vbap-data speaker-data)
-                :azi (make-ref (or azi 0))
-                :ele (make-ref (or ele 0))
-                :spread (make-ref (or spread 0)))))
-    (setf (vbap-ls-gains vbap)
-          (make-array num-speakers :initial-contents
-                      (v-collect (i num-speakers)
-                                 (make-ref 0.0))))
-    (setf (vbap-tmp-gains vbap)
-          (make-array num-speakers :initial-contents
-                      (v-collect (i num-speakers) 0.0)))
+                :azi (or azi 0)
+                :ele (or ele 0)
+                :spread (or spread 0))))
+    (setf (vbap-ls-gains vbap) (make-array num-speakers :initial-element 0.0))
+    (setf (vbap-tmp-gains vbap) (make-array num-speakers :initial-element 0.0))
     vbap))
 
+(defun init-vbap-pair (speaker-data)
+  "Return a list of two intialized vbap structs, ready to use. The
+function will calculate all speaker sets and their matrices from
+/speaker-data/ and put them into the ~vbap-data~ slot of the struct.
 
+@Arguments
+speaker-data - List of the azimuths of all speakers for 2D setup, or of lists of (azimuth elevation) for 3D setups.
+
+@Examples
+
+;;; 8 Speaker sourround 2D setup with center speaker:
+
+(init-vbap-pair '(-45 0 45 90 135 180 -135 -90))
+
+;;; 8 Speaker sourround 3D setup with center speaker and every second
+;;; speaker at 45 degrees elevation:
+
+(init-vbap-pair '((-45 0) (0 45) (45 0) (90 45) (135 0) (180 45) (-135 0) (-90 45)))
+
+@See-also
+calc-vbap
+init-vbap
+vbap-bus"
+  (let* ((num-speakers (length speaker-data))
+         (vbap-data (speaker->vbap-data speaker-data))
+         (vbap1 (make-vbap
+                :ls-directions speaker-data
+                :vbap-data vbap-data
+                :azi 0
+                :ele 0
+                :spread 0))
+         (vbap2 (make-vbap
+                :ls-directions speaker-data
+                :vbap-data vbap-data
+                :azi 0
+                :ele 0
+                :spread 0)))
+    (setf (vbap-ls-gains vbap1) (make-array num-speakers :initial-element 0.0))
+    (setf (vbap-tmp-gains vbap1) (make-array num-speakers :initial-element 0.0))
+    (setf (vbap-ls-gains vbap2) (make-array num-speakers :initial-element 0.0))
+    (setf (vbap-tmp-gains vbap2) (make-array num-speakers :initial-element 0.0))
+    (list vbap1 vbap2)))
 
 (defmacro normalize-vector (v1)
   "Modify coordinates of 3D vector v1 to a unit length vector in
@@ -632,8 +688,9 @@ degree."
      (setf (aref ,v1 1) (/ (+ (aref ,v2 1) (aref ,v3 1)) 2.0))
      (setf (aref ,v1 2) (/ (+ (aref ,v2 2) (aref ,v3 2)) 2.0))))
 
-(defun vbap (vbap spreaddir)
-  (declare (type v3 spreaddir))
+(defun vbap-first (vbap vscartdir)
+  "calc the ls-gains on main virtual source direction"
+  (declare (type v3 vscartdir))
   (let* ((global-sm-g most-negative-single-float)
          (global-neg-g-am 3)
          (gtmp (vbap-gtmp vbap))
@@ -652,7 +709,7 @@ degree."
              (dotimes (j dim)
                (setf (aref gtmp j) 0.0)
                (dotimes (k dim)
-                 (incf (aref gtmp j) (* (aref spreaddir k)
+                 (incf (aref gtmp j) (* (aref vscartdir k)
                                         (aref (vbap-ls-set-inv-matrix ls-set) (+ (* j dim) k)))))
                (replace-when (< (aref gtmp j) local-sm-g))
                (when (>= (aref gtmp j) -0.01)
@@ -856,15 +913,50 @@ degree."
 ;;; not multithread-safe and will likely be replaced with another
 ;;; mechanism in the future.
 
-
-
 (defun calc-vbap (vbap)
-  "Non consing calculation of vbap gains with given azi, ele and spread."
+  "Non consing calculation of the gains in the ~vbap-ls-gains~ slot of
+/vbap/, taking azimuth, elevation and spread from the ~vbap-azi~,
+~vbap-ele~ and ~vbap-spread~ slots of /vbap/ and using the
+precalculated matrices in the ~vbap-data~ slot.
+
+@Examples
+
+;;; 2D 8-channel circle:
+
+(defparameter *my-vbap* (init-vbap '(-45 0 45 90 135 180 -135 -90)))
+
+(setf (vbap-azi *my-vbap*) 0)     ;;; set azimuth
+(setf (vbap-ele *my-vbap*) 0)     ;;; set elevation
+(setf (vbap-spread *my-vbap*) 10) ;;; set spread
+(calc-vbap *my-vbap*)             ;;; calc gains
+
+(vbap-ls-gains *my-vbap*)  ; => #(0.07054434 0.9950111 0.07054434 0.0 0.0 0.0 0.0 0.0)
+
+;;; 3D 8-channel circle with every second speaker at 45 degree elevation:
+
+(defparameter *my-vbap* (init-vbap (mapcar #'list
+                                           '(-45 0 45 90 135 180 -135 -90) ;;; azimuths
+                                           '(0 45 0 45 0 45 0 45) ;;; elevations
+                                           )))
+
+(setf (vbap-azi *my-vbap*) 0)     ;;; set azimuth
+(setf (vbap-ele *my-vbap*) 25)    ;;; set elevation
+(setf (vbap-spread *my-vbap*) 10) ;;; set spread
+(calc-vbap *my-vbap*)             ;;; calc gains
+
+(vbap-ls-gains *my-vbap*) ; => #(0.44656235 0.7753477 0.44656238 0.0 0.0 0.0 0.0 0.0)
+
+@See-also
+init-vbap
+vbap
+vbap-bus
+"
   (let* ((azi (float (getter (vbap-azi vbap))))
          (ele (float (getter (vbap-ele vbap))))
          (spread (float (getter (vbap-spread vbap))))
          (spread-base (vbap-spread-base vbap))
          (vbap-data (vbap-vbap-data vbap))
+         (dim (vbap-data-dimen vbap-data))
          (num-speakers (vbap-data-num-speakers vbap-data))
          (tmp-gains (vbap-tmp-gains vbap))
          (vscartdir (vbap-vscartdir vbap))
@@ -879,61 +971,48 @@ degree."
 ;;;    (incudine.util:msg :warn "calc-vbap")
     (dotimes (i num-speakers)
       (setf (aref tmp-gains i) 0.0))
+    (when (or (< (vbap-azi vbap) -180) (> (vbap-azi vbap) 180))
+      (setf (vbap-azi vbap)
+            (- (mod (+ (vbap-azi vbap) 180) 360) 180)))
+    (setf (vbap-ele vbap)
+          (if (= dim 3)
+              (when (or (< (vbap-ele vbap) -180) (> (vbap-ele vbap) 180))
+                (- (mod (+ (vbap-ele vbap) 180) 360) 180))
+              0.0))
     (angle-to-cart azi ele vscartdir)
     (dotimes (i (vbap-data-num-speakers (vbap-vbap-data vbap)))
       (map '() (lambda (tmp-gain) (setf tmp-gain 0.0)) tmp-gains))
-    (vbap vbap vscartdir)
+    (vbap-first vbap vscartdir)
     (when (> spread 0)
-      (case (vbap-data-dimen vbap-data)
+      (case dim
         (3
          (setf (aref spread-base 0) 0.0)
          (setf (aref spread-base 1) 1.0)
          (setf (aref spread-base 2) 0.0)
-;;;           (incudine.util:msg :warn "spread-base: ~a" spread-base)
          (new-spread-dir vbap (aref spreaddir 0) vscartdir spread-base)
-;;;           (incudine.util:msg :warn "spreaddir0: ~a" (aref spreaddir 0))
-;;;           (incudine.util:msg :warn "vscarddir: ~a" vscartdir)
          (new-spread-base vbap (aref spreaddir 0) vscartdir)
-;;;           (incudine.util:msg :warn "spread-base: ~a" spread-base)
          (v3-unq-cross-prod spread-base vscartdir (aref spreadbase 1))
-;;;           (incudine.util:msg :warn "spreadbase1: ~a" (aref spreadbase 1))
          (v3-unq-cross-prod (aref spreadbase 1) vscartdir (aref spreadbase 2))
-;;;           (incudine.util:msg :warn "spreadbase2: ~a" (aref spreadbase 2))
          (v3-unq-cross-prod (aref spreadbase 2) vscartdir (aref spreadbase 3))
-;;;           (incudine.util:msg :warn "spreadbase3: ~a" (aref spreadbase 3))
          
          (new-half-angle (aref spreadbase 4) spread-base (aref spreadbase 1))
-;;;           (incudine.util:msg :warn "spreadbase4: ~a" (aref spreadbase 4))
          (new-half-angle (aref spreadbase 5) (aref spreadbase 1) (aref spreadbase 2))
-;;;           (incudine.util:msg :warn "spreadbase5: ~a" (aref spreadbase 5))
          (new-half-angle (aref spreadbase 6) (aref spreadbase 2) (aref spreadbase 3))
-;;;           (incudine.util:msg :warn "spreadbase6: ~a" (aref spreadbase 6))
-;;;           (incudine.util:msg :warn "spread-base: ~a" spread-base)
          (new-half-angle (aref spreadbase 7) (aref spreadbase 3) spread-base)
-;;;           (incudine.util:msg :warn "spreadbase7: ~a" (aref spreadbase 7))
 
          (new-half-angle (aref spreadbase 8) vscartdir spread-base)
-;;;           (incudine.util:msg :warn "spreadbase8: ~a" (aref spreadbase 8))
          (new-half-angle (aref spreadbase 9) vscartdir (aref spreadbase 1))
-;;;           (incudine.util:msg :warn "spreadbase9: ~a" (aref spreadbase 9))
          (new-half-angle (aref spreadbase 10) vscartdir (aref spreadbase 2))
-;;;           (incudine.util:msg :warn "spreadbase10: ~a" (aref spreadbase 10))
          (new-half-angle (aref spreadbase 11) vscartdir (aref spreadbase 3))
-;;;           (incudine.util:msg :warn "spreadbase11: ~a" (aref spreadbase 11))
 
          (new-half-angle (aref spreadbase 12) vscartdir (aref spreadbase 8))
-;;;           (incudine.util:msg :warn "spreadbase12: ~a" (aref spreadbase 12))
          (new-half-angle (aref spreadbase 13) vscartdir (aref spreadbase 9))
-;;;           (incudine.util:msg :warn "spreadbase13: ~a" (aref spreadbase 13))
          (new-half-angle (aref spreadbase 14) vscartdir (aref spreadbase 10))
-;;;           (incudine.util:msg :warn "spreadbase14: ~a" (aref spreadbase 14))
          (new-half-angle (aref spreadbase 15) vscartdir (aref spreadbase 11))
-;;;           (incudine.util:msg :warn "spreadbase15: ~a" (aref spreadbase 15))
          (additive-vbap vbap (aref spreaddir 0))
          (loop for i from 1 to 15
                do (progn
                     (new-spread-dir vbap (aref spreaddir i) vscartdir (aref spreadbase i))
-;;;                      (incudine.util:msg :warn "spreaddir~d: ~a" i (aref spreaddir i))
                     (additive-vbap vbap (aref spreaddir i)))))
         (2
          (progn
@@ -943,27 +1022,20 @@ degree."
            (angle-to-cart (+ azi (/ spread 4)) 0 (aref spreaddir 3))
            (angle-to-cart (+ azi (/ spread 2)) 0 (aref spreaddir 4))
            (angle-to-cart (+ azi spread) 0 (aref spreaddir 5))
-;;;             (incudine.util:msg :warn "spreaddir: ~a" (subseq spreaddir 0 6))
            (map '() (lambda (tmp-gain) (setf tmp-gain 0.0)) tmp-gains)
-;;;             (vbap vbap vscartdir)
            (dotimes (i 6)               
              (additive-vbap vbap (aref spreaddir i))
-;;;               (incudine.util:msg :warn "tmp-gains: ~a" tmp-gains)
              )))))
     (when (> spread 70)
-;;;               (incudine.util:msg :warn "tmp-gains-before: ~a" tmp-gains)
       (let ((gain-add (* (/ (- spread 70) 30) (/ (- spread 70) 30) 10)))
-        (dotimes (i num-speakers) (incf (aref tmp-gains i) gain-add))
-        ;; (incudine.util:msg :warn "tmp-gains-after: ~a" tmp-gains)
-        ))
+        (dotimes (i num-speakers) (incf (aref tmp-gains i) gain-add))))
     (let ((power (sqrt (loop for tmp-gain across tmp-gains summing (sqr tmp-gain)))))
-      ;; (incudine.util:msg :warn "power: ~a ~a" power tmp-gains)
       (unless (zerop power)
-        (dotimes (i num-speakers) (setter (aref ls-gains i) (float (/ (aref tmp-gains i) power) 1.0)))
-        ;; (incudine.util:msg :warn "ls-gains: ~a" ls-gains)
-        ))))
+        (dotimes (i num-speakers) (setter (aref ls-gains i) (float (/ (aref tmp-gains i) power) 1.0)))))))
 
+(get-keynum)
 
+#|
 
 (setf *vbap* (init-vbap (mapcar #'list
                                 '(-45 0 45 90 135 180 -135 -90)
@@ -973,7 +1045,8 @@ degree."
 
 (setf *vbap* (init-vbap '(-45 0 45 90 135 180 -135 -90) :azi 45))
 
-;;; (vbap-data-dimen *vbap-data*)
+|#
+
 
 #|
 ;;; Examples:

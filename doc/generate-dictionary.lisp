@@ -697,13 +697,13 @@ set-tempo
     clog-dsp-widgets:binding-name cl-poolplayer:buf-idx cl-midictl:button-labels cl-midictl:cc-fns
     cl-midictl:cc-map cl-midictl:cc-nums cl-midictl:cc-state
     clog-dsp-widgets:channel-offs cl-poolplayer:*circle-cw*
-    cl-poolplayer:cm-collect cl-poolplayer:cm-collect-song
+    cl-poolplayer:cm-collect
     cl-poolplayer:collecting-cm cl-midictl:cp-src
     clog-midi-controller:ctl-panel-vis cl-midictl:curr-bank cl-midictl:curr-player
     cl-midictl:*curr-preset* svg-import-export:cx svg-import-export:cy
     cl-midictl:cycle svg-import-export:d ats-cuda-display:data-watch
     orm-utils:default orm-utils:defconst cl-midictl:digest-nanoktl2-presets
-    cl-poolplayer:digest-poolplayer-preset cl-poolplayer:distributed-play
+    cl-poolplayer:distributed-play
     cl-poolplayer:dtime cl-poolplayer:dtime-dev cl-midictl:echo
     svg-import-export:elements cl-poolplayer:eventplayer
     cl-poolplayer:eventplotter cl-poolplayer:expand-arg-forms

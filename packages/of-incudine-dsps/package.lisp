@@ -55,4 +55,12 @@
            #:CLEAR-BUSES
            #:MIX-BUS-TO-OUT
            #:BUS-TO-OUT
+           #:VBAP-BUS
+           #:VBAP-PAIR-BUS
+           #:INIT-VBAP
+           #:INIT-VBAP-PAIR
+           #:VBAP #:VBAP-AZI #:VBAP-ELE  #:VBAP-SPREAD  #:VBAP-LSDIRECTIONS  #:VBAP-LS-GAINS  #:VBAP-VBAP-DATA
+           #:VBAP-DATA #:VBAP-DATA-DIMEN #:VBAP-DATA-NUM-SPEAKERS #:VBAP-DATA-NUM-LS-SETS #:VBAP-DATA-LS-SET-DATA
+           #:VBAP-LS-SET #:VBAP-LS-SET-SPEAKERS #:VBAP-LS-SET-INV_MATRIX #:VBAP-LS-SET-MATRIX
+           #:CALC-VBAP
            ))

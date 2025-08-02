@@ -21,8 +21,9 @@
    #:sf-table-get-range
    #:play-sfz
    #:play-sfz-loop
-   #:play-sfz-one-shot))
+   #:play-sfz-one-shot
+   #:sfz->lsample
+   #:get-keynum
+   #:abs-path
+   ))
 
-(in-package :of-incudine-dsps)
-
-(export '(sfz->lsample get-keynum abs-path) 'of-incudine-dsps)
