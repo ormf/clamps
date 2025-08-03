@@ -50,7 +50,6 @@ header, options and a grid flag."
                "; pause mouse close"))
 
 (defun launch-gnuplot (&rest args &key region &allow-other-keys)
-  (format t (apply #'construct-plot-command :region region args))
   (uiop:launch-program
    (list *gnuplot-program*  "-p" "-e"
          (apply #'construct-plot-command :region region args))

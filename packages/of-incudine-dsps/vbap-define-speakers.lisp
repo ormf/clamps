@@ -112,12 +112,18 @@ as first arg to fn and is reset for each seq."
 (defconstant +atorad+ (float (/ pi 180) 1.0))
 (defconstant +radtoa+ (float (/ 180 pi) 1.0))
 
-(defun angle-to-cart (azi ele cart)
-  "Convert azimuth/elevatio to cartesian coordinates."
-  (setf (elt cart 0) (* (cos (* azi +atorad+)) (cos (* ele +atorad+))))
-  (setf (elt cart 1) (* (sin (* azi +atorad+)) (cos (* ele +atorad+))))
-  (setf (elt cart 2) (sin (* ele +atorad+)))
-  cart)
+(defun angle-to-cart (azi ele &optional cart)
+  "Convert azimuth/elevation to cartesian coordinates."
+  (if cart
+      (progn
+        (setf (elt cart 0) (* (cos (* azi +atorad+)) (cos (* ele +atorad+))))
+        (setf (elt cart 1) (* (sin (* azi +atorad+)) (cos (* ele +atorad+))))
+        (setf (elt cart 2) (sin (* ele +atorad+)))
+        cart)
+      (list
+       (* (cos (* azi +atorad+)) (cos (* ele +atorad+)))
+       (* (sin (* azi +atorad+)) (cos (* ele +atorad+)))
+       (sin (* ele +atorad+)))))
 
 (defun cart-to-angle (coords res)
   "Convert cartesian coordinates to #(azi ele dist), returned in res."
