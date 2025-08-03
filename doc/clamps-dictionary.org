@@ -6085,8 +6085,8 @@
    #+BEGIN_SRC lisp
      (vbap-bus &rest optional-keywords &aux (#:lambda-list '((in-bus-idx 0 (vbap (incudine-missing-arg 'vbap)) (azi 0) (ele 0) (spread 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
-   Distribute bus signal to the physical outlets using vbap/mdap. Works
-   with any blocksize.
+   Incudine DSP function distributing a bus signal to the physical
+   outlets using vbap/mdap. Works with any blocksize.
 *** Arguments
     | =in-bus-idx= | Non-negative Integer denoting the Input Bus index. |
     | =vbap= | initialized Vbap Struct. |
@@ -6149,11 +6149,12 @@
    #+BEGIN_SRC lisp
      (vbap-pair-bus &rest optional-keywords &aux (#:lambda-list '((in-bus-idx 0 (vbap1 (incudine-missing-arg 'vbap)) (vbap2 (incudine-missing-arg 'vbap)) (azi1 0) (ele1 0) (spread1 0) (azi2 0) (ele2 0) (spread2 0) (pan 0) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
-   Distribute bus signal to the physical outlets using vbap/mdap with a
-   pair of two vbaps with distinct ele/azi/spread values and a pan value
-   to interpolate between them. This enables panning between disjunct
-   speakers/directions. The two provided vbaps should use the same
-   speaker-setup. Works with any blocksize.
+   Incudine DSP function distributing a bus signal to the physical
+   outlets using vbap/mdap with a pair of two vbaps with distinct
+   ele/azi/spread values and a pan value to interpolate between
+   them. This enables panning between disjunct speakers/directions. The
+   two provided vbaps should use the same speaker-setup. Works with any
+   blocksize.
 *** Arguments
     | =in-bus-idx= | Non-negative Integer denoting the Input Bus index. |
     | =vbap1= | initialized Vbap Struct for first direction. |
@@ -6164,7 +6165,7 @@
     | =azi2= | Number denoting azimuth in degrees of second direction. |
     | =ele2= | Number denoting elevation (3D only) in degrees of second direction. |
     | =spread2= | Number denoting spread in degrees of second direction. Will be clipped to the range [0..100]. |
-    | =pan= | Number denoting the interpolation between direction1 and direction2 in the range [0..1]. |
+    | =pan= | Number denoting the interpolation between direction1 and direction2 wrapped into the range [0..1]. |
 
 *** See also
     - [[calc-vbap][calc-vbap]]

@@ -1034,8 +1034,6 @@ vbap-bus
       (unless (zerop power)
         (dotimes (i num-speakers) (setter (aref ls-gains i) (float (/ (aref tmp-gains i) power) 1.0)))))))
 
-(get-keynum)
-
 #|
 
 (setf *vbap* (init-vbap (mapcar #'list
