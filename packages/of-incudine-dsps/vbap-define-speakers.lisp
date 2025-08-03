@@ -116,7 +116,8 @@ as first arg to fn and is reset for each seq."
   "Convert azimuth/elevatio to cartesian coordinates."
   (setf (elt cart 0) (* (cos (* azi +atorad+)) (cos (* ele +atorad+))))
   (setf (elt cart 1) (* (sin (* azi +atorad+)) (cos (* ele +atorad+))))
-  (setf (elt cart 2) (sin (* ele +atorad+))))
+  (setf (elt cart 2) (sin (* ele +atorad+)))
+  cart)
 
 (defun cart-to-angle (coords res)
   "Convert cartesian coordinates to #(azi ele dist), returned in res."

@@ -46,9 +46,11 @@ header, options and a grid flag."
                (if 3d "splot " "plot ")
                (if region (format nil "[~{~,2f~^:~}] " region) "")
                "'<cat' "
-               options))
+               options
+               "; pause mouse close"))
 
 (defun launch-gnuplot (&rest args &key region &allow-other-keys)
+  (format t (apply #'construct-plot-command :region region args))
   (uiop:launch-program
    (list *gnuplot-program*  "-p" "-e"
          (apply #'construct-plot-command :region region args))
@@ -208,7 +210,6 @@ an external dataset."
                          (get-first-min-max data))))
     (with-gnuplot-instance (out . args)
       (map-indexed nil (lambda (idx x)
-                         (format t "~& ~a ~a" idx x)
                          (format out "~{~,4f~^ ~}~%"
                                  (multiple-value-list (funcall data-fn idx x))))
                    data))
