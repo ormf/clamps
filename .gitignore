@@ -9,9 +9,6 @@ doc/#*
 clamps
 init-clamps.lisp
 todo.org
-doc/html/clamps-doc/clamps/*
-doc/html/clamps-doc/clamps-dict/*
-doc/html/clamps-doc/cm-dict-orig/*
-doc/html/clamps-doc/fonts/*
+doc/html/clamps-doc
 doc/scratch
 doc/cm-dict-neu

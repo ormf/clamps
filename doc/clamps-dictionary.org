@@ -242,12 +242,12 @@
 ** add-watch
    Macro
    #+BEGIN_SRC lisp
-     (add-watch unwatch &rest args)
+     (add-watch unwatch &rest forms)
    #+END_SRC
-   Add function bodies in /args/ to /unwatch/.
+   Add function bodies in /forms/ to /unwatch/.
 *** Arguments
     | =unwatch= | A list containing functions to undo a watch definition. |
-    | =args= | Zero or more function bodies supplied to the #'watch function. |
+    | =forms= | Zero or more function bodies supplied to the #'watch function. |
 
 *** Example
     #+BEGIN_SRC lisp
@@ -331,16 +331,20 @@
    #+BEGIN_SRC lisp
      (amp->db amp)
    #+END_SRC
-   Return dB value of linear amplitude /amp/. An amplitude of 0 returns a
+   Return dB value of linear amplitude /amp/ relative to a unit
+   gain of 1. An amplitude of 0 returns a
    dB value of -100.
 *** Arguments
     | =amp= | Positive Integer denoting linear amplitude. |
 
-*** Example
+*** Examples
     #+BEGIN_SRC lisp
       (amp->db 1) ; => 0.0
+      (amp->db 0.5) ; => -6.0206003
       (amp->db 0) ;= -100
     #+END_SRC
+*** See also
+    - [[db->amp][db->amp]]
 ** amp->db-slider
    Function
    #+BEGIN_SRC lisp
@@ -443,7 +447,7 @@
       ;;; set the color of the leftmost rotary of the Asparion to red:
       
       (let ((controller (find-controller :d700)))
-        (asparion-send-color "FF0000" (midi-output controller) 0))
+        (asparion-send-color "FF0000" 0 (midi-output controller)))
     #+END_SRC
 *** See also
     - [[asparion][asparion]]
@@ -1081,6 +1085,20 @@
    #+BEGIN_SRC lisp
      (clip val min max)
    #+END_SRC
+   Clip val into the range [min..max].
+*** Arguments
+    | =val= | Number to be clipped. |
+    | =min= | Number denoting minimum bound. |
+    | =min= | Number denoting maximum bound. |
+
+*** Example
+    #+BEGIN_SRC lisp
+      (clip -10 0 3) ; => 0
+      
+      (clip 10 0 3) ; => 3
+      
+      (clip 1.73 0 3) ; => 1.73
+    #+END_SRC
 ** clog-midi-controller
    Class
 
@@ -1440,17 +1458,19 @@
    #+BEGIN_SRC lisp
      (db->amp db)
    #+END_SRC
-   Return amp value of dB value /db/. The dB value is clipped below -100
-   and returns the amplitude 0.
+   Return linear amplitude value of dB value /db/ relative to a unit gain
+   of 1. for all dB values <= -100 it returns the amplitude 0.
 *** Arguments
     | =amp= | Positive Integer denoting amplitude. |
 
-*** Example
+*** Examples
     #+BEGIN_SRC lisp
       (db->amp 0) ; => 1
       (db->amp -6) ; => 0.5011872
       (db->amp -100) ; => 0
     #+END_SRC
+*** See also
+    - [[amp->db][amp->db]]
 ** db->db-slider
    Function
    #+BEGIN_SRC lisp
@@ -1711,7 +1731,19 @@
    #+BEGIN_SRC lisp
      (dround num &optional (prec 2))
    #+END_SRC
-   round num to prec digits after the decimal point.
+   Return a float of /num/ rounded to /prec/ decimal places.
+*** Arguments
+    | =num= | The number to round. |
+    | =prec= | Non Negative Integer denoting the number of decimal places. |
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (dround 1/3) ; => 0.33
+      
+      (dround 1/3 5) ; => 0.33333
+      
+      (dround 1) ; => 1.0
+    #+END_SRC
 ** dsp-id
    Generic Function
    #+BEGIN_SRC lisp
@@ -1996,8 +2028,10 @@
 *** See also
     - [[lin-n][lin-n]]
     - [[m-exp][m-exp]]
+    - [[m-exp-zero][m-exp-zero]]
     - [[m-lin][m-lin]]
     - [[n-exp][n-exp]]
+    - [[n-exp-zero][n-exp-zero]]
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
@@ -2057,7 +2091,15 @@
    #+BEGIN_SRC lisp
      (filter pred seq)
    #+END_SRC
-   return a list of all elements of seq satisfying pred.
+   Return a list of all elements of /seq/ satisfying /pred/.
+*** Arguments
+    | =seq= | A Common Lisp sequence |
+    | =pred= | Function of one element for filtering elements. |
+
+*** Example
+    #+BEGIN_SRC lisp
+      (filter (lambda (e) (< e 9)) '(3 1 12 17 5 4)) ; => (3 1 5 4)
+    #+END_SRC
 ** find-buffer
    Function
    #+BEGIN_SRC lisp
@@ -2129,9 +2171,20 @@
 ** flatten
    Function
    #+BEGIN_SRC lisp
-     (flatten list)
+     (flatten form)
    #+END_SRC
-   remove all brackets except the outmost in list.
+   Remove all brackets except the outmost from /form/. Non-recursive,
+   non-stack version from Rosetta Code.
+*** Arguments
+    | =form= | A Common Lisp form. |
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (flatten '((a b) (((c d) (e f)) (g h)) (i k)))
+      ;; -> (a b c d e f g h i k)
+    #+END_SRC
+*** See also
+    - [[flatten-fn][flatten-fn]]
 ** flatten-fn
    Function
    #+BEGIN_SRC lisp
@@ -2678,8 +2731,10 @@
 *** See also
     - [[exp-n][exp-n]]
     - [[m-exp][m-exp]]
+    - [[m-exp-zero][m-exp-zero]]
     - [[m-lin][m-lin]]
     - [[n-exp][n-exp]]
+    - [[n-exp-zero][n-exp-zero]]
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
@@ -2926,19 +2981,19 @@
 
 *** Examples
     #+BEGIN_SRC lisp
-      #+BEGIN_SRC lisp
       (m-exp 0 1 100) ; => 1.0 (100.0%)
       
       (m-exp 64 1 100) ; => 10.18296
       
       (m-exp 127 1 100) ; => 100.0
-      #+END_SRC
     #+END_SRC
 *** See also
     - [[exp-n][exp-n]]
     - [[lin-n][lin-n]]
+    - [[m-exp-zero][m-exp-zero]]
     - [[m-lin][m-lin]]
     - [[n-exp][n-exp]]
+    - [[n-exp-zero][n-exp-zero]]
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
@@ -2977,7 +3032,32 @@
    #+BEGIN_SRC lisp
      (m-exp-zero x min max)
    #+END_SRC
-   exp interpolation for midivalues (x = [0..127]) with 0 for x = 0
+   Return the exponential interpolation for a MIDI value in the range
+   /[min..max]/ as a float value. For /x = 0/ the result is always 0. The
+   min and max values have to be positive.
+*** Arguments
+    | =x= | An input value in the range /[0..127]/ to be interpolated. |
+    | =min= | The output value for /x close to 0/. |
+    | =max= | The output value for /x = 127/. |
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (m-exp-zero 0 0.01 1) ; => 0.0
+      
+      (m-exp-zero 64 0.01 1) ; => 0.101829596
+      
+      (m-exp-zero 127 0.01 1) ; => 1.0
+    #+END_SRC
+*** See also
+    - [[exp-n][exp-n]]
+    - [[lin-n][lin-n]]
+    - [[m-exp][m-exp]]
+    - [[m-lin][m-lin]]
+    - [[n-exp][n-exp]]
+    - [[n-exp-zero][n-exp-zero]]
+    - [[n-exp-dev][n-exp-dev]]
+    - [[n-lin][n-lin]]
+    - [[n-lin-dev][n-lin-dev]]
 ** m-exp-zero-fn
    Function
    #+BEGIN_SRC lisp
@@ -3004,19 +3084,19 @@
 
 *** Examples
     #+BEGIN_SRC lisp
-      #+BEGIN_SRC lisp
       (m-lin 0 10 20) ; => 10.0
       
       (m-lin 64 10 20) ; => 15.039371
       
       (m-lin 127 10 20)  ; => 20.0
-      #+END_SRC
     #+END_SRC
 *** See also
     - [[exp-n][exp-n]]
     - [[lin-n][lin-n]]
     - [[m-exp][m-exp]]
+    - [[m-exp-zero][m-exp-zero]]
     - [[n-exp][n-exp]]
+    - [[n-exp-zero][n-exp-zero]]
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
@@ -3229,8 +3309,19 @@
    #+BEGIN_SRC lisp
      (map-indexed result-type fn &rest seqs)
    #+END_SRC
-   map fn over seqs with incrementing idx. The idx will get supplied
-   as first arg to fn and is reset for each seq.
+   Map /fn/ over /seqs/ with incrementing zero-based idx. The idx will
+   get supplied as first arg to /fn/. /result-type/ serves the same
+   purpose as in #'map.
+*** Arguments
+    | =result-type= | Result type to return. If nil, don't return a result. |
+    | =fn= | Function to map over sequences. Needs to accept /(+ 1 (length seqs))/ arguments. |
+    | =seqs= | One or more sequences where mapping gets applied, similar to map. |
+
+*** Example
+    #+BEGIN_SRC lisp
+      (map-indexed 'list #'list '(a b c d e)  '(20 10 30 50 40))
+      ;; => ((0 a 20) (1 b 10) (2 c 30) (3 d 50) (4 e 40))
+    #+END_SRC
 ** map-params
    Macro
    #+BEGIN_SRC lisp
@@ -3692,26 +3783,26 @@
    #+END_SRC
    Return the exponential interpolation for a normalized value in the
    range /[min..max]/ as a float value.
-   
-    @Arguments
-   x - An input value in the range /[0..1]/ to be interpolated.
-   min - The output value for /x = 0/.
-   max - The output value for /x = 1/.
+*** Arguments
+    | =x= | An input value in the range /[0..1]/ to be interpolated. |
+    | =min= | The output value for /x = 0/. |
+    | =max= | The output value for /x = 1/. |
+
 *** Examples
     #+BEGIN_SRC lisp
-      #+BEGIN_SRC lisp
       (n-exp 0 1 100) ; => 1.0
       
       (n-exp 0.5 1 100) ; => 10.0
       
       (n-exp 1 1 100) ; => 100.0
-      #+END_SRC
     #+END_SRC
 *** See also
     - [[exp-n][exp-n]]
     - [[lin-n][lin-n]]
     - [[m-exp][m-exp]]
+    - [[m-exp-zero][m-exp-zero]]
     - [[m-lin][m-lin]]
+    - [[n-exp-zero][n-exp-zero]]
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin][n-lin]]
     - [[n-lin-dev][n-lin-dev]]
@@ -3728,13 +3819,11 @@
 
 *** Examples
     #+BEGIN_SRC lisp
-      #+BEGIN_SRC lisp
       (n-exp-dev 0 4) ; => 1.0
       
       (n-exp-dev 0.5 4) ; a random value exponentially distributed in the range [0.5..2.0]
       
       (n-exp-dev 1 4) ; a random value exponentially distributed in the range [0.25..4.0]
-      #+END_SRC
     #+END_SRC
 *** See also
     - [[exp-n][exp-n]]
@@ -3761,7 +3850,31 @@
    #+BEGIN_SRC lisp
      (n-exp-zero x min max)
    #+END_SRC
-   exp interpolation for normalized values (x = [0..1]) with 0 for x = 0
+   Return the exponential interpolation for a normalized value in the
+   range /[min..max]/ as a float value. For /x = 0/ the result is always 0.
+*** Arguments
+    | =x= | An input value in the range /[0..1]/ to be interpolated. |
+    | =min= | The output value for /x/ close to /0/. |
+    | =max= | The output value for /x = 1/. |
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (n-exp-zero 0 0.01 1) ; => 0.0
+      
+      (n-exp-zero 0.5 0.01 1) ; => 0.1
+      
+      (n-exp-zero 1 0.01 1) ; => 1.0
+    #+END_SRC
+*** See also
+    - [[exp-n][exp-n]]
+    - [[lin-n][lin-n]]
+    - [[m-exp][m-exp]]
+    - [[m-exp-zero][m-exp-zero]]
+    - [[m-lin][m-lin]]
+    - [[n-exp-zero][n-exp-zero]]
+    - [[n-exp-dev][n-exp-dev]]
+    - [[n-lin][n-lin]]
+    - [[n-lin-dev][n-lin-dev]]
 ** n-lin
    Function
    #+BEGIN_SRC lisp
@@ -3776,20 +3889,20 @@
 
 *** Examples
     #+BEGIN_SRC lisp
-      #+BEGIN_SRC lisp
       (n-lin 0 10 20) ; => 10.0
       
       (n-lin 0.5 10 20) ; => 15.0
       
       (n-lin 1 10 20)  ; => 20.0
-      #+END_SRC
     #+END_SRC
 *** See also
     - [[exp-n][exp-n]]
     - [[lin-n][lin-n]]
     - [[m-exp][m-exp]]
+    - [[m-exp-zero][m-exp-zero]]
     - [[m-lin][m-lin]]
     - [[n-exp][n-exp]]
+    - [[n-exp-zero][n-exp-zero]]
     - [[n-exp-dev][n-exp-dev]]
     - [[n-lin-dev][n-lin-dev]]
 ** n-lin-dev
@@ -3805,13 +3918,11 @@
 
 *** Examples
     #+BEGIN_SRC lisp
-      #+BEGIN_SRC lisp
       (n-lin-dev 0 4) ; => 0
       
       (n-lin-dev 0.5 4) ; a random value linearly distributed in the range [-2.0..2.0]
       
       (n-lin-dev 1 4) ; a random value linearly distributed in the range [-4.0..4.0]
-      #+END_SRC
     #+END_SRC
 *** See also
     - [[exp-n][exp-n]]
@@ -4223,6 +4334,16 @@
     - [[#play-buffer-loop][play-buffer-loop​*]]
     - [[#play-buffer-stretch][play-buffer-stretch​*]]
     - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
+** phasor-amp*
+   :PROPERTIES:
+   :CUSTOM_ID: phasor-amp
+   :END:
+   Function
+   #+BEGIN_SRC lisp
+     (phasor-amp* &rest optional-keywords &aux (#:lambda-list '((freq 1 (init 0) (amp 1) ugen-node))))
+   #+END_SRC
+   Incudine Ugen producing a normalized moving phase value with
+   frequency FREQ, initial value INIT (0 by default) and AMP at k-rate.
 ** phasor-amp
    Function
    #+BEGIN_SRC lisp
@@ -6156,7 +6277,7 @@
    Incudine Ugen for vbap/mdap. Returns a foreign array of amplitude
    values for the speakers of the /vbap/ struct with /azi/, /ele/ and
    /spread/ applied.
-*** Example
+*** Examples
     #+BEGIN_SRC lisp
       (in-package :oid)
       
@@ -6211,18 +6332,15 @@
           (init-vbap '(-30 30 70 110 150 -150 -110 -70))
           :action
           (lambda (node) (let ((id (node-id node)))
+                      (format t "id: ~a" id)
                       (add-watch
                        *vbap-ctl-unwatch*
-                       (set-control id :spread (* 100 (/ (clamps:ccin 1) 127.0)))
-                       (set-control id :circle-freq (n-exp (/ (clamps:ccin 2) 127.0) 0.1 1))
-                       (set-control id :pulse-freq (n-exp (/ (clamps:ccin 3) 127.0) 5 20)))))
+                       (set-control id :spread (m-lin (clamps:ccin 0) 0 100))
+                       (set-control id :circle-freq (m-exp (clamps:ccin 1) 0.1 1))
+                       (set-control id :pulse-freq (m-exp (clamps:ccin 2) 5 20))
+                       (set-control id :amp (m-exp-zero (clamps:ccin 3) 0.01 1)))))
+          :free-hook (list (lambda (node) node (unwatch-all *vbap-ctl-unwatch*)))
           :head 200)
-      
-      ;;; cleanup:
-      
-      (progn
-        (dogroup (n 200) (free n))
-        (unwatch-all *vbap-ctl-unwatch*))
     #+END_SRC
 *** See also
     - [[vbap-bus][vbap-bus]]
