@@ -109,6 +109,10 @@ function init() {
     setTocStartState();
     document.querySelector("html").setAttribute("data-theme", currentThemeSetting);
     localStorage.setItem("theme", currentThemeSetting);
+    let activeToc = document.getElementsByClassName("toc-active")[0];
+    activeToc.scrollIntoView({behavior: 'auto', block: 'center'});
+    document.getElementById("table-of-contents").scrollLeft = 0;
+    document.body.scrollIntoView();
 }
 
 document.querySelector("html").setAttribute("data-theme", currentThemeSetting);

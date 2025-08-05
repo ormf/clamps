@@ -479,7 +479,12 @@ forms - Zero or more function bodies supplied to the #'watch function.
 unwatch-all
 watch
 "
-  `(dolist (form ',forms) (push (watch (lambda () form)) ,unwatch)))
+  `(progn
+     ,@(loop
+         for form in forms
+         collect (if unwatch
+                     `(push (watch (lambda () ,form)) ,unwatch)
+                     `(watch (lambda () ,form))))))
 
 
 (defmacro unwatch-all (unwatch)

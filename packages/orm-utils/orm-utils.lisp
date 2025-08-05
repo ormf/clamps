@@ -1091,16 +1091,21 @@ calls. If collect is t return all results in a list."
 (setf *tempo* '(1/4 60))
 
 (defun amp->db (amp)
-  "Return dB value of linear amplitude /amp/. An amplitude of 0 returns a
+  "Return dB value of linear amplitude /amp/ relative to a unit
+gain of 1. An amplitude of 0 returns a
 dB value of -100.
 
 @Arguments
 amp - Positive Integer denoting linear amplitude.
 
-@Example
+@Examples
 
 (amp->db 1) ; => 0.0
+(amp->db 0.5) ; => -6.0206003
 (amp->db 0) ;= -100
+
+@See-also
+db->amp
 "
   (if (zerop amp) -100
       (* 20 (log (abs amp) 10))))
@@ -1110,17 +1115,20 @@ amp - Positive Integer denoting linear amplitude.
 ;;; (amp->db 2) -> 6
 
 (defun db->amp (db)
-  "Return amp value of dB value /db/. The dB value is clipped below -100
-and returns the amplitude 0.
+  "Return linear amplitude value of dB value /db/ relative to a unit gain
+of 1. for all dB values <= -100 it returns the amplitude 0.
 
 @Arguments
 amp - Positive Integer denoting amplitude.
 
-@Example
+@Examples
 
 (db->amp 0) ; => 1
 (db->amp -6) ; => 0.5011872
 (db->amp -100) ; => 0
+
+@See-also
+amp->db
 "
   (if (<= db -100) 0
       (expt 10 (/ db 20))))
@@ -2217,7 +2225,6 @@ with-props
 
   (or (second (member key proplist :test #'equal)) default))
 
-
 (defun n-lin (x min max)
   "Return the linear interpolation for a normalized value in the range
 /[min..max]/ as a float value.
@@ -2226,21 +2233,22 @@ with-props
 x - An input value in the range /[0..1]/ to be interpolated.
 min - The output value for /x = 0/.
 max - The output value for /x = 1/.
+
 @Examples
-#+BEGIN_SRC lisp
 (n-lin 0 10 20) ; => 10.0
 
 (n-lin 0.5 10 20) ; => 15.0
 
 (n-lin 1 10 20)  ; => 20.0
-#+END_SRC
 
 @See-also
 exp-n
 lin-n
 m-exp
+m-exp-zero
 m-lin
 n-exp
+n-exp-zero
 n-exp-dev
 n-lin-dev
 "
@@ -2270,8 +2278,10 @@ max - The maximum value.
 @See-also
 exp-n
 m-exp
+m-exp-zero
 m-lin
 n-exp
+n-exp-zero
 n-exp-dev
 n-lin
 n-lin-dev
@@ -2282,24 +2292,25 @@ n-lin-dev
   "Return the exponential interpolation for a normalized value in the
 range /[min..max]/ as a float value.
 
- @Arguments
+@Arguments
 x - An input value in the range /[0..1]/ to be interpolated.
 min - The output value for /x = 0/.
 max - The output value for /x = 1/.
+
 @Examples
-#+BEGIN_SRC lisp
 (n-exp 0 1 100) ; => 1.0
 
 (n-exp 0.5 1 100) ; => 10.0
 
 (n-exp 1 1 100) ; => 100.0
-#+END_SRC
 
 @See-also
 exp-n
 lin-n
 m-exp
+m-exp-zero
 m-lin
+n-exp-zero
 n-exp-dev
 n-lin
 n-lin-dev
@@ -2330,8 +2341,10 @@ max - The maximum value.
 @See-also
 lin-n
 m-exp
+m-exp-zero
 m-lin
 n-exp
+n-exp-zero
 n-exp-dev
 n-lin
 n-lin-dev
@@ -2349,19 +2362,19 @@ x - An input value in the range /[0..127]/ to be interpolated.
 min - The output value for /x = 0/.
 max - The output value for /x = 127/.
 @Examples
-#+BEGIN_SRC lisp
 (m-exp 0 1 100) ; => 1.0 (100.0%)
 
 (m-exp 64 1 100) ; => 10.18296
 
 (m-exp 127 1 100) ; => 100.0
-#+END_SRC
 
 @See-also
 exp-n
 lin-n
+m-exp-zero
 m-lin
 n-exp
+n-exp-zero
 n-exp-dev
 n-lin
 n-lin-dev
@@ -2369,13 +2382,64 @@ n-lin-dev
   (n-exp (/ x 127) min max))
 
 (defun n-exp-zero (x min max)
-  "exp interpolation for normalized values (x = [0..1]) with 0 for x = 0"
+  "Return the exponential interpolation for a normalized value in the
+range /[min..max]/ as a float value. For /x = 0/ the result is always 0.
+
+@Arguments
+x - An input value in the range /[0..1]/ to be interpolated.
+min - The output value for /x/ close to /0/.
+max - The output value for /x = 1/.
+
+@Examples
+(n-exp-zero 0 0.01 1) ; => 0.0
+
+(n-exp-zero 0.5 0.01 1) ; => 0.1
+
+(n-exp-zero 1 0.01 1) ; => 1.0
+
+@See-also
+exp-n
+lin-n
+m-exp
+m-exp-zero
+m-lin
+n-exp-zero
+n-exp-dev
+n-lin
+n-lin-dev
+" 
   (float
    (if (zerop x) 0
        (* min (expt (/ max min) x)))))
 
 (defun m-exp-zero (x min max)
-  "exp interpolation for midivalues (x = [0..127]) with 0 for x = 0"
+ "Return the exponential interpolation for a MIDI value in the range
+/[min..max]/ as a float value. For /x = 0/ the result is always 0. The
+min and max values have to be positive.
+
+@Arguments
+x - An input value in the range /[0..127]/ to be interpolated.
+min - The output value for /x close to 0/.
+max - The output value for /x = 127/.
+
+@Examples
+(m-exp-zero 0 0.01 1) ; => 0.0
+
+(m-exp-zero 64 0.01 1) ; => 0.101829596
+
+(m-exp-zero 127 0.01 1) ; => 1.0
+
+@See-also
+exp-n
+lin-n
+m-exp
+m-lin
+n-exp
+n-exp-zero
+n-exp-dev
+n-lin
+n-lin-dev
+"
   (n-exp-zero (/ x 127) min max))
 
 ;;; (n-exp 0 10 1000) -> 10
@@ -2391,19 +2455,19 @@ x - An input value in the range /[0..127]/ to be interpolated.
 min - The output value for /x = 0/.
 max - The output value for /x = 127/.
 @Examples
-#+BEGIN_SRC lisp
 (m-lin 0 10 20) ; => 10.0
 
 (m-lin 64 10 20) ; => 15.039371
 
 (m-lin 127 10 20)  ; => 20.0
-#+END_SRC
 
 @See-also
 exp-n
 lin-n
 m-exp
+m-exp-zero
 n-exp
+n-exp-zero
 n-exp-dev
 n-lin
 n-lin-dev
@@ -2500,13 +2564,11 @@ interpolated between /1/ for /x = 0/ and /[1/max..max]/ for /x = 1/.
 x - An input value in the range /[0..1]/ to be interpolated.
 max - The maximum deviation factor for /x = 1/;
 @Examples
-#+BEGIN_SRC lisp
 (n-exp-dev 0 4) ; => 1.0
 
 (n-exp-dev 0.5 4) ; a random value exponentially distributed in the range [0.5..2.0]
 
 (n-exp-dev 1 4) ; a random value exponentially distributed in the range [0.25..4.0]
-#+END_SRC
 
 @See-also
 exp-n
@@ -2534,13 +2596,11 @@ interpolated between /0/ for /x = 0/ and /[-max..max]/ for /x = 1/.
 x - An input value in the range /[0..1]/ to be interpolated.
 max - The maximum deviation value for /x = 1/;
 @Examples
-#+BEGIN_SRC lisp
 (n-lin-dev 0 4) ; => 0
 
 (n-lin-dev 0.5 4) ; a random value linearly distributed in the range [-2.0..2.0]
 
 (n-lin-dev 1 4) ; a random value linearly distributed in the range [-4.0..4.0]
-#+END_SRC
 
 @See-also
 exp-n
@@ -2830,7 +2890,7 @@ n - Integer denoting starting index
 "
   (if (null list)
       nil
-      (cons (cons n (first list)) (index-seq (rest list) (1+ n)))))
+      (cons (cons n (first list)) (index-list (rest list) :n (1+ n)))))
 
 (defun subseqx (seq start &optional end)
   "Like #'subseq, but allowing negative values for /end/, indicating the

@@ -233,7 +233,7 @@ strip-idx - Integer denoting the index of the rotary strip (On the D700FT, 8 den
 ;;; set the color of the leftmost rotary of the Asparion to red:
 
 (let ((controller (find-controller :d700)))
-  (asparion-send-color \"FF0000\" (midi-output controller) 0))
+  (asparion-send-color \"FF0000\" 0 (midi-output controller)))
 
 @See-also
 asparion

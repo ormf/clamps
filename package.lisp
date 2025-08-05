@@ -74,6 +74,8 @@
            cl-midictl:midi-port-pitch-bend-fns
            cl-midictl:midi-port-after-touch-fns
 
+           incudine.vug:with
+
            orm-utils:delete-props cl-midictl:buchla-scale
            cl-midictl:midi->inc
            orm-utils:call/collecting
@@ -206,7 +208,7 @@
            clog-dsp-widgets:create-o-vumeter svg-collect-lines
            common-lisp:output-stream-p orm-utils:sum_x
            cl-midictl:start-midi-engine
-           cm::with cm::= cm::for cm::by cm::from cm::downto cm::to
+           cm::= cm::for cm::by cm::from cm::downto cm::to
            ;; cm::chan
            cl-refs:make-bang
            get-dtime-fn-no-x set-tempo stream-p
@@ -691,6 +693,8 @@
                           )
   (:shadowing-import-from #:incudine.util
                           #:msg)
+  (:shadowing-import-from #:incudine.vug
+                          #:with)
 
   (:shadowing-import-from #:clog
                           #:title #:style #:html-document
@@ -705,28 +709,36 @@
            #:envelope
            #:remove-all-responders #:recv-stop
            #:without-interrupts
-           #:play)
+           #:play
+           #:metatdata)
 
   (:shadowing-import-from #:cl-midictl
                           #:*midi-in1* #:*midi-out1*
                           #:chan #:id)
   (:shadowing-import-from #:cm #:args #:cycle
+                          #:midi-pitch-bend
+                          #:midi-note-on
+                          #:midi-note-off
+                          #:line
                           #:tempo->svg-timescale
-                          #:with #:initially #:finally #:repeat #:for
+                          #:initially #:finally #:repeat #:for
                           #:do #:each #:output #:sprout #:while #:until #:when #:unless #:if
                           #:and #:= #:then #:from #:to #:downto #:below #:in #:on #:by #:over #:of #:set #:wait
                           #:duration #:time #:keynum #:amplitude #:channel #:stop #:at #:quantize
                           #:*tempo* #:tuning #:now #:rescale-envelope #:poolevt
                           #:pwd #:cd #:rts?)
-  
+
+  (:shadowing-import-from #:cl-midictl #:pulse)
   (:shadowing-import-from #:ou #:range)
   (:shadowing-import-from #:cl-plot #:plot)
   (:use #:cl
         #:cl-user
         #:cl-refs
         #:incudine
-        #:cl-poolplayer
+        #:incudine.vug
         #:incudine.util
+        :incudine.analysis #:incudine-bufs
+        #:cl-poolplayer
         #:cl-midictl
         #:of-incudine-dsps
         #:incudine-bufs
