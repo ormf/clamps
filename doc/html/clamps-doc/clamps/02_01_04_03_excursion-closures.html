@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-10-01 Di 09:24 -->
+<!-- 2025-08-05 Di 09:15 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Packages</title>
@@ -50,7 +50,7 @@
 <ul class="ul-toc-level-2">
 <li class="toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
 <ul class="ul-toc-level-3">
-<li class="toc-level-3"><a href="02_01_01_00_opening-midi-ports.html"class="toc-entry">Opening MIDI Ports</a></li>
+<li class="toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
 <li class="toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
 <li class="toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry">MIDI Input</a>
 <ul class="ul-toc-level-4">
@@ -63,7 +63,7 @@
 </li>
 <li class="toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
 <ul class="ul-toc-level-4">
-<li class="toc-level-4"><a href="02_01_04_01_using-a-nanokontrol2-controller.html"class="toc-entry">Using a NanoKONTROL2 Controller</a></li>
+<li class="toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
 <li class="toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
 <li class="toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry toc-active">Excursion: Closures</a></li>
 </ul>
@@ -119,6 +119,7 @@
 <li class="toc-hidden toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
 </ul>
 </li>
 <li class="toc-hidden toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
@@ -138,11 +139,11 @@
 <header>
 <h1 class="title">Clamps Packages</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="02_01_04_02_other-utility-functions.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-orgf2badc1" class="outline-5">
-<h5 id="orgf2badc1">Excursion: Closures</h5>
-<div class="outline-text-5" id="text-orgf2badc1">
+<div id="page-text-body"><div id="outline-container-org7dc742c" class="outline-5">
+<h5 id="org7dc742c">Excursion: Closures</h5>
+<div class="outline-text-5" id="text-org7dc742c">
 <p>
-The definition of the watch functions in the <a href="02_01_04_01_using-a-nanokontrol2-controller.html#org5c1f3dd">NanoKONTROL2 example</a>
+The definition of the watch functions in the <a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html#org5d61dd2">NanoKONTROL2 example</a>
 contains a tricky part: The variable <i>i</i> of the <i>dolist</i> is bound
 to a symbol <i>n</i> in each iteration using a <i>let</i> expression in its
 body.
@@ -254,7 +255,7 @@ clamps&gt;
 </div>
 
 <p>
-To avoid this situation, the <i>let</i> expression in the <a href="02_01_04_01_using-a-nanokontrol2-controller.html#org5c1f3dd">correct
+To avoid this situation, the <i>let</i> expression in the <a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html#org5d61dd2">correct
 example</a> serves the purpose of using a new variable <i>n</i> in each
 iteration of the dolist to capture the value of <i>i</i> at the
 <i>compile-time</i> of the function so that dereferencing <i>n</i> at
@@ -389,7 +390,7 @@ what is happening.
 </div>
 
 <p>
-In the <a href="02_01_04_01_using-a-nanokontrol2-controller.html#org5c1f3dd">correct example</a>, two new watch function bindings are
+In the <a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html#org5d61dd2">correct example</a>, two new watch function bindings are
 established in each of the 8 iterations. As in the example above,
 the <i>let</i> binds a new <i>symbol</i> n to the current <i>value</i> of the
 outer iteration variable i.

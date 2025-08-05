@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-10-01 Di 09:24 -->
+<!-- 2025-08-05 Di 09:15 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Packages</title>
@@ -50,7 +50,7 @@
 <ul class="ul-toc-level-2">
 <li class="toc-level-2"><a href="02_00_00_00_midi.html"class="toc-entry">cl-midictl</a>
 <ul class="ul-toc-level-3">
-<li class="toc-level-3"><a href="02_01_01_00_opening-midi-ports.html"class="toc-entry">Opening MIDI Ports</a></li>
+<li class="toc-level-3"><a href="02_01_01_00_midi-ports.html"class="toc-entry">MIDI Ports</a></li>
 <li class="toc-level-3"><a href="02_01_02_00_midi-output.html"class="toc-entry">MIDI Output</a></li>
 <li class="toc-level-3"><a href="02_01_03_00_midi-input.html"class="toc-entry toc-active">MIDI Input</a>
 <ul class="ul-toc-level-4">
@@ -63,7 +63,7 @@
 </li>
 <li class="toc-level-3"><a href="02_01_04_00_midi-controllers.html"class="toc-entry">MIDI Controllers</a>
 <ul class="ul-toc-level-4">
-<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-nanokontrol2-controller.html"class="toc-entry">Using a NanoKONTROL2 Controller</a></li>
+<li class="toc-hidden toc-level-4"><a href="02_01_04_01_using-a-korg-nanokontrol2-controller.html"class="toc-entry">Using a Korg NanoKONTROL2 Controller</a></li>
 <li class="toc-hidden toc-level-4"><a href="02_01_04_02_other-utility-functions.html"class="toc-entry">Other Utility Functions</a></li>
 <li class="toc-hidden toc-level-4"><a href="02_01_04_03_excursion-closures.html"class="toc-entry">Excursion: Closures</a></li>
 </ul>
@@ -119,6 +119,7 @@
 <li class="toc-hidden toc-level-3"><a href="07_02_01_00_a-short-example.html"class="toc-entry">A short example</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_02_00_the-ref-object-class.html"class="toc-entry">The ref-object class</a></li>
 <li class="toc-hidden toc-level-3"><a href="07_02_03_00_defining-relations.html"class="toc-entry">Defining relations</a></li>
+<li class="toc-hidden toc-level-3"><a href="07_02_04_00_the-bang-object-class.html"class="toc-entry">The bang-object class</a></li>
 </ul>
 </li>
 <li class="toc-hidden toc-level-2"><a href="07_03_00_00_cl-sfz.html"class="toc-entry">cl-sfz</a>
@@ -138,38 +139,38 @@
 <header>
 <h1 class="title">Clamps Packages</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="02_01_02_00_midi-output.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-org9de477d" class="outline-4">
-<h4 id="org9de477d">MIDI Input</h4>
-<div class="outline-text-4" id="text-org9de477d">
+<div id="page-text-body"><div id="outline-container-orgfa39c38" class="outline-4">
+<h4 id="orgfa39c38">MIDI Input</h4>
+<div class="outline-text-4" id="text-orgfa39c38">
 </div>
-<div id="outline-container-orgbc28e09" class="outline-5">
-<h5 id="orgbc28e09">Receiving and handling MIDI Input</h5>
-<div class="outline-text-5" id="text-orgbc28e09">
+<div id="outline-container-orgd413c38" class="outline-5">
+<h5 id="orgd413c38">Receiving and handling MIDI Input</h5>
+<div class="outline-text-5" id="text-orgd413c38">
 <p>
 After the Ports have been opened, MIDI input handling is started
 using the function <a href="../clamps-dict/start-midi-receive.html">start-midi-receive</a>, which gets called
-automatically on startup using the <a href="../clamps-dict/clamps.html">clamps</a> function. MIDI input
-handling can be suspended using the <a href="../clamps-dict/stop-midi-receive.html">stop-midi-receive</a>
-function. Note that this will not close the MIDI ports, so
-connections to external devices or programs will be persistent. A
-later call to <a href="../clamps-dict/start-midi-receive.html">start-midi-receive</a> will continue to process MIDI
-input.
+automatically on startup using the <a href="../clamps-dict/clamps.html">clamps</a> or <a href="../clamps-dict/open-midi-port.html">open-midi-port</a>
+function. MIDI input handling can be suspended using the
+<a href="../clamps-dict/stop-midi-receive.html">stop-midi-receive</a> function. Note that this will not close the
+MIDI ports, so connections to external devices or programs will
+be persistent. A later call to <a href="../clamps-dict/start-midi-receive.html">start-midi-receive</a> will continue
+to process MIDI input.
 </p>
 
 <p>
-Handling MIDI input in Clamps is done in 3 different stages:
+A <a href="../clamps-dict/midi-port-1.html">midi-port</a> in Clamps handles MIDI input in 3 different stages:
 </p>
 
 <ul class="org-ul">
-<li>All note and cc input is captured in the special variables
-*​midi-cc-state​* and *​midi-note-state​*. Both contain a
-2-dimensional array of 16x128 <a href="07_02_02_00_the-ref-object-class.html#org18e6fe1">ref-objects</a> which capture the
+<li>All note and cc input is captured in the <i>cc-state</i> and
+<i>note-state</i> arrays of the port struct. Both contain a
+2-dimensional array of 16x128 <a href="07_02_02_00_the-ref-object-class.html#org423546e">ref-objects</a> which capture the
 last received values of the 128 controller numbers or note
 numbers of all 16 MIDI channels. <a href="../overview/04_04_code-inspection.html">Inspect</a> this value to see the
 current state of the MIDI input of Clamps.</li>
 
-<li>In addition two other special variables, *​midi-cc-fns​* and
-*​midi-note-fns* contain 16x128 lists, intially empty. When
+<li>In addition two other special variables, the <i>cc-fns</i> and
+<i>note-fns</i> slots contain 16x128 lists, intially empty. When
 receiving MIDI cc or MIDI note input, Clamps will address these
 arrays and call all functions stored in the list of the
 corresponding channel and CC number or keynum with the received
@@ -179,6 +180,13 @@ controller value or note velocity as arguments.</li>
 instances registered with the function <a href="../clamps-dict/add-midi-controller.html">add-midi-controller</a> will
 get called.</li>
 </ul>
+
+<p>
+For convenience, <i>*​midi-cc-state​*</i>, <i>*​midi-cc-fns*</i>,
+<i>*​​midi-note-state*</i> and <i>*​midi-note-fns*</i> are special variables
+pointing to the <i>cc-state</i>, <i>cc-fns</i>, <i>note-state</i> and <i>note-fns</i>
+slot of the midi-port <i>:midi-1</i>, opened by the <a href="../clamps-dict/clamps.html">clamps</a> function.
+</p>
 </div>
 </div>
 </div>
