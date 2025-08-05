@@ -1085,20 +1085,6 @@
    #+BEGIN_SRC lisp
      (clip val min max)
    #+END_SRC
-   Clip val into the range [min..max].
-*** Arguments
-    | =val= | Number to be clipped. |
-    | =min= | Number denoting minimum bound. |
-    | =min= | Number denoting maximum bound. |
-
-*** Example
-    #+BEGIN_SRC lisp
-      (clip -10 0 3) ; => 0
-      
-      (clip 10 0 3) ; => 3
-      
-      (clip 1.73 0 3) ; => 1.73
-    #+END_SRC
 ** clog-midi-controller
    Class
 
@@ -1731,19 +1717,7 @@
    #+BEGIN_SRC lisp
      (dround num &optional (prec 2))
    #+END_SRC
-   Return a float of /num/ rounded to /prec/ decimal places.
-*** Arguments
-    | =num= | The number to round. |
-    | =prec= | Non Negative Integer denoting the number of decimal places. |
-
-*** Examples
-    #+BEGIN_SRC lisp
-      (dround 1/3) ; => 0.33
-      
-      (dround 1/3 5) ; => 0.33333
-      
-      (dround 1) ; => 1.0
-    #+END_SRC
+   round num to prec digits after the decimal point.
 ** dsp-id
    Generic Function
    #+BEGIN_SRC lisp
@@ -2091,15 +2065,7 @@
    #+BEGIN_SRC lisp
      (filter pred seq)
    #+END_SRC
-   Return a list of all elements of /seq/ satisfying /pred/.
-*** Arguments
-    | =seq= | A Common Lisp sequence |
-    | =pred= | Function of one element for filtering elements. |
-
-*** Example
-    #+BEGIN_SRC lisp
-      (filter (lambda (e) (< e 9)) '(3 1 12 17 5 4)) ; => (3 1 5 4)
-    #+END_SRC
+   return a list of all elements of seq satisfying pred.
 ** find-buffer
    Function
    #+BEGIN_SRC lisp
@@ -2171,20 +2137,9 @@
 ** flatten
    Function
    #+BEGIN_SRC lisp
-     (flatten form)
+     (flatten list)
    #+END_SRC
-   Remove all brackets except the outmost from /form/. Non-recursive,
-   non-stack version from Rosetta Code.
-*** Arguments
-    | =form= | A Common Lisp form. |
-
-*** Examples
-    #+BEGIN_SRC lisp
-      (flatten '((a b) (((c d) (e f)) (g h)) (i k)))
-      ;; -> (a b c d e f g h i k)
-    #+END_SRC
-*** See also
-    - [[flatten-fn][flatten-fn]]
+   remove all brackets except the outmost in list.
 ** flatten-fn
    Function
    #+BEGIN_SRC lisp
@@ -3309,19 +3264,8 @@
    #+BEGIN_SRC lisp
      (map-indexed result-type fn &rest seqs)
    #+END_SRC
-   Map /fn/ over /seqs/ with incrementing zero-based idx. The idx will
-   get supplied as first arg to /fn/. /result-type/ serves the same
-   purpose as in #'map.
-*** Arguments
-    | =result-type= | Result type to return. If nil, don't return a result. |
-    | =fn= | Function to map over sequences. Needs to accept /(+ 1 (length seqs))/ arguments. |
-    | =seqs= | One or more sequences where mapping gets applied, similar to map. |
-
-*** Example
-    #+BEGIN_SRC lisp
-      (map-indexed 'list #'list '(a b c d e)  '(20 10 30 50 40))
-      ;; => ((0 a 20) (1 b 10) (2 c 30) (3 d 50) (4 e 40))
-    #+END_SRC
+   map fn over seqs with incrementing idx. The idx will get supplied
+   as first arg to fn and is reset for each seq.
 ** map-params
    Macro
    #+BEGIN_SRC lisp
@@ -6279,8 +6223,6 @@
    /spread/ applied.
 *** Examples
     #+BEGIN_SRC lisp
-      (in-package :oid)
-      
       (dsp! pnoise-vbap-test ((vbap vbap) freq amp azi ele spread)
         (:defaults (incudine-missing-arg 'vbap) 10 0.1 0 0 0)
         (with ((numoutchannels (vbap-data-num-speakers (vbap-vbap-data vbap))))
@@ -6318,15 +6260,16 @@
                   (incf (audio-out current-channel)
                         (frame-ref frame current-channel))))))))
       
-      ;;; Use MIDI Controllers with ccnum 1-3 to control the spread,
-      ;;; circle-freq and pulse-freq:
+      ;;; Use MIDI Controllers with ccnum 0-3 to control the spread,
+      ;;; circle-freq, pulse-freq and amplitude:
       
       (defparameter *vbap-ctl-unwatch* nil)
       
       (progn ;; init controllers
-        (setf (clamps:ccin 1) 0)
-        (setf (clamps:ccin 2) 64)
-        (setf (clamps:ccin 3) 64))
+        (setf (ccin 0) 0)
+        (setf (ccin 1) 64)
+        (setf (ccin 2) 64)
+        (setf (ccin 3) 64))
       
       (pnoise-circle-vbap-test
           (init-vbap '(-30 30 70 110 150 -150 -110 -70))
@@ -6335,10 +6278,10 @@
                       (format t "id: ~a" id)
                       (add-watch
                        *vbap-ctl-unwatch*
-                       (set-control id :spread (m-lin (clamps:ccin 0) 0 100))
-                       (set-control id :circle-freq (m-exp (clamps:ccin 1) 0.1 1))
-                       (set-control id :pulse-freq (m-exp (clamps:ccin 2) 5 20))
-                       (set-control id :amp (m-exp-zero (clamps:ccin 3) 0.01 1)))))
+                       (set-control id :spread (m-lin (ccin 0) 0 100))
+                       (set-control id :circle-freq (m-exp (ccin 1) 0.1 1))
+                       (set-control id :pulse-freq (m-exp (ccin 2) 5 20))
+                       (set-control id :amp (m-exp-zero (ccin 3) 0.01 1)))))
           :free-hook (list (lambda (node) node (unwatch-all *vbap-ctl-unwatch*)))
           :head 200)
     #+END_SRC
@@ -6395,6 +6338,11 @@
    Function
    #+BEGIN_SRC lisp
      (vbap-ele instance)
+   #+END_SRC
+** vbap-ls-directions
+   Function
+   #+BEGIN_SRC lisp
+     (vbap-ls-directions instance)
    #+END_SRC
 ** vbap-ls-gains
    Function

@@ -481,6 +481,7 @@
    ("vbap-data-num-ls-sets" "clamps-dict/vbap-data-num-ls-sets.html")
    ("vbap-data-num-speakers" "clamps-dict/vbap-data-num-speakers.html")
    ("vbap-ele" "clamps-dict/vbap-ele.html")
+   ("vbap-ls-directions" "clamps-dict/vbap-ls-directions.html")
    ("vbap-ls-gains" "clamps-dict/vbap-ls-gains.html")
    ("vbap-ls-set" "clamps-dict/vbap-ls-set.html")
    ("vbap-ls-set-matrix" "clamps-dict/vbap-ls-set-matrix.html")
