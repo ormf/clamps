@@ -456,6 +456,7 @@ td, th {
 .toc-level-2 .toc-active {
     color: var(--anchor-active);
     pointer-events: auto;
+    scroll-into-view: true block-center;
 }
 
 .toc-level-2 .toc-active:hover {
@@ -482,6 +483,7 @@ td, th {
 
 .toc-active {
     color: var(--anchor-active);
+    scroll-into-view: true block-center;
 }
 
 
