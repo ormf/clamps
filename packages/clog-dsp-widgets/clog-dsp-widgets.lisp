@@ -268,6 +268,9 @@ hash-table if its e-list is empty."
     "[0]"))
 
 (defun create-o-scope (parent bindings &key width height css buffer)
+  "Create a scope view using /buffer/ as data for the scope. buffer has
+to be a ref-object containing an incudine buffer updating the view
+whenever the ref gets set with set-val."
   (declare (ignorable width height))
   (let* ((var (b-ref (first bindings)))
          (attr (b-attr (first bindings)))

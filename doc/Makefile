@@ -9,7 +9,12 @@ clean:
 	rm -rf html/clamps-doc/fonts
 
 clamps-dictionary.org:
-	sbcl --load generate-dictionary.lisp
+	clamps --load generate-dictionary.lisp
+
+documentation:
+	./generate-doc.sh
+	scp clamps-doc.tgz orm@10.8.0.11:/var/www/finnendahl/
+	./replace-doc.sh
 
 html:
 	mkdir -p html/
@@ -18,9 +23,9 @@ html:
 	cp -r img/clamps-img html/clamps-doc/clamps/img
 	cp -r img/overview-img html/clamps-doc/overview/img
 	cp -r img/clamps-dict-img html/clamps-doc/clamps-dict/img
-	# ln -s ../../css html/clamps-doc/
-	# ln -s ../../js html/clamps-doc/
-	# ln -s ../../fonts html/clamps-doc/
+# ln -s ../../css html/clamps-doc/
+# ln -s ../../js html/clamps-doc/
+# ln -s ../../fonts html/clamps-doc/
 	cp -rf css html/clamps-doc/
 	cp -rf js html/clamps-doc/
 	cp -rf fonts html/clamps-doc/

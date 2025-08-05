@@ -38,6 +38,23 @@
 (defsetf aux set-aux)
 |#
 
+(define-ugen phasor-amp* frame (freq init amp)
+  "Incudine Ugen producing a normalized moving phase value with
+frequency FREQ, initial value INIT (0 by default) and AMP at k-rate."
+  (:defaults 1 0 1)
+  (with ((frame (make-frame (block-size))))
+    (with-samples ((rate (* amp freq *sample-duration*)))
+      (foreach-frame
+        (setf (frame-ref frame current-frame)
+              (incudine.vug::%phasor rate init amp)))
+      frame)))
+
+(define-vug phasor-amp (freq init amp)
+  "Incudine Ugen producing a normalized moving phase value with frequency
+FREQ, initial value INIT (0 by default) and AMP."
+  (:defaults 1 0 1)
+  (with-samples ((rate (* amp freq *sample-duration*)))
+    (incudine.vug::%phasor rate init amp)))
 
 (dsp! osc~ (freq amp phase master (buf buffer))
   "table lookup cosine oscillator."
@@ -54,10 +71,10 @@
 
 (define-vug bus-value ((channel fixnum))
   "if blocksize > 1 returns the value of bus for current-frame."
-  (with ((frames (block-size)))
+  (with ((num-frames (block-size)))
     (bus (the fixnum
               (+ (the fixnum
-                      (* current-frame frames))
+                      (* current-frame num-frames))
                  channel)))))
 
 (dsp! cp-input-buses ((first-input channel-number) (first-bus channel-number)

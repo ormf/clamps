@@ -100,10 +100,12 @@
       (let ((idx (round-sample (loop-counter size))))
         ;;;(incudine.util:nrt-msg :info "~a ~a" idx current-frame)
         (when (zerop idx)
-          ;;          (incudine.util:nrt-msg :info "bingo ~a" idx)
-          (let ((gui-buf (cl-refs:get-val ref)))
-            (copy-buffers buffer gui-buf)
-            (at (now) (lambda () (cl-refs:set-val ref gui-buf :force t)))))
+          ;; (nrt-funcall
+          ;;  (lambda ()
+          ;;    (let ((gui-buf (cl-refs:get-val ref)))
+          ;;      (copy-buffers buffer gui-buf)
+          ;;      (cl-refs:set-val ref gui-buf :force t))))
+          )
         (when (< idx bufsize) (set-buffer-value buffer idx (audio-out out current-frame)))))))
 
 (define-vug bus-scope-vug ((chan channel-number) freq (ref cl-refs:ref-object))
@@ -120,9 +122,11 @@
         (when (zerop idx)
           ;;          (incudine.util:nrt-msg :info "bingo ~a" idx)
           (reduce-warnings
-            (let ((gui-buf (cl-refs:get-val ref)))
-              (copy-buffers buffer gui-buf)
-              (at (now) (lambda () (cl-refs:set-val ref gui-buf :force t))))))
+            (nrt-funcall
+             (lambda ()
+               (let ((gui-buf (cl-refs:get-val ref)))
+                 (copy-buffers buffer gui-buf)
+                 (cl-refs:set-val ref gui-buf :force t))))))
         (when (< idx bufsize) (set-buffer-value (the buffer buffer)
                                                 (the non-negative-fixnum idx)
                                                 (incudine::audio-bus chan current-frame)))))))

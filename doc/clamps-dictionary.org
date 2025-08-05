@@ -239,6 +239,57 @@
     - [[make-bang][make-bang]]
     - [[remove-all-triggers][remove-all-triggers]]
     - [[remove-trigger-fn][remove-trigger-fn]]
+** add-watch
+   Macro
+   #+BEGIN_SRC lisp
+     (add-watch unwatch &rest args)
+   #+END_SRC
+   Add function bodies in /args/ to /unwatch/.
+*** Arguments
+    | =unwatch= | A list containing functions to undo a watch definition. |
+    | =args= | Zero or more function bodies supplied to the #'watch function. |
+
+*** Example
+    #+BEGIN_SRC lisp
+      (defparameter *unwatch* nil)
+      (defparameter *v1* (make-ref 0.0))
+      (defparameter *v2* (make-ref 0.0))
+      
+      (add-watch
+       *unwatch*
+       (format t "~&v1 changed: ~a" (get-val *v1*))
+       (format t "~&v2 changed: ~a" (get-val *v2*)))
+      ;; => (#<function (lambda () :in watch) {120DE2BB8B}>
+      ;;     #<function (lambda () :in watch) {120DE2BAEB}>)
+      ;;
+      ;; Output in REPL:
+      ;; v1 changed: 0.0
+      ;; v2 changed: 0.0
+      
+      (set-val *v1* 0)
+      ;; => 20
+      ;;
+      ;; Output in REPL:
+      ;; v1 changed: 0.0
+      
+      (set-val *v2* -2.3)
+      ;; => -2.3
+      ;;
+      ;; Output in REPL:
+      ;; v2 changed: -2.3
+      
+      (unwatch-all *unwatch*)
+      
+      *unwatch* ; => nil
+      
+      (set-val *v1* 0)
+      ;; => 0
+      ;;
+      ;; No Output in REPL.
+    #+END_SRC
+*** See also
+    - [[unwatch-all][unwatch-all]]
+    - [[watch][watch]]
 ** all-notes-off
    Function
    #+BEGIN_SRC lisp
@@ -1237,6 +1288,9 @@
    #+BEGIN_SRC lisp
      (create-o-scope parent bindings &key width height css buffer)
    #+END_SRC
+   Create a scope view using /buffer/ as data for the scope. buffer has
+   to be a ref-object containing an incudine buffer updating the view
+   whenever the ref gets set with set-val.
 ** create-o-slider
    Function
    #+BEGIN_SRC lisp
@@ -4169,6 +4223,13 @@
     - [[#play-buffer-loop][play-buffer-loop​*]]
     - [[#play-buffer-stretch][play-buffer-stretch​*]]
     - [[#play-buffer-stretch-env-pan-out][play-buffer-stretch-env-pan-out​*]]
+** phasor-amp
+   Function
+   #+BEGIN_SRC lisp
+     (phasor-amp &rest optional-keywords &aux (#:lambda-list '((freq 1 (init 0) (amp 1)))))
+   #+END_SRC
+   Incudine Ugen producing a normalized moving phase value with frequency
+   FREQ, initial value INIT (0 by default) and AMP.
 ** phasor-loop*
    :PROPERTIES:
    :CUSTOM_ID: phasor-loop
@@ -6009,6 +6070,18 @@
      (unwatch object)
    #+END_SRC
    automatically generated reader method
+** unwatch-all
+   Macro
+   #+BEGIN_SRC lisp
+     (unwatch-all unwatch)
+   #+END_SRC
+   Call all functions of /unwatch/ and set /unwatch/ to nil.
+*** Arguments
+    | =unwatch= | List of functions with no arguments removing a previously established watch association. |
+
+*** See also
+    - [[add-watch][add-watch]]
+    - [[watch][watch]]
 ** update-all-controllers
    Function
    #+BEGIN_SRC lisp
@@ -6075,6 +6148,85 @@
 ** vbap
    Structure
 
+** vbap
+   Function
+   #+BEGIN_SRC lisp
+     (vbap &rest optional-keywords &aux (#:lambda-list '((in 0 (vbap (incudine-missing-arg 'vbap)) (azi 0) (ele 0) (spread 0) ugen-node))))
+   #+END_SRC
+   Incudine Ugen for vbap/mdap. Returns a foreign array of amplitude
+   values for the speakers of the /vbap/ struct with /azi/, /ele/ and
+   /spread/ applied.
+*** Example
+    #+BEGIN_SRC lisp
+      (in-package :oid)
+      
+      (dsp! pnoise-vbap-test ((vbap vbap) freq amp azi ele spread)
+        (:defaults (incudine-missing-arg 'vbap) 10 0.1 0 0 0)
+        (with ((numoutchannels (vbap-data-num-speakers (vbap-vbap-data vbap))))
+          (foreach-frame
+            (with ((frame (vbap (white-noise (* amp (decay-2 (impulse freq) 0 (/ 0.5 freq))))
+                                 vbap azi ele spread)))
+              (maybe-expand frame)
+              (dochannels (current-channel numoutchannels)
+                (setf (audio-out current-channel)
+                      (frame-ref frame current-channel)))))))
+      
+      (let* ((ls-directions '(-30 30 70 110 150 -150 -110 -70))
+             (vbap (init-vbap ls-directions))
+             (time -0.5))
+        (pnoise-vbap-test vbap :azi -30 :id 10 :head 200)
+        (dolist (azi ls-directions)
+          (let ((azi azi))
+            (at (+ (now) (clamps:time->samps (incf time 0.5)))
+                (lambda () (set-control 10 :azi azi))))))
+      
+      ;;; DSP for an automated circular movement of noise pulses in 5 degree steps
+      
+      (dsp! pnoise-circle-vbap-test ((vbap vbap) pulse-freq circle-freq amp spread)
+        (:defaults (incudine-missing-arg 'vbap) 10 0.5 0.1 0)
+        (with ((numoutchannels (vbap-data-num-speakers (vbap-vbap-data vbap)))
+               (first-speaker-angle (reduce-warnings (/ (first (vbap-ls-directions vbap)) 5))))
+          (foreach-frame
+            (reduce-warnings
+              (with ((azi (* 5.0d0 (round (+ (* 72 (phasor circle-freq 0)) first-speaker-angle))))
+                     (frame (vbap (white-noise (* amp (decay-2 (impulse pulse-freq) 0 (/ 0.5 pulse-freq))))
+                                  vbap azi 0 spread)))
+                (maybe-expand azi)
+                (maybe-expand frame)
+                (dochannels (current-channel numoutchannels)
+                  (incf (audio-out current-channel)
+                        (frame-ref frame current-channel))))))))
+      
+      ;;; Use MIDI Controllers with ccnum 1-3 to control the spread,
+      ;;; circle-freq and pulse-freq:
+      
+      (defparameter *vbap-ctl-unwatch* nil)
+      
+      (progn ;; init controllers
+        (setf (clamps:ccin 1) 0)
+        (setf (clamps:ccin 2) 64)
+        (setf (clamps:ccin 3) 64))
+      
+      (pnoise-circle-vbap-test
+          (init-vbap '(-30 30 70 110 150 -150 -110 -70))
+          :action
+          (lambda (node) (let ((id (node-id node)))
+                      (add-watch
+                       *vbap-ctl-unwatch*
+                       (set-control id :spread (* 100 (/ (clamps:ccin 1) 127.0)))
+                       (set-control id :circle-freq (n-exp (/ (clamps:ccin 2) 127.0) 0.1 1))
+                       (set-control id :pulse-freq (n-exp (/ (clamps:ccin 3) 127.0) 5 20)))))
+          :head 200)
+      
+      ;;; cleanup:
+      
+      (progn
+        (dogroup (n 200) (free n))
+        (unwatch-all *vbap-ctl-unwatch*))
+    #+END_SRC
+*** See also
+    - [[vbap-bus][vbap-bus]]
+    - [[vbap-pair-bus][vbap-pair-bus]]
 ** vbap-azi
    Function
    #+BEGIN_SRC lisp
@@ -6203,10 +6355,12 @@
     | =fn= | Function of no arguments to call |
 
 *** See also
+    - [[add-watch][add-watch]]
     - [[get-val][get-val]]
     - [[make-computed][make-computed]]
     - [[make-ref][make-ref]]
     - [[set-val][set-val]]
+    - [[unwatch-all][unwatch-all]]
 ** with-curr-dir
    Macro
    #+BEGIN_SRC lisp

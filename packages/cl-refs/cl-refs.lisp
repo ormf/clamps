@@ -381,10 +381,12 @@ Packages documentation for examples.
 fn - Function of no arguments to call
 
 @See-also
+add-watch
 get-val
 make-computed
 make-ref
 set-val
+unwatch-all
 "  (let* ((new-ref (make-ref nil :fn fn))
           (update-callback (lambda (&optional old new)
                              (declare (ignorable old new))
@@ -427,6 +429,70 @@ set-val
 (defun copy-ref (ref)
   (make-computed (lambda () (get-val ref))
                  (lambda (val) (%set-val ref val))))
+
+(defmacro add-watch (unwatch &rest forms)
+  "Add function bodies in /forms/ to /unwatch/.
+
+@Arguments
+unwatch - A list containing functions to undo a watch definition.
+forms - Zero or more function bodies supplied to the #'watch function.
+
+@Example
+
+(defparameter *unwatch* nil)
+(defparameter *v1* (make-ref 0.0))
+(defparameter *v2* (make-ref 0.0))
+
+(add-watch
+ *unwatch*
+ (format t \"~&v1 changed: ~a\" (get-val *v1*))
+ (format t \"~&v2 changed: ~a\" (get-val *v2*)))
+;; => (#<function (lambda () :in watch) {120DE2BB8B}>
+;;     #<function (lambda () :in watch) {120DE2BAEB}>)
+;;
+;; Output in REPL:
+;; v1 changed: 0.0
+;; v2 changed: 0.0
+
+(set-val *v1* 0)
+;; => 20
+;;
+;; Output in REPL:
+;; v1 changed: 0.0
+
+(set-val *v2* -2.3)
+;; => -2.3
+;;
+;; Output in REPL:
+;; v2 changed: -2.3
+
+(unwatch-all *unwatch*)
+
+*unwatch* ; => nil
+
+(set-val *v1* 0)
+;; => 0
+;;
+;; No Output in REPL.
+
+@See-also
+unwatch-all
+watch
+"
+  `(dolist (form ',forms) (push (watch (lambda () form)) ,unwatch)))
+
+
+(defmacro unwatch-all (unwatch)
+  "Call all functions of /unwatch/ and set /unwatch/ to nil.
+
+@Arguments
+unwatch - List of functions with no arguments removing a previously established watch association.
+
+@See-also
+add-watch
+watch
+"
+  `(setf ,unwatch (map '() #'funcall ,unwatch)))
 
 (defun add-trigger-fn (ref &rest fns)
   "Add one or more /fns/ to be executed when /ref/ is called with the

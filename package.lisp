@@ -80,7 +80,10 @@
            clog-dsp-widgets:levelmeter cl-midictl:nanoktl2-midi
             orm-utils:m-lin
            cl-midictl:stop-midi-receive orm-utils:let-default
-           clog-dsp-widgets:create-grid orm-utils:count-elements cl-refs:copy-ref
+           clog-dsp-widgets:create-grid orm-utils:count-elements
+           cl-refs:copy-ref
+           cl-refs:add-watch
+           cl-refs:unwatch-all
            cl-midictl:set-marker orm-utils:combinations export-svg
            orm-utils:with-curr-dir plot-2d
            orm-utils:differentiate
@@ -104,8 +107,8 @@
            orm-utils:n-lin-fn cl-midictl:add-midi-controller
            start-doc-acceptor orm-utils:reducing
            clog-dsp-widgets:amp->db-slider orm-utils:index-list
-           clog-dsp-widgets:start-gui of-incudine-dsps:buffer-record
-           cl-sfz:sfz-get-range of-incudine-dsps:*env1*
+           clog-dsp-widgets:start-gui
+           cl-sfz:sfz-get-range
            cl-midictl:osc-midi-write-short value-fn
            clog-dsp-widgets:bus-channel clog-dsp-widgets:highlight
            cl-midictl:with-gui-update-off clog-dsp-widgets:cuda-dsp cm:pwd orm-utils:n-apply
@@ -121,14 +124,12 @@
            incudine-bufs:load-sounds-from-dir
            clog-dsp-widgets:pulse-off
            clog-dsp-widgets:*out-refs* orm-utils:rmprop orm-utils:multf
-           of-incudine-dsps:play-buffer-stretch* orm-utils:r-lin idump
+           orm-utils:r-lin idump
            mtof orm-utils:range clog-dsp-widgets:create-o-svg
            clog-midi-controller:nanoktl2-gui ats-cuda-display:ats->browser
            lines->svg orm-utils:m-exp-rev-fn clog-dsp-widgets:list-dsps
            common-lisp:input-stream-p list->svg-points
            orm-utils:str-concat orm-utils:m-exp-zero
-           of-incudine-dsps:play-buffer-loop*
-           of-incudine-dsps:play-buffer*
            *gnuplot-options* orm-utils:ct2fv svg-rect
            cl-midictl:*midi-note-fns* clog-dsp-widgets:bus-name orm-utils:ntom
            cl-midictl:stop-osc-midi-receive clog-dsp-widgets:db-slider->db
@@ -142,13 +143,12 @@
            clog-dsp-widgets:bind-ref-to-attr orm-utils:array-slice
            orm-utils:with-props clog-dsp-widgets:remove-dsp
            cl-midictl:remove-all-midi-controllers *gnuplot-header*
-           clog-dsp-widgets:num-channels of-incudine-dsps:envelope*
+           clog-dsp-widgets:num-channels
            cl-sfz:list-sfz-presets orm-utils:every-nth orm-utils:v-collect
            orm-utils:v-append
            clog-midi-controller:midicontroller clog-dsp-widgets:create-o-radio
-           of-incudine-dsps:play-buffer-stretch-out
            common-lisp:stream orm-utils:r-exp orm-utils:all-permutations
-           common-lisp:close of-incudine-dsps:phasor*
+           common-lisp:close
            clog-dsp-widgets:remove-all-dsps orm-utils:system-version
            cl-midictl:gui orm-utils:randm orm-utils:flatten
            orm-utils:m-exp-zero-fn construct-plot-command
@@ -160,7 +160,7 @@
            clog-dsp-widgets:master-amp-bus-levelmeter-gui
            clog-dsp-widgets:bind-refs-to-attrs orm-utils:with-lin-midi-fn
            clog-dsp-widgets:master-amp-out-levelmeter-gui orm-utils:repeated
-           of-incudine-dsps:phasor-loop* orm-utils:map-all-pairs
+           orm-utils:map-all-pairs
            out-stream-open? clog-dsp-widgets:master-bus-levelmeter-gui
            orm-utils:filter clog-dsp-widgets:clear-bindings zoom
            cl-midictl:remove-all-midi-cc-fns orm-utils:group-by
@@ -172,10 +172,9 @@
            orm-utils:push-if svg-cm-line orm-utils:splice
            orm-utils:quantize-time incudine.vug:counter cl-sfz:sfz-preset-file
            clog-dsp-widgets:add-bus clamps-start
-           of-incudine-dsps:*hanning1024* orm-utils:lin-n orm-utils:def-params
+           orm-utils:lin-n orm-utils:def-params
            cl-midictl:start-osc-midi-receive clog-dsp-widgets:find-bus
            orm-utils:fr->ct
-           of-incudine-dsps:play-buffer-stretch-env-pan-out*
            clog-midi-controller:nanoktl2-preset-gui orm-utils:db->amp
            orm-utils:do-proplist/collecting clog-dsp-widgets:levelmeter-full-gui
            cl-midictl:start-midi-receive orm-utils:r-getf orm-utils:partition-seq
@@ -183,13 +182,13 @@
            cl-refs:getter
            cl-refs:setter
            orm-utils:n-lin-dev
-           of-incudine-dsps:play-lsample orm-utils:with-exp-midi-fn
+           orm-utils:with-exp-midi-fn
            transform clog-dsp-widgets:node-group
            orm-utils:memorize-random-state cl-sfz:play-sfz-loop
-           of-incudine-dsps:play-buffer-stretch-env-pan-out add-elements
+           add-elements
            orm-utils:calcsndbytes cl-sfz:load-sfz-preset common-lisp:open
            orm-utils:path-find-file clog-dsp-widgets:find-dsp ftom
-            orm-utils:do-repeated cl-midictl:pulse
+           orm-utils:do-repeated cl-midictl:pulse
            orm-utils:n-exp-dev make-osc-receiver svg-gui-path
            orm-utils:mapply clog-dsp-widgets:create-o-toggle
            incudine-bufs:remove-buffer incudine-bufs:clamps-buffer-load
@@ -197,12 +196,12 @@
            clog-dsp-widgets:set-on-data orm-utils:m-exp-zero-rev-fn send
            clog-dsp-widgets:dsp-id orm-utils:n-exp-rev-fn orm-utils:n-lin-rev-fn
            orm-utils:repeat-format cl-plot:plot orm-utils:defvar*
-           of-incudine-dsps:play-buffer* orm-utils:ensure-prop orm-utils:r-elt
+           orm-utils:ensure-prop orm-utils:r-elt
            points->svg clog-dsp-widgets:create-o-multislider
            orm-utils:recall-random-state orm-utils:date-string
-           of-incudine-dsps:*sine1024* cl-midictl:ccin orm-utils:mton
+           cl-midictl:ccin orm-utils:mton
            stream-open? cl-refs:make-ref
-           of-incudine-dsps:play-buffer-stretch orm-utils:m-lin-rd-rev-fn
+           orm-utils:m-lin-rd-rev-fn
            orm-utils:map-tree orm-utils:map-proplist
            clog-dsp-widgets:create-o-vumeter svg-collect-lines
            common-lisp:output-stream-p orm-utils:sum_x
@@ -218,11 +217,13 @@
            cl-midictl:midi-input cl-midictl:toggle-slot of-incudine-dsps:osc~
            orm-utils:spit clog-dsp-widgets:levelmeter-gui orm-utils:n-exp-fn
            make-cm-line
-           cl-midictl:*midi-note-state* of-incudine-dsps:make-lsample
-           orm-utils:m-exp-rd-fn of-incudine-dsps:keynum->hz
+           cl-midictl:*midi-note-state*
+           orm-utils:m-exp-rd-fn           
            orm-utils:group-by-key new-id
            clog-dsp-widgets:create-collection cl-sfz:remove-sfz-preset
-           orm-utils:mappend clog-dsp-widgets:*bindings* of-incudine-dsps:line*
+           orm-utils:mappend clog-dsp-widgets:*bindings*
+
+
            orm-utils:get-duplicates clog-dsp-widgets:create-o-bang
            orm-utils:n-exp-zero clog-dsp-widgets:db-slider->amp
            cl-sfz:sf-table-get-range
@@ -237,7 +238,7 @@
            orm-utils:exp-n orm-utils:defparameter* orm-utils:permute
            cl-midictl:update-hw-state orm-utils:copy-instance orm-utils:get-time
            cl-midictl:*midi-debug* orm-utils:slurp-string
-           of-incudine-dsps:make-oasr cl-refs:set-val cl-midictl:*oscin*
+           cl-refs:set-val cl-midictl:*oscin*
            orm-utils:ct->fr clog-midi-controller:faderfox-gui cm:transp
            cm:play-midi cm:cm-store cm:midi-text-event cm:drunk
            cm:midi-chan-event cm:*midi-rcv-type-dummy*
@@ -362,8 +363,23 @@
            incudine.fudi:send incudine.fudi:stream incudine.fudi:input-stream-p
            incudine.fudi:stream-p incudine.fudi:close incudine.fudi:open
 
-
-
+           of-incudine-dsps:phasor-amp
+           of-incudine-dsps:phasor-amp*
+           of-incudine-dsps:play-buffer-loop*
+           of-incudine-dsps:play-buffer*
+           of-incudine-dsps:buffer-record
+           of-incudine-dsps:play-buffer-stretch*
+           of-incudine-dsps:play-buffer-stretch-out
+           of-incudine-dsps:*hanning1024*
+           of-incudine-dsps:play-buffer-stretch-env-pan-out*
+           of-incudine-dsps:play-lsample
+           of-incudine-dsps:play-buffer-stretch-env-pan-out
+           of-incudine-dsps:*sine1024*
+           of-incudine-dsps:play-buffer*
+           of-incudine-dsps:play-buffer-stretch
+           of-incudine-dsps:make-lsample
+           of-incudine-dsps:keynum->hz
+           of-incudine-dsps:make-oasr
            of-incudine-dsps:meters
            of-incudine-dsps:input-bus
            of-incudine-dsps:bus-value
@@ -385,31 +401,48 @@
            of-incudine-dsps:play-buffer-stretch-out of-incudine-dsps:make-oasr
            of-incudine-dsps:lsample-loopend
            of-incudine-dsps:*sine1024*
-           of-incudine-dsps:play-sample of-incudine-dsps:keynum->hz
-           of-incudine-dsps:play-lsample of-incudine-dsps:*hanning1024*
-           of-incudine-dsps:buffer-loop-play* of-incudine-dsps:lsample-oneshot
+           of-incudine-dsps:play-sample
+           of-incudine-dsps:keynum->hz
+           of-incudine-dsps:play-lsample
+           of-incudine-dsps:*hanning1024*
+           of-incudine-dsps:buffer-loop-play*
+           of-incudine-dsps:lsample-oneshot
            of-incudine-dsps:play-buffer-stretch-env-out
-           of-incudine-dsps:play-buffer-stretch of-incudine-dsps:line*
-           of-incudine-dsps:phasor* of-incudine-dsps:restore-envs
+           of-incudine-dsps:play-buffer-stretch
+           of-incudine-dsps:line*
+           of-incudine-dsps:phasor*
+           of-incudine-dsps:restore-envs
            of-incudine-dsps:phasor-loop*
-            of-incudine-dsps:lsample
-           of-incudine-dsps:*env1* of-incudine-dsps:envelope*
+           of-incudine-dsps:lsample
+           of-incudine-dsps:*env1*
+           of-incudine-dsps:envelope*
            of-incudine-dsps:osc~
            of-incudine-dsps:buffer-record of-incudine-dsps:lsample-keynum incudine-bufs:add-buffer
            of-incudine-dsps:restore-envs
            of-incudine-dsps:buffer-loop-play*
            of-incudine-dsps:vbap-bus
            of-incudine-dsps:vbap-pair-bus
-           of-incudine-dsps:vbap of-incudine-dsps:vbap-azi of-incudine-dsps:vbap-ele  of-incudine-dsps:vbap-spread  of-incudine-dsps:vbap-lsdirections  of-incudine-dsps:vbap-ls-gains  of-incudine-dsps:vbap-vbap-data
-           of-incudine-dsps:vbap-data of-incudine-dsps:vbap-data-dimen of-incudine-dsps:vbap-data-num-speakers of-incudine-dsps:vbap-data-num-ls-sets of-incudine-dsps:vbap-data-ls-set-data
-           of-incudine-dsps:vbap-ls-set of-incudine-dsps:vbap-ls-set-speakers of-incudine-dsps:vbap-ls-set-inv_matrix of-incudine-dsps:vbap-ls-set-matrix
+           of-incudine-dsps:vbap
+           of-incudine-dsps:vbap-azi
+           of-incudine-dsps:vbap-ele
+           of-incudine-dsps:vbap-spread
+           of-incudine-dsps:vbap-lsdirections
+           of-incudine-dsps:vbap-ls-gains
+           of-incudine-dsps:vbap-vbap-data
+           of-incudine-dsps:vbap-data
+           of-incudine-dsps:vbap-data-dimen
+           of-incudine-dsps:vbap-data-num-speakers
+           of-incudine-dsps:vbap-data-num-ls-sets
+           of-incudine-dsps:vbap-data-ls-set-data
+           of-incudine-dsps:vbap-ls-set
+           of-incudine-dsps:vbap-ls-set-speakers
+           of-incudine-dsps:vbap-ls-set-inv_matrix
+           of-incudine-dsps:vbap-ls-set-matrix
            of-incudine-dsps:calc-vbap
            of-incudine-dsps:init-vbap
            of-incudine-dsps:init-vbap-pair
-
            of-incudine-dsps:*standard-output-group*
            of-incudine-dsps:play-buffer-stretch-env-out
-
 
            incudine-bufs:remove-all-buffers incudine-bufs:remove-buffer
            orm-utils:path-find-file
