@@ -113,12 +113,20 @@ The location for the <<svg->browser><SVG Player Gui>> is at
 
 http://localhost:54619/svg-display
 
+The location for the ATS display is at /<clamps-base-url>/ats-display/
+which translates to the URL
+
+http://localhost:54619/ats-display
+
 @See-also
+ats->browser
 clamps
 clamps-restart-gui
 clamps-gui-root
 gui
 meters
+svg-gui-path
+svg->browser
 "
   (format nil "https://localhost:~d" clog:*clog-port*) )
 

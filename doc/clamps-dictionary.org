@@ -6274,14 +6274,14 @@
       (pnoise-circle-vbap-test
           (init-vbap '(-30 30 70 110 150 -150 -110 -70))
           :action
-          (lambda (node) (let ((id (node-id node)))
-                      (format t "id: ~a" id)
-                      (add-watch
-                       *vbap-ctl-unwatch*
-                       (set-control id :spread (m-lin (ccin 0) 0 100))
-                       (set-control id :circle-freq (m-exp (ccin 1) 0.1 1))
-                       (set-control id :pulse-freq (m-exp (ccin 2) 5 20))
-                       (set-control id :amp (m-exp-zero (ccin 3) 0.01 1)))))
+          (lambda (node)
+            (let ((id (node-id node)))
+              (add-watch
+               *vbap-ctl-unwatch*
+               (set-control id :spread (m-lin (ccin 0) 0 100))
+               (set-control id :circle-freq (m-exp (ccin 1) 0.1 1))
+               (set-control id :pulse-freq (m-exp (ccin 2) 5 20))
+               (set-control id :amp (m-exp-zero (ccin 3) 0.01 1)))))
           :free-hook (list (lambda (node) node (unwatch-all *vbap-ctl-unwatch*)))
           :head 200)
     #+END_SRC
@@ -6304,7 +6304,7 @@
     | =in-bus-idx= | Non-negative Integer denoting the Input Bus index. |
     | =vbap= | initialized Vbap Struct. |
     | =azi= | Number denoting azimuth in degrees. |
-    | =ele= | Number denoting elevation (3D only) in degrees. |
+    | =ele= | Number denoting elevation in degrees (3D only). |
     | =spread= | Number denoting spread in degrees. Will be clipped to the range [0..100]. |
 
 *** See also
@@ -6352,6 +6352,11 @@
 ** vbap-ls-set
    Structure
 
+** vbap-ls-set-inv-matrix
+   Function
+   #+BEGIN_SRC lisp
+     (vbap-ls-set-inv-matrix instance)
+   #+END_SRC
 ** vbap-ls-set-matrix
    Function
    #+BEGIN_SRC lisp
@@ -6378,10 +6383,10 @@
     | =vbap1= | initialized Vbap Struct for first direction. |
     | =vbap2= | initialized Vbap Struct for second direction. |
     | =azi1= | Number denoting azimuth in degrees of first direction. |
-    | =ele1= | Number denoting elevation (3D only) in degrees of first direction. |
+    | =ele1= | Number denoting elevation in degrees of first direction (3D only). |
     | =spread1= | Number denoting spread in degrees of first direction. Will be clipped to the range [0..100]. |
     | =azi2= | Number denoting azimuth in degrees of second direction. |
-    | =ele2= | Number denoting elevation (3D only) in degrees of second direction. |
+    | =ele2= | Number denoting elevation in degrees of second direction (3D only). |
     | =spread2= | Number denoting spread in degrees of second direction. Will be clipped to the range [0..100]. |
     | =pan= | Number denoting the interpolation between direction1 and direction2 wrapped into the range [0..1]. |
 

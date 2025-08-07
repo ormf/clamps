@@ -428,7 +428,7 @@
            of-incudine-dsps:vbap-azi
            of-incudine-dsps:vbap-ele
            of-incudine-dsps:vbap-spread
-           of-incudine-dsps:vbap-lsdirections
+           of-incudine-dsps:vbap-ls-directions
            of-incudine-dsps:vbap-ls-gains
            of-incudine-dsps:vbap-vbap-data
            of-incudine-dsps:vbap-data
@@ -438,7 +438,7 @@
            of-incudine-dsps:vbap-data-ls-set-data
            of-incudine-dsps:vbap-ls-set
            of-incudine-dsps:vbap-ls-set-speakers
-           of-incudine-dsps:vbap-ls-set-inv_matrix
+           of-incudine-dsps:vbap-ls-set-inv-matrix
            of-incudine-dsps:vbap-ls-set-matrix
            of-incudine-dsps:calc-vbap
            of-incudine-dsps:init-vbap

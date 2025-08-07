@@ -401,7 +401,7 @@ sfz-preset-loaded?
 "
   (if (or (not (gethash preset cl-user::*sfz-preset-lookup*)) force)
       (setf (gethash preset cl-user::*sfz-preset-lookup*) file)
-      (warn "preset ~S already defined, not redefining!" preset)))
+      (incudine.util:msg :warn "preset ~S already defined, not redefining!" preset)))
 
 (defun sfz-preset-file (preset)
   "Return the full path of /preset/.

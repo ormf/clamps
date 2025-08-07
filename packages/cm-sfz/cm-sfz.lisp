@@ -127,7 +127,6 @@ svg-file."
 
 (defmethod write-event ((obj sfz) (to incudine-stream) scoretime)
   "output sfz object."
-;;;  (if *debug* (format t "~&sfz->svg: ~a~%" obj))
   (declare (ignore to))
   (rt-write-sfz-evt obj scoretime))
 
