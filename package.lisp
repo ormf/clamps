@@ -248,7 +248,7 @@
            cm:incudine-ensure-microtuning cm:sfz-oneshot cm:fudi-open
            cm:note-accidental cm:poolevt-amp cm:object-name cm:poolevt-lsample
            cm:poolevt-stretch cm:object-parameters cm:note-on cm:harmonics
-           cm:weighting cm:invert cm:rescale-envelope cm:cm-version-number
+           cm:weighting cm:invert cm:cm-version-number
            cm:midi-note-off cm:midi-port-event cm:clm-file
            cm:scale-shift-transform cm:append-object cm:poolevt-out2 cm:sco-file
            cm:sampleevt-keynum cm:fudi-open-default cm:*svg-colormap-old*
@@ -286,7 +286,7 @@
 
            cm:time->samps cm:status->channel cm:poolevt
            cm:permutation cm:poolevt-buffer-idx cm:transpose cm:write-event
-           cm:args cm:preset cm:stop cm:region cm:find-object cm:pickl
+           cm:args cm:preset cm:region cm:find-object cm:pickl
            cm:cents->scaler cm:thunk cm:*midi-out1* cm:rescale cm:incudine-output
            cm:map-objects cm:sfz-amp cm:midi-stream cm:remove-subobjects cm:new
            cm:octave-number cm:pitch-class cm:poolevt-out1 cm:midi-out cm:jbmf
@@ -424,7 +424,9 @@
            of-incudine-dsps:buffer-loop-play*
            of-incudine-dsps:vbap-bus
            of-incudine-dsps:vbap-pair-bus
+           of-incudine-dsps:make-vbap
            of-incudine-dsps:vbap
+           of-incudine-dsps:make-vbap
            of-incudine-dsps:vbap-azi
            of-incudine-dsps:vbap-ele
            of-incudine-dsps:vbap-spread

@@ -1180,10 +1180,10 @@ seq in orginal order.
 
 @Example
 
-(partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) (> (- y x) 1))) 
+(partition-seq '(1 2 4 5 6 8 9) (lambda (x y) (> (- y x) 1))) 
 ;; => ((1 2) (4 5 6) (8 9))
 
-(partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) t)) 
+(partition-seq '(1 2 4 5 6 8 9) (lambda (x y) t))
 ;; => ((1) (2) (4) (5) (6) (8) (9))
 
 "
