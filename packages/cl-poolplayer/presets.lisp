@@ -297,7 +297,7 @@ the *poolplayer-preset* with index /preset-no/."
 
 #+slynk
 (defun define-poolplayer-elisp-code (&key (basedir (asdf:system-source-directory :cl-poolplayer)))
-  (let ((slynk::*emacs-connection* *emcs-conn*))
+  (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
     (slynk::eval-in-emacs
      `(progn
         (setq poolplayer-preset-file "/tmp/curr-preset.lisp")
