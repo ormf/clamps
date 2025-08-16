@@ -22,6 +22,7 @@
   (:export
    #:PLOT
    #:PLOT-2D
+   #:PLOT-3D
    #:CONSTRUCT-PLOT-COMMAND
    #:WITH-GNUPLOT-INSTANCE
    #:*GNUPLOT-HEADER*

@@ -172,7 +172,7 @@ the respective values.
 
 @Example
 
-(defvar *my-pulsar* (make-led-pulsar 32 1 (cm:ensure-jackmidi *midi-out1*)))
+(defvar *my-pulsar* (make-led-pulsar 32 1 (ensure-jackmidi *midi-out1*)))
 
 (funcall *my-pulsar* :start)
 

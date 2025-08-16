@@ -55,7 +55,9 @@
            orm-utils:get-props-list orm-utils:m-exp
            output-stream
 
-           plot-pairs
+           cl-plot:plot-2d
+           cl-plot:plot-3d
+           cl-plot:plot
            
            cl-midictl:cleanup
            cl-midictl:midi-output cl-midictl:get-ref
@@ -638,6 +640,7 @@
            clog-dsp-widgets:opt-format-attr clog-dsp-widgets:remove-all-dsps
            clog-dsp-widgets:master-amp-out-levelmeter-gui
            cl-midictl:*midi-cc-state* cl-midictl:nk2-fader-modes
+           cl-midictl:make-led-pulsar
            cl-midictl:*oscin* cl-midictl:toggle-slot cl-midictl:set-marker
            cl-midictl:start-midi-receive cl-midictl:*midi-note-state*
            cl-midictl:update-all-controllers cl-midictl:echo cl-midictl:r-buttons
@@ -737,10 +740,10 @@
 
   (:shadowing-import-from #:cl-midictl #:pulse)
   (:shadowing-import-from #:ou #:range)
-  (:shadowing-import-from #:cl-plot #:plot)
   (:use #:cl
         #:cl-user
         #:cl-refs
+        #:cl-plot
         #:incudine
         #:incudine.vug
         #:incudine.util
@@ -759,3 +762,4 @@
         #:clog-dsp-widgets
         ))
 
+(import 'clamps:plot-2d 'cl-poolplayer)

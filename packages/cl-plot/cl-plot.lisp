@@ -131,7 +131,12 @@ plot-2d
 
 (defun plot-2d (data &rest args &key region header options grid &allow-other-keys)
   (declare (ignorable region header options grid))
-  (apply #'plot (ou:group data 2) args))
+  (apply #'plot (ou:group (coerce data 'list) 2) args))
+
+(defun plot-3d (seq)
+  "Plot a flat sequence of coordinates by grouping the elements in 3."
+  (plot (ou:group (coerce seq 'list) 3))
+  (values))
 
 (defun gnuplot-data-fn (idx obj)
   (if (numberp obj)

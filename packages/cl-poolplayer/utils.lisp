@@ -145,58 +145,83 @@ num at limit."
       (if (> repeat 0)
           (recurse-fn (now))))))
 
-(defmacro digest-interp-form (form)
-  "Return an interpolation list for the #'interp function with alternating
-min and max values and x values going from 0..1. /form/should contain
-a :dtime, :min and :max property. The dtime, min and max forms can use
-x in their forms, referring to its value and :min and :max can use
-ip-num and ip-idx in their forms, referring to the current idx and the
-total num of values in the interpolated list. :bindings it an optional
-binding form vor variables usable within the context of min and max.
+(defmacro digest-interp-form (form &key (round t))
+  "Return an interpolation breakpoint list for the [[dict:interp][interp]] function with
+alternating min and max values of the form /(x1 min1 x2 max1 x3 min2 x4 max2...)/
+
+x values in the result are going from 0..1, the distance between
+succesive x vals calculated by the :dtime function form.
+
+A form /(:dtime 0.1)/  will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+
+A form /(:dtime (n-lin x 0.2 0.5))/ will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+
+ /form/ should contain a =:dtime=, =:min= and =:max= property. The
+forms of =:dtime=, =:min= and =:max= can use /x/, referring to its
+value and the forms of =:min= and =:max= can additionally use /ip-num/
+and /ip-idx/, referring to the current idx and the total num of values
+in the interpolated list. =:bindings= is an optional binding form for
+variables usable within the context of the =:min= and =:max= forms.
 
 @Arguments
-proplist - Property List containing :dtime, :bindings, :min and :max properties.
+proplist - Property List containing =:dtime=, =:bindings=, =:min= and =:max= properties.
+:round - whether the results should get rounded to two decimal places (default t).
 
 @Examples
-(get-interp-form
- `(:dtime (n-exp x 0.3 0.05)
-   :min (n-lin x 0.5 0)
-   :max (n-lin x 0.5 1)))
+(digest-interp-form
+ (:dtime (n-exp x 0.3 0.05)
+  :min (n-lin x 0.5 0)
+  :max (n-lin x 0.5 1)))
 
-;; => (0 0.5 0.3 0.65 0.47525722 0.2623714 0.6032835 0.80164176
-;; 0.70506656 0.14746672 0.7898816 0.8949408 0.862739 0.06863049
-;; 0.9266801 0.96334004 0.9836997 0.00815016 1 1.0)
+;; => (0 0.5 0.3 0.65 0.48 0.26 0.61 0.8 0.71 0.15 0.79 0.9 0.86 0.07
+;;     0.92 0.96 0.98 0.01 1 1.0)
 
-
-(plot-pairs
+(plot-2d
  (digest-interp-form
   (:dtime (n-exp x 0.3 0.05)
    :min (n-lin x 0.5 0)
    :max (n-lin x 0.5 1))))
 
+@Image
+digest-interp-form-01.png
+
+40
+
+@Example-noheader
 (digest-interp-form
   (:bindings ((min 0) (max 1))
    :dtime (n-exp x 0.3 0.05)
    :min (float (* ip-idx (/ 0.5 (1- ip-num))) 1.0)
    :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num))))))
 
-;; => (0 0.0 0.3 0.9444444 0.47525722 0.11111111 0.6032835 0.8333333 0.70506656
-;; 0.22222222 0.7898816 0.7222222 0.862739 0.33333334 0.9266801 0.6111111
-;; 0.9836997 0.44444445 1 0.5)
+;; => (0 0.0 0.3 0.94 0.48 0.11 0.61 0.83 0.71 0.22 0.79 0.72 0.86
+;;     0.33 0.92 0.61 0.98 0.44 1 0.5)
 
-(plot-pairs
+(plot-2d
  (digest-interp-form
    (:bindings ((min 0) (max 1))
-    :dtime (n-exp x 0.3 0.05)
+    :dtime (n-exp x 0.01 0.3)
     :min (float (* ip-idx (/ 0.5 (1- ip-num))) 1.0)
-    :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num)))))))"
+    :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num)))))))
+
+@Image
+digest-interp-form-02.png
+
+40
+
+@See-also
+
+get-interp-vals
+"
 
   `(let* ((dtime-fn (lambda (x) ,(getf form :dtime 0.1)))
           (min-fn (lambda (x ip-idx ip-num) (declare (ignorable x ip-idx ip-num)) (let ,(getf form :bindings) ,(getf form :min 0))))
           (max-fn (lambda (x ip-idx ip-num) (declare (ignorable x ip-idx ip-num)) (let ,(getf form :bindings) ,(getf form :max 1))))
           (num-vals 1)
           (x-vals (loop
-                    for x = 0 then (+ x (funcall dtime-fn x))
+                    for x = 0 then (if ,round
+                                       (dround (+ x (funcall dtime-fn x)))
+                                       (+ x (funcall dtime-fn x)))
                     with result
                     while (< x 1)
                     do (progn (push x result)
@@ -206,55 +231,78 @@ proplist - Property List containing :dtime, :bindings, :min and :max properties.
        for x in x-vals
        for idx from 0
        for y = 0 then (if (zerop y) 1 0)
-       append (list x (funcall (if (zerop y) min-fn max-fn) x idx num-vals)))))
+       append (list x (if ,round
+                          (dround (funcall (if (zerop y) min-fn max-fn) x idx num-vals))
+                          (funcall (if (zerop y) min-fn max-fn) x idx num-vals))))))
 
 (defun get-interp-vals (proplist)
-  "Function wrapper around #'digest-interp-form.
+  "Return an interpolation breakpoint list for the [[dict:interp][interp]] function with
+alternating min and max values of the form /(x1 min1 x2 max1 x3 min2 x4 max2...)/
 
-Return an interpolation list for the #'interp function with alternating
-min and max values and x values going from 0..1. /form/should contain
-a :dtime, :min and :max property. The dtime, min and max forms can use
-x in their forms, referring to its value and :min and :max can use
-ip-num and ip-idx in their forms, referring to the current idx and the
-total num of values in the interpolated list. :bindings it an optional
-binding form vor variables usable within the context of min and max.
+x values in the result are going from 0..1, the distance between
+succesive x vals calculated by the :dtime function form.
+
+A form /(:dtime 0.1)/  will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+
+A form /(:dtime (n-lin x 0.2 0.5))/ will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+
+ /form/ should contain a =:dtime=, =:min= and =:max= property. The
+forms of =:dtime=, =:min= and =:max= can use /x/, referring to its
+value and the forms of =:min= and =:max= can additionally use /ip-num/
+and /ip-idx/, referring to the current idx and the total num of values
+in the interpolated list. =:bindings= is an optional binding form for
+variables usable within the context of the =:min= and =:max= forms.
 
 @Arguments
-proplist - Property List containing :dtime, :bindings, :min and :max properties.
+proplist - Property List containing =:dtime=, =:bindings=, =:min= and =:max= properties.
+:round - whether the results should get rounded to two decimal places (default t).
 
 @Examples
-(get-interp-form
- `(:dtime (n-exp x 0.3 0.05)
-   :min (n-lin x 0.5 0)
-   :max (n-lin x 0.5 1)))
+(digest-interp-form
+ (:dtime (n-exp x 0.3 0.05)
+  :min (n-lin x 0.5 0)
+  :max (n-lin x 0.5 1)))
 
-;; => (0 0.5 0.3 0.65 0.47525722 0.2623714 0.6032835 0.80164176
-;; 0.70506656 0.14746672 0.7898816 0.8949408 0.862739 0.06863049
-;; 0.9266801 0.96334004 0.9836997 0.00815016 1 1.0)
+;; => (0 0.5 0.3 0.65 0.48 0.26 0.61 0.8 0.71 0.15 0.79 0.9 0.86 0.07
+;;     0.92 0.96 0.98 0.01 1 1.0)
 
-
-(plot-pairs
- (get-interp-form
- `(:dtime (n-exp x 0.3 0.05)
+(plot-2d
+ (digest-interp-form
+  (:dtime (n-exp x 0.3 0.05)
    :min (n-lin x 0.5 0)
    :max (n-lin x 0.5 1))))
 
-(get-interp-form
- `(:bindings ((min 0) (max 1))
+@Image
+digest-interp-form-01.png
+
+40
+
+@Example-noheader
+(digest-interp-form
+  (:bindings ((min 0) (max 1))
    :dtime (n-exp x 0.3 0.05)
    :min (float (* ip-idx (/ 0.5 (1- ip-num))) 1.0)
    :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num))))))
 
-;; => (0 0.0 0.3 0.9444444 0.47525722 0.11111111 0.6032835 0.8333333 0.70506656
-;; 0.22222222 0.7898816 0.7222222 0.862739 0.33333334 0.9266801 0.6111111
-;; 0.9836997 0.44444445 1 0.5)
+;; => (0 0.0 0.3 0.94 0.48 0.11 0.61 0.83 0.71 0.22 0.79 0.72 0.86
+;;     0.33 0.92 0.61 0.98 0.44 1 0.5)
 
-(plot-pairs
- (get-interp-form
-  `(:bindings ((min 0) (max 1))
-    :dtime (n-exp x 0.3 0.05)
+(plot-2d
+ (digest-interp-form
+   (:bindings ((min 0) (max 1))
+    :dtime (n-exp x 0.01 0.3)
     :min (float (* ip-idx (/ 0.5 (1- ip-num))) 1.0)
-    :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num)))))))"
+    :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num)))))))
+
+@Image
+digest-interp-form-02.png
+
+40
+
+@See-also
+
+get-interp-vals
+"
   (eval `(digest-interp-form ,proplist)))
 
 

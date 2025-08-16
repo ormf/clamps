@@ -970,12 +970,20 @@
    /<clamps-base-url>/svg-display/ which translates to the URL
    
    http://localhost:54619/svg-display
+   
+   The location for the ATS display is at /<clamps-base-url>/ats-display/
+   which translates to the URL
+   
+   http://localhost:54619/ats-display
 *** See also
+    - [[ats->browser][ats->browser]]
     - [[clamps][clamps]]
     - [[clamps-restart-gui][clamps-restart-gui]]
     - [[clamps-gui-root][clamps-gui-root]]
     - [[gui][gui]]
     - [[meters][meters]]
+    - [[svg-gui-path][svg-gui-path]]
+    - [[svg->browser][svg->browser]]
 ** clamps-bounce-to-disk
    Macro
    #+BEGIN_SRC lisp
@@ -1622,6 +1630,74 @@
    A call to this macro will trigger compiling the dtime-fn and params-fn
    definitions of /form/ and store the compiled functions and /form/ into
    the *​poolplayer-preset​* with index /preset-no/.
+** digest-interp-form
+   Macro
+   #+BEGIN_SRC lisp
+     (digest-interp-form form &key (round t))
+   #+END_SRC
+   Return an interpolation breakpoint list for the [[dict:interp][interp]] function with
+   alternating min and max values of the form /(x1 min1 x2 max1 x3 min2 x4 max2...)/
+   
+   x values in the result are going from 0..1, the distance between
+   succesive x vals calculated by the :dtime function form.
+   
+   A form /(:dtime 0.1)/  will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+   
+   A form /(:dtime (n-lin x 0.2 0.5))/ will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+   
+    /form/ should contain a =:dtime=, =:min= and =:max= property. The
+   forms of =:dtime=, =:min= and =:max= can use /x/, referring to its
+   value and the forms of =:min= and =:max= can additionally use /ip-num/
+   and /ip-idx/, referring to the current idx and the total num of values
+   in the interpolated list. =:bindings= is an optional binding form for
+   variables usable within the context of the =:min= and =:max= forms.
+*** Arguments
+    | =proplist= | Property List containing =:dtime=, =:bindings=, =:min= and =:max= properties. |
+    | =:round= | whether the results should get rounded to two decimal places (default t). |
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (digest-interp-form
+       (:dtime (n-exp x 0.3 0.05)
+        :min (n-lin x 0.5 0)
+        :max (n-lin x 0.5 1)))
+      
+      ;; => (0 0.5 0.3 0.65 0.48 0.26 0.61 0.8 0.71 0.15 0.79 0.9 0.86 0.07
+      ;;     0.92 0.96 0.98 0.01 1 1.0)
+      
+      (plot-2d
+       (digest-interp-form
+        (:dtime (n-exp x 0.3 0.05)
+         :min (n-lin x 0.5 0)
+         :max (n-lin x 0.5 1))))
+    #+END_SRC
+    #+attr_html: :width 40%
+    #+CAPTION: 
+    [[./img/digest-interp-form-01.png]]
+
+    #+BEGIN_SRC lisp
+      (digest-interp-form
+        (:bindings ((min 0) (max 1))
+         :dtime (n-exp x 0.3 0.05)
+         :min (float (* ip-idx (/ 0.5 (1- ip-num))) 1.0)
+         :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num))))))
+      
+      ;; => (0 0.0 0.3 0.94 0.48 0.11 0.61 0.83 0.71 0.22 0.79 0.72 0.86
+      ;;     0.33 0.92 0.61 0.98 0.44 1 0.5)
+      
+      (plot-2d
+       (digest-interp-form
+         (:bindings ((min 0) (max 1))
+          :dtime (n-exp x 0.01 0.3)
+          :min (float (* ip-idx (/ 0.5 (1- ip-num))) 1.0)
+          :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num)))))))
+    #+END_SRC
+    #+attr_html: :width 40%
+    #+CAPTION: 
+    [[./img/digest-interp-form-02.png]]
+
+*** See also
+    - [[get-interp-vals][get-interp-vals]]
 ** do-proplist
    Macro
    #+BEGIN_SRC lisp
@@ -2245,6 +2321,74 @@
       
       (get-duplicates '(0 1 3 2 4 3 9 3 1 3 4 2 3) :once t)  ; => (1 2 4 3)
     #+END_SRC
+** get-interp-vals
+   Function
+   #+BEGIN_SRC lisp
+     (get-interp-vals proplist)
+   #+END_SRC
+   Return an interpolation breakpoint list for the [[dict:interp][interp]] function with
+   alternating min and max values of the form /(x1 min1 x2 max1 x3 min2 x4 max2...)/
+   
+   x values in the result are going from 0..1, the distance between
+   succesive x vals calculated by the :dtime function form.
+   
+   A form /(:dtime 0.1)/  will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+   
+   A form /(:dtime (n-lin x 0.2 0.5))/ will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+   
+    /form/ should contain a =:dtime=, =:min= and =:max= property. The
+   forms of =:dtime=, =:min= and =:max= can use /x/, referring to its
+   value and the forms of =:min= and =:max= can additionally use /ip-num/
+   and /ip-idx/, referring to the current idx and the total num of values
+   in the interpolated list. =:bindings= is an optional binding form for
+   variables usable within the context of the =:min= and =:max= forms.
+*** Arguments
+    | =proplist= | Property List containing =:dtime=, =:bindings=, =:min= and =:max= properties. |
+    | =:round= | whether the results should get rounded to two decimal places (default t). |
+
+*** Examples
+    #+BEGIN_SRC lisp
+      (digest-interp-form
+       (:dtime (n-exp x 0.3 0.05)
+        :min (n-lin x 0.5 0)
+        :max (n-lin x 0.5 1)))
+      
+      ;; => (0 0.5 0.3 0.65 0.48 0.26 0.61 0.8 0.71 0.15 0.79 0.9 0.86 0.07
+      ;;     0.92 0.96 0.98 0.01 1 1.0)
+      
+      (plot-2d
+       (digest-interp-form
+        (:dtime (n-exp x 0.3 0.05)
+         :min (n-lin x 0.5 0)
+         :max (n-lin x 0.5 1))))
+    #+END_SRC
+    #+attr_html: :width 40%
+    #+CAPTION: 
+    [[./img/digest-interp-form-01.png]]
+
+    #+BEGIN_SRC lisp
+      (digest-interp-form
+        (:bindings ((min 0) (max 1))
+         :dtime (n-exp x 0.3 0.05)
+         :min (float (* ip-idx (/ 0.5 (1- ip-num))) 1.0)
+         :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num))))))
+      
+      ;; => (0 0.0 0.3 0.94 0.48 0.11 0.61 0.83 0.71 0.22 0.79 0.72 0.86
+      ;;     0.33 0.92 0.61 0.98 0.44 1 0.5)
+      
+      (plot-2d
+       (digest-interp-form
+         (:bindings ((min 0) (max 1))
+          :dtime (n-exp x 0.01 0.3)
+          :min (float (* ip-idx (/ 0.5 (1- ip-num))) 1.0)
+          :max (- 1.0 (* ip-idx (/ 0.5 (1- ip-num)))))))
+    #+END_SRC
+    #+attr_html: :width 40%
+    #+CAPTION: 
+    [[./img/digest-interp-form-02.png]]
+
+*** See also
+    - [[get-interp-vals][get-interp-vals]]
 ** get-keynum
    Function
    #+BEGIN_SRC lisp
@@ -3179,7 +3323,7 @@
    the respective values.
 *** Example
     #+BEGIN_SRC lisp
-      (defvar *my-pulsar* (make-led-pulsar 32 1 (cm:ensure-jackmidi *midi-out1*)))
+      (defvar *my-pulsar* (make-led-pulsar 32 1 (ensure-jackmidi *midi-out1*)))
       
       (funcall *my-pulsar* :start)
       
@@ -3241,6 +3385,11 @@
     - [[ref-object][ref-object]]
     - [[set-val][set-val]]
     - [[watch][watch]]
+** make-vbap
+   Function
+   #+BEGIN_SRC lisp
+     (make-vbap &key ((:azi #:azi) 0.0) ((:ele #:ele) 0.0) ((:spread #:spread) 0.0) ((:ls-directions #:ls-directions) nil) ((:spread-base #:spread-base) (make-array 3 :initial-contents '(0.0 1.0 0.0))) ((:ls-gains #:ls-gains) nil) ((:tmp-gains #:tmp-gains) nil) ((:vbap-data #:vbap-data) nil) ((:vscartdir #:vscartdir) (empty-float-vector 3)) ((:spreaddir #:spreaddir) (empty-v3-array 16)) ((:spreadbase #:spreadbase) (empty-v3-array 16)) ((:gtmp #:gtmp) (empty-float-vector 3)) ((:curr-gain #:curr-gain) (empty-float-vector 3)) ((:tmp-ls #:tmp-ls) (make-array 3 :element-type 'fixnum :initial-contents '(0 0 0))))
+   #+END_SRC
 ** map-all-pairs
    Function
    #+BEGIN_SRC lisp
@@ -4217,10 +4366,10 @@
    seq in orginal order.
 *** Example
     #+BEGIN_SRC lisp
-      (partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) (> (- y x) 1))) 
+      (partition-seq '(1 2 4 5 6 8 9) (lambda (x y) (> (- y x) 1))) 
       ;; => ((1 2) (4 5 6) (8 9))
       
-      (partition-seq '(1 2 4 5 6 8 9) #'(lambda (x y) t)) 
+      (partition-seq '(1 2 4 5 6 8 9) (lambda (x y) t))
       ;; => ((1) (2) (4) (5) (6) (8) (9))
     #+END_SRC
 ** path-find-file
@@ -4534,6 +4683,12 @@
    #+BEGIN_SRC lisp
      (plot-2d data &rest args &key region header options grid &allow-other-keys)
    #+END_SRC
+** plot-3d
+   Function
+   #+BEGIN_SRC lisp
+     (plot-3d seq)
+   #+END_SRC
+   Plot a flat sequence of coordinates by grouping the elements in 3.
 ** points->svg
    Function
    #+BEGIN_SRC lisp
@@ -6398,6 +6553,11 @@
    Function
    #+BEGIN_SRC lisp
      (vbap-spread instance)
+   #+END_SRC
+** vbap-tmp-gains
+   Function
+   #+BEGIN_SRC lisp
+     (vbap-tmp-gains instance)
    #+END_SRC
 ** vbap-vbap-data
    Function

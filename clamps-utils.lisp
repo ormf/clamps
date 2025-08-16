@@ -248,23 +248,6 @@ accessible at the URL /https://localhost:8282/.
   (declare (float min max))
   (n-exp (apply #'interp x (flatten bp)) min max))
 
-(defun plot-2d (seq)
-  "Convenience wrapper around <<plot>>: A flat sequence of numbers is
-interpreted as 2-d coordinate pairs.
-
-@Examples
-#+BEGIN_SRC lisp
-(plot-2d '(2 1 4 3 6 10)) <=> (plot '((2 1) (4 3) (6 10)))
-#+END_SRC
-"
-  (plot (ou:group seq 2))
-  (values))
-
-(defun plot-3d (seq)
-  "Plot a flat sequence of coordinates by grouping the elements in 3."
-  (plot (ou:group seq 3))
-  (values))
-
 (defvar *standard-pitch* 440.0
   "Tuning reference for /ftom/ and /mtof/ in Hz. Defaults to 440.
 
@@ -350,10 +333,6 @@ ftom
 "
 (* tuning-base (expt 2 (/ (- midi-value 69) 12))))
 |#
-
-(defun plot-pairs (data)
-  "Plot a list of numbers interpreted as interleaved x/y pairs."
-  (plot (ou:group data 2)))
 
 (defun fr2ct (ratio)
        "Return the Midicents interval of /ratio/.

@@ -926,13 +926,7 @@ result."
     #+END_SRC~%"
           (trim-list strings)))
 
-(defun clampsdoc-transcode-examples-nosrc (strings)
-  "Reformat @Examples section of docstring for org-mode file."
-  (format nil "*** Example~%~{      ~a~^~%~}
-"
-          (trim-list strings)))
-
-(defun clampsdoc-transcode-example-nosrc (strings)
+(defun clampsdoc-transcode-examples-no-src (strings)
   "Reformat @Examples section of docstring for org-mode file."
   (format nil "*** Example~%~{      ~a~^~%~}
 "
@@ -944,6 +938,27 @@ result."
 ~{      ~a~^~%~}
     #+END_SRC~%"
           (trim-list strings)))
+
+(defun clampsdoc-transcode-example-no-src (strings)
+  "Reformat @Examples section of docstring for org-mode file."
+  (format nil "*** Example~%~{      ~a~^~%~}
+"
+          (trim-list strings)))
+
+(defun clampsdoc-transcode-example-no-header (strings)
+  "Reformat @Examples section of docstring for org-mode file."
+  (format nil "    #+BEGIN_SRC lisp
+~{      ~a~^~%~}
+    #+END_SRC~%"
+          (trim-list strings)))
+
+
+(defun clampsdoc-transcode-image (strings)
+  "Reformat @Image section of docstring for org-mode file."
+  (let ((string-list (trim-list strings)))
+    (destructuring-bind (link &optional caption (width 80)) string-list
+      (format nil "    #+attr_html: :width ~a%
+    ~@[#+CAPTION: ~a~%    ~][[./img/~A]]~%~%" width caption link))))
 
 (defun clampsdoc-transcode-see-also (strings)
   "Reformat @See-also section of docstring for org-mode file."
@@ -966,8 +981,10 @@ result."
     ("@Slots" . ,#'clampsdoc-transcode-slots)
     ("@Example" . ,#'clampsdoc-transcode-example)
     ("@Examples" . ,#'clampsdoc-transcode-examples)
-    ("@Example-nosrc" . ,#'clampsdoc-transcode-example-nosrc)
-    ("@Examples-nosrc" . ,#'clampsdoc-transcode-examples-nosrc)
+    ("@Example-nosrc" . ,#'clampsdoc-transcode-example-no-src)
+    ("@Examples-nosrc" . ,#'clampsdoc-transcode-examples-no-src)
+    ("@Example-noheader" . ,#'clampsdoc-transcode-example-no-header)
+    ("@Image" . ,#'clampsdoc-transcode-image)
     ("@See-also" . ,#'clampsdoc-transcode-see-also)
     ("@Note" . ,#'clampsdoc-transcode-note)
     ("@Important-Note" . ,#'clampsdoc-transcode-important-note)))
@@ -1278,4 +1295,11 @@ find-dsp
 list-dsps
 remove-dsp
 "))
+
+
+   #+attr_html: :width 80%
+   #+CAPTION: Clamps GUI after startup
+   [[./img/clamps-gui.png]]   
 |#
+
+
