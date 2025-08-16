@@ -351,6 +351,10 @@ ftom
 (* tuning-base (expt 2 (/ (- midi-value 69) 12))))
 |#
 
+(defun plot-pairs (data)
+  "Plot a list of numbers interpreted as interleaved x/y pairs."
+  (plot (ou:group data 2)))
+
 (defun fr2ct (ratio)
        "Return the Midicents interval of /ratio/.
 

@@ -55,6 +55,8 @@
            orm-utils:get-props-list orm-utils:m-exp
            output-stream
 
+           plot-pairs
+           
            cl-midictl:cleanup
            cl-midictl:midi-output cl-midictl:get-ref
            cl-midictl:byte->midi cl-midictl:color->midi-rgb
@@ -517,6 +519,9 @@
            cl-sfz:play-sfz-loop cl-sfz:play-sfz
            cl-sfz:sfz-preset-file cl-sfz:add-sfz-preset cl-sfz:sfz-get-range
            cl-sfz:remove-sfz-preset cl-poolplayer:p1 cl-poolplayer:p-song-afterfn
+           cl-poolplayer:get-interp-vals
+           cl-poolplayer:digest-interp-form
+           cl-poolplayer:ip-idx cl-poolplayer:ip-num
            cl-poolplayer:*pool-hash* cl-poolplayer:init-poolplayer
            cl-poolplayer:preset-play cl-poolplayer:p2 cl-poolplayer:dtime
            cl-poolplayer:value-fn cl-poolplayer:*outseq8* cl-poolplayer:p4
