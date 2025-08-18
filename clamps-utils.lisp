@@ -468,3 +468,24 @@ TYPE should be one of ERROR, WARN, INFO or DEBUG."
   `(incudine.util::%msg ',(incudine::ensure-symbol type "INCUDINE.UTIL")
          ,format-control (list ,@format-arguments)))
 
+#|
+(defun plot-envelope (env)
+  (cl-plot:plot
+   (with-buffer (b 100)
+     (buffer->list
+      (bounce-to-buffer (b)
+        (env-synth env)))))
+  env)
+|#
+
+(defmethod cl-plot:plot ((env incudine.vug:envelope) &rest args
+                         &key (region '(0 100)) (header *gnuplot-header*)
+                           (options *gnuplot-options*) (num-values 100) (grid t)
+                         &allow-other-keys)
+  (declare (ignorable args region header options num-values grid))
+  (plot
+   (with-buffer (b num-values)
+     (buffer->list
+      (bounce-to-buffer (b)
+        (env-synth env)))))
+  env)

@@ -85,3 +85,7 @@ sample."
 (defun restore-envs ()
   (setq *env1* (make-envelope '(0 1 1 0) '(0 .9 .1)))
   (setq *hanning1024* (make-buffer 1024 :fill-function (gen:hanning))))
+
+(dsp! env-synth ((env incudine.vug:envelope))
+  (out (envelope env 1 (/ 100 *sample-rate*) #'free)))
+

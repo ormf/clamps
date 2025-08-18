@@ -35,6 +35,9 @@
            get-keynum
            
            imsg
+
+;;;           plot-envelope
+           
            set-page-dimensions
            ats-cuda:load-ats
            ats-cuda:save-ats
@@ -194,7 +197,7 @@
            add-elements
            orm-utils:calcsndbytes cl-sfz:load-sfz-preset common-lisp:open
            orm-utils:path-find-file clog-dsp-widgets:find-dsp ftom
-           orm-utils:do-repeated cl-midictl:pulse
+           orm-utils:do-repeated
            orm-utils:n-exp-dev make-osc-receiver svg-gui-path
            orm-utils:mapply clog-dsp-widgets:create-o-toggle
            incudine-bufs:remove-buffer incudine-bufs:clamps-buffer-load
@@ -220,7 +223,9 @@
            clog-dsp-widgets:create-o-slider orm-utils:m-lin-rev-fn
            orm-utils:setf-default cl-midictl:list-midi-controllers
            cl-midictl:find-controller clog-dsp-widgets:named-bus
-           cl-midictl:midi-input cl-midictl:toggle-slot of-incudine-dsps:osc~
+           cl-midictl:midi-input cl-midictl:toggle-slot
+           of-incudine-dsps:osc~
+           of-incudine-dsps:env-synth
            orm-utils:spit clog-dsp-widgets:levelmeter-gui orm-utils:n-exp-fn
            make-cm-line
            cl-midictl:*midi-note-state*
@@ -283,7 +288,7 @@
            cm:poolevt-end cm:chord-derive cm:copier cm:odds cm:*fudi.in*
            cm:time->vstime-fn cm:play-curr cm:time->speed-fn cm:pval
            cm:cm-version cm:sfz-dur cm:play-fn
-           cm:sfz-keynum cm:rt-proc cm:zero-shift cm:line cm:midi-key-pressure
+           cm:sfz-keynum cm:rt-proc cm:zero-shift cm:midi-key-pressure
            cm:amplitude cm:scale> cm:power cm:display cm:pitch-bend
            cm:sampleevt-amp cm:add-recreation-fn cm:plotter cm:plotter-redraw
 ;;;           cm:reinit-midi
@@ -331,7 +336,7 @@
            cm:rts cm:sampleevt-start
            cm:status->opcode cm:make-mt-stream cm:cmn cm:tendency cm:sfz
            cm:decode-interval cm:hertz cm:object->cmn cm:rhythm cm:explsegs
-           cm:midi cm:play cm:player-cont
+           cm:midi cm:player-cont
            cm:true cm:audio-file cm:*rts-out* cm:between
            cm:fm-spectrum cm:fit cm:all-notes-off cm:rts-hush
            cm:add-rts-hush-hook cm:remove-all-rts-hush-hooks cm:show-rts-hush-hooks
@@ -653,7 +658,7 @@
            cl-midictl:get-active-players cl-midictl:handle-midi-in
            cl-midictl:cc-nums cl-midictl:tr-stop cl-midictl:nk2-fader-last-cc
            cl-midictl:midi-controller cl-midictl:*curr-preset*
-           cl-midictl:button-labels cl-midictl:pulse cl-midictl:tr-ffwd
+           cl-midictl:button-labels cl-midictl:tr-ffwd
            cl-midictl:preset-buttons cl-midictl:handle-player-switch
            cl-midictl:midi-input cl-midictl:remove-all-midi-controllers
            cl-midictl:cycle cl-midictl:nanoktl2-midi cl-midictl:marker-left

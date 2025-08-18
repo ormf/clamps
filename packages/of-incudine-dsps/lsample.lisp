@@ -80,9 +80,9 @@ sfz
 file - Pathname or String denoting filename.
 :path - List of Pathnames to search for file. Defaults to [[#sfile-path][*​sfile-path​*]].
 :keynum - Number denoting keynum of sample.
-:oneshot - Boolean indicationg whether not to loop the sample. Defaults to t.
+:oneshot - Boolean indicating whether not to loop the sample. Defaults to t.
 :loopstart - Positive Integer denoting start of loop. Defaults to 0.
-:loopend - Positive Integer denoting end of loop. Defaults to 0.
+:loopend - Positive Integer denoting end of loop. Defaults to 0, denoting the end of the sample.
 :amp - Number denoting amplitude in dB. The range [-100..0] is mapped to linear amplitude [0..1]. Defaults to 0.
 
 @See-also

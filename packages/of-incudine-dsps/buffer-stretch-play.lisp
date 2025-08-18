@@ -86,7 +86,7 @@ The curvature CURVE defaults to -4."
 
 (dsp! play-buffer-stretch-out ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth (out integer))
   (:defaults (incudine:incudine-missing-arg "BUFFER")
-             (incudine:incudine-missing-arg "ENV")
+             *env1*
              0 0 0 0 1 137 0)
   (with-samples ((rate (/ (* (buffer-sample-rate buffer) (keynum->hz transp))
                           (* *sample-rate* 8.175798915643707d0)))

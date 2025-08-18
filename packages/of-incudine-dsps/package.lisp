@@ -68,4 +68,5 @@
            #:CALC-VBAP
            #:PHASOR-AMP*
            #:PHASOR-AMP
+           #:ENV-SYNTH
            ))

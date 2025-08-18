@@ -152,9 +152,11 @@ alternating min and max values of the form /(x1 min1 x2 max1 x3 min2 x4 max2...)
 x values in the result are going from 0..1, the distance between
 succesive x vals calculated by the :dtime function form.
 
-A form /(:dtime 0.1)/  will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+A form /(:dtime 0.2)/  will result in x values /(0 0.2 0.4 0.6 0.8 1)/.
 
-A form /(:dtime (n-lin x 0.2 0.5))/ will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+A form /(:dtime (n-lin x 0.2 0.5))/ will result in x values /(0 0.2 0.46 0.8 1)/.
+
+Note that the final dtime value is truncated in the second example.
 
  /form/ should contain a =:dtime=, =:min= and =:max= property. The
 forms of =:dtime=, =:min= and =:max= can use /x/, referring to its
@@ -242,9 +244,11 @@ alternating min and max values of the form /(x1 min1 x2 max1 x3 min2 x4 max2...)
 x values in the result are going from 0..1, the distance between
 succesive x vals calculated by the :dtime function form.
 
-A form /(:dtime 0.1)/  will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+A form /(:dtime 0.2)/  will result in x values /(0 0.2 0.4 0.6 0.8 1)/.
 
-A form /(:dtime (n-lin x 0.2 0.5))/ will result in x values /(0 0.1 0.2 0.3 ... 1)/.
+A form /(:dtime (n-lin x 0.2 0.5))/ will result in x values /(0 0.2 0.46 0.8 1)/.
+
+Note that the final dtime value is truncated in the second example.
 
  /form/ should contain a =:dtime=, =:min= and =:max= property. The
 forms of =:dtime=, =:min= and =:max= can use /x/, referring to its
