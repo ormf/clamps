@@ -58,9 +58,8 @@ nil. Otherwise it just sets the 'playing slot of the player to nil and
 returns."
   (with-slots (playing preset-no id start end dur) player
     (let* ((x (normalize-x time end dur))
-           (prst (aref *poolplayer-presets* (if (= -1 preset-no) *curr-poolplayer-preset-no* preset))) ;;; if preset-no is -1 use *curr-preset*
-           (params (apply (params-fn prst) x dur args)))
-;;;        (break "preset-no: ~a, prst: ~a" preset-no prst)
+           (prst (aref *poolplayer-presets* (if (= -1 preset-no) *curr-poolplayer-preset-no* preset-no))) ;;; if preset-no is -1 use *curr-preset*
+           (params (apply (params-fn prst) x 0 dur args)))
       (when playing
         (let* ((next (+ time (apply (dtime-fn prst) x dur args))))
           (incf (getf params :amp) *master-amp-db*)
@@ -90,4 +89,4 @@ returns."
       :dur dur
       :preset-no preset-no)
     (funcall #'perform player time args)
-    player))
+    nil))

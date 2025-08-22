@@ -105,6 +105,7 @@
            clog-dsp-widgets:create-o-numbox orm-utils:amp->db
            cl-midictl:handle-midi-in
            ;; cm:clip
+           cm:container-subobjects
            clog-dsp-widgets:list-buses
            cl-midictl:show-midi-cc-fns orm-utils:ucopy orm-utils:get-prop
            clog-dsp-widgets:add-dsp orm-utils:do-proplist

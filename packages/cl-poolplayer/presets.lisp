@@ -94,7 +94,7 @@
   (let ((hash-table (make-hash-table)))
     (loop for (key val) on
           '(:dtimefn 0.3
-            :lsamplefn lsample
+            :lsamplefn nil
             :transpfn 60
             :ampfn 0
             :dyfn 0
@@ -350,7 +350,7 @@ the *curr-preset* to 0 and display it in emacs buffer."
   (load-poolplayer-presets)
   (setf *curr-poolplayer-preset-no* 0)
   (uiop:run-program "/usr/bin/touch /tmp/curr-preset.lisp")
-  (cl-poolplayer::define-elisp-code :basedir (pathname "/tmp/")))
+  (cl-poolplayer::define-poolplayer-elisp-code :basedir (pathname "/tmp/")))
 
 ;;; into init-file: (define-elisp-code)
 ;;;
