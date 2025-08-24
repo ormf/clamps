@@ -573,70 +573,45 @@ svg element."
   args)
 
 (defun opacity->db (opacity)
+  "Return a dB value in the range [-60..0] from opacity values [0..1]."
   (- (* opacity 60) 60))
 
 (defun db->opacity (db)
+  "Return an opacity value in the range [0..1] from dB values clipped to
+the range [-60..0]."
   (float (max (min 1.0 (+ (/ db 60) 1)) 0.0) 1.0))
 
-#|
-(defun svg->cm (file layer x-scale &key colormap start end group? layer?)
-  (let* ((x-offs (if start (* -1 (/ start x-scale)) 0))
-         (ende (if end (+ x-offs (/ end x-scale)) most-positive-fixnum)))
-;;;    (break "x-offs: ~a ende: ~a" x-offs ende)
-    (labels ((inner (elems)
-;;;               (break "inner: ~a" elems)
-               (cond
-                 ((null elems) '())
-                 ((consp (first elems))
-                  (cons (inner (first elems)) (inner (rest elems))))
-                 ((typep (first elems) 'svg-ie:svg-cm-line)
-                  (with-slots (svg-ie::x1 svg-ie::y1 svg-ie::x2 svg-ie::color svg-ie::opacity svg-ie::attributes)
-                      (first elems)
-                    (if (and ende (<= (* x-scale svg-ie::x1) ende))
-                        (cons (progn
-                                (when (not svg-ie::attributes) (setf (getf svg-ie::attributes :type) 'midi))
-                                (recreate-from-attributes (list* :time (float (* x-scale svg-ie::x1))
-                                                                 :keynum svg-ie::y1
-                                                                 :duration (float (* x-scale (- svg-ie::x2 svg-ie::x1)))
-                                                                 :amplitude svg-ie::opacity
-                                                                 :channel (color->chan svg-ie::color colormap)
-                                                                 (keynum->saved-keynum svg-ie::attributes))))
-                              (inner (rest elems)))
-                        (inner (rest elems)))))
-                 (:else (cons (first elems) (inner (rest elems)))))))
-      (let ((lines (svg-ie:svg->lines :infile file :layer layer :xquantize nil :yquantize nil :x-offset x-offs
-                                      :group? group? :layer? layer?)))
-        (inner lines)))))
-
 (defun svg-lines->cm (svg-lines &key (x-offset 0) (x-scale 1) end colormap)
-  (labels ((inner (elems result)
-                  (cond
-                    ((null elems) (reverse result))
-                    ((consp (first elems))
-                     (push (inner (first elems) '()) result)
-                     (inner (rest elems) result))
-                    ((typep (first elems) 'svg-ie:svg-cm-line)
-                     (with-slots (svg-ie::x1 svg-ie::y1 svg-ie::x2 svg-ie::color svg-ie::opacity svg-ie::attributes)
-                         (first elems)
-                       (if (or (not end) (<= (* x-scale svg-ie::x1) end))
-                           (progn
-                             (when (not svg-ie::attributes) (setf (getf svg-ie::attributes :type) 'midi))
-                             (if (svg-symbol->fn (getf svg-ie::attributes :type))
-                                 (progn
-                                   (ou:ensure-prop svg-ie::attributes :channel (color->chan svg-ie::color colormap))
-                                   (push (recreate-from-attributes (list* :time (float (+ x-offset (* x-scale svg-ie::x1)))
-                                                                          :keynum svg-ie::y1
-                                                                          :duration (float (max 0.001 (* x-scale (- svg-ie::x2 svg-ie::x1))))
-                                                                          :amplitude svg-ie::opacity
-                                                                          (keynum->saved-keynum svg-ie::attributes)))
-                                         result))
-                                 (warn "can't import type ~a" (getf svg-ie::attributes :type)))))
-                       (inner (rest elems) result)))
-                    (:else (inner (rest elems) (push (first elems) result))))))
-    (inner svg-lines '())))
-|#
+  "Convert a list of /svg-lines/ parsed from an svg document into Common
+Music instances according to the ~:type~ property of the ~:attributes~
+property. The coordinates, color and opacity of the lines are
+prepended to the attributes argument list and delegated to the
+function stored in *svg-fn-assoc* for the type of object. If no
+attributes list is given, lines will be handled as a MIDI note event.
 
-(defun svg-lines->cm (svg-lines &key (x-offset 0) (x-scale 1) end colormap)
+@Arguments
+svg-lines - A list of property lists parsed from the svg-file.
+x-offset - Number denoting an x-offset to add to each line.
+xscale - Number denoting a scaling factor to apply to each line.
+end - Number denoting an optional end (default is all lines).
+colormap - A hash table to map colors of the svg-lines to channels.
+
+@Example
+(svg-lines->cm
+ '((:x1 307.5 :y1 53.5 :x2 331.5 :y2 53.5
+    :color \"#00ff02\"
+    :opacity 0.4
+    :attributes (:type cm:sfz :preset :flute-nv :oneshot nil :pan 0.5 :startpos 0 :chan 100)
+    )
+   (:x1 290.5 :y1 66 :x2 316.5 :y2 66
+    :color \"#aa4403\"
+    :opacity 0.42
+    :attributes (:type cm:sfz :preset :vc-nonvib-mf-4c :oneshot nil :pan 0.5 :startpos 0 :chan 100)
+    )))
+
+@See-also
+svg->lines
+"
   (loop
     for elem in svg-lines
     append (with-slots (svg-ie::x1 svg-ie::y1 svg-ie::x2 svg-ie::y2 svg-ie::color svg-ie::opacity svg-ie::attributes)
@@ -740,7 +715,6 @@ svg element."
                                        :group? nil :layer? nil)))))
 
 |#
-(* (/ 4 (- (log 9 2) (log 8 2))) 3) ; => 70.6194
 
 (defmethod import-events ((file svg-file) &key (x-offset 0)
                                             (seq t) layer (x-scale 1/32)
@@ -785,9 +759,10 @@ to sproutable cm-events."
 ;;;    (break "~a" (mapcar (lambda (e) (slot-value e 'svg-import-export::color)) evts))
     (svg-lines->cm evts :x-offset x-offs :x-scale x-scale :colormap colormap)))
 
-
-(export '(SVG->CM *SVG-COLORMAP-OLD* *SVG-COLORMAP* COLOR->CHAN CHAN->COLOR ADD-RECREATION-FN OPACITY->DB DB->OPACITY SVG-LINES->CM
-          INKSCAPE-EXPORT->CM
-          *SVG-X-SCALE*
-          TEMPO->SVG-TIMESCALE)
+(export '(svg->cm *svg-colormap-old* *svg-colormap* color->chan chan->color add-recreation-fn
+          opacity->db db->opacity svg-lines->cm inkscape-export->cm *svg-x-scale* tempo->svg-timescale
+          add-svg-assoc-fns)
         'cm)
+
+
+(clamps:stop-midi-receive)

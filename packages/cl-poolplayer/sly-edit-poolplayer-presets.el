@@ -1,5 +1,3 @@
-(setq poolplayer-preset-file "~/quicklisp/local-projects/clamps/packages/cl-poolplayer/curr-preset.lisp")
-
 (defun edit-poolplayer-preset (str ref)
   (set-buffer (find-file-noselect poolplayer-preset-file))
   (delete-region (point-min) (point-max))
@@ -37,5 +35,3 @@
 (define-key lisp-mode-map (kbd "M-<left>") 'previous-poolplayer-preset)
 (define-key lisp-mode-map (kbd "M-<right>") 'next-poolplayer-preset)
 
-(save-excursion
-  (switch-to-buffer (get-buffer "curr-preset.lisp")))

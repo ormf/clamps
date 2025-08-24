@@ -10,29 +10,7 @@
   :version "0.0.1"
   :serial t
   :depends-on (
-               #:cl-refs
-               #:incudine
-               #:of-incudine-dsps
-               #:incudine-bufs
-               #:orm-utils
-               #:cm-svg
-               #:cl-plot
-               #:incudine-plot
-               #:cl-ppcre
-               #:cl-sfz
                #:cm
-               #:cm-sfz
-               #:cm-poolevt
-               #:cm-fomus
-               #:cm-poolevt
-               #:cm-poolplayer
-               #:cm-incudine
-               #:cm-utils
-               #:clog-dsp-widgets
-               #:ats-cuda
-               #:clog-cuda
-               #:cl-midictl
-               #:clog-midi-controller
                )
   :components ((:module "src"
                 :serial t

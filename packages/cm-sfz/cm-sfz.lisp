@@ -20,7 +20,9 @@
 
 (in-package :cm)
 
-(export '(sfz sfz-keynum sfz-dur sfz-amp sfz-preset sfz-pan sfz-startpos sfz-oneshot svg->sfz) 'cm)
+(export '(sfz sfz-keynum sfz-dur sfz-amp sfz-preset sfz-pan sfz-startpos sfz-oneshot svg->sfz
+          rt-write-sfz-evt)
+        'cm)
 
 (defobject sfz (event)
     ((keynum :initform 60 :accessor sfz-keynum)
@@ -131,7 +133,7 @@ svg-file."
   (rt-write-sfz-evt obj scoretime))
 
 (defmethod write-event ((obj sfz) (to jackmidi:output-stream) scoretime)
-  "output sfz object."
+  "output sfz object to the audio outputs."
 ;;;  (if *debug* (format t "~&sfz->svg: ~a~%" obj))
   (declare (ignore to))
   (rt-write-sfz-evt obj scoretime))
@@ -146,5 +148,3 @@ svg-file."
                  (sfz-keynum obj) :dur (sfz-duration obj) :marks
                  marks)
                 (part-events part)))))
-
-

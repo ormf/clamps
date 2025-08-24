@@ -618,10 +618,10 @@ stop-midi-receive
 
 (defun stop-midi-receive (midi-port)
   "Stop the clamps generic midi handler and remove all registered MIDI
-responders of input stream /input/.
+responders of input port /midi-port/.
 
 @Arguments
-midi-port - Instance id, or jackmidi input stream of a midi-port struct.
+midi-port - Id, Midi-Port struct or jackmidi input stream of a midi-port struct.
 
 @Example
 ;;; equivalent forms to stop a midi handler:

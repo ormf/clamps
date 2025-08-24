@@ -593,6 +593,7 @@ set-tempo
               clamps:evt-duration
               clamps:evt-keynum
               clamps:evt-amp
+              clamps:svg-lines->cm
 
               cl-user:*sfz-file-path*
               cl-user:*sfile-path*
@@ -621,7 +622,10 @@ set-tempo
 
 (defun all-clamps-symbols ()
   (let ((acc nil))
-    (dolist (pkg *clamps-packages* (cons 'cl-user:clamps (nreverse acc)))
+    (dolist (pkg
+;;;             (cons "CLAMPS" *clamps-packages*)
+             *clamps-packages*
+             (cons 'cl-user:clamps (nreverse acc)))
 ;;;      (format t "~a~%" (find-package pkg))
       (do-external-symbols (sym (find-package pkg))
         (push sym acc)))))

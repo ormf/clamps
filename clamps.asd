@@ -32,6 +32,7 @@
                #:ats-cuda)
   :components ((:file "init")
                (:file "load-packages")
+               (:file "cm-exports-extra")
                (:file "inkscape-export")
                (:file "package")
                (:file "display-automation")

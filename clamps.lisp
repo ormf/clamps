@@ -281,6 +281,7 @@ supplied and gets interned as a parameter."
          :ignore-error-status t))))
 
 (defun restart-qsynth ()
+  "restart qsynth instance if not already running and connect it to jack."
   (let ((result (with-output-to-string (str)
                   (uiop:run-program (format nil "ps aux") :output str))))
     (unless (cl-ppcre:scan "qsynth" result)

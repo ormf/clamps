@@ -278,35 +278,31 @@ the *poolplayer-preset* with index /preset-no/."
         (edit-preset-in-emacs *curr-poolplayer-preset-no*)))))
 
 #-slynk
-(defun define-elisp-code ()
+(defun define-poolplayer-elisp-code (&key (elisp-basedir (asdf:system-source-directory :cl-poolplayer)) (curr-preset-file "/tmp/curr-preset.lisp"))
   (let ((swank::*emacs-connection* *emcs-conn*))
     (swank::eval-in-emacs
      `(progn
-        (setq poolplayer-preset-file ,(namestring
-                                       (merge-pathnames
-                                        "curr-preset.lisp"
-                                        (asdf:system-source-directory :cl-poolplayer))))
+        (setq poolplayer-preset-file ,curr-preset-file)
         (find-file poolplayer-preset-file)
         (set-window-dedicated-p (get-buffer-window "curr-preset.lisp" t) t)
         (load ,(namestring
                 (merge-pathnames
-                 "edit-poolplayer-presets.el"
-                 (asdf:system-source-directory :cl-poolplayer))))
-        )
+                 "sly-edit-poolplayer-presets.el" elisp-basedir))))
      t)))
 
 #+slynk
-(defun define-poolplayer-elisp-code (&key (basedir (asdf:system-source-directory :cl-poolplayer)))
+(defun define-poolplayer-elisp-code (&key (elisp-basedir (asdf:system-source-directory :cl-poolplayer)) (curr-preset-file "/tmp/curr-preset.lisp"))
   (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
     (slynk::eval-in-emacs
      `(progn
-        (setq poolplayer-preset-file "/tmp/curr-preset.lisp")
-        (find-file poolplayer-preset-file)
+        (setq poolplayer-preset-file ,curr-preset-file)
+        (find-file ,curr-preset-file)
         (set-window-dedicated-p (get-buffer-window "curr-preset.lisp" t) t)
         (load ,(namestring
                 (merge-pathnames
-                 "sly-edit-poolplayer-presets.el" basedir))))
-     t)))
+                 "sly-edit-poolplayer-presets.el" elisp-basedir))))
+     t)
+    (edit-preset-in-emacs 0)))
 
 #-slynk
 (defun edit-preset-in-emacs (ref)
@@ -350,7 +346,7 @@ the *curr-preset* to 0 and display it in emacs buffer."
   (load-poolplayer-presets)
   (setf *curr-poolplayer-preset-no* 0)
   (uiop:run-program "/usr/bin/touch /tmp/curr-preset.lisp")
-  (cl-poolplayer::define-poolplayer-elisp-code :basedir (pathname "/tmp/")))
+  (cl-poolplayer::define-poolplayer-elisp-code :elisp-basedir (pathname "/tmp/")))
 
 ;;; into init-file: (define-elisp-code)
 ;;;

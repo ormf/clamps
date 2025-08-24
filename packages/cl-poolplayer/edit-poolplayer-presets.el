@@ -30,6 +30,3 @@
 
 (define-key lisp-mode-map (kbd "M-<left>") 'previous-poolplayer-preset)
 (define-key lisp-mode-map (kbd "M-<right>") 'next-poolplayer-preset)
-
-(save-excursion
-  (switch-to-buffer (get-buffer "curr-preset.lisp")))

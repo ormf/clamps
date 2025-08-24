@@ -104,8 +104,6 @@
            clog-dsp-widgets:new-gui-window
            clog-dsp-widgets:create-o-numbox orm-utils:amp->db
            cl-midictl:handle-midi-in
-           ;; cm:clip
-           cm:container-subobjects
            clog-dsp-widgets:list-buses
            cl-midictl:show-midi-cc-fns orm-utils:ucopy orm-utils:get-prop
            clog-dsp-widgets:add-dsp orm-utils:do-proplist
@@ -121,7 +119,8 @@
            cl-sfz:sfz-get-range
            cl-midictl:osc-midi-write-short value-fn
            clog-dsp-widgets:bus-channel clog-dsp-widgets:highlight
-           cl-midictl:with-gui-update-off clog-dsp-widgets:cuda-dsp cm:pwd orm-utils:n-apply
+           cl-midictl:with-gui-update-off clog-dsp-widgets:cuda-dsp
+           orm-utils:n-apply
            orm-utils:rfind collect-pool orm-utils:n-lin
            cl-sfz:sfz-preset-loaded? orm-utils:subseqx
            clog-dsp-widgets:unregister-element
@@ -216,8 +215,6 @@
            clog-dsp-widgets:create-o-vumeter svg-collect-lines
            common-lisp:output-stream-p orm-utils:sum_x
            cl-midictl:start-midi-engine
-           cm::= cm::for cm::by cm::from cm::downto cm::to
-           ;; cm::chan
            cl-refs:make-bang
            get-dtime-fn-no-x set-tempo stream-p
            orm-utils:reverse-all clog-dsp-widgets:master-amp-meter-bus
@@ -233,7 +230,10 @@
            orm-utils:m-exp-rd-fn           
            orm-utils:group-by-key new-id
            clog-dsp-widgets:create-collection cl-sfz:remove-sfz-preset
-           orm-utils:mappend clog-dsp-widgets:*bindings*
+           orm-utils:mappend
+           orm-utils:fibonacci orm-utils:file-string
+
+           clog-dsp-widgets:*bindings*
 
 
            orm-utils:get-duplicates clog-dsp-widgets:create-o-bang
@@ -244,14 +244,24 @@
            clamps-restart-gui cl-refs:watch common-lisp-user:clamps
            cl-midictl:remove-midi-controller orm-utils:rotate
            orm-utils:make-adjustable-string 
-           ;; cm:group
-           cl-midictl:remove-all-channel-midi-cc-fns cm::repeat
-           cm:cd orm-utils:fibonacci orm-utils:file-string
+           cl-midictl:remove-all-channel-midi-cc-fns
+
            orm-utils:exp-n orm-utils:defparameter* orm-utils:permute
            cl-midictl:update-hw-state orm-utils:copy-instance orm-utils:get-time
            cl-midictl:*midi-debug* orm-utils:slurp-string
            cl-refs:set-val cl-midictl:*oscin*
-           orm-utils:ct->fr clog-midi-controller:faderfox-gui cm:transp
+           orm-utils:ct->fr clog-midi-controller:faderfox-gui
+
+           cm:cd
+           cm:rt-write-sfz-evt
+           cm::= cm::for cm::by cm::from cm::downto cm::to
+           cm:pwd
+           cm:container-subobjects
+           cm::repeat
+           ;; cm:clip
+           ;; cm::chan
+           ;; cm:group
+           cm:transp
            cm:play-midi cm:cm-store cm:midi-text-event cm:drunk
            cm:midi-chan-event cm:*midi-rcv-type-dummy*
            cm:*stream-recv-responders* cm:ctl-out cm:fold-objects cm:input
@@ -280,8 +290,7 @@
            cm:midi-file-print cm:poolevt-pan cm:export-poolplayer-events
            cm:scale-max cm:process cm:midi-channel-pressure
            cm:sampleevt-out cm:prime-form cm:color->chan cm:ransegs cm:recv?
-           cm:cd
-           cm:pwd cm:secs->samps
+           cm:secs->samps
            cm:rt-wait cm:defprocess cm:midi-system-event cm:insert-object cm:note
            cm:false cm:transpose-evt cm:set-clm-output-hook! cm:interp
            cm:amp->velo cm:ran cm:object-time cm:lsample->poolevt cm:keynum
@@ -293,7 +302,6 @@
            cm:amplitude cm:scale> cm:power cm:display cm:pitch-bend
            cm:sampleevt-amp cm:add-recreation-fn cm:plotter cm:plotter-redraw
 ;;;           cm:reinit-midi
-
            cm:time->samps cm:status->channel cm:poolevt
            cm:permutation cm:poolevt-buffer-idx cm:transpose cm:write-event
            cm:args cm:preset cm:region cm:find-object cm:pickl
@@ -301,6 +309,7 @@
            cm:map-objects cm:sfz-amp cm:midi-stream cm:remove-subobjects cm:new
            cm:octave-number cm:pitch-class cm:poolevt-out1 cm:midi-out cm:jbmf
            cm:f cm:inkscape-export->cm cm:rewrite cm:*chromatic-scale*
+           cm:add-svg-assoc-fns
            cm:note-off cm:midi-file cm:cmn-file cm:poolevt-wwidth cm:doeach
            cm:midi-note-on cm:drunk-traverse cm:make-mm-mask cm:subcontainers
            cm:sc-file cm:vstime->speed-fn cm:set-midi-output-hook! cm:scale<

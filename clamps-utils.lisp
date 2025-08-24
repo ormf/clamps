@@ -229,8 +229,11 @@ set-bpm
 
 (defun start-doc-acceptor ()
   "Start the doc acceptor for online documentation. This is done
-automatically on startup to make the clamps documentation
-accessible at the URL /https://localhost:8282/.
+automatically on [[clamps][Clamps Startup]] to make the clamps
+documentation accessible at the URL /https://localhost:8282/.
+
+@See-also
+clamps
 "  (when (hunchentoot::acceptor-listen-socket *clamps-doc-acceptor*)
      (hunchentoot:stop *clamps-doc-acceptor*))  
   (hunchentoot:start *clamps-doc-acceptor*))
