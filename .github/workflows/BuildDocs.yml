@@ -1,0 +1,45 @@
+name: Build HTML Documentation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+
+    - name: Install system dependencies
+      run: sudo apt-get update && sudo apt-get install -y emacs-nox make curl jackd2 qjackctl pulseaudio-module-jack a2jmidid emacs inkscape python3-pip sbcl git lilypond
+
+    - name: Clone org-mode repository
+      run: |
+        git clone https://git.savannah.gnu.org/git/emacs/org-mode.git /tmp/org-mode
+        cd /tmp/org-mode
+        make autoloads
+
+    - name: clone clamps-install
+      run: |
+        cd /tmp
+        git clone https://github.com/ormf/clamps-install.git
+        cd clamps-install
+        bash clamps-install.sh
+
+    - name: Build HTML documentation
+      run: |
+        export EMACSLOADPATH="/tmp/org-mode/lisp:$EMACSLOADPATH"
+        cd doc
+        make html
+
+    - name: Upload HTML documentation as an artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: html-docs
+        path: doc/html

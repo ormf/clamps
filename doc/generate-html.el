@@ -6,9 +6,10 @@
 (add-to-list 'load-path (format "%s%s" *clamps-doc-dir* "/../extra/elisp/htmlize-20240527.1456"))
 (add-to-list 'load-path (format "%s%s" *clamps-doc-dir* "/../extra/elisp/rainbow-delimiters-20210515.1254"))
 
-(load (format "%s%s" *clamps-doc-dir* "/../extra/elisp/font-lock-add-ons.el"))
+;(load (format "%s%s" *clamps-doc-dir* "/../extra/elisp/font-lock-add-ons.el"))
 
 (require 'org)
+(require 'org-element)
 (require 'ox)
 (require 'ox-html)
 (require 'htmlize)
