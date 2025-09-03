@@ -34,7 +34,9 @@
 
 (find-sensor :sensor1)
 
-;;; attach behaviour to value changes received from the mobile.
+;;; attach behaviour to value changes received from the mobile (here
+;;; we just print out the sensor-data values in the repl whenever they
+;;; are changed).
 
 (with-sensor-add-watch (sensor :sensor1)
   (format t "~&~a%" (get-val (sensor-data sensor))))
