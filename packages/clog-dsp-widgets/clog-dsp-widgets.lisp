@@ -314,7 +314,13 @@ whenever the ref gets set with set-val."
        ,option))
 
 (defun opt-format-attr (attr val)
-  (when val (format nil "~a='~(~a~)'" attr val)))
+  (format nil "~a='~(~a~)'" attr (or val 'false) ))
+
+(let ((attr "hallo")
+      (val nil))
+  (or val 'false))
+
+(opt-format-attr "label" nil)
 
 (defun clog-trigger-fn (obj)
   "execute bang() on the clog obj."
@@ -472,6 +478,89 @@ hash-table if its element-list is empty."
                            (t (%set-val var (gethash attr data)))))))
     element))
 
+;;;   <li>Data Interval: <span id=\"Accelerometer_i\">0</span><span> ms</span></li>
+
+(defun sensor-data-reader-fn (&rest data)
+  data)
+
+(defun create-o-sensors (parent bindings &key (interval 2) (orientation t) (xyz t) (gxyz t) (gyro t) css)
+  (let* (;;; (var (b-ref (first bindings)))
+         ;;; (attr (b-attr (first bindings))) ;;; format nil "~{~a~^,~}"
+         (element (create-child
+                   parent
+                   (format nil "<o-sensors ~{~@[~a ~]~}>
+<div id=\"orientation_panel\" style=\"display: inline-block;\"\>
+<h4 style=\"margin-top:2.75rem;\">Orientation</h4>
+<ul>
+  <li>X-axis (β): <span id=\"Orientation_b\">0</span><span>°</span></li>
+  <li>Y-axis (γ): <span id=\"Orientation_g\">0</span><span>°</span></li>
+  <li>Z-axis (α): <span id=\"Orientation_a\">0</span><span>°</span></li>
+</ul>
+</div>
+
+<div id=\"accelerometer_panel\" style=\"display: inline-block;\"\>
+<h4>Accelerometer</h4>
+<ul>
+  <li>X-axis: <span id=\"Accelerometer_x\">0</span><span> m/s<sup>2</sup></span></li>
+  <li>Y-axis: <span id=\"Accelerometer_y\">0</span><span> m/s<sup>2</sup></span></li>
+  <li>Z-axis: <span id=\"Accelerometer_z\">0</span><span> m/s<sup>2</sup></span></li>
+</ul>
+</div>
+
+<div id=\"g_accelerometer_panel\" style=\"display: inline-block;\"\>
+<h4>Accelerometer including gravity</h4>
+
+<ul>
+  <li>X-axis: <span id=\"Accelerometer_gx\">0</span><span> m/s<sup>2</sup></span></li>
+  <li>Y-axis: <span id=\"Accelerometer_gy\">0</span><span> m/s<sup>2</sup></span></li>
+  <li>Z-axis: <span id=\"Accelerometer_gz\">0</span><span> m/s<sup>2</sup></span></li>
+</ul>
+</div>
+
+<div id=\"gyroscope_panel\" style=\"display: inline-block;\"\>
+<h4>Gyroscope</h4>
+<ul>
+  <li>X-axis: <span id=\"Gyroscope_x\">0</span><span>°/s</span></li>
+  <li>Y-axis: <span id=\"Gyroscope_y\">0</span><span>°/s</span></li>
+  <li>Z-axis: <span id=\"Gyroscope_z\">0</span><span>°/s</span></li>
+</ul>
+</div>
+</o-sensors>"
+                           (list
+                            (format-style css)
+                            (opt-format-attr "interval" interval)
+                            (opt-format-attr "id" nil)
+                            (opt-format-attr "orientation" orientation)
+                            (opt-format-attr "xyz" xyz)
+                            (opt-format-attr "gxyz" gxyz)
+                            (opt-format-attr "gyro" gyro)
+                            )))))
+    (dolist (binding bindings)
+      (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
+      (setf (attribute element (b-attr binding)) (get-val (b-ref binding))))
+    (set-on-data element ;;; react to changes in the browser page
+                 (lambda (obj data)
+                   (declare (ignore obj))
+                   (setf *test* data)
+;;;                   (break "data: ~a" data)
+                   (cond ((gethash "close" data)
+                          (unregister-element element bindings))
+                         (t (dolist (binding bindings)
+                              (let* ((attr (b-attr binding))
+                                     (*refs-seen* (list (list element attr)))
+                                     (val (gethash attr data)))
+                                (when val
+                                  (cond
+                                    ((string= attr "sensor-data")
+                                     (push (list element attr) *refs-seen*)
+                                     (%set-val (b-ref binding)
+                                               (apply #'sensor-data-reader-fn (read-from-string val))))
+                                    (t
+                                     (push (list element attr) *refs-seen*)
+                                     (%set-val (b-ref binding) val))))))))))
+    element))
+
+(defparameter *test* nil)
 ;;; min, max, mapping, clip-zero, thumb-color, bar-color
 
 (defun create-o-multislider (parent bindings
@@ -698,12 +787,15 @@ clog-obj - A Clog object which accepts a highlight() function, like a Button or 
   (setf (title (html-document body)) "Clog Gui")
   (add-class body "w3-blue-grey"))
 
-(defun start-gui (&key (port 54619) (gui-base (asdf:system-source-directory :clog-dsp-widgets)) (open t))
+(defun start-gui (&key (port 54619) (gui-base (asdf:system-source-directory :clog-dsp-widgets)) (open t) ssl ssl-cert-file ssl-key-file)
   (clear-bindings) ;;; start from scratch
   (format t "starting webserver at ~A" (merge-pathnames "www/" gui-base))
   (initialize #'on-new-window
               :port port
               :static-root (merge-pathnames "www/" gui-base)
+              :ssl ssl
+              :ssl-key-file ssl-key-file
+              :ssl-cert-file ssl-cert-file
               :boot-file "/boot.html")
   ;; Open a browser to http://127.0.0.1:8080 - the default for CLOG apps
   (when open (open-browser)))
@@ -711,4 +803,3 @@ clog-obj - A Clog object which accepts a highlight() function, like a Button or 
 ;;; (start-gui) should start a webserver
 
 ;;; (merge-pathnames "www/" (pathname "/tmp/"))
-

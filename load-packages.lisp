@@ -23,6 +23,9 @@
 (pushnew (asdf:system-relative-pathname :clamps "packages/")
          asdf:*central-registry*)
 
+(pushnew (asdf:system-relative-pathname :clamps "packages/clamps-sensors/")
+         asdf:*central-registry*)
+
 ;;; (push (asdf:system-relative-pathname :clamps "packages/fudi/") asdf:*central-registry*)
 
 (dolist (system '(:orm-utils
@@ -47,6 +50,7 @@
                   :cm-utils
                   :clog-dsp-widgets
                   :clog-midi-controller
+                  :clamps-sensors
 ;;;                  :cm-all
                   ))
   (format t "~&loading ~a~%" system)
@@ -54,6 +58,7 @@
 
 (setf asdf:*central-registry*
       (remove (asdf:system-relative-pathname :clamps "packages/") asdf:*central-registry* :test #'equal))
+
 
 ;;; (pop asdf:*central-registry*)
 (pop asdf:*central-registry*)

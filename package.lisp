@@ -102,7 +102,22 @@
            orm-utils:parse-proplist orm-utils:m-exp-fn
            orm-utils:r-lin-dev orm-utils:r-exp-dev clog-dsp-widgets:clog-dsp-widgets-initialize
            clog-dsp-widgets:new-gui-window
-           clog-dsp-widgets:create-o-numbox orm-utils:amp->db
+           clog-dsp-widgets:create-o-numbox
+           clog-dsp-widgets:create-o-sensors
+
+           clamps-sensors:make-sensor
+           clamps-sensors:make-sensor-data
+           clamps-sensors:sensor-oa clamps-sensors:sensor-ob clamps-sensors:sensor-og
+           clamps-sensors:sensor-x clamps-sensors:sensor-y clamps-sensors:sensor-z
+           clamps-sensors:sensor-gx clamps-sensors:sensor-gy clamps-sensors:sensor-gz
+           clamps-sensors:sensor-gyrox clamps-sensors:sensor-gyroy clamps-sensors:sensor-gyroz
+           clamps-sensors:add-sensor clamps-sensors:remove-sensor
+           clamps-sensors:find-sensor clamps-sensors:list-sensors
+           clamps-sensors:sensor-id clamps-sensors:sensor-path clamps-sensors:sensor-data
+           clamps-sensors:sensor-unwatch  clamps-sensors:with-sensor-add-watch
+
+           
+           orm-utils:amp->db
            cl-midictl:handle-midi-in
            clog-dsp-widgets:list-buses
            cl-midictl:show-midi-cc-fns orm-utils:ucopy orm-utils:get-prop
@@ -775,6 +790,7 @@
         #:cm
         #:orm-utils
         #:clog-dsp-widgets
+        #:clamps-sensors
         ))
 
 (import 'clamps:plot-2d 'cl-poolplayer)

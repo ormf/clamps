@@ -329,6 +329,8 @@ midi-input - jackmidi:input-stream for MIDI input.
 
 midi-output - jackmidi:output-stream for MIDI output.
 
+midi-port - midi-port struct for MIDI in/output.
+
 note-fns - Array of 128 lists storing functions to call with the
 velocity as argument, mapped to a received note-on event on any of the
 128 keynumbers.
@@ -355,9 +357,11 @@ remove-all-midi-controllers
         (progn
           (if (keywordp midi-port) (setf midi-port (find-midi-port midi-port)))
           (unless chan (setf chan *default-midi-channel*))
+          (setf midi-port (unless (or midi-input midi-output) *default-midi-port*))
           (setf midi-input (or midi-input (midi-port-in (or midi-port *default-midi-port*))))
           (format t "adding midi controller ~S~%" id)
           (setf midi-output (ensure-default-midi-out (or midi-output (midi-port-out (or midi-port *default-midi-port*)))))
+
           (when id
             (push instance (gethash midi-input *midi-controllers*))
             (setf (gethash id *midi-controllers*) instance))))))

@@ -42,6 +42,8 @@
    #:create-o-vumeter
    #:create-o-svg
    #:create-o-scope
+   #:create-o-sensors
+   #:sensor-data-reader-fn
    #:create-hide-button
    #:create-collection
    #:format-style

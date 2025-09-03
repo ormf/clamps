@@ -165,7 +165,7 @@ clamps-gui-root
 "
   (merge-pathnames (format nil "svg/~a" file) (ensure-directory (clamps-gui-root))))
 
-(defun clamps-restart-gui (&key (gui-base "/tmp") (open t) (port 54619))
+(defun clamps-restart-gui (&key (gui-base "/tmp") (open t) (port 54619) ssl ssl-key-file ssl-cert-file)
   "Reset the root directory of the Gui to /<gui-base>/www//, optionally
 opening the Gui in a browser window. The command will create the
 subdirectories /www//, /snd//, /ats// and /www/svg// in the
@@ -211,7 +211,7 @@ clamps-gui-root
     (clog:set-on-new-window #'clog-dsp-widgets::meters-window :path "/meters")
     (clog:set-on-new-window  #'svg-display :path "/svg-display")
     (clog:set-on-new-window  #'ats-cuda-display:ats-display :path "/ats-display")
-    (progn (sleep 0.5) (clog-dsp-widgets:start-gui :gui-base (namestring dir) :port port :open open))))
+    (progn (sleep 0.5) (clog-dsp-widgets:start-gui :gui-base (namestring dir) :port port :open open :ssl ssl :ssl-key-file ssl-key-file :ssl-cert-file ssl-cert-file))))
 
 ;;; (uiop:probe-file* (namestring (merge-pathnames (pathname "/tmp/") "/www")))
 
@@ -403,7 +403,8 @@ clamps-base-url
 gui
 "  (clog:open-browser :url (format nil "http://127.0.0.1:~A/meters" clog::*clog-port*)))
 
-(defun clamps-start (&key (gui-base "/tmp") (qsynth nil) (open-gui nil) (port 54619) (num-midi-ports *num-midi-ports*))
+(defun clamps-start (&key (gui-base "/tmp") (qsynth nil) (open-gui nil) (port 54619) (num-midi-ports *num-midi-ports*)
+                       ssl ssl-key-file ssl-cert-file)
   "Entry function called by <<clamps>> to start the webserver for the
 GUI, call <<rts>> to set up IO and MIDI, start the OSC responder for
 Incudine, optionally start qsynth (Linux only) and open the gui in a
@@ -431,7 +432,7 @@ rts
   (incudine:setup-io)
   (install-standard-sly-hooks)
   (start-doc-acceptor)
-  (clamps-restart-gui :gui-base gui-base :port port :open open-gui)
+  (clamps-restart-gui :gui-base gui-base :port port :open open-gui :ssl ssl :ssl-key-file ssl-key-file :ssl-cert-file ssl-cert-file)
   (ats-cuda-display:ats-display-init)
   (reset-logger-stream)
   (clamps-logo))

@@ -763,6 +763,3 @@ to sproutable cm-events."
           opacity->db db->opacity svg-lines->cm inkscape-export->cm *svg-x-scale* tempo->svg-timescale
           add-svg-assoc-fns)
         'cm)
-
-
-(clamps:stop-midi-receive)

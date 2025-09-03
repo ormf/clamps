@@ -56,7 +56,7 @@ class SliderElement extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-//        console.log(`Attribute ${name} has changed: ~{newValue}`)
+        // console.log(`Attribute ${name} has changed: ${newValue} `)
         switch (name) {
         case 'value':
             this.setVal(parseFloat(newValue));
@@ -70,7 +70,7 @@ class SliderElement extends HTMLElement {
         case 'color':
             this.setColor(newValue);
             break;
-        case 'color':
+        case 'background':
             this.setBackground(newValue);
             break;
         }
@@ -90,6 +90,8 @@ function slider(elem) {
     else
         slider = elem;
 
+    // console.log('slider: ' + slider);
+    
     function disableDrag (elem) {
        // elem.ondragstart = undefined
     }
@@ -242,7 +244,7 @@ function slider(elem) {
 //    const mySetAttribute = slider.setAttribute;
 
     function setVal(value) {
-//        console.log('attribute change: ' + key);
+        // console.log(`val change: ${value}`);
 //            console.log("val-change: " + value + ", oldValue: " + oldValue + ", external: " + slider.externalValueChange);
             if (slider.externalValueChange) {
                 if (value != oldValue) {
@@ -257,6 +259,7 @@ function slider(elem) {
     }
 
     function setMin(value) {
+        // console.log(`setMin: ${value}`);
         minValue = value;
         let fraction = (parseFloat(slider.getAttribute('value'))-minValue) / (maxValue-minValue);
         //                    console.log("value " + oldValue + ", minValue: " + minValue + ", maxValue: " + maxValue + ", fraction: " + fraction);
@@ -266,20 +269,23 @@ function slider(elem) {
     }
 
     function setMax(value) {
+        // console.log(`setMax: ${value}`);
         maxValue = value;
 //        console.log(value);
         let fraction = (parseFloat(slider.getAttribute('value'))-minValue) / (maxValue-minValue);
         //                    console.log("value " + parseFloat(slider.getAttribute('value')) + ", minValue: " + minValue + ", maxValue: " + maxValue + ", fraction: " + fraction);
-        calcBarSize(fraction);
+        // calcBarSize(fraction);
         setMinMaxMapping();
 //        console.log('setMax', fraction, slider.getAttribute('value'), value);
     }
 
     function setColor(value) {
+        // console.log(`setColor: ${value}`);
         slider.style.color = value;
     }
 
     function setBackground(value) {
+        // console.log(`setBackground: ${value}`);
         slider.style.background = value;
     }
 
@@ -454,7 +460,7 @@ function slider(elem) {
 // initialization
 
     function initSlider () {
-        console.log('initialising Slider');
+        // console.log('initialising Slider');
         if (thumbColor == 'transparent')
             thumb = false;
         setSliderBarStyle();

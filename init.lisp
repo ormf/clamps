@@ -79,7 +79,8 @@ calling (clamps) in such cases."
 (defun clamps-image-start ()
   (setf *package* (find-package :cl-user)))
 
-(defun clamps (&key (gui-base "/tmp") (qsynth nil) (open-gui nil) (num-midi-ports *num-midi-ports*))
+(defun clamps (&key (gui-base "/tmp") (qsynth nil) (open-gui nil) (num-midi-ports *num-midi-ports*)
+                 ssl ssl-key-file ssl-cert-file)
   "Start Clamps including the Gui. This function can be called from the
 /:cl-user/ package.
 
@@ -150,6 +151,7 @@ rts
                               (cmvar :*cm-readtable*))
                         (symbol-value sym)))))))
     (funcall #'clampscall :clamps-start
-             :num-midi-ports num-midi-ports :gui-base gui-base :qsynth qsynth :open-gui open-gui)))
+             :num-midi-ports num-midi-ports :gui-base gui-base :qsynth qsynth :open-gui open-gui
+             :ssl ssl :ssl-key-file ssl-key-file :ssl-cert-file ssl-cert-file)))
 
 (export '(*sfz-preset-lookup* *sfz-file-path* *sfile-path* *ats-file-path* set-clamps-doc-root *clamps-doc-root* *num-midi-ports* clamps clamps-no-gui clamps-image-start) 'cl-user)
