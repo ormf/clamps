@@ -18,9 +18,13 @@
 ;;;
 ;;; **********************************************************************
 
+;;; first load clamps
+
 (ql:quickload :clamps)
 
 (in-package :clamps)
+
+;;; start clamps
 
 (clamps)
 
@@ -80,3 +84,13 @@
 (let ((sensor (find-sensor :sensor1)))
   (push (lambda () (format t "~&~a%" (get-val (sensor-data sensor))))
         (sensor-unwatch sensor)))
+
+(progn
+  (setf (clamps-sensors::sensor-data-oa (get-val (sensor-data (find-sensor :sensor1)))) (random 10.0))
+  (setf (sensor-data (find-sensor :sensor1)) (sensor-data (find-sensor :sensor1))))
+
+
+"#S(sensor-data :oa 89.28 :ob 42.11 :og -1.47
+:x 0.32 :y -0.53 :z -1.37
+:gx 0.70 :gy 5.98 :gz 5.23
+:gyrox -1.58 :gyroy -24.97 :gyroz 1.92)"
