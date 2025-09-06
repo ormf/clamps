@@ -48,7 +48,7 @@ class SensorElement extends HTMLElement {
 
     disconnectedCallback() {
         $(this).trigger("data", { close: true });
-        console.log("o-sensors removed from page.");
+//        console.log("o-sensors removed from page.");
 
     }
 
@@ -87,7 +87,7 @@ function sensors(elem) {
         sensor = elem;
 
 
-    console.log('sensor: ' + sensor);
+//    console.log('sensor: ' + sensor);
 
     function disableDrag (elem) {
        // elem.ondragstart = undefined
@@ -209,7 +209,7 @@ function sensors(elem) {
 //        const d = new Date();
         //        button.innerHTML = d.toLocaleTimeString();
         const data = "(" + oa + " " + ob + " " + og + " " + x + " " + y + " " + z + " " + gx + " " + gy + " " + gz + " " + gyrox + " " + gyroy + " " + gyroz + ")";
-        console.log(data);
+//        console.log(data);
         sensor.internalValueChange = true;
         sensor.setAttribute(
             'sensor-data', data );
