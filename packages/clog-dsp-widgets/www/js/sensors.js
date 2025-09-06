@@ -106,7 +106,7 @@ function sensors(elem) {
 
     var interval = 50;
     var id = false;
-    var internalValueChange = true;
+    var internalValueChange = false;
 
     var sensorDataVals = [];
     var oa = 0;
@@ -133,8 +133,39 @@ function sensors(elem) {
         id = value;
     }
 
+    const myRe0 = /[\n\r]+/g;
+//    const myRe1 = /#S\(sensor-data :oa (.+)\)/g;
+
+    
     function setSensorData(value) {
-        sensorDataVals = value;
+
+        if (internalValueChange == false) {
+            console.log (value.replaceAll(myRe0, " "));
+            
+            console.log (value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
+            sensorDataVals = JSON.parse(value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
+        }
+        else
+            sensorDataVals = value;
+
+//        console.log ( sensorDataVals );
+
+        // oa = sensorDataVals[0];
+        // ob = sensorDataVals[1];
+        // og = sensorDataVals[2];
+        // 
+        // x = sensorDataVals[3];
+        // y = sensorDataVals[4];
+        // z = sensorDataVals[5];
+        // 
+        // gx = sensorDataVals[6];
+        // gy = sensorDataVals[7];
+        // gz = sensorDataVals[8];
+        // 
+        // gyrox = sensorDataVals[9];
+        // gyroy = sensorDataVals[10];
+        // gyroz = sensorDataVals[11];
+
         updateFieldIfNotNull('Orientation_a', oa);
         updateFieldIfNotNull('Orientation_b', ob);
         updateFieldIfNotNull('Orientation_g', og);
@@ -222,7 +253,7 @@ function sensors(elem) {
             button.classList.add('btn-success');
             button.classList.remove('btn-danger');
             clearTimeout(sendDataTimer);
-//            internalValueChange = false;
+            internalValueChange = true;
             is_running = false;
         }else{
 //            alert("start");
@@ -231,7 +262,7 @@ function sensors(elem) {
             button.innerHTML = "Stop demo";
             button.classList.remove('btn-success');
             button.classList.add('btn-danger');
-//            internalValueChange = true;
+            internalValueChange = true;
             sendDataTimer = setTimeout( sendData, interval );
             is_running = true;
         }

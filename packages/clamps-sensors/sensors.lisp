@@ -33,13 +33,20 @@
 
 (defmethod print-object ((data sensor-data) stream)
   (format stream "#S(sensor-data :oa ~,2f :ob ~,2f :og ~,2f~&:x ~,2f :y ~,2f :z ~,2f~&:gx ~,2f :gy ~,2f :gz ~,2f~&:gyrox ~,2f :gyroy ~,2f :gyroz ~,2f)~%"
-          (sensor-data-oa data)(sensor-data-ob data)(sensor-data-og data)
-          (sensor-data-x data)(sensor-data-y data)(sensor-data-z data)
-          (sensor-data-gx data)(sensor-data-gy data)(sensor-data-gz data)
-          (sensor-data-gyrox data)(sensor-data-gyroy data)(sensor-data-gyroz data)))
+          (sensor-data-oa data) (sensor-data-ob data) (sensor-data-og data)
+          (sensor-data-x data) (sensor-data-y data) (sensor-data-z data)
+          (sensor-data-gx data) (sensor-data-gy data) (sensor-data-gz data)
+          (sensor-data-gyrox data) (sensor-data-gyroy data) (sensor-data-gyroz data)))
 
 (defun clog-dsp-widgets:sensor-data-reader-fn (&rest data)
   (apply #'make-sensor-data data))
+
+(defun clog-dsp-widgets::get-attribute-form (val)
+  (typecase val
+    (clamps-sensors::sensor-data
+     (with-slots (oa ob og x y z gx gy gz gyrox gyroy gyroz) val
+       (list oa ob og x y z gx gy gz gyrox gyroy gyroz) ))
+    (otherwise val)))
 
 (defun add-sensor (id)
   (let* ((sensor-data (make-ref (make-sensor-data)))
@@ -48,13 +55,14 @@
                "On-new-window handler."
                (setf (clog:title (clog:html-document body)) "Sensors Test")
                (let ((collection (create-collection body "1/1")))
-                 (create-o-sensors collection (bind-refs-to-attrs
-                                               sensor-data "sensor-data")
-                                   :interval 50 :css '(:font-size "3em")
-                                   :orientation t
-                                   :xyz nil
-                                   :gxyz nil
-                                   :gyro nil))))
+                 (setf *my-sensor*
+                       (create-o-sensors collection (bind-refs-to-attrs
+                                                     sensor-data "sensor-data")
+                                         :interval 50 :css '(:font-size "3em")
+                                         :orientation t
+                                         :xyz nil
+                                         :gxyz nil
+                                         :gyro nil)))))
       (setf (getf *sensors* id)
             (make-sensor :id id
                          :path path
@@ -85,3 +93,40 @@
           (remf *sensors* id)
           nil)
         (warn "can't remove sensor ~S: Sensor isn't registered." id))))
+
+
+(defun sensor-oa (sensor)
+  (sensor-data-oa (sensor-data sensor)))
+
+(defun sensor-ob (sensor)
+  (sensor-data-ob (sensor-data sensor)))
+
+(defun sensor-og (sensor)
+  (sensor-data-og (sensor-data sensor)))
+
+(defun sensor-x (sensor)
+  (sensor-data-x (sensor-data sensor)))
+
+(defun sensor-y (sensor)
+  (sensor-data-y (sensor-data sensor)))
+
+(defun sensor-z (sensor)
+  (sensor-data-z (sensor-data sensor)))
+
+(defun sensor-gx (sensor)
+  (sensor-data-gx (sensor-data sensor)))
+
+(defun sensor-gy (sensor)
+  (sensor-data-gy (sensor-data sensor)))
+
+(defun sensor-gz (sensor)
+  (sensor-data-gz (sensor-data sensor)))
+
+(defun sensor-gyrox (sensor)
+  (sensor-data-gyrox (sensor-data sensor)))
+
+(defun sensor-gyroy (sensor)
+  (sensor-data-gyroy (sensor-data sensor)))
+
+(defun sensor-gyroz (sensor)
+  (sensor-data-gyroz (sensor-data sensor)))

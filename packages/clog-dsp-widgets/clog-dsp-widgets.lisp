@@ -71,6 +71,12 @@ of refvar. refvar has to be a bang-object."
     (push fn (trigger-fns refvar))
     (lambda () (remove fn (trigger-fns refvar)))))
 
+(defun get-attribute-form (val)
+  "return the form to set in the attribute of an html element. Defaults
+to val but in case of structs can also have other forms (see
+clamps-sensors:sensors.lisp for a overwrite of this function)."
+  val)
+
 ;;; (trigger x-bang)
 (defgeneric define-watch (refvar attr new)
   (:method ((refvar ref-object) attr new)
@@ -83,7 +89,7 @@ of refvar. refvar has to be a bang-object."
            (unless (member (list obj attr) *refs-seen* :test #'equal)
              ;; (if *debug* (format t "~&~%watch update: ~a~%-> ~a ~a~%" (obj-print *refs-seen*) obj val))
              (push (list obj attr) *refs-seen*)
-             (setf (attribute obj attr) val)))))))
+             (setf (attribute obj attr) (get-attribute-form val))))))))
   (:method ((refvar bang-object) attr new)
     (if (equal attr "bang")
         (bang-watch refvar attr new)
@@ -202,7 +208,7 @@ hash-table if its e-list is empty."
                            min max step (get-val var) precision unit
                            (format-style css))))) ;;; the get-val automagically registers the ref
     (dolist (binding bindings) (push element (b-elist binding))
-      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
+      (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding))))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
 		   (declare (ignore obj))
@@ -230,7 +236,7 @@ hash-table if its e-list is empty."
                            (format-style css))))
          ) ;;; the get-val automagically registers the ref
     (dolist (binding bindings) (push element (b-elist binding))
-      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
+      (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding))))) ;;; register the browser page's html elem for value updates.
     (set-on-data ;;; react to changes in the browser page
      element
      (lambda (obj data)
@@ -282,7 +288,7 @@ whenever the ref gets set with set-val."
                            (execute element (format nil "setValues(~a)"
                                                     (buffer->js-string (get-val buffer)))))))) ;;; the get-val automagically registers the ref
     (dolist (binding bindings) (push element (b-elist binding))
-      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
+      (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding))))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
 		   (declare (ignore obj))
@@ -316,11 +322,6 @@ whenever the ref gets set with set-val."
 (defun opt-format-attr (attr val)
   (format nil "~a='~(~a~)'" attr (or val 'false) ))
 
-(let ((attr "hallo")
-      (val nil))
-  (or val 'false))
-
-(opt-format-attr "label" nil)
 
 (defun clog-trigger-fn (obj)
   "execute bang() on the clog obj."
@@ -348,7 +349,7 @@ whenever the ref gets set with set-val."
                            (format-style css)
                            (or (option-main label) "")))))
     (dolist (binding bindings) (push element (b-elist binding))
-      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
+      (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding))))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (incudine.util:msg :info "clog event from ~a: ~{~{~S~^ ~}~^,~}" (html-id element)
@@ -393,7 +394,7 @@ hash-table if its element-list is empty."
                            (format-style css)
                            (or (option-main label) "")))))
     (dolist (binding bindings) (push element (b-elist binding))
-      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
+      (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding))))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
@@ -432,7 +433,7 @@ hash-table if its element-list is empty."
                            (format-style css)
                            (or (option-main label) "")))))
     (dolist (binding bindings) (push element (b-elist binding))
-      (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
+      (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding))))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
@@ -468,7 +469,7 @@ hash-table if its element-list is empty."
                            (or (option-main label) "")))))
     (dolist (binding bindings)
       (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
-      (setf (attribute element (b-attr binding)) (get-val (b-ref binding))))
+      (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding)))))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
@@ -537,7 +538,7 @@ hash-table if its element-list is empty."
                             )))))
     (dolist (binding bindings)
       (push element (b-elist binding)) ;;; register the browser page's html elem for value updates.
-      (setf (attribute element (b-attr binding)) (get-val (b-ref binding))))
+      (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding)))))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
@@ -613,7 +614,7 @@ hash-table if its element-list is empty."
 
                             (opt-format-attr "type" type))))))
     (dolist (binding bindings) (push element (b-elist binding))
-            (setf (attribute element (b-attr binding)) (get-val (b-ref binding)))) ;;; register the browser page's html elem for value updates.
+            (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding))))) ;;; register the browser page's html elem for value updates.
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignore obj))
@@ -642,7 +643,7 @@ hash-table if its element-list is empty."
                                              :background ,background)
                                            css)))))))
     (dolist (binding bindings) (push element (b-elist binding))
-      (setf (attribute element (b-attr binding)) (get-val (b-ref binding))))
+      (setf (attribute element (b-attr binding)) (get-attribute-form (get-val (b-ref binding)))))
     (set-on-data element ;;; react to changes in the browser page
                  (lambda (obj data)
                    (declare (ignorable obj))

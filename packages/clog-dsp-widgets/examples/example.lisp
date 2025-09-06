@@ -129,6 +129,3 @@
 
 (set-on-new-window #'on-new-window :path "/example")
 
-
-
-gx
