@@ -140,31 +140,31 @@ function sensors(elem) {
     function setSensorData(value) {
 
         if (internalValueChange == false) {
-            console.log (value.replaceAll(myRe0, " "));
+//            console.log (value.replaceAll(myRe0, " "));
             
-            console.log (value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
+//            console.log (value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
             sensorDataVals = JSON.parse(value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
+        oa = sensorDataVals[0];
+        ob = sensorDataVals[1];
+        og = sensorDataVals[2];
+        
+        x = sensorDataVals[3];
+        y = sensorDataVals[4];
+        z = sensorDataVals[5];
+        
+        gx = sensorDataVals[6];
+        gy = sensorDataVals[7];
+        gz = sensorDataVals[8];
+        
+        gyrox = sensorDataVals[9];
+        gyroy = sensorDataVals[10];
+        gyroz = sensorDataVals[11];
         }
         else
             sensorDataVals = value;
 
 //        console.log ( sensorDataVals );
 
-        // oa = sensorDataVals[0];
-        // ob = sensorDataVals[1];
-        // og = sensorDataVals[2];
-        // 
-        // x = sensorDataVals[3];
-        // y = sensorDataVals[4];
-        // z = sensorDataVals[5];
-        // 
-        // gx = sensorDataVals[6];
-        // gy = sensorDataVals[7];
-        // gz = sensorDataVals[8];
-        // 
-        // gyrox = sensorDataVals[9];
-        // gyroy = sensorDataVals[10];
-        // gyroz = sensorDataVals[11];
 
         updateFieldIfNotNull('Orientation_a', oa);
         updateFieldIfNotNull('Orientation_b', ob);
