@@ -1,16 +1,8 @@
 //
 // sensors.js
 //
-// definition of sensors event handling fpr mobile devices in the
-// client. slider() gets called with the div being the track of the
-// slider. It creates and initializes the div for the sliderbar with
-// the thumb as border. All information needed for proper
-// initialization needs to be contained in the attributes of the
-// slider track div before calling slider().
-//
-// WARNING: Currently only changing the value attribute after
-// initialization is supported. All other attribute or style changes
-// after initialization probably have no or detrimental effects.
+// definition of motion/accelerometer sensors event handling for
+// mobile devices.
 //
 // **********************************************************************
 // Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
@@ -315,11 +307,7 @@ function sensors(elem) {
         button.addEventListener("click", doButtonClick);
         button.addEventListener("ontouchstart", doButtonClick);
         sensor.is_running = is_running;
-//        sendDataTimer = setTimeout( myTimer, 1000 );
     }
 
     initSensors();
-//    document.getElementById("start_demo").innerHTML = "Stop demo";
-//    console.log ("document: ", document);
-//    console.log ("window: ", window);
 }
