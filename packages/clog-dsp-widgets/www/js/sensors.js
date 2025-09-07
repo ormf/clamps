@@ -5,7 +5,8 @@
 // mobile devices.
 //
 // **********************************************************************
-// Copyright (c) 2023 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
+// Copyright (c) 2025 Orm Finnendahl
+// <orm.finnendahl@selma.hfmdk-frankfurt.de>
 //
 // Revision history: See git repository.
 //
