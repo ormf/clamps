@@ -64,6 +64,28 @@ class SensorElement extends HTMLElement {
 
 customElements.define("o-sensors", SensorElement );
 
+var os = "";
+
+if(navigator.userAgent.match(/Android/i)) {
+    os = "Android";
+} else if (navigator.userAgent.match(/iPhone/i)) {
+    os = "iPhone";
+} else {
+    console.log("NonMobile OS");
+};
+
+function isNumber(number) {
+    return typeof number === 'number' && !isNaN(number)
+}
+
+function clamp(number, lower, upper) {
+    if (!isNumber(number) || !isNumber(lower) || !isNumber(upper)) {
+        throw new Error('All inputs must be valid numbers.')
+    }
+
+    return Math.min(Math.max(number, lower), upper)
+}
+
 function parseBool(value){
     if (value === 'false')
         return false;
@@ -127,36 +149,64 @@ function sensors(elem) {
     }
 
     const myRe0 = /[\n\r]+/g;
-//    const myRe1 = /#S\(sensor-data :oa (.+)\)/g;
+    //    const myRe1 = /#S\(sensor-data :oa (.+)\)/g;
+
+
+    var gAccScalar = 1.0;
+
+    if(os == "iPhone") {
+        gAccScalar = 2.0;
+    } else if(os == "Android") {
+        gAccScalar = 20.0;
+    };
 
     
+    function normalizeGXY(value) {
+        if(os==""){
+            return value;
+        } else {
+            let val = (value / gAccScalar) + 0.5;
+            return clamp(val, 0.0, 1.0);
+        }
+    };
+
+    function normalizeGZ(value) {
+        if(os==""){
+            return value;
+        } else {
+            let val = value / gAccScalar;
+            return clamp(val, 0.0, 1.0);
+        }
+    };
+
     function setSensorData(value) {
 
         if (internalValueChange == false) {
-//            console.log (value.replaceAll(myRe0, " "));
+            //            console.log (value.replaceAll(myRe0, " "));
             
-//            console.log (value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
+            //            console.log (value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
             sensorDataVals = JSON.parse(value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
-        oa = sensorDataVals[0];
-        ob = sensorDataVals[1];
-        og = sensorDataVals[2];
-        
-        x = sensorDataVals[3];
-        y = sensorDataVals[4];
-        z = sensorDataVals[5];
-        
-        gx = sensorDataVals[6];
-        gy = sensorDataVals[7];
-        gz = sensorDataVals[8];
-        
-        gyrox = sensorDataVals[9];
-        gyroy = sensorDataVals[10];
-        gyroz = sensorDataVals[11];
+            
+            oa = sensorDataVals[0];
+            ob = sensorDataVals[1];
+            og = sensorDataVals[2];
+            
+            x = sensorDataVals[3];
+            y = sensorDataVals[4];
+            z = sensorDataVals[5];
+
+            gx = sensorDataVals[6];
+            gy = sensorDataVals[7];
+            gz = sensorDataVals[8];
+            
+            gyrox = sensorDataVals[9];
+            gyroy = sensorDataVals[10];
+            gyroz = sensorDataVals[11];
         }
         else
             sensorDataVals = value;
 
-//        console.log ( sensorDataVals );
+        //        console.log ( sensorDataVals );
 
 
         updateFieldIfNotNull('Orientation_a', oa);
@@ -211,9 +261,9 @@ function sensors(elem) {
 
     function handleMotion(event) {
         //        internalValueChange = true;
-            gx = event.accelerationIncludingGravity.x;
-            gy = event.accelerationIncludingGravity.y;
-            gz = event.accelerationIncludingGravity.z;
+        gx = normalizeGXY(event.accelerationIncludingGravity.x);
+        gy = normalizeGXY(event.accelerationIncludingGravity.y);
+        gz = normalizeGZ(event.accelerationIncludingGravity.z);
             x = event.acceleration.x;
             y = event.acceleration.y;
             z = event.acceleration.z;
