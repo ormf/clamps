@@ -196,7 +196,6 @@ function sensors(elem) {
             z = sensorDataVals[5];
 
             gx = sensorDataVals[6];
-            gx = normalizeGXY(gx);
             gy = sensorDataVals[7];
             gz = sensorDataVals[8];
             
