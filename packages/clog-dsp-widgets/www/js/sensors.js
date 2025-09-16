@@ -22,11 +22,9 @@
 //
 // **********************************************************************
 
-// Attributes: min, max, mapping, clip-zero, thumb-color, bar-color
-
 class SensorElement extends HTMLElement {
-    static observedAttributes = [ 'interval', 'sensor-data' ];
-
+    static observedAttributes = [ 'interval', 'sensor-data', 'sensor-trigger', 'trigger-active',
+                                  'trigger-timeout', 'trigger-threshold' ];
 
     constructor() {
         // Always call super first in constructor
@@ -58,11 +56,23 @@ class SensorElement extends HTMLElement {
         case 'sensor-data':
             this.setSensorData(newValue);
             break;
+        case 'sensor-trigger':
+            this.setTrigger(newValue);
+            break;
+        case 'trigger-active':
+            this.setTriggerActive(newValue);
+            break;
+        case 'trigger-threshold':
+            this.setTriggerThreshold(newValue);
+            break;
+        case 'trigger-timeout':
+            this.setTriggerTimeout(newValue);
+            break;
         }
     }
 }
 
-customElements.define("o-sensors", SensorElement );
+customElements.define("o-sensor", SensorElement );
 
 function parseBool(value){
     if (value === 'false')
@@ -101,7 +111,7 @@ function sensors(elem) {
     var id = false;
     var internalValueChange = false;
 
-    var sensorDataVals = [];
+    var sensorDataVals = [1,1,1,1,1,1,1,1,1,1,1,1,1];
     var oa = 0;
     var ob = 0;
     var og = 0;
@@ -118,8 +128,53 @@ function sensors(elem) {
     var gyroy = 0;
     var gyroz = 0;
 
+    var deltag = 0;
+
+    var trigger = 1;
+    var triggerPending = false;
+    var triggerActive = true;
+    var triggerThreshold = 40;
+    var triggerTimeout = 100;    
+
+    var triggerTimeoutFn = false;
+    
+    var oldgx = 0;
+    var oldgy = 0;
+    var oldgz = 0;
+
+//    alert('delta-g-neu: ' + deltag);
+
+    
     function setInterval(value) {
         interval = value;
+    }
+
+    function setTrigger(value) {
+        trigger = parseFloat(value);
+//        console.log('trigger: ' + trigger);
+        if (trigger == 0)
+            document.getElementById('trigger').style.background = "transparent";
+        else
+            document.getElementById('trigger').style.background = "orange";
+    }
+
+    function setTriggerActive(value) {
+        triggerActive = parseBool(value);
+        document.getElementById('Trigger_active').innerHTML = triggerActive;
+    }
+
+    function setTriggerThreshold(value) {
+        if (internalValueChange == false) {
+            triggerThreshold = parseFloat(value);
+//            console.log('threshold: ' + triggerThreshold);
+            updateFieldIfNotNull('Trigger_threshold', triggerThreshold);
+        }
+    }
+
+    function setTriggerTimeout(value) {
+        triggerTimeout = parseFloat(value);
+ //           console.log('threshold: ' + triggerTimeout);
+        updateFieldIfNotNull('Trigger_timeout', triggerTimeout);
     }
 
     function setId(value) {
@@ -127,7 +182,7 @@ function sensors(elem) {
     }
 
     const myRe0 = /[\n\r]+/g;
-//    const myRe1 = /#S\(sensor-data :oa (.+)\)/g;
+    const myRe1 = /\((.+)\)/g;
 
     
     function setSensorData(value) {
@@ -136,28 +191,30 @@ function sensors(elem) {
 //            console.log (value.replaceAll(myRe0, " "));
             
 //            console.log (value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
-            sensorDataVals = JSON.parse(value.replaceAll(myRe0, " ").replaceAll(/\((.+)\)/g, "[$1]").replaceAll(/ +/g, ", "));
-        oa = sensorDataVals[0];
-        ob = sensorDataVals[1];
-        og = sensorDataVals[2];
-        
-        x = sensorDataVals[3];
-        y = sensorDataVals[4];
-        z = sensorDataVals[5];
-        
-        gx = sensorDataVals[6];
-        gy = sensorDataVals[7];
-        gz = sensorDataVals[8];
-        
-        gyrox = sensorDataVals[9];
-        gyroy = sensorDataVals[10];
-        gyroz = sensorDataVals[11];
+            sensorDataVals = JSON.parse(value.replaceAll(myRe0, " ").replaceAll(myRe1, "[$1]").replaceAll(/ +/g, ", "));
+
+            oa = sensorDataVals[0];
+            ob = sensorDataVals[1];
+            og = sensorDataVals[2];
+            
+            x = sensorDataVals[3];
+            y = sensorDataVals[4];
+            z = sensorDataVals[5];
+            
+            gx = sensorDataVals[6];
+            gy = sensorDataVals[7];
+            gz = sensorDataVals[8];
+            
+            gyrox = sensorDataVals[9];
+            gyroy = sensorDataVals[10];
+            gyroz = sensorDataVals[11];
+
+            deltag = sensorDataVals[12];
         }
         else
             sensorDataVals = value;
 
 //        console.log ( sensorDataVals );
-
 
         updateFieldIfNotNull('Orientation_a', oa);
         updateFieldIfNotNull('Orientation_b', ob);
@@ -171,10 +228,25 @@ function sensors(elem) {
         updateFieldIfNotNull('Gyroscope_x', gyrox);
         updateFieldIfNotNull('Gyroscope_y', gyroy);
         updateFieldIfNotNull('Gyroscope_z', gyroz);
-        if (sensor.internalValueChange)
+        updateFieldIfNotNull('Delta_g', deltag);
+        if ( internalValueChange ) {
             $(sensor).trigger( "data", { "sensor-data": sensorDataVals } );
-        //   [ oa, ob, og, x, y, z, gx, gy, gz, gyrox, gyroy, gyroz ]
-        sensor.internalValueChange = false;
+            //   [ oa, ob, og, x, y, z, gx, gy, gz, gyrox, gyroy, gyroz deltag ]
+            
+            if ((deltag > triggerThreshold) && (!triggerPending)) {
+//                $(sensor).trigger( "data", { "sensor-trigger": 1 } );
+                sensor.setAttribute('sensor-trigger', '1');
+                $(sensor).trigger( "data", { "sensor-trigger": 1 } );
+                triggerPending = true;
+                triggerTimeoutFn = setTimeout(function() {
+//                    $(sensor).trigger( "data", { "sensor-trigger": 0 } );
+                    sensor.setAttribute('sensor-trigger', '0');
+                    $(sensor).trigger( "data", { "sensor-trigger": 0 } );
+                    triggerPending = false;
+                }, triggerTimeout);
+            }
+        }
+        internalValueChange = false;
     }
 
     function handleOrientation(event) {
@@ -201,9 +273,9 @@ function sensors(elem) {
     function sendData () {
 //        const d = new Date();
         //        button.innerHTML = d.toLocaleTimeString();
-        const data = "(" + oa + " " + ob + " " + og + " " + x + " " + y + " " + z + " " + gx + " " + gy + " " + gz + " " + gyrox + " " + gyroy + " " + gyroz + ")";
+        const data = "(" + oa + " " + ob + " " + og + " " + x + " " + y + " " + z + " " + gx + " " + gy + " " + gz + " " + gyrox + " " + gyroy + " " + gyroz + " " + deltag + ")";
 //        console.log(data);
-        sensor.internalValueChange = true;
+        internalValueChange = true;
         sensor.setAttribute(
             'sensor-data', data );
         sendDataTimer = setTimeout( sendData, interval );
@@ -220,6 +292,14 @@ function sensors(elem) {
             gyrox = event.rotationRate.alpha;
             gyroy = event.rotationRate.beta;
             gyroz = event.rotationRate.gamma;
+            if (triggerActive) {
+                deltag = Math.abs(gx - oldgx)
+                    + Math.abs(gy - oldgy)
+                    + Math.abs(gz - oldgz);
+                oldgx = gx;
+                oldgy = gy;
+                oldgz = gz;
+            }
     }
 
     var is_running = false;
@@ -281,6 +361,10 @@ function sensors(elem) {
         sensor.id = id;
         sensor.sensorDataVals = sensorDataVals;
         sensor.sendData = sendData;
+        sensor.setTriggerActive = setTriggerActive;
+        sensor.setTriggerThreshold = setTriggerThreshold;
+        sensor.setTriggerTimeout = setTriggerTimeout;
+        sensor.setTrigger = setTrigger;
 
         sensor.oa = oa;
         sensor.ob = ob;
@@ -302,6 +386,15 @@ function sensors(elem) {
 
         sensor.updateFieldIfNotNull = updateFieldIfNotNull;
 
+        
+        sensor.triggerActive = triggerActive;
+        sensor.triggerThreshold = triggerThreshold;
+        sensor.triggerTimeout = triggerTimeout;
+        sensor.triggerPending = triggerPending;
+        sensor.trigger = trigger;
+
+
+        
         sensor.button = button;
         sensor.doButtonClick = doButtonClick;
         

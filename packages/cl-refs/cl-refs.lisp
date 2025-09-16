@@ -306,7 +306,7 @@ watch
 (defun make-computed (fn &optional (setter nil))
   "Return a <<ref-object>> which recalculates and sets its value using
 /fn/ whenever a ref-object accessed with <<get-val>> in the body of
-/fn/ is changed.
+/fn/ is changed and its unwatch fn as values.
 
 Refer to <<clamps:Defining relations>> in the Clamps documentation for
 examples.
@@ -355,8 +355,8 @@ watch
                         (funcall listener old (ref-value new-ref)))))))
               new-ref))
       ;; call the update function once to register all callbacks.
-      (funcall (ref-update new-ref))
-      new-ref)))
+      (funcall (ref-update new-ref)))
+    (values new-ref (lambda () (clear-dependencies new-ref update-callback)))))
 
 ;;; watch is similar to make-computed. In contrast to make-computed it
 ;;; mainly implements behaviour. Like computed it uses a ref-object

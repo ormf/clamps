@@ -201,7 +201,7 @@ sfz-preset-loaded?
                                    slist))))
         (list (apply #'min keynums) (apply #'max keynums)))))
 
-;;; (sf-table-get-range :altoflute-k)
+;;; (sfz-table-get-range :altoflute-k)
 
 (defun get-scale (keynum sample-data)
   "calc time scaling factor from target pitch and sample-data."

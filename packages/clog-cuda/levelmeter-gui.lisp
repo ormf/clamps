@@ -206,31 +206,38 @@ nil just create the levelmeter."
            :mapping :pd
            :css '(:height "97%" :width "0.25em" :min-width "0.1em" :margin "1.75% 1.75% 1.5% 1.5%" :border "0.1em solid black" :background "#222")))))))
 
+(defparameter *mb01-amp-slider* (make-ref (amp->db-slider 1)))
+(defparameter *mb01-amp* (make-computed (lambda () (db-slider->amp (get-val *mb01-amp-slider*)))))
+(defparameter *mb01-ampdb* (make-computed (lambda () (amp->db (get-val *mb01-amp*)))))
+
+
 (defun master-amp-bus-levelmeter-gui
     (id gui-parent &key (group 300)
                      (audio-bus 0)
                      (out-chan 0)
                      (num-channels 1)
-                     ;;                                                      (freq 10)
-                     (amp (make-ref 1))
+                     ;; (freq 10)
                      (amp-slider (make-ref (amp->db-slider 1)))
-                     meter-refs
+                     (meter-refs (vector (make-ref -100)))
                      (meter-display (make-ref :post))
                      (bus-name "")
                      (min -40)
-                     (max 12)
-                     nb-ampdb)
-  (declare (ignorable nb-ampdb))
+                     (max 12))
   (let* ((dsp (or (find-dsp id)
-                  (add-dsp 'master-amp-meter-bus
-                           id :node-group group
-                           :audio-bus audio-bus
-                           :out-chan out-chan
-                           :num-channels num-channels
-                           :amp amp
-                           :meter-refs meter-refs
-                           :meter-display meter-display
-                           :bus-name bus-name))))
+                  (let ((unwatch nil))
+                    (push (make-computed (lambda () (db-slider->amp (get-val amp-slider)))) unwatch)
+                    (push (make-computed (lambda () (ou:n-lin (get-val amp-slider) -40 12))) unwatch)
+                    (add-dsp 'master-amp-meter-bus
+                             id :node-group group
+                             :audio-bus audio-bus
+                             :out-chan out-chan
+                             :num-channels num-channels
+                             :amp amp
+                             :meter-refs meter-refs
+                             :meter-display meter-display
+                             :bus-name bus-name
+                             :unwatch unwatch
+                             )))))
     (with-slots (meter-refs bus-node) dsp
       (let* ((gui-container (create-div gui-parent
                                         :content bus-name

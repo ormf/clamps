@@ -19,8 +19,9 @@
 ;;; **********************************************************************
 
 (defpackage #:clog-dsp-widgets
-  (:use #:cl #:clog #:cl-refs)
-  (:shadowing-import-from #:incudine :buffer :buffer-size :buffer-value)
+  (:use #:cl #:clog #:cl-refs #:orm-utils)
+  (:shadowing-import-from #:incudine :buffer :buffer-size :buffer-value :group)
+  (:shadowing-import-from #:orm-utils :rotate)
   (:export
    #:*bindings*
    #:clear-bindings
@@ -42,7 +43,7 @@
    #:create-o-vumeter
    #:create-o-svg
    #:create-o-scope
-   #:create-o-sensors
+   #:create-o-sensor
    #:sensor-data-reader-fn
    #:create-hide-button
    #:create-collection

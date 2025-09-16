@@ -9,4 +9,4 @@ in clamps."
   :serial t
   :depends-on (#:cl-refs #:orm-utils #:clog-dsp-widgets #:incudine)
   :components ((:file "package")
-               (:file "sensors")))
+               (:file "sensor")))

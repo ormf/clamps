@@ -111,6 +111,11 @@
            clamps-sensors:sensor-x clamps-sensors:sensor-y clamps-sensors:sensor-z
            clamps-sensors:sensor-gx clamps-sensors:sensor-gy clamps-sensors:sensor-gz
            clamps-sensors:sensor-gyrox clamps-sensors:sensor-gyroy clamps-sensors:sensor-gyroz
+           clamps-sensors:sensor-deltag
+           clamps-sensors:sensor-trigger-threshold
+           clamps-sensors:sensor-trigger-timeout
+           clamps-sensors:sensor-trigger
+
            clamps-sensors:add-sensor clamps-sensors:remove-sensor
            clamps-sensors:find-sensor clamps-sensors:list-sensors
            clamps-sensors:sensor-id clamps-sensors:sensor-path clamps-sensors:sensor-data

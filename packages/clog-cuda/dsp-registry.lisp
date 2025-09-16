@@ -3,7 +3,7 @@
 ;;;
 ;;;
 ;;; a dsp registry for dsps like buses, levelmeters, etc. which live
-;;; in persistent group (different from group 200).
+;;; in a persistent group (different from group 200).
 ;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2024 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>

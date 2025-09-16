@@ -484,13 +484,22 @@ hash-table if its element-list is empty."
 (defun sensor-data-reader-fn (&rest data)
   data)
 
-(defun create-o-sensors (parent bindings &key (interval 2) (orientation t) (xyz t) (gxyz t) (gyro t) css)
+(defun create-o-sensor (parent bindings &key (interval 2) (orientation t) (xyz t) (gxyz t) (gyro t) css)
   (let* (;;; (var (b-ref (first bindings)))
          ;;; (attr (b-attr (first bindings))) ;;; format nil "~{~a~^,~}"
          (element (create-child
                    parent
-                   (format nil "<o-sensors ~{~@[~a ~]~}>
-<div id=\"orientation_panel\" style=\"display: inline-block;\"\>
+                   (format nil "<o-sensor ~{~@[~a ~]~}>
+<div id=\"trigger\" style=\"background: transparent; width: 3em; height: 1em;border: 1px solid black;\"></div>
+<h4>Delta G</h4>
+<ul>
+  <li>delta-g: <span id=\"Delta_g\" style=\"font-size: 5em\">0</span></li>
+  <li>Trigger-timeout: <span id=\"Trigger_timeout\">0</span><span>ms</span></li>
+  <li>Trigger-threshold: <span id=\"Trigger_threshold\">0</span></li>
+  <li>Trigger-active: <span id=\"Trigger_active\">0</span></li>
+</ul>
+<div id=\"delta_g_panel\" style=\"display: inline-block;height: 10rem;\"\>
+<div id=\"orientation_panel\" style=\"display: inline-block;height: 10rem;\"\>
 <h4 style=\"margin-top:2.75rem;\">Orientation</h4>
 <ul>
   <li>X-axis (β): <span id=\"Orientation_b\">0</span><span>°</span></li>
@@ -499,7 +508,7 @@ hash-table if its element-list is empty."
 </ul>
 </div>
 
-<div id=\"accelerometer_panel\" style=\"display: inline-block;\"\>
+<div id=\"accelerometer_panel\" style=\"display: inline-block;height: 10rem;\"\>
 <h4>Accelerometer</h4>
 <ul>
   <li>X-axis: <span id=\"Accelerometer_x\">0</span><span> m/s<sup>2</sup></span></li>
@@ -508,7 +517,7 @@ hash-table if its element-list is empty."
 </ul>
 </div>
 
-<div id=\"g_accelerometer_panel\" style=\"display: inline-block;\"\>
+<div id=\"g_accelerometer_panel\" style=\"display: inline-block;height: 10rem;\"\>
 <h4>Accelerometer including gravity</h4>
 
 <ul>
@@ -518,7 +527,7 @@ hash-table if its element-list is empty."
 </ul>
 </div>
 
-<div id=\"gyroscope_panel\" style=\"display: inline-block;\"\>
+<div id=\"gyroscope_panel\" style=\"display: inline-block;height: 10rem;\"\>
 <h4>Gyroscope</h4>
 <ul>
   <li>X-axis: <span id=\"Gyroscope_x\">0</span><span>°/s</span></li>
@@ -556,6 +565,10 @@ hash-table if its element-list is empty."
                                      (push (list element attr) *refs-seen*)
                                      (%set-val (b-ref binding)
                                                (apply #'sensor-data-reader-fn (read-from-string val))))
+                                    ((string= attr "sensor-trigger")
+                                     (push (list element attr) *refs-seen*)
+                                     (%set-val (b-ref binding) val)
+                                     (if (= val 1) (trigger (b-ref binding))))
                                     (t
                                      (push (list element attr) *refs-seen*)
                                      (%set-val (b-ref binding) val))))))))))

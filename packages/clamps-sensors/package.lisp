@@ -34,5 +34,7 @@
            #:sensor-x #:sensor-y #:sensor-z
            #:sensor-gx #:sensor-gy #:sensor-gz
            #:sensor-gyrox #:sensor-gyroy #:sensor-gyroz
+           #:sensor-deltag
+           #:sensor-trigger-threshold #:sensor-trigger-timeout #:sensor-trigger
            #:add-sensor #:remove-sensor #:find-sensor #:list-sensors
            #:with-sensor-add-watch))
