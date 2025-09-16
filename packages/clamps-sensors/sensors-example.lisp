@@ -36,24 +36,69 @@
   (remove-sensor :sensor1)
   (add-sensor :sensor1))
 
-(add-trigger-fn (sensor-trigger (find-sensor :sensor1)) (lambda () (imsg :warn "triggered")))
-
-(identity)
+;;; check if the sensor is registered:
 
 (find-sensor :sensor1)
 
-(set-val (sensor-trigger (find-sensor :sensor1)) 0)
+;;; setting properties of the sensor:
+
+(set-val (sensor-trigger-timeout (find-sensor :sensor1)) 200)
+(set-val (sensor-trigger-threshold (find-sensor :sensor1)) 0.1)
+
+;;; activate trigger
+(set-val (sensor-trigger-active (find-sensor :sensor1)) t)
+
+;;; deactivate trigger
+(set-val (sensor-trigger-active (find-sensor :sensor1)) nil)
 
 ;;; check if it is registered.
 
-;;; (defparameter clamps-sensors::*my-sensor* nil)
+(find-sensor :sensor1)
 
-(set-val (sensor-data (find-sensor :sensor1))
-         (make-sensor-data  (random 2.0) (random 2.0) (random 2.0)
-                            (random 2.0) (random 2.0) (random 2.0)
-                            (random 2.0) (random 2.0) (random 2.0)
-                            (random 2.0) (random 2.0) (random 2.0)
-                            (random 2.0)))
+;;; defining a function to be invoked on trigger:
+
+(add-trigger-fn
+ (sensor-trigger (find-sensor :sensor1))
+ (lambda () (imsg :warn "triggered")))
+
+;;; wrappers for the above:
+
+(defun sensor-trig-timeout (sensor)
+  (get-val (sensor-trigger-timeout (find-sensor sensor))))
+
+(defun set-sensor-trig-timeout (sensor val)
+  (set-val (sensor-trigger-timeout (find-sensor sensor)) val))
+
+(defsetf sensor-trig-timeout set-sensor-trig-timeout)
+
+;;; (sensor-trig-timeout :sensor1)
+;;; (setf (sensor-trig-timeout :sensor1) 500)
+
+(defun sensor-trig-threshold (sensor)
+  (get-val (sensor-trigger-threshold (find-sensor sensor))))
+
+(defun set-sensor-trig-threshold (sensor val)
+  (set-val (sensor-trigger-threshold (find-sensor sensor)) val))
+
+(defsetf sensor-trig-threshold set-sensor-trig-threshold)
+
+;;; (sensor-trig-threshold :sensor1)
+;;; (setf (sensor-trig-threshold :sensor1) 0.2)
+
+(defun sensor-trig-active (sensor)
+  (get-val (sensor-trigger-active (find-sensor sensor))))
+
+(defun set-sensor-trig-active (sensor val)
+  (set-val (sensor-trigger-active (find-sensor sensor)) val))
+
+(defsetf sensor-trig-active set-sensor-trig-active)
+
+;;; (sensor-trig-active :sensor1)
+;;; (setf (sensor-trig-active :sensor1) nil)
+;;; (setf (sensor-trig-active :sensor1) t)
+
+
+
 
 ;;; attach behaviour to value changes received from the mobile (here
 ;;; we just print out the sensor-data values in the repl whenever they
@@ -101,7 +146,3 @@
 (let ((sensor (find-sensor :sensor1)))
   (push (lambda () (format t "~&~a%" (get-val (sensor-data sensor))))
         (sensor-unwatch sensor)))
-
-(phasor)
-
-(list-sensors)

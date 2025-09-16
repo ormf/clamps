@@ -97,7 +97,7 @@ function clamp(number, lower, upper) {
 }
 
 function parseBool(value){
-    if (value === 'false')
+    if ((value == 'false' || value == 'nil' ))
         return false;
     else
         return true;
@@ -123,8 +123,9 @@ function sensors(elem) {
     button.className = "btn btn-lg btn-success py-1";
     button.setAttribute("id", "start_demo");
     button.setAttribute("type", "button");
-    button.innerHTML = "Start Demo";
+    button.innerHTML = "Stopped";
     button.style.fontSize = "3em";
+    button.style.backgroundColor = "#ccc";
     //    sensor.appendChild(button);
     sensor.prepend(button);
     sensor.externalValueChange = true;
@@ -182,6 +183,10 @@ function sensors(elem) {
 
     function setTriggerActive(value) {
         triggerActive = parseBool(value);
+        if (triggerActive)
+            document.getElementById('trigger').style.background = "transparent";
+        else
+            document.getElementById('trigger').style.background = "#aaa";
         document.getElementById('Trigger_active').innerHTML = triggerActive;
     }
 
@@ -363,7 +368,8 @@ function sensors(elem) {
         if (is_running){
 //            alert("stop");
             window.removeEventListener("deviceorientation", handleOrientation);
-            button.innerHTML = "Start demo";
+            button.innerHTML = "Stopped";
+            button.style.backgroundColor = "#ccc";
             button.classList.add('btn-success');
             button.classList.remove('btn-danger');
             clearTimeout(sendDataTimer);
@@ -373,7 +379,8 @@ function sensors(elem) {
 //            alert("start");
             window.addEventListener("devicemotion", handleMotion);
             window.addEventListener("deviceorientation", handleOrientation);
-            button.innerHTML = "Stop demo";
+            button.innerHTML = "Running";
+            button.style.backgroundColor = "#cfc";
             button.classList.remove('btn-success');
             button.classList.add('btn-danger');
             internalValueChange = true;
