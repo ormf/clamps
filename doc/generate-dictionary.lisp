@@ -48,6 +48,7 @@
     ;; "CM"
     "CUDA-USOCKET-OSC"
     "ATS-CUDA-DISPLAY"
+    "CLAMPS-SENSORS"
     "FUDI"
     "OF-INCUDINE-DSPS"
     "INCUDINE-BUFS"

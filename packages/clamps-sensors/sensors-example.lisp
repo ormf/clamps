@@ -63,41 +63,6 @@
 
 ;;; wrappers for the above:
 
-(defun sensor-trig-timeout (sensor)
-  (get-val (sensor-trigger-timeout (find-sensor sensor))))
-
-(defun set-sensor-trig-timeout (sensor val)
-  (set-val (sensor-trigger-timeout (find-sensor sensor)) val))
-
-(defsetf sensor-trig-timeout set-sensor-trig-timeout)
-
-;;; (sensor-trig-timeout :sensor1)
-;;; (setf (sensor-trig-timeout :sensor1) 500)
-
-(defun sensor-trig-threshold (sensor)
-  (get-val (sensor-trigger-threshold (find-sensor sensor))))
-
-(defun set-sensor-trig-threshold (sensor val)
-  (set-val (sensor-trigger-threshold (find-sensor sensor)) val))
-
-(defsetf sensor-trig-threshold set-sensor-trig-threshold)
-
-;;; (sensor-trig-threshold :sensor1)
-;;; (setf (sensor-trig-threshold :sensor1) 0.2)
-
-(defun sensor-trig-active (sensor)
-  (get-val (sensor-trigger-active (find-sensor sensor))))
-
-(defun set-sensor-trig-active (sensor val)
-  (set-val (sensor-trigger-active (find-sensor sensor)) val))
-
-(defsetf sensor-trig-active set-sensor-trig-active)
-
-;;; (sensor-trig-active :sensor1)
-;;; (setf (sensor-trig-active :sensor1) nil)
-;;; (setf (sensor-trig-active :sensor1) t)
-
-
 
 
 ;;; attach behaviour to value changes received from the mobile (here

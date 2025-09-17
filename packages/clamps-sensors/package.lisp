@@ -38,4 +38,9 @@
            #:sensor-trigger-threshold #:sensor-trigger-timeout
            #:sensor-trigger #:sensor-trigger-active
            #:add-sensor #:remove-sensor #:find-sensor #:list-sensors
-           #:with-sensor-add-watch))
+           #:with-sensor-add-watch
+           #:sensor-trig-active
+           #:sensor-trig-threshold
+           #:sensor-trig-timeout
+           #:sensor-add-trigger-fn
+           ))

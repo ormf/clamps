@@ -103,7 +103,7 @@
            orm-utils:r-lin-dev orm-utils:r-exp-dev clog-dsp-widgets:clog-dsp-widgets-initialize
            clog-dsp-widgets:new-gui-window
            clog-dsp-widgets:create-o-numbox
-           clog-dsp-widgets:create-o-sensors
+           clog-dsp-widgets:create-o-sensor
 
            clamps-sensors:make-sensor
            clamps-sensors:make-sensor-data
@@ -114,8 +114,15 @@
            clamps-sensors:sensor-deltag
            clamps-sensors:sensor-trigger-threshold
            clamps-sensors:sensor-trigger-timeout
+           clamps-sensors:sensor-trigger-active
            clamps-sensors:sensor-trigger
+           clamps-sensors:sensor-trig-threshold
+           clamps-sensors:sensor-trig-timeout
+           clamps-sensors:sensor-trig-active
+           clamps-sensors:sensor-add-trigger-fn
 
+
+           
            clamps-sensors:add-sensor clamps-sensors:remove-sensor
            clamps-sensors:find-sensor clamps-sensors:list-sensors
            clamps-sensors:sensor-id clamps-sensors:sensor-path clamps-sensors:sensor-data
