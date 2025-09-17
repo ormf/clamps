@@ -492,3 +492,109 @@ TYPE should be one of ERROR, WARN, INFO or DEBUG."
       (bounce-to-buffer (b)
         (env-synth env)))))
   env)
+
+(in-package :cl-refs)
+
+(defun speedlim-watch (timeout fn)
+  "Call /fn/ whenever a value accessed using <<get-val>> in the body of
+the function is changed, limiting the speed between two consecutive
+values to /timeout/ in seconds.
+
+/speedlim-watch/ returns a function to remove the relation,
+/speedlim-watch/ has established. Refer to the chapter
+<<clamps:cl-refs>> in the Clamps Packages documentation for examples.
+
+@Arguments
+fn - Function of no arguments to call
+
+@Example
+(progn
+  (unwatch-all *unwatch*)
+  (push
+   (speedlim-watch
+    1
+    (lambda ()
+      (imsg :warn \"value: ~a\" (get-val *my-value*))))
+   *unwatch*))
+
+(loop
+  for i below 40
+  do (at (+ (now) (* i 0.1))
+         (lambda () (set-val *my-value* (random 1.0)))))
+
+
+@See-also
+add-watch
+get-val
+make-computed
+make-ref
+set-val
+unwatch-all
+watch
+"  (let* ((new-ref (make-ref nil :fn fn))
+          (timeout timeout)
+          (pending nil)
+          (new-val nil)
+          (last-time (clamps:now))
+          (update-callback (lambda (&optional old new)
+                             (declare (ignorable old new))
+                             (funcall (ref-update new-ref)))))
+     (with-updating-deps
+       (setf (ref-update new-ref)
+             (lambda ()
+               (labels ((clock-fn ()
+/;;                          (clamps:imsg :warn "clock-fn: ~a" new-val)
+                          (setf pending nil)
+                          (if new-val
+                              (progn
+                                (setf (ref-value new-ref) (funcall (ref-fn new-ref)))
+                                (setf new-val nil)
+                                (if (< (- (clamps:now) last-time) timeout)
+                                    (progn
+                                      (clamps:at (+ last-time timeout) #'clock-fn)
+                                      (setf pending t)
+                                      (setf last-time (clamps:now))))))))
+                 (on-deps-update (clear-dependencies new-ref update-callback))
+                 ;; the let below establishes a dynamic context for the
+                 ;; funcall in its body. If *curr-ref* is non-nil, any
+                 ;; #'get-val access to a ref in ref-fn will push the
+                 ;; update-callback to the listeners of the ref and the
+                 ;; ref to the dependencies of the new-ref. In the first
+                 ;; call to watch, *update-deps* is set to T to ensure
+                 ;; all dependencies/listeners get registered. Subsequent
+                 ;; calls to ref-update depend on the value of
+                 ;; *update-deps* in the dynamic context in which they
+                 ;; are called to avoid unnecessary duplicate registering
+                 ;; of the dependencies/listeners on each update
+                 ;; triggered by value changes in the observed refs.
+                 (if pending
+                     (progn
+ ;;                      (clamps:imsg :warn "pending")
+                       (setf new-val t)
+                       (setf last-time (clamps:now))
+                       )
+                     (let ((*curr-ref* (on-deps-update new-ref)) 
+                           (*curr-callback* update-callback))
+                       ;; Note: storing the new value doesn't seem to make sense as the
+                       ;; object's value isn't supposed to be read anywhere. Watch is rather
+                       ;; used for its side effects only.
+                       (setf pending t)
+                       (clamps:at (+ (clamps:now) timeout) #'clock-fn)
+                       (setf (ref-value new-ref) (funcall (ref-fn new-ref)))
+                       (setf new-val nil))))
+               new-ref))
+       ;; call the update function once to register a call to it in all
+       ;; ref-objects read in <f>.
+       (funcall (ref-update new-ref)))
+     (lambda (&optional new-timeout) ;;; return the unwatch/cleanup fn with
+                                ;;; an optional argument to reset the
+                                ;;; timeout rather than
+                                ;;; unwatch/cleaning up.
+       (if (numberp new-timeout)
+           (setf timeout new-timeout)
+           (progn ;;; cleanup if called with no number Argument
+             (clear-dependencies new-ref update-callback)
+             (makunbound 'new-ref))))))
+
+(export 'speedlim-watch 'cl-refs)
+(export 'speedlim-watch 'clamps)

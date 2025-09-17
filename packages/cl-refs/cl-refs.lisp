@@ -284,6 +284,7 @@ make-computed
 make-ref
 ref-object
 set-val
+speedlim-watch
 watch
 "
   `(typecase ,ref
@@ -386,6 +387,7 @@ get-val
 make-computed
 make-ref
 set-val
+speedlim-watch
 unwatch-all
 "  (let* ((new-ref (make-ref nil :fn fn))
           (update-callback (lambda (&optional old new)
@@ -477,6 +479,7 @@ forms - Zero or more function bodies supplied to the #'watch function.
 
 @See-also
 unwatch-all
+speedlim-watch
 watch
 "
   `(progn
@@ -495,6 +498,7 @@ unwatch - List of functions with no arguments removing a previously established 
 
 @See-also
 add-watch
+speedlim-watch
 watch
 "
   `(setf ,unwatch (map '() #'funcall ,unwatch)))

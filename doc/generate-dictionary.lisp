@@ -596,6 +596,7 @@ set-tempo
               clamps:evt-amp
               clamps:svg-lines->cm
 
+;;              cl-refs:speedlim-watch
               cl-user:*sfz-file-path*
               cl-user:*sfile-path*
               cl-user:*ats-file-path*

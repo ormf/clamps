@@ -198,8 +198,9 @@
    #+BEGIN_SRC lisp
      (add-sensor id)
    #+END_SRC
-   Add an Accelerometer sensor with /id/ accessible by obile at the URL
-   http://<local-ip>:54619/id to the sensor registry.
+   Add an Accelerometer sensor with /id/ accessible from a Firefox
+   Browser on a Mobile device at the URL http://<local-ip>:54619/id to
+   the sensor registry.
    
    Note that the id in the URL will be written without the colon of the
    keyword. An id of ~:sensor1~ will result in the URL
@@ -211,6 +212,10 @@
     - [[find-sensor][find-sensor]]
     - [[list-sensors][list-sensors]]
     - [[remove-sensor][remove-sensor]]
+    - [[sensor-add-motion-fn][sensor-add-motion-fn]]
+    - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
+    - [[sensor-remove-all-motion-fns][sensor-remove-all-motion-fns]]
+    - [[sensor-remove-all-triggers][sensor-remove-all-triggers]]
     - [[sensor-trig-active][sensor-trig-active]]
     - [[sensor-trig-threshold][sensor-trig-threshold]]
     - [[sensor-trig-timeout][sensor-trig-timeout]]
@@ -310,6 +315,7 @@
     #+END_SRC
 *** See also
     - [[unwatch-all][unwatch-all]]
+    - [[speedlim-watch][speedlim-watch]]
     - [[watch][watch]]
 ** all-notes-off
    Function
@@ -2243,7 +2249,7 @@
    #+BEGIN_SRC lisp
      (find-sensor id)
    #+END_SRC
-   Return the sensor struct of sensor /id/.
+   Return the sensor struct of sensor referenced by /id/.
 *** Arguments
     | =id= | Keyword of the id of the sensor. |
 
@@ -2252,6 +2258,10 @@
     - [[find-sensor][find-sensor]]
     - [[list-sensors][list-sensors]]
     - [[remove-sensor][remove-sensor]]
+    - [[sensor-add-motion-fn][sensor-add-motion-fn]]
+    - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
+    - [[sensor-remove-all-motion-fns][sensor-remove-all-motion-fns]]
+    - [[sensor-remove-all-triggers][sensor-remove-all-triggers]]
     - [[sensor-trig-active][sensor-trig-active]]
     - [[sensor-trig-threshold][sensor-trig-threshold]]
     - [[sensor-trig-timeout][sensor-trig-timeout]]
@@ -2986,6 +2996,13 @@
     - [[find-sensor][find-sensor]]
     - [[list-sensors][list-sensors]]
     - [[remove-sensor][remove-sensor]]
+    - [[sensor-add-motion-fn][sensor-add-motion-fn]]
+    - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
+    - [[sensor-remove-all-motion-fns][sensor-remove-all-motion-fns]]
+    - [[sensor-remove-all-triggers][sensor-remove-all-triggers]]
+    - [[sensor-trig-active][sensor-trig-active]]
+    - [[sensor-trig-threshold][sensor-trig-threshold]]
+    - [[sensor-trig-timeout][sensor-trig-timeout]]
 ** list-sfz-presets
    Function
    #+BEGIN_SRC lisp
@@ -5252,7 +5269,7 @@
    #+BEGIN_SRC lisp
      (remove-sensor id)
    #+END_SRC
-   remove the sensor /id/ from the sensor registry.
+   remove the sensor referenced by /id/ from the sensor registry.
 *** Arguments
     | =id= | Keyword of the id of the sensor. |
 
@@ -5260,6 +5277,10 @@
     - [[add-sensor][add-sensor]]
     - [[find-sensor][find-sensor]]
     - [[list-sensors][list-sensors]]
+    - [[sensor-add-motion-fn][sensor-add-motion-fn]]
+    - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
+    - [[sensor-remove-all-motion-fns][sensor-remove-all-motion-fns]]
+    - [[sensor-remove-all-triggers][sensor-remove-all-triggers]]
     - [[sensor-trig-active][sensor-trig-active]]
     - [[sensor-trig-threshold][sensor-trig-threshold]]
     - [[sensor-trig-timeout][sensor-trig-timeout]]
@@ -5557,6 +5578,28 @@
      (send-button object)
    #+END_SRC
    state of the the Send button
+** sensor-add-trigger-fn
+   Function
+   #+BEGIN_SRC lisp
+     (sensor-add-trigger-fn id fn)
+   #+END_SRC
+   Add /fn/ to the sensor referenced by /id/ to be called upon a trigger when moving
+   the accelerometer.
+*** Arguments
+    | =id= | Keyword of the id of the sensor.        |
+    | =fn= | Function to call when a trigger occurs. |
+
+*** See also
+    - [[add-sensor][add-sensor]]
+    - [[find-sensor][find-sensor]]
+    - [[list-sensors][list-sensors]]
+    - [[remove-sensor][remove-sensor]]
+    - [[sensor-add-motion-fn][sensor-add-motion-fn]]
+    - [[sensor-remove-all-motion-fns][sensor-remove-all-motion-fns]]
+    - [[sensor-remove-all-triggers][sensor-remove-all-triggers]]
+    - [[sensor-trig-active][sensor-trig-active]]
+    - [[sensor-trig-threshold][sensor-trig-threshold]]
+    - [[sensor-trig-timeout][sensor-trig-timeout]]
 ** sensor-data
    Structure
 
@@ -5630,6 +5673,26 @@
    #+BEGIN_SRC lisp
      (sensor-path instance)
    #+END_SRC
+** sensor-remove-all-triggers
+   Function
+   #+BEGIN_SRC lisp
+     (sensor-remove-all-triggers id)
+   #+END_SRC
+   remove all trigger functions from the sensor referenced by /id/.
+*** Arguments
+    | =id= | Keyword of the id of the sensor. |
+
+*** See also
+    - [[add-sensor][add-sensor]]
+    - [[find-sensor][find-sensor]]
+    - [[list-sensors][list-sensors]]
+    - [[remove-sensor][remove-sensor]]
+    - [[sensor-add-motion-fn][sensor-add-motion-fn]]
+    - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
+    - [[sensor-remove-all-motion-fns][sensor-remove-all-motion-fns]]
+    - [[sensor-trig-active][sensor-trig-active]]
+    - [[sensor-trig-threshold][sensor-trig-threshold]]
+    - [[sensor-trig-timeout][sensor-trig-timeout]]
 ** sensor-trig-active
    Function
    #+BEGIN_SRC lisp
@@ -5645,6 +5708,10 @@
     - [[find-sensor][find-sensor]]
     - [[list-sensors][list-sensors]]
     - [[remove-sensor][remove-sensor]]
+    - [[sensor-add-motion-fn][sensor-add-motion-fn]]
+    - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
+    - [[sensor-remove-all-motion-fns][sensor-remove-all-motion-fns]]
+    - [[sensor-remove-all-triggers][sensor-remove-all-triggers]]
     - [[sensor-trig-threshold][sensor-trig-threshold]]
     - [[sensor-trig-timeout][sensor-trig-timeout]]
 ** sensor-trig-threshold
@@ -5662,6 +5729,10 @@
     - [[find-sensor][find-sensor]]
     - [[list-sensors][list-sensors]]
     - [[remove-sensor][remove-sensor]]
+    - [[sensor-add-motion-fn][sensor-add-motion-fn]]
+    - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
+    - [[sensor-remove-all-motion-fns][sensor-remove-all-motion-fns]]
+    - [[sensor-remove-all-triggers][sensor-remove-all-triggers]]
     - [[sensor-trig-active][sensor-trig-active]]
     - [[sensor-trig-timeout][sensor-trig-timeout]]
 ** sensor-trig-timeout
@@ -5679,6 +5750,10 @@
     - [[find-sensor][find-sensor]]
     - [[list-sensors][list-sensors]]
     - [[remove-sensor][remove-sensor]]
+    - [[sensor-add-motion-fn][sensor-add-motion-fn]]
+    - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
+    - [[sensor-remove-all-motion-fns][sensor-remove-all-motion-fns]]
+    - [[sensor-remove-all-triggers][sensor-remove-all-triggers]]
     - [[sensor-trig-active][sensor-trig-active]]
     - [[sensor-trig-threshold][sensor-trig-threshold]]
 ** sensor-trigger
@@ -5799,6 +5874,7 @@
     - [[make-ref][make-ref]]
     - [[ref-object][ref-object]]
     - [[set-val][set-val]]
+    - [[speedlim-watch][speedlim-watch]]
     - [[watch][watch]]
 ** *​sfile-path​*
    :PROPERTIES:
@@ -6040,6 +6116,29 @@
      (slurp-string file)
    #+END_SRC
    Return contents of file as a string.
+** speedlim-watch
+   Function
+   #+BEGIN_SRC lisp
+     (speedlim-watch timeout fn)
+   #+END_SRC
+   Call /fn/ whenever a value accessed using [[get-val][get-val]] in the body of
+   the function is changed, limiting the speed between two consecutive
+   values to /timeout/ in seconds.
+   
+   /watch/ returns a function to remove the relation, /watch/ has
+   established. Refer to the chapter [[clamps:cl-refs][cl-refs]] in the Clamps
+   Packages documentation for examples.
+*** Arguments
+    | =fn= | Function of no arguments to call |
+
+*** See also
+    - [[add-watch][add-watch]]
+    - [[get-val][get-val]]
+    - [[make-computed][make-computed]]
+    - [[make-ref][make-ref]]
+    - [[set-val][set-val]]
+    - [[unwatch-all][unwatch-all]]
+    - [[watch][watch]]
 ** spit
    Function
    #+BEGIN_SRC lisp
@@ -6592,6 +6691,7 @@
 
 *** See also
     - [[add-watch][add-watch]]
+    - [[speedlim-watch][speedlim-watch]]
     - [[watch][watch]]
 ** update-all-controllers
    Function
@@ -6882,6 +6982,7 @@
     - [[make-computed][make-computed]]
     - [[make-ref][make-ref]]
     - [[set-val][set-val]]
+    - [[speedlim-watch][speedlim-watch]]
     - [[unwatch-all][unwatch-all]]
 ** with-curr-dir
    Macro

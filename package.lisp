@@ -93,6 +93,7 @@
            cl-refs:copy-ref
            cl-refs:add-watch
            cl-refs:unwatch-all
+           
            cl-midictl:set-marker orm-utils:combinations export-svg
            orm-utils:with-curr-dir plot-2d
            orm-utils:differentiate
@@ -121,9 +122,9 @@
            clamps-sensors:sensor-trig-active
            clamps-sensors:sensor-add-trigger-fn
            clamps-sensors:sensor-remove-all-triggers
+;;           clamps-sensors:sensor-add-motion-fn
+;;           clamps-sensors:sensor-remove-all-motion-fns
 
-
-           
            clamps-sensors:add-sensor clamps-sensors:remove-sensor
            clamps-sensors:find-sensor clamps-sensors:list-sensors
            clamps-sensors:sensor-id clamps-sensors:sensor-path clamps-sensors:sensor-data

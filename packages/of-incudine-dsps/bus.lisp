@@ -129,7 +129,7 @@ at CHANNEL-OFFSET."
         (setf (audio-bus (+ current-channel bus) current-frame) +sample-zero+))))) ;;; reset audio-bus before next audiograph run.
     
 (defun bus-amp-dsp (&key (group 300) id-callback (num-channels 1) (amp 1) (audio-bus 0))
-  "wrapper around master-out with a callback to register the node id after instantiation."
+  "wrapper around bs-amp-synth with a callback to register the node id after instantiation."
   (bus-amp-synth audio-bus amp num-channels
                  :action (lambda (n)
                            (funcall id-callback (node-id n)))

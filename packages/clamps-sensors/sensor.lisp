@@ -69,7 +69,7 @@ find-sensor
 list-sensors
 remove-sensor
 sensor-add-trigger-fn
-sensor-remove-all-trigger-fns
+sensor-remove-all-triggers
 sensor-trig-active
 sensor-trig-threshold
 sensor-trig-timeout
@@ -109,7 +109,7 @@ sensor-trig-timeout
       (clog:set-on-new-window #'new-sensor-window :path path))))
 
 (defun find-sensor (id)
-  "Return the sensor struct of sensor /id/.
+  "Return the sensor struct of sensor referenced by /id/.
 
 @Arguments
 id - Keyword of the id of the sensor.
@@ -120,7 +120,7 @@ find-sensor
 list-sensors
 remove-sensor
 sensor-add-trigger-fn
-sensor-remove-all-trigger-fns
+sensor-remove-all-triggers
 sensor-trig-active
 sensor-trig-threshold
 sensor-trig-timeout
@@ -136,7 +136,7 @@ find-sensor
 list-sensors
 remove-sensor
 sensor-add-trigger-fn
-sensor-remove-all-trigger-fns
+sensor-remove-all-triggers
 sensor-trig-active
 sensor-trig-threshold
 sensor-trig-timeout
@@ -151,7 +151,7 @@ sensor-trig-timeout
      (push (watch (lambda () ,@body)) (sensor-unwatch ,var))))
 
 (defun remove-sensor (id)
-  "remove the sensor /id/ from the sensor registry.
+  "remove the sensor referenced by /id/ from the sensor registry.
 
 @Arguments
 id - Keyword of the id of the sensor.
@@ -161,8 +161,8 @@ add-sensor
 find-sensor
 list-sensors
 sensor-add-trigger-fn
+sensor-remove-all-triggers
 sensor-trig-active
-sensor-remove-all-trigger-fns
 sensor-trig-threshold
 sensor-trig-timeout
 "
@@ -229,7 +229,7 @@ find-sensor
 list-sensors
 remove-sensor
 sensor-add-trigger-fn
-sensor-remove-all-trigger-fns
+sensor-remove-all-triggers
 sensor-trig-active
 sensor-trig-threshold
 "
@@ -256,7 +256,7 @@ find-sensor
 list-sensors
 remove-sensor
 sensor-add-trigger-fn
-sensor-remove-all-trigger-fns
+sensor-remove-all-triggers
 sensor-trig-active
 sensor-trig-timeout
 "
@@ -283,7 +283,7 @@ find-sensor
 list-sensors
 remove-sensor
 sensor-add-trigger-fn
-sensor-remove-all-trigger-fns
+sensor-remove-all-triggers
 sensor-trig-threshold
 sensor-trig-timeout
 "
@@ -299,7 +299,7 @@ sensor-trig-timeout
 ;;; (setf (sensor-trig-active :sensor1) t)
 
 (defun sensor-add-trigger-fn (id fn)
-"Add /fn/ to the sensor /id/ to be called upon a trigger when moving
+"Add /fn/ to the sensor referenced by /id/ to be called upon a trigger when moving
 the accelerometer.
 
 @Arguments
@@ -311,7 +311,7 @@ add-sensor
 find-sensor
 list-sensors
 remove-sensor
-sensor-remove-all-trigger-fns
+sensor-remove-all-triggers
 sensor-trig-active
 sensor-trig-threshold
 sensor-trig-timeout
@@ -335,3 +335,47 @@ sensor-trig-threshold
 sensor-trig-timeout
 "
   (remove-all-triggers (sensor-trigger (find-sensor id))))
+
+(defun sensor-add-motion-fn (id fn)
+"Add /fn/ to the sensor referenced by /id/ to be called upon a motion event from the Mobile.
+
+@Arguments
+id - Keyword of the id of the sensor.
+fn - Function to call when a trigger occurs.
+
+@See-also
+add-sensor
+find-sensor
+list-sensors
+remove-sensor
+sensor-add-trigger-fn
+sensor-remove-all-motion-fns
+sensor-remove-all-triggers
+sensor-trig-active
+sensor-trig-threshold
+sensor-trig-timeout
+"
+  ;; (let ((sensor (find-sensor id)))
+  ;;   (push (watch fn (sensor-unwatch sensor))))
+  )
+
+(defun sensor-remove-all-motion-fns (id)
+"remove all motion functions from the sensor referenced by /id/.
+
+@Arguments
+id - Keyword of the id of the sensor.
+
+@See-also
+add-sensor
+find-sensor
+list-sensors
+remove-sensor
+sensor-add-trigger-fn
+sensor-remove-all-triggers
+sensor-trig-active
+sensor-trig-threshold
+sensor-trig-timeout
+"
+  ;;; (remove-all-triggers (sensor-trigger (find-sensor id)))
+
+  )

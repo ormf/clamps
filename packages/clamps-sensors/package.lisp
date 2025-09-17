@@ -44,4 +44,6 @@
            #:sensor-trig-timeout
            #:sensor-add-trigger-fn
            #:sensor-remove-all-triggers
+;;           #:sensor-add-motion-fn
+;;           #:sensor-remove-all-motion-fns
            ))
