@@ -61,9 +61,23 @@
  (sensor-trigger (find-sensor :sensor1))
  (lambda () (imsg :warn "triggered")))
 
-;;; wrappers for the above:
+;;; wrappers for the above have been defined (check sensor.lisp):
 
+(sensor-trig-active :sensor1)  ; => t
+(setf (sensor-trig-active :sensor1) nil) ; => nil
+(sensor-trig-active :sensor1) ; => nil
+(setf (sensor-trig-active :sensor1) t) ; => t
 
+(sensor-trig-threshold :sensor1) ; => 0.1
+(setf (sensor-trig-threshold :sensor1) 0.12)  ; => 0.12
+
+(sensor-trig-timeout :sensor1) ; => 200
+(setf (sensor-trig-timeout :sensor1) 500) ; => 500
+
+(sensor-add-trigger-fn :sensor1
+ (lambda () (imsg :warn "triggered")))
+
+(sensor-remove-all-triggers :sensor1)
 
 ;;; attach behaviour to value changes received from the mobile (here
 ;;; we just print out the sensor-data values in the repl whenever they

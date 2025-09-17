@@ -120,6 +120,7 @@
            clamps-sensors:sensor-trig-timeout
            clamps-sensors:sensor-trig-active
            clamps-sensors:sensor-add-trigger-fn
+           clamps-sensors:sensor-remove-all-triggers
 
 
            

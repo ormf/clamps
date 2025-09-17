@@ -43,4 +43,5 @@
            #:sensor-trig-threshold
            #:sensor-trig-timeout
            #:sensor-add-trigger-fn
+           #:sensor-remove-all-triggers
            ))
