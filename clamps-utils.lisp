@@ -501,13 +501,23 @@ the function is changed, limiting the speed between two consecutive
 values to /timeout/ in seconds.
 
 /speedlim-watch/ returns a function to remove the relation,
-/speedlim-watch/ has established. Refer to the chapter
-<<clamps:cl-refs>> in the Clamps Packages documentation for examples.
+/speedlim-watch/ has established.
+
+Also refer to the chapter <<clamps:cl-refs>> in the Clamps Packages
+documentation for additional examples.
+
+@Note
+If the function returnd by ~speedlim-watch~ is called with a
+numerical argument, the number in the argument will reset the timeout
+of the speedlim and the relation is *not* removed.
 
 @Arguments
 fn - Function of no arguments to call
 
 @Example
+(defparameter *my-value* (make-ref 1.0))
+(defparameter *unwatch* nil)
+
 (progn
   (unwatch-all *unwatch*)
   (push
