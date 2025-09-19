@@ -465,7 +465,7 @@
 ;;;        (declare (sample lag-amp))
         (foreach-frame
           (dochannels (ch num)
-            (with-samples ((val (peak-limiter
+            (with-samples ((val (oid::peak-limiter
                                  (* lag-amp (audio-out (+ out ch) current-frame))
                                  lag-amp 0.01 peak-trig-fn)))
               (setf (audio-out (+ out ch)) val)
