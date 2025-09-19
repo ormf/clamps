@@ -142,6 +142,18 @@ at CHANNEL-OFFSET."
                         (funcall id-callback (node-id n)))
               :tail group))
 
+(dsp! master-limit-out ((bus channel-number) (num-channels channel-number)
+                        (channel-offset channel-number))
+  (:DEFAULTS 0 1 0)
+  "multichannel master bus of NUM-CHANNELS consecutive
+bus numbers starting at BUS, routed to hardware audio outputs starting
+at CHANNEL-OFFSET."
+  (reduce-warnings
+    (foreach-frame
+      (dochannels (current-channel num-channels)
+        (incf (audio-out current-channel) (audio-bus (+ current-channel bus) current-frame))
+        (setf (audio-bus (+ current-channel bus) current-frame) +sample-zero+)))))
+
 
 #|
 

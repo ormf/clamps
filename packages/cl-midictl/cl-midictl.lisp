@@ -645,8 +645,6 @@ start-midi-receive
 
 ;;; (start-midi-receive :midi-1) (list-midi-ports)
 
-(type-of *midi-in1*)
-
 (defun update-all-controllers (midi-port)
   "call <<update-hw-state>> on all registered midi-controllers of
 /midi-port/."

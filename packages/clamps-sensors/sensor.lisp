@@ -116,7 +116,6 @@ id - Keyword of the id of the sensor.
 
 @See-also
 add-sensor
-find-sensor
 list-sensors
 remove-sensor
 sensor-add-trigger-fn
@@ -133,7 +132,6 @@ sensor-trig-timeout
 @See-also
 add-sensor
 find-sensor
-list-sensors
 remove-sensor
 sensor-add-trigger-fn
 sensor-remove-all-triggers

@@ -498,7 +498,7 @@ TYPE should be one of ERROR, WARN, INFO or DEBUG."
 (defun speedlim-watch (timeout fn)
   "Call /fn/ whenever a value accessed using <<get-val>> in the body of
 the function is changed, limiting the speed between two consecutive
-values to /timeout/ in seconds.
+calls to the function to /timeout/ in seconds.
 
 /speedlim-watch/ returns a function to remove the relation,
 /speedlim-watch/ has established.
@@ -506,13 +506,13 @@ values to /timeout/ in seconds.
 Also refer to the chapter <<clamps:cl-refs>> in the Clamps Packages
 documentation for additional examples.
 
+@Arguments
+fn - Function of no arguments to call
+
 @Note
 If the function returnd by ~speedlim-watch~ is called with a
 numerical argument, the number in the argument will reset the timeout
 of the speedlim and the relation is *not* removed.
-
-@Arguments
-fn - Function of no arguments to call
 
 @Example
 (defparameter *my-value* (make-ref 1.0))
@@ -528,10 +528,17 @@ fn - Function of no arguments to call
    *unwatch*))
 
 (loop
-  for i below 40
-  do (at (+ (now) (* i 0.1))
+  for i below 400
+  do (at (+ (now) (* i 0.01))
          (lambda () (set-val *my-value* (random 1.0)))))
 
+;;; reset timeout
+(funcall (first *unwatch*) 0.2)
+
+(loop
+  for i below 400
+  do (at (+ (now) (* i 0.01))
+         (lambda () (set-val *my-value* (random 1.0)))))
 
 @See-also
 add-watch

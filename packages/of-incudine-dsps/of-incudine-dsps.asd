@@ -13,7 +13,6 @@
                (:file "bus")
                (:file "levelmeter")
                (:file "basic-dsps")
+               (:file "amp")
                (:file "vbap-define-speakers")
-               (:file "vbap-dsps")
-               ))
-
+               (:file "vbap-dsps")))

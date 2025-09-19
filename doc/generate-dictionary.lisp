@@ -245,8 +245,6 @@ remove-all-rts-hush-hooks
 rts-hush
 "))
 
-
-
       (clamps:reset-logger-stream
        (function ()
         "Resets /incudine:*logger-stream*/ to /*​error-output​*/ Call this

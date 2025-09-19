@@ -436,6 +436,58 @@
                     (setf (aref last-value ch) (aref value ch)))
                   (setf (smp-ref sums (+ (* ch periods) i)) +sample-zero+))))))))))
 
+;;; pre/post peak limit off/amp/unit
+
+
+(define-vug master-amp-limit-meter-out-vug ((out channel-number)
+                                            (num channel-number)
+                                            amp
+                                            (freq alexandria:positive-fixnum)
+                                            (meter-refs (simple-array cl-refs:ref-object))
+                                            (peak-trig-fn function)
+                                            (pre boolean)
+                                            (periods channel-number))
+  (:defaults 0 1 1 10 nil (lambda ()) nil 2)
+  (with ((size (round-sample (/ (* periods *sample-rate*) freq)))
+         (hanning (make-buffer (1+ size) :fill-function (hanning-rms)))
+         (sums (make-frame (* num periods) :zero-p t))
+         (phases (reduce-warnings
+                   (make-array periods
+                               :element-type 'alexandria:non-negative-fixnum
+                               :initial-contents
+                               (loop for i below periods
+                                     collect (round (* (/ i periods) size))))))
+         (value (make-array num :initial-element 0))
+         (last-value (make-array num :initial-element #.most-positive-fixnum)))
+    (declare (type alexandria:non-negative-fixnum size))
+    (reduce-warnings
+      (with ((lag-amp (lag amp 0.05)))
+;;;        (declare (sample lag-amp))
+        (foreach-frame
+          (dochannels (ch num)
+            (with-samples ((val (peak-limiter
+                                 (* lag-amp (audio-out (+ out ch) current-frame))
+                                 lag-amp 0.01 peak-trig-fn)))
+              (setf (audio-out (+ out ch)) val)
+              (dochannels (i periods)            
+                (incf (smp-ref sums (+ (* ch periods) i))
+                      (* val val
+                         (the sample (buffer-value hanning (aref phases i)))))
+                (when (zerop ch) (incf (aref phases i)))
+                (when (>=  (aref phases i) size)
+                  (when (= ch (1- num)) (setf (aref phases i) 0))
+                  (setf (aref value ch)
+                        (max -100 (round (power->db (smp-ref sums (+ (* ch periods) i))))))
+                  (when (/= (aref last-value ch) (aref value ch))
+                    (nrt-funcall
+                     (let*
+                         ((ch ch) (value (aref value ch))
+                          (ref (aref meter-refs ch)))
+                       (lambda ()
+                         (cl-refs:set-val ref value))))
+                    (setf (aref last-value ch) (aref value ch)))
+                  (setf (smp-ref sums (+ (* ch periods) i)) +sample-zero+))))))))))
+
 (dsp! master-amp-meter-out ((out channel-number)
                             (num-channels channel-number)
                             amp
@@ -446,6 +498,18 @@
 
    (:defaults 0 1 1 10 nil nil 2)
   (foreach-frame (master-amp-meter-out-vug out num-channels amp freq meter-refs pre hop-size)))
+
+(dsp! master-amp-limit-meter-out ((out channel-number)
+                                  (num-channels channel-number)
+                                  amp
+                                  (freq alexandria:positive-fixnum)
+                                  (meter-refs (simple-array cl-refs:ref-object))
+                                  (peak-trig-fn (lambda ()))
+                                  (pre boolean)
+                                  (hop-size channel-number))
+
+   (:defaults 0 1 1 10 nil nil 2)
+  (foreach-frame (master-amp-limit-meter-out-vug out num-channels amp freq meter-refs peak-trig-fn pre hop-size)))
 
 (defun master-amp-meter-bus-dsp (&key (group 300) id-callback (bus-num 0) (audio-out 0) (num-channels 1) (amp 1) (freq 10) meter-refs pre (hop-size 2))
   "wrapper around master-amp-meter-bus with a callback to register the
@@ -462,6 +526,15 @@ node id after instantiation."
                  :action (lambda (n)
                            (funcall id-callback (node-id n)))
                  :tail group))
+
+(defun master-amp-limit-meter-out-dsp (&key (group 300) id-callback (audio-out 0) (num-channels 1) (amp 1) (freq 10) meter-refs pre (hop-size 2))
+  "wrapper around master-amp-meter-bus with a callback to register the
+node id after instantiation."
+  (master-amp-meter-out audio-out num-channels amp freq meter-refs pre hop-size
+                        :action (lambda (n)
+                                  (funcall id-callback (node-id n)))
+                        :tail group))
+
 
 #|
 
