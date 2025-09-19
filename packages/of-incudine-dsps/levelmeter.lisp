@@ -508,7 +508,7 @@
                                   (pre boolean)
                                   (hop-size channel-number))
 
-   (:defaults 0 1 1 10 nil nil 2)
+   (:defaults 0 1 1 10 nil (lambda ()) nil 2)
   (foreach-frame (master-amp-limit-meter-out-vug out num-channels amp freq meter-refs peak-trig-fn pre hop-size)))
 
 (defun master-amp-meter-bus-dsp (&key (group 300) id-callback (bus-num 0) (audio-out 0) (num-channels 1) (amp 1) (freq 10) meter-refs pre (hop-size 2))
