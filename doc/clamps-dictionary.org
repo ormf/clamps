@@ -613,6 +613,20 @@
    its current value and the maximum value, if it moves down (< curr
    old), the software target will be interpolated between the current
    value and 0 using the remaining space below the hardware fader.
+** buffer->lsample
+   Function
+   #+BEGIN_SRC lisp
+     (buffer->lsample buffer &key (keynum 60) (ampdb 0) (oneshot t) (loopstart 0) (loopend 0))
+   #+END_SRC
+   Return a lsample struct of /buffer/.
+*** Arguments
+    | =buffer= | Incudine buffer to convert. |
+    | =:keynum= | keynum of the sound in the buffer. |
+    | =:ampdb= | Positive number denoting amp in dB, mapping range [-100..0] to linear amp [0..1]. |
+    | =:oneshot= | Boolean indicating whether not to loop the sample on playback. |
+    | =:loopstart= | Positive number denoting the loop start in seconds. |
+    | =:loopend= | Positive number denoting the loop end in seconds. |
+
 ** buffer-dur
    Function
    #+BEGIN_SRC lisp
@@ -2253,7 +2267,6 @@
 
 *** See also
     - [[add-sensor][add-sensor]]
-    - [[find-sensor][find-sensor]]
     - [[list-sensors][list-sensors]]
     - [[remove-sensor][remove-sensor]]
     - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
@@ -2990,7 +3003,6 @@
 *** See also
     - [[add-sensor][add-sensor]]
     - [[find-sensor][find-sensor]]
-    - [[list-sensors][list-sensors]]
     - [[remove-sensor][remove-sensor]]
     - [[sensor-add-trigger-fn][sensor-add-trigger-fn]]
     - [[sensor-remove-all-triggers][sensor-remove-all-triggers]]
@@ -3005,6 +3017,19 @@
    Return a sorted list of all sfz preset names.
 *** Arguments
     | =:loaded= | Boolean to indicate whether only the preset names of loaded presets should be returned. If /nil/ all registered preset names are returned. |
+
+** load-all-lsamples
+   Function
+   #+BEGIN_SRC lisp
+     (load-all-lsamples parent-dir &key (hashtable (make-hash-table)) exclude)
+   #+END_SRC
+   Return a hash table with arrays of lsamples of all soundfiles in all
+   subdirectories of parent-dir. The keys of the hash table are keywords
+   of the subdirectory names.
+*** Arguments
+    | =parent-dir= | Pathname of a directory to recursively search for soundfile directories. |
+    | =:hashtable= | Hashtable to store the retrieved lsamples. |
+    | =:exclude= | List of strings of directories to exclude. |
 
 ** load-ats
    Function
@@ -4462,7 +4487,7 @@
    #+BEGIN_SRC lisp
      (path-find-file fname path)
    #+END_SRC
-   Return the full pathname of the first occurence of fname in path.
+   Return the full pathname of the first occurence of /fname/ in /path/.
 *** Arguments
     | =fname= | String or Pathname of file. |
     | =path= | List of paths to search. |
@@ -5095,6 +5120,34 @@
    #+BEGIN_SRC lisp
      (regenerate-points svg-file &key (fname #p"/tmp/test.svg") (xquantize t) (yquantize t))
    #+END_SRC
+** relative-directory-keyword
+   Function
+   #+BEGIN_SRC lisp
+     (relative-directory-keyword pathname)
+   #+END_SRC
+   Return keyword of the last directory of /pathname/.
+*** Arguments
+    | =pathname= | Pathname from which directory is extracted. |
+
+*** Example
+    #+BEGIN_SRC lisp
+      (relative-directory-keyword (pathname "~/work/snd/subdir/test.wav"))
+      ;; => :subdir
+    #+END_SRC
+** relative-directory-name
+   Function
+   #+BEGIN_SRC lisp
+     (relative-directory-name pathname)
+   #+END_SRC
+   Return string of the name of last directory of /pathname/.
+*** Arguments
+    | =pathname= | Pathname from which directory is extracted. |
+
+*** Example
+    #+BEGIN_SRC lisp
+      (relative-directory-name (pathname "~/work/snd/subdir/test.wav"))
+      ;; => "subdir"
+    #+END_SRC
 ** remove-all-buffers
    Function
    #+BEGIN_SRC lisp

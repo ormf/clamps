@@ -6,6 +6,8 @@
   (:nicknames #:ou)
   (:export 
    #:PATH-FIND-FILE
+   #:RELATIVE-DIRECTORY-NAME
+   #:RELATIVE-DIRECTORY-KEYWORD
    #:SYSTEM-VERSION
    #:N
    #:FILTER

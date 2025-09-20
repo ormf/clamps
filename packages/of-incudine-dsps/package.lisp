@@ -69,4 +69,6 @@
            #:PHASOR-AMP*
            #:PHASOR-AMP
            #:ENV-SYNTH
+           #:BUFFER->LSAMPLE
+           #:LOAD-ALL-LSAMPLES
            ))

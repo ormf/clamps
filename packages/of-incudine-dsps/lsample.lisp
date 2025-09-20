@@ -161,3 +161,44 @@ lsample
       (if oneshot
         (play-buffer* buffer oid:*env1* duration (+ amp ampdb) rate pan startpos out1 out2 :tail *standard-output-group*)
         (play-buffer-loop* buffer oid:*env1* duration (+ amp ampdb) rate pan loopstart loopend startpos out1 out2 :tail *standard-output-group*)))))
+
+(defun buffer->lsample (buffer &key (keynum 60) (ampdb 0) (oneshot t)
+                                 (loopstart 0) (loopend 0))
+  "Return a lsample struct of /buffer/.
+
+@Arguments
+buffer - Incudine buffer to convert.
+:keynum - keynum of the sound in the buffer.
+:ampdb - Positive number denoting amp in dB, mapping range [-100..0] to linear amp [0..1].
+:oneshot - Boolean indicating whether not to loop the sample on playback.
+:loopstart - Positive number denoting the loop start in seconds.
+:loopend - Positive number denoting the loop end in seconds.
+"
+  (make-lsample :buffer buffer :name (buffer-name buffer)
+                :keynum (float keynum 1.0d0)
+                :amp (float ampdb 1.0d0) :oneshot oneshot
+                :loopstart (float loopstart 1.0d0)
+                :loopend (float loopend 1.0d0)))
+
+(defun load-all-lsamples (parent-dir &key (hashtable (make-hash-table)) exclude )
+  "Return a hash table with arrays of lsamples of all soundfiles in all
+subdirectories of parent-dir. The keys of the hash table are keywords
+of the subdirectory names.
+
+@Arguments
+parent-dir - Pathname of a directory to recursively search for soundfile directories.
+:hashtable - Hashtable to store the retrieved lsamples.
+:exclude - List of strings of directories to exclude.
+"
+  (dolist (dir (uiop:subdirectories parent-dir))
+    (format t "~&checking: ~a  ~%~a" dir (uiop:directory-files dir "*.wav"))
+    (when (and (uiop:directory-files dir "*.wav")
+               (not (member (relative-directory-name dir) exclude :test #'string=))) ;;; only register non-empty dirs which aren't excluded.
+      (setf (gethash (relative-directory-keyword dir) hashtable)
+            (coerce
+             (loop for file in (uiop:directory-files dir "*.wav")
+                   do (format t "~&adding: ~A" file)
+                   collect (buffer->lsample (clamps-buffer-load file)))
+             'vector)))
+    (load-all-lsamples dir :hashtable hashtable :exclude exclude))
+  hashtable)

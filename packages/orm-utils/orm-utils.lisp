@@ -16,8 +16,32 @@ system-designator - A designator acceptable to /asdf:find-system/
     (when (and system (slot-boundp system 'asdf:version))
       (asdf:component-version system))))
 
+(defun relative-directory-name (pathname)
+  "Return string of the name of last directory of /pathname/.
+
+@Arguments
+pathname - Pathname from which directory is extracted.
+
+@Example
+(relative-directory-name (pathname \"~/work/snd/subdir/test.wav\"))
+;; => \"subdir\"
+"
+  (first (last (pathname-directory pathname))))
+
+(defun relative-directory-keyword (pathname)
+  "Return keyword of the last directory of /pathname/.
+
+@Arguments
+pathname - Pathname from which directory is extracted.
+
+@Example
+(relative-directory-keyword (pathname \"~/work/snd/subdir/test.wav\"))
+;; => :subdir
+"
+  (make-keyword (relative-directory-name pathname)))
+
 (defun path-find-file (fname path)
-  "Return the full pathname of the first occurence of fname in path.
+  "Return the full pathname of the first occurence of /fname/ in /path/.
 
 @Arguments
 fname - String or Pathname of file.

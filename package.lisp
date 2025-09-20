@@ -225,7 +225,9 @@
            orm-utils:memorize-random-state cl-sfz:play-sfz-loop
            add-elements
            orm-utils:calcsndbytes cl-sfz:load-sfz-preset common-lisp:open
-           orm-utils:path-find-file clog-dsp-widgets:find-dsp ftom
+           orm-utils:path-find-file
+           orm-utils:relative-directory-name
+           orm-utils:relative-directory-keyword clog-dsp-widgets:find-dsp ftom
            orm-utils:do-repeated
            orm-utils:n-exp-dev make-osc-receiver svg-gui-path
            orm-utils:mapply clog-dsp-widgets:create-o-toggle
@@ -450,6 +452,8 @@
            of-incudine-dsps:lsample-buffer incudine.vug:counter
            of-incudine-dsps:play-buffer-stretch-out of-incudine-dsps:make-oasr
            of-incudine-dsps:lsample-loopend
+           of-incudine-dsps:buffer->lsample
+           of-incudine-dsps:load-all-lsamples
            of-incudine-dsps:*sine1024*
            of-incudine-dsps:play-sample
            of-incudine-dsps:keynum->hz
