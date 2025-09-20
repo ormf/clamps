@@ -181,24 +181,29 @@ buffer - Incudine buffer to convert.
                 :loopend (float loopend 1.0d0)))
 
 (defun load-all-lsamples (parent-dir &key (hashtable (make-hash-table)) exclude )
-  "Return a hash table with arrays of lsamples of all soundfiles in all
-subdirectories of parent-dir. The keys of the hash table are keywords
-of the subdirectory names.
+  "Return a hash table with lists of lsamples of all soundfiles in all
+subdirectories of /parent-dir/ except directories listed in
+/exclude/. The keys of the hashtable are keywords of the subdirectory
+names.
 
 @Arguments
 parent-dir - Pathname of a directory to recursively search for soundfile directories.
 :hashtable - Hashtable to store the retrieved lsamples.
 :exclude - List of strings of directories to exclude.
+
+@Note
+There is no checking for duplicate directory names. If two or more
+directories of the same name exist, the last directory encountered
+will replace any previously added entries of that directory name in
+the hashtable.
 "
   (dolist (dir (uiop:subdirectories parent-dir))
     (format t "~&checking: ~a  ~%~a" dir (uiop:directory-files dir "*.wav"))
     (when (and (uiop:directory-files dir "*.wav")
                (not (member (relative-directory-name dir) exclude :test #'string=))) ;;; only register non-empty dirs which aren't excluded.
       (setf (gethash (relative-directory-keyword dir) hashtable)
-            (coerce
-             (loop for file in (uiop:directory-files dir "*.wav")
-                   do (format t "~&adding: ~A" file)
-                   collect (buffer->lsample (clamps-buffer-load file)))
-             'vector)))
+            (loop for file in (uiop:directory-files dir "*.wav")
+                  do (format t "~&adding: ~A" file)
+                  collect (buffer->lsample (clamps-buffer-load file)))))
     (load-all-lsamples dir :hashtable hashtable :exclude exclude))
   hashtable)

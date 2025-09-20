@@ -185,35 +185,36 @@ sensor-trig-timeout
 (defun sensor-og (sensor)
   (sensor-data-og (sensor-data sensor)))
 
-(defun sensor-x (sensor)
-  (sensor-data-x (sensor-data sensor)))
+(defun sensor-x (&optional sensor)
+  "accessor fn for the sensor-data ref-cell of sensor"
+  (sensor-data-x (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
-(defun sensor-y (sensor)
-  (sensor-data-y (sensor-data sensor)))
+(defun sensor-y (&optional sensor)
+  (sensor-data-y (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
-(defun sensor-z (sensor)
-  (sensor-data-z (sensor-data sensor)))
+(defun sensor-z (&optional sensor)
+  (sensor-data-z (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
-(defun sensor-gx (sensor)
-  (sensor-data-gx (sensor-data sensor)))
+(defun sensor-gx (&optional sensor)
+  (sensor-data-gx (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
-(defun sensor-gy (sensor)
-  (sensor-data-gy (sensor-data sensor)))
+(defun sensor-gy (&optional sensor)
+  (sensor-data-gy (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
-(defun sensor-gz (sensor)
-  (sensor-data-gz (sensor-data sensor)))
+(defun sensor-gz (&optional sensor)
+  (sensor-data-gz (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
-(defun sensor-gyrox (sensor)
-  (sensor-data-gyrox (sensor-data sensor)))
+(defun sensor-gyrox (&optional sensor)
+  (sensor-data-gyrox (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
-(defun sensor-gyroy (sensor)
-  (sensor-data-gyroy (sensor-data sensor)))
+(defun sensor-gyroy (&optional sensor)
+  (sensor-data-gyroy (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
-(defun sensor-gyroz (sensor)
-  (sensor-data-gyroz (sensor-data sensor)))
+(defun sensor-gyroz (&optional sensor)
+  (sensor-data-gyroz (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
-(defun sensor-deltag (sensor)
-  (sensor-data-deltag (sensor-data sensor)))
+(defun sensor-deltag (&optional sensor)
+  (sensor-data-deltag (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
 
 (defun sensor-trig-timeout (sensor)
   "Return the value of the trigger-timeout ref-cell in
