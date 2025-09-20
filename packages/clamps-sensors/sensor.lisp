@@ -106,7 +106,8 @@ sensor-trig-timeout
                          :trigger-timeout trigger-timeout
                          :data sensor-data))
       (format t "adding sensor ~S~%" id)
-      (clog:set-on-new-window #'new-sensor-window :path path))))
+      (clog:set-on-new-window #'new-sensor-window :path path)
+      nil)))
 
 (defun find-sensor (id)
   "Return the sensor struct of sensor referenced by /id/.
