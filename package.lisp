@@ -335,7 +335,7 @@
 ;;;           cm:reinit-midi
            cm:time->samps cm:status->channel cm:poolevt
            cm:permutation cm:poolevt-buffer-idx cm:transpose cm:write-event
-           cm:args cm:preset cm:region cm:find-object cm:pickl
+           cm:preset cm:region cm:find-object cm:pickl
            cm:cents->scaler cm:thunk cm:*midi-out1* cm:rescale cm:incudine-output
            cm:map-objects cm:sfz-amp cm:midi-stream cm:remove-subobjects cm:new
            cm:octave-number cm:pitch-class cm:poolevt-out1 cm:midi-out cm:jbmf
@@ -759,7 +759,7 @@
                           #:set-on-new-window)
 
   (:shadowing-import-from #:of-incudine-dsps #:clip)
-  ;;  (:shadowing-import-from #:cl-poolplayer #:args #:make-eventplayer #:digest-form-to-preset)
+  (:shadowing-import-from #:cl-poolplayer #:args) ;;  #:make-eventplayer #:digest-form-to-preset
 
   (:shadow #:buffer #:buffer-frames
            #:buffer-sample-rate
@@ -773,7 +773,7 @@
   (:shadowing-import-from #:cl-midictl
                           #:*midi-in1* #:*midi-out1*
                           #:chan #:id)
-  (:shadowing-import-from #:cm #:args #:cycle
+  (:shadowing-import-from #:cm #:cycle
                           #:midi-pitch-bend
                           #:midi-note-on
                           #:midi-note-off

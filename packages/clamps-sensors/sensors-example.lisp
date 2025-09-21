@@ -222,7 +222,14 @@ delta-g = 2.1
   (setf (gethash :trigger1 *my-trigger-fns*)
         (make-trigger-fn
          0.1 1
-         (lambda (delta-g) (imsg :warn "trigger1: ~a" delta-g)))
+         (lambda (delta-g)
+           (apply #'preset-play
+                  `(:preset 1
+                    :dtimefn (n-exp (/ (clamps:sensor-oa) 360) 0.01 0.3)
+                    :g1 ,cl-poolplayer::*pool2*
+                    :transpfn (n-lin (/ (clamps:sensor-oa) 360) -10 10) 
+                    :dur ,(random 6)))
+           (imsg :warn "trigger1: ~a" delta-g)))
         (gethash (gethash :trigger1 *my-trigger-fns*) *my-trigger-fns*)
         :trigger1        
         (gethash :trigger2 *my-trigger-fns*)
@@ -249,13 +256,14 @@ delta-g = 2.1
 
 ;;; add/remove trigger functions:
 
+(sensor-x)
 (add-trigger :trigger1)
 (add-trigger :trigger2)
 
 (remove-trigger :trigger1)
 (remove-trigger :trigger2)
 
-*active-triggers*
+(setf *active-triggers* nil)
 
 (list-active-triggers)
 
@@ -312,4 +320,9 @@ mu4e
 
 
 
-
+(apply #'preset-play
+       `(:preset 0
+         :dtimefn (n-exp (/ (clamps:sensor-oa) 360) 0.01 0.3)
+         :g1 ,cl-poolplayer::*pool2*
+         :transpfn (n-lin (/ (clamps:sensor-oa) 360) -10 10) 
+         :dur ,(random 6)))

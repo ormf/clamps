@@ -1,10 +1,15 @@
 (defun edit-poolplayer-preset (str ref)
   (set-buffer (find-file-noselect poolplayer-preset-file))
   (delete-region (point-min) (point-max))
-  (insert "(in-package :cl-poolplayer)\n\n;;; preset: ")
+  (insert "(in-package :clamps)\n\n;;; preset: ")
   (insert (format "%s\n\n" ref))
-  (insert (replace-regexp-in-string "cl-poolplayer::" ""
-                                    (replace-regexp-in-string "orm-utils:" "" str)))
+  (insert (replace-regexp-in-string
+           "clamps::" ""
+           (replace-regexp-in-string
+            "orm-utils:" ""
+            (replace-regexp-in-string
+            "nil" "()"
+            str))))
 ;;;  (insert (format "\n\n(state-store-curr-preset %s)" ref))
   (insert (format "\n\n;;; (show-poolplayer-preset %s)\n;;; (save-poolplayer-presets)" ref))
   (delete-region (point) (point-max))

@@ -175,46 +175,135 @@ sensor-trig-timeout
           nil)
         (warn "can't remove sensor ~S: Sensor isn't registered." id))))
 
+(defun sensor-oa (&optional (id :sensor1))
+  "Accessor for Orientation alpha of sensor with /id/. As the
+<<sensor-data>> of the sensor is a ref-cell, this function can be used
+in a <<watch>> context.
 
-(defun sensor-oa (sensor)
-  (sensor-data-oa (sensor-data sensor)))
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-oa (get-val (sensor-data (find-sensor id)))))
 
-(defun sensor-ob (sensor)
-  (sensor-data-ob (sensor-data sensor)))
+(defun sensor-ob (&optional (id :sensor1))
+  "Accessor for Orientation beta of sensor with /id/. As the
+<<sensor-data>> of the sensor is a ref-cell, this function can be used
+in a <<watch>> context.
 
-(defun sensor-og (sensor)
-  (sensor-data-og (sensor-data sensor)))
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-ob (get-val (sensor-data (find-sensor id)))))
 
-(defun sensor-x (&optional sensor)
-  "accessor fn for the sensor-data ref-cell of sensor"
-  (sensor-data-x (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+(defun sensor-og (&optional (id :sensor1))
+  "Accessor for Orientation gamma of sensor with /id/. As the
+<<sensor-data>> of the sensor is a ref-cell, this function can be used
+in a <<watch>> context.
 
-(defun sensor-y (&optional sensor)
-  (sensor-data-y (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-og (get-val (sensor-data (find-sensor id)))))
 
-(defun sensor-z (&optional sensor)
-  (sensor-data-z (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+(defun sensor-x (&optional (id :sensor1))
+  "Accessor for Accelerometer x of sensor with /id/. As the
+<<sensor-data>> of the sensor is a ref-cell, this function can be used
+in a <<watch>> context.
 
-(defun sensor-gx (&optional sensor)
-  (sensor-data-gx (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-x (get-val (sensor-data (find-sensor id)))))
 
-(defun sensor-gy (&optional sensor)
-  (sensor-data-gy (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+(defun sensor-y (&optional (id :sensor1))
+  "Accessor for Accelerometer y of sensor with /id/. As the
+<<sensor-data>> of the sensor is a ref-cell, this function can be used
+in a <<watch>> context.
 
-(defun sensor-gz (&optional sensor)
-  (sensor-data-gz (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-y (get-val (sensor-data (find-sensor id)))))
 
-(defun sensor-gyrox (&optional sensor)
-  (sensor-data-gyrox (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+(defun sensor-z (&optional (id :sensor1))
+ "Accessor for Accelerometer z of sensor with /id/. As the
+<<sensor-data>> of the sensor is a ref-cell, this function can be used
+in a <<watch>> context.
 
-(defun sensor-gyroy (&optional sensor)
-  (sensor-data-gyroy (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-z (get-val (sensor-data (find-sensor id)))))
 
-(defun sensor-gyroz (&optional sensor)
-  (sensor-data-gyroz (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+(defun sensor-gx (&optional (id :sensor1))
+ "Accessor for g-weighted Accelerometer x of sensor with /id/. As
+the <<sensor-data>> of the sensor is a ref-cell, this function can be
+used in a <<watch>> context.
 
-(defun sensor-deltag (&optional sensor)
-  (sensor-data-deltag (get-val (sensor-data (find-sensor (or sensor :sensor1))))))
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-gx (get-val (sensor-data (find-sensor id)))))
+
+(defun sensor-gy (&optional (id :sensor1))
+ "Accessor for g-weighted Accelerometer y of sensor with /id/. As the
+<<sensor-data>> of the sensor is a ref-cell, this function can be used
+in a <<watch>> context.
+
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-gy (get-val (sensor-data (find-sensor id)))))
+
+(defun sensor-gz (&optional (id :sensor1))
+  "Accessor for g-weighted Accelerometer z of sensor with /id/. As the
+<<sensor-data>> of the sensor is a ref-cell, this function can be used
+in a <<watch>> context.
+
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-gz (get-val (sensor-data (find-sensor id)))))
+
+(defun sensor-gyrox (&optional (id :sensor1))
+ "Accessor for Gyrometer x of sensor with /id/. As the <<sensor-data>>
+of the sensor is a ref-cell, this function can be used in a <<watch>>
+context.
+
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-gyrox (get-val (sensor-data (find-sensor id)))))
+
+(defun sensor-gyroy (&optional (id :sensor1))
+ "Accessor for Gyrometer y of sensor with /id/. As the <<sensor-data>>
+of the sensor is a ref-cell, this function can be used in a <<watch>>
+context.
+
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-gyroy (get-val (sensor-data (find-sensor id)))))
+
+(defun sensor-gyroz (&optional (id :sensor1))
+ "Accessor for Gyrometer z of sensor with /id/. As the <<sensor-data>>
+of the sensor is a ref-cell, this function can be used in a <<watch>>
+context.
+
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-gyroz (get-val (sensor-data (find-sensor id)))))
+
+(defun sensor-deltag (&optional (id :sensor1))
+ "Accessor for Orientation alpha of sensor with /id/. As the
+<<sensor-data>> of the sensor is a ref-cell, this function can be used
+in a <<watch>> context.
+
+@Arguments
+id - id of sensor.
+"
+  (sensor-data-deltag (get-val (sensor-data (find-sensor id)))))
 
 (defun sensor-trig-timeout (sensor)
   "Return the value of the trigger-timeout ref-cell in

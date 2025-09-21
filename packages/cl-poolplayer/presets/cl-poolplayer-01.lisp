@@ -1,4 +1,4 @@
-(in-package :cl-poolplayer)
+(in-package :clamps)
 
 (progn
   (set-poolplayer-preset-form
