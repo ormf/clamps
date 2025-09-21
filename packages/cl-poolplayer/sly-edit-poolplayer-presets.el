@@ -9,7 +9,9 @@
             "orm-utils:" ""
             (replace-regexp-in-string
             "nil" "()"
-            str))))
+            (replace-regexp-in-string
+            "cm:" ""
+            str)))))
 ;;;  (insert (format "\n\n(state-store-curr-preset %s)" ref))
   (insert (format "\n\n;;; (show-poolplayer-preset %s)\n;;; (save-poolplayer-presets)" ref))
   (delete-region (point) (point-max))

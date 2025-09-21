@@ -46,22 +46,49 @@
   (dtime-fn)
   (params-fn))
 
-(defparameter *poolplayer-presets-file*
+(defvar *poolplayer-presets-file*
   (namestring (merge-pathnames "presets/cl-poolplayer-01.lisp"
-                               (asdf:system-source-directory :cl-poolplayer)))) 
+                               (asdf:system-source-directory :cl-poolplayer)))
+  "Pathname of the storage of poolplayer presets.
+
+@See-also
+edit-preset-in-emacs
+init-poolplayer
+load-poolplayer-presets
+next-poolplayer-preset
+*poolplayer-presets*
+*poolplayer-presets-file*
+previous-poolplayer-preset
+save-poolplayer-presets
+show-poolplayer-preset
+"
+  ) 
 
 
-(defparameter *curr-poolplayer-preset-no* 0)
+(defvar *curr-poolplayer-preset-no* 0)
 ;;; (defparameter *curr-preset-no* 0)
-(defparameter *max-poolplayer-preset-no* 99)
+(defvar *max-poolplayer-preset-no* 99)
 
 
-(defparameter *poolplayer-presets*
+(defvar *poolplayer-presets*
   (make-array
    100
    :element-type 'vector
    :initial-contents
-   (loop for i below 100 collect (make-poolplayer-preset))))
+   (loop for i below 100 collect (make-poolplayer-preset)))
+  "Storage of the ~form~, ~dtime-fn~ and ~params-fn~ of all poolplayer presets.
+
+@See-also
+edit-preset-in-emacs
+init-poolplayer
+load-poolplayer-presets
+next-poolplayer-preset
+*poolplayer-presets*
+*poolplayer-presets-file*
+previous-poolplayer-preset
+save-poolplayer-presets
+show-poolplayer-preset
+")
 
 ;;; Use the new definition of poolplayer-preset for *poolplayer-presets*
 ;;; TODO: Incorporate into cl-poolplayer.
@@ -88,7 +115,7 @@
                          key ))
           '(:lsample :transp :amp :dy :start :end :stretch
             :wwidth :attack :release :pan :out1 :out2))
-  "List of all param-fn keywords, param-fn symbols and param keywords.")
+  "List of all param-fn keywords, param-fn symbols and param keywords of a poolplayer preset.")
 
 (defparameter *default-param-fns*
   (let ((hash-table (make-hash-table)))
@@ -110,12 +137,12 @@
           by #'cddr
           do (setf (gethash key hash-table) val))
     hash-table)
-  "Defaults for the param fns."
+  "Defaults for the param fns of a poolplayer preset."
   )
 
 (defun get-param-fns (form)
   "Return a list of function definition forms for all param-fns of a
-poolplayer-preset in a list. The list is used in digest-form-to-preset
+poolplayer preset in a list. The list is used in digest-form-to-preset
 for labels bindings. If /form/ doesn't contain an entry for the
 param-fn, it is retrieved from *default-param-fns*."
   (loop for (fnkey fnsym key) in *param-lookup*
@@ -178,19 +205,36 @@ same syntax as an argument of let."
 
 (defun params-fn-form (form)
   "Return the lambda form for the params-fn from /form/ as a quoted list."
-  `(lambda (x dtime total-dur &rest args)
+  `(lambda (x dtime dur &rest args)
+     (declare (ignorable x dtime dur args)
+              (type (or null number) dur))
      (let* ,(getf form :bindings)
-       (declare (ignorable ,@(binding-syms (getf form :bindings))))
        (labels ,(get-param-fns form)
          (list
           ,@(loop
               for (fnkey fnsym key) in *param-lookup*
-              append `(,key (,fnsym x dtime total-dur args))))))))
+              append `(,key (,fnsym x dtime dur args))))))))
 
 (defmacro digest-form-to-preset (preset-no form)
-  "A call to this macro will trigger compiling the dtime-fn and params-fn
+  "A call to this macro will trigger compiling the ~dtime-fn~ and ~params-fn~q
 definitions of /form/ and store the compiled functions and /form/ into
-the *poolplayer-preset* with index /preset-no/."
+the ~*poolplayer-presets*~ variable with index /preset-no/.
+
+@Arguments
+preset-no - Number in the range [0.99] denoting the index of the preset to compile into.
+form - Preset form to digest.
+
+@See-also
+edit-preset-in-emacs
+init-poolplayer
+load-poolplayer-presets
+next-poolplayer-preset
+*poolplayer-presets*
+*poolplayer-presets-file*
+previous-poolplayer-preset
+save-poolplayer-presets
+show-poolplayer-preset
+"
   `(progn
      (incudine.util:msg :info "Compiling form to preset ~a" ,preset-no)
      (setf (preset-form (aref *poolplayer-presets* ,preset-no)) ',form)
@@ -218,9 +262,25 @@ the *poolplayer-preset* with index /preset-no/."
 ;;; #'save-poolplayer-presets
 
 (defun save-poolplayer-presets (&optional (file *poolplayer-presets-file*))
+  "Save *poolplayer-presets* to /file/.
+
+@Arguments
+file - Pathname or String denoting the filename of the poolplayer presets file.
+
+@See-also
+digest-form-to-preset
+edit-preset-in-emacs
+init-poolplayer
+load-poolplayer-presets
+next-poolplayer-preset
+*poolplayer-presets*
+*poolplayer-presets-file*
+previous-poolplayer-preset
+show-poolplayer-preset
+"
   (with-open-file (out file :direction :output
                             :if-exists :supersede)
-    (format out "(in-package :cl-poolplayer)~%~%(progn~%")
+    (format out "(in-package :clamps)~%~%(progn~%")
     (loop for preset across *poolplayer-presets*
           for idx from 0
           do (format out (get-preset-load-form idx)))
@@ -231,6 +291,22 @@ the *poolplayer-preset* with index /preset-no/."
 ;;; load-poolplayer-presets
 
 (defun load-poolplayer-presets (&optional (file *poolplayer-presets-file*))
+  "Load *poolplayer-presets* from /file/.
+
+@Arguments
+file - Pathname or String denoting the filename of the poolplayer presets file.
+
+@See-also
+digest-form-to-preset
+edit-preset-in-emacs
+init-poolplayer
+next-poolplayer-preset
+*poolplayer-presets*
+*poolplayer-presets-file*
+previous-poolplayer-preset
+save-poolplayer-presets
+show-poolplayer-preset
+"
   (load file))
 
 (defun preset->digest-string (ref)
@@ -259,18 +335,62 @@ the *poolplayer-preset* with index /preset-no/."
 (defparameter *emcs-conn* slynk::*emacs-connection*)
 
 (defun next-poolplayer-preset ()
+  "Display next poolplayer preset in the ~curr-preset.lisp~ buffer. Bound
+to the ~<M-Right>~ keyboard shortcut.
+
+@See-also
+digest-form-to-preset
+edit-preset-in-emacs
+init-poolplayer
+load-poolplayer-presets
+*poolplayer-presets*
+*poolplayer-presets-file*
+previous-poolplayer-preset
+save-poolplayer-presets
+show-poolplayer-preset
+"
   (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
     (when (< *curr-poolplayer-preset-no* *max-poolplayer-preset-no*)
       (incudine.util:msg :info "next")
       (edit-preset-in-emacs (incf *curr-poolplayer-preset-no*)))))
 
 (defun previous-poolplayer-preset ()
-  (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
+  "Display previous poolplayer preset in the ~curr-preset.lisp~ buffer. Bound
+to the ~<M-Left>~ keyboard shortcut.
+
+@See-also
+digest-form-to-preset
+edit-preset-in-emacs
+init-poolplayer
+load-poolplayer-presets
+next-poolplayer-preset
+*poolplayer-presets*
+*poolplayer-presets-file*
+save-poolplayer-presets
+show-poolplayer-preset
+"  (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
     (when (> *curr-poolplayer-preset-no* 0)
       (incudine.util:msg :info "previous")
       (edit-preset-in-emacs (decf *curr-poolplayer-preset-no*)))))
 
 (defun show-poolplayer-preset (num)
+  "Show preset /num/ in the ~curr-preset.lisp~ buffer.
+
+@Arguments
+num - Non-negative Integer denoting the index of *poolplayer-presets* to display.
+
+@See-also
+digest-form-to-preset
+edit-preset-in-emacs
+init-poolplayer
+load-poolplayer-presets
+next-poolplayer-preset
+*poolplayer-presets*
+*poolplayer-presets-file*
+previous-poolplayer-preset
+save-poolplayer-presets
+show-poolplayer-preset
+"
   (let ((new (max (min (round num) *max-poolplayer-preset-no*) 0)))
     (when (/= new *curr-poolplayer-preset-no*)
       (setf *curr-poolplayer-preset-no* new)
@@ -323,30 +443,63 @@ curr-preset.lisp buffer."
 
 #+slynk
 (defun edit-preset-in-emacs (ref)
-  "send the preset form referenced by <ref> to emacs for display in the
-curr-preset.lisp buffer."
-  (if (numberp ref)
-      (slynk::eval-in-emacs
-       `(edit-poolplayer-preset
-         ,(progn
-            (in-package :cl-poolplayer)
-            (defparameter slynk::*send-counter* 0)
-            (preset->digest-string ref))
-         ,*curr-poolplayer-preset-no*)
-       t)
-      (slynk::eval-in-emacs
-       `(save-excursion
-         (switch-to-buffer (get-buffer "curr-preset.lisp"))) t)))
+  "Send the poolplayer preset form referenced by /ref/ to emacs for
+display in the ~curr-preset.lisp~ buffer.
 
-(defun init-poolplayer (presets-file)
-  "Set poolplayer presets file to /presets-file/, load all presets, set
-the *curr-preset* to 0 and display it in emacs buffer."
+@Arguments
+ref - Non-negative integer denoting the index of *poolplayer-presets*
+
+@See-also
+digest-form-to-preset
+init-poolplayer
+load-poolplayer-presets
+next-poolplayer-preset
+*poolplayer-presets*
+*poolplayer-presets-file*
+previous-poolplayer-preset
+save-poolplayer-presets
+show-poolplayer-preset
+"
+  (when (numberp ref)
+    (setf *curr-poolplayer-preset-no* ref)
+    (slynk::eval-in-emacs
+     `(edit-poolplayer-preset
+       ,(progn
+          (in-package :cl-poolplayer)
+          (defparameter slynk::*send-counter* 0)
+          (preset->digest-string ref))
+       ,*curr-poolplayer-preset-no*)
+     t)
+    (slynk::eval-in-emacs
+     `(save-excursion
+       (switch-to-buffer (get-buffer "curr-preset.lisp"))) t)))
+
+(defun init-poolplayer (presets-file &key (dir (pathname "/tmp/")))
+  "Set <<*poolplayer-presets*>> by loading /presets-file/, digesting all
+presets and display the preset at index 0 in an emacs buffer linked to
+the file /pathname/​/​~curr-preset.lisp~.
+
+@Arguments
+presets-file - Pathname or string denoting the presets file to load.
+dir - Pathname or string denoting the directory of ~curr-preset.lisp~.
+
+@See-also
+digest-form-to-preset
+edit-preset-in-emacs
+load-poolplayer-presets
+next-poolplayer-preset
+*poolplayer-presets*
+*poolplayer-presets-file*
+previous-poolplayer-preset
+save-poolplayer-presets
+show-poolplayer-preset
+"
   (setf *poolplayer-presets-file*
         (namestring presets-file))
   (load-poolplayer-presets)
   (setf *curr-poolplayer-preset-no* 0)
   (uiop:run-program "/usr/bin/touch /tmp/curr-preset.lisp")
-  (cl-poolplayer::define-poolplayer-elisp-code :elisp-basedir (pathname "/tmp/")))
+  (cl-poolplayer::define-poolplayer-elisp-code :elisp-basedir dir))
 
 ;;; into init-file: (define-elisp-code)
 ;;;

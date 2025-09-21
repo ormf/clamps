@@ -728,15 +728,21 @@ set-tempo
     clog-midi-controller:gui-rewind clog-midi-controller:gui-s-buttons
     clog-midi-controller:gui-set-marker clog-midi-controller:gui-stop
     clog-midi-controller:gui-track-left clog-midi-controller:gui-track-right
+    clog-midi-controller::next-page-button
+    clog-midi-controller::prev-page-button
+
     cl-midictl:gui-update-off cl-midictl:handle-player-button-press
     cl-midictl:handle-player-switch
     cl-midictl:handle-store-button-press
     svg-import-export:header svg-import-export:height cl-midictl:hide-fader
-    svg-import-export:href cl-midictl:init-nk2 cl-poolplayer:init-poolplayer
+    svg-import-export:href cl-midictl:init-nk2
     cuda-usocket-osc:input-stream svg-import-export:insensitive orm-utils:insert
     svg-import-export:inverse svg-import-export:label
     svg-import-export:last-id orm-utils:last-n cl-midictl:last-note-on
-    cl-poolplayer:load-poolplayer-presets cl-poolplayer:load-poolplayer-sounds
+;;    cl-poolplayer:load-poolplayer-presets
+
+
+    cl-poolplayer:load-poolplayer-sounds
     cl-midictl:load-presets of-incudine-dsps:lsample-amp
     of-incudine-dsps:lsample-buffer of-incudine-dsps:lsample-name
     of-incudine-dsps:lsample-keynum of-incudine-dsps:lsample-loopend
@@ -745,8 +751,7 @@ set-tempo
     svg-import-export:make-piano-roll svg-import-export:make-staff-system
     svg-import-export:make-svg-cm-line svg-import-export:marker-end
     cl-midictl:marker-left cl-midictl:marker-right orm-utils:n
-    svg-import-export:name cl-midictl:*nanoktl2-presets-file*
-    cl-poolplayer:next-poolplayer-preset cl-midictl:nk-cycle
+    svg-import-export:name cl-midictl:*nanoktl2-presets-file* cl-midictl:nk-cycle
     cl-midictl:nk2-fader-last-cc cl-midictl:nk2-fader-modes
     cl-midictl:nk2-fader-update-fns cl-midictl:nk2-faders cl-midictl:nk2-last-cc
     cl-midictl:note-fns cl-midictl:note-state cl-poolplayer:npreset-play
@@ -758,19 +763,21 @@ set-tempo
     cl-poolplayer:p-song-playfn cl-poolplayer:p1 cl-poolplayer:p2 cl-poolplayer:p3
     cl-poolplayer:p4 svg-import-export:pd-color->svg-color cl-poolplayer:perform
     cl-poolplayer:play-song ats-cuda-display:play-watch cl-poolplayer:*pool-hash*
-    cl-poolplayer:*poolplayer-events* cl-poolplayer:*poolplayer-presets-file*
+    cl-poolplayer:*poolplayer-events*
     ats-cuda-display:pos-watch cl-midictl:preset-buttons cl-poolplayer:preset-play
     cl-midictl:preset-state cl-midictl:presets
-    cl-poolplayer:previous-poolplayer-preset
+;;    cl-poolplayer:previous-poolplayer-preset
+;;    cl-poolplayer:next-poolplayer-preset
     svg-import-export:print-head-to-stream svg-import-export:print-tail-to-stream
     svg-import-export:print-to-stream cl-midictl:r-buttons cl-refs:ref-id
     cl-refs:ref-listeners cl-refs:ref-object cl-refs:ref-object-super
     clog-dsp-widgets:refs cl-refs:*refs-seen* svg-import-export:renew-svg
     svg-import-export:rx svg-import-export:ry cl-midictl:s-buttons
-    cl-poolplayer:save-poolplayer-presets cl-midictl:save-presets
+    ;; cl-poolplayer:save-poolplayer-presets
+    cl-midictl:save-presets
     cuda-usocket-osc:send cl-poolplayer:serialize-score
     cl-midictl:set-player-buttons cl-poolplayer:set-poolplayer-preset-form
-    cl-refs:%set-val cl-poolplayer:show-poolplayer-preset
+    cl-refs:%set-val
     svg-import-export:showgrid cl-poolplayer:stereo-out
     svg-import-export:stroke-color svg-import-export:stroke-dasharray
     svg-import-export:stroke-linecap svg-import-export:stroke-linejoin

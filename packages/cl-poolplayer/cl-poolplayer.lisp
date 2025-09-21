@@ -59,9 +59,11 @@ returns."
   (with-slots (playing preset-no id start end dur) player
     (let* ((x (normalize-x time end dur))
            (prst (aref *poolplayer-presets* (if (= -1 preset-no) *curr-poolplayer-preset-no* preset-no))) ;;; if preset-no is -1 use *curr-preset*
-           (params (apply (params-fn prst) x 0 dur args)))
+)
       (when playing
-        (let* ((next (+ time (apply (dtime-fn prst) x dur args))))
+        (let* ((dtime (apply (dtime-fn prst) x dur args))
+               (next (+ time dtime))
+               (params (apply (params-fn prst) x dtime dur args)))
           (incf (getf params :amp) *master-amp-db*)
           (setf params (list* :buffer (lsample-buffer (getf params :lsample)) params))
           (incudine.util:msg :info "~S" params)

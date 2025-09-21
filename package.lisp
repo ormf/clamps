@@ -568,13 +568,16 @@
            cl-sfz:sfz-preset-loaded? cl-sfz:get-sfz-preset
            cl-sfz:play-sfz-loop cl-sfz:play-sfz
            cl-sfz:sfz-preset-file cl-sfz:add-sfz-preset cl-sfz:sfz-get-range
-           cl-sfz:remove-sfz-preset cl-poolplayer:p1 cl-poolplayer:p-song-afterfn
+           cl-sfz:remove-sfz-preset
+
+           cl-poolplayer:edit-preset-in-emacs
+           cl-poolplayer:p-song-afterfn
            cl-poolplayer:get-interp-vals
            cl-poolplayer:digest-interp-form
            cl-poolplayer:ip-idx cl-poolplayer:ip-num
            cl-poolplayer:*pool-hash* cl-poolplayer:init-poolplayer
            cl-poolplayer:preset-play cl-poolplayer:p2 cl-poolplayer:dtime
-           cl-poolplayer:value-fn cl-poolplayer:*outseq8* cl-poolplayer:p4
+           cl-poolplayer:value-fn cl-poolplayer:*outseq8*
            cl-poolplayer:save-poolplayer-presets
            cl-poolplayer:*poolplayer-presets-file*
            cl-poolplayer:digest-form-to-preset
@@ -589,16 +592,21 @@
            cl-poolplayer:cm-collect cl-poolplayer:make-eventplayer
            cl-poolplayer:*outseq13*
            cl-poolplayer:load-poolplayer-presets cl-poolplayer:init-poolplayer
-           cl-poolplayer:previous-poolplayer-preset cl-poolplayer:args
+           cl-poolplayer:args
            cl-poolplayer:expand-arg-forms cl-poolplayer:x
            cl-poolplayer:show-poolplayer-preset cl-poolplayer:p-song-playfn
            cl-poolplayer:g1 cl-poolplayer:p-song-durfn orm-utils:r-elt
-           cl-poolplayer:next-poolplayer-preset cl-poolplayer:p3 cl-poolplayer:g2
+            cl-poolplayer:p3 cl-poolplayer:g2
            cl-poolplayer:buf-idx cl-poolplayer:g3 cl-poolplayer:get-dtime-fn
            cl-poolplayer:play-song cl-poolplayer:p-song-name
-           cl-poolplayer:fig12-out cl-poolplayer:fn-digest-poolplayer-preset
+           cl-poolplayer:fig12-out
            cl-poolplayer:load-poolplayer-sounds
            cl-poolplayer:get-dtime-fn-no-x
+           cl-poolplayer:edit-preset-in-emacs
+           cl-poolplayer:next-poolplayer-preset
+           cl-poolplayer:previous-poolplayer-preset
+           cl-poolplayer:init-poolplayer
+           
            svg-import-export:add-svg-attr-props-to-quote
            svg-import-export:print-head-to-stream svg-import-export:opacity
            svg-import-export:w-x svg-import-export:new-id
