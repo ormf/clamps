@@ -157,6 +157,20 @@ default - The value the property should get assigned to if not set.
      (unless val (setf (getf ,proplist ,prop) ,default))
      (or val ,default)))
 
+(defun proplist-keys (proplist)
+  "Return a list of all keys of /proplist/.
+
+@Arguments
+proplist - Property List."
+  (loop for (key value) on proplist by #'cddr collect key))
+
+(defun proplist-vals (proplist)
+  "Return a list of all values of /proplist/.
+
+@Arguments
+proplist - Property List."
+  (loop for (key value) on proplist by #'cddr collect value))
+
 (defun every-nth (list n &key (offset 0))
   "Return a sublist of /list/ containing every element with an index
 being a multiple of /n/.

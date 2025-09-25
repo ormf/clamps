@@ -47,6 +47,7 @@
    #:GET-DTIME-FN-NO-X
    #:VALUE-FN
    #:X
+   #:IDX
    #:ARGS
    #:P1 #:P2 #:P3 #:P4
    #:G1 #:G2 #:G3 #:G4
@@ -73,6 +74,4 @@
    #:EXPAND-ARG-FORMS
    #:NORMALIZE-X
    #:PLAYING #:PRESET-NO #:ID #:START #:END #:DUR
-
-   )
-  )
+   #:INIT-POOLPLAYER-ELISP-CODE))

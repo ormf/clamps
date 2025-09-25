@@ -56,6 +56,8 @@
            orm-utils:dolist-db
            orm-utils:ftom orm-utils:mtof
            orm-utils:get-props-list orm-utils:m-exp
+           orm-utils:proplist-keys
+           orm-utils:proplist-vals
            output-stream
 
            cl-plot:plot-2d
@@ -570,6 +572,7 @@
            cl-sfz:sfz-preset-file cl-sfz:add-sfz-preset cl-sfz:sfz-get-range
            cl-sfz:remove-sfz-preset
 
+           cl-poolplayer:init-poolplayer-elisp-code
            cl-poolplayer:edit-preset-in-emacs
            cl-poolplayer:p-song-afterfn
            cl-poolplayer:get-interp-vals
@@ -582,6 +585,7 @@
            cl-poolplayer:*poolplayer-presets-file*
            cl-poolplayer:digest-form-to-preset
            cl-poolplayer:g4
+           cl-poolplayer:idx
            cl-poolplayer:*circle-cw* cl-poolplayer:make-p-song
            cl-poolplayer:npreset-play cl-poolplayer:set-poolplayer-preset-form
            cl-poolplayer:stereo-out cl-poolplayer:dtime-dev

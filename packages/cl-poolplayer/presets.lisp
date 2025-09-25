@@ -146,17 +146,15 @@ poolplayer preset in a list. The list is used in digest-form-to-preset
 for labels bindings. If /form/ doesn't contain an entry for the
 param-fn, it is retrieved from *default-param-fns*."
   (loop for (fnkey fnsym key) in *param-lookup*
-        collect `(,fnsym (x &optional dtime dur args)
-                         (declare (ignorable x dtime dur args )
-                                  (type (or null number) dur))
+        collect `(,fnsym ()
                          (let ((outer-form (getf args ,fnkey)))
                            (if outer-form
                                (funcall
                                 (eval
-                                 `(lambda (x &optional dtime dur args)
+                                 `(lambda (x &optional dtime dur idx &rest args)
                                     (declare (ignorable x dtime dur args))
                                     ,outer-form))
-                                x dtime dur args)
+                                x dtime dur idx args)
                                ,(getf form fnkey (gethash fnkey *default-param-fns*)))))))
 
 ;;; (get-param-fns '(:transpfn 0 :ampfn (n-lin x 0 -12)))
@@ -169,8 +167,8 @@ same syntax as an argument of let."
 
 (defun dtime-fn-form (form)
   "Return the lambda form for the dtime-fn from /form/ as a quoted list."
-  `(lambda (x &optional dur &rest args)
-     (declare (ignorable x dur args)
+  `(lambda (x &optional dur idx &rest args)
+     (declare (ignorable x dur idx args)
               (type (or null number) dur))
      (let* ,(getf form :bindings)
        (declare (ignorable ,@(binding-syms (getf form :bindings)))
@@ -179,11 +177,12 @@ same syntax as an argument of let."
                            (if outer-form
                                (funcall
                                 (eval
-                                 `(lambda (x &optional dur args)
-                                    (declare (ignorable x dur args))
+                                 `(lambda (x &optional dur idx args)
+                                    (declare (ignorable x dur idx args))
                                     ,outer-form))
                                 x dur args)
                                ,(getf form :dtimefn (gethash :dtimefn *default-param-fns*)))))))
+
 
 #|
 (defun params-fn-form (form)
@@ -205,15 +204,15 @@ same syntax as an argument of let."
 
 (defun params-fn-form (form)
   "Return the lambda form for the params-fn from /form/ as a quoted list."
-  `(lambda (x dtime dur &rest args)
-     (declare (ignorable x dtime dur args)
+  `(lambda (x dtime dur idx &rest args)
+     (declare (ignorable x dtime dur idx args)
               (type (or null number) dur))
      (let* ,(getf form :bindings)
        (labels ,(get-param-fns form)
          (list
           ,@(loop
               for (fnkey fnsym key) in *param-lookup*
-              append `(,key (,fnsym x dtime dur args))))))))
+              append `(,key (,fnsym))))))))
 
 (defmacro digest-form-to-preset (preset-no form)
   "A call to this macro will trigger compiling the ~dtime-fn~ and ~params-fn~q
@@ -411,16 +410,20 @@ show-poolplayer-preset
      t)))
 
 #+slynk
-(defun define-poolplayer-elisp-code (&key (elisp-basedir (asdf:system-source-directory :cl-poolplayer)) (curr-preset-file "/tmp/curr-preset.lisp"))
-  (let ((slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
+(defun init-poolplayer-elisp-code (elisp-file)
+  "Init the emacs interface for poolplayer preset editing using /elisp-file/.
+@Arguments
+elisp-file - String denoting the elisp file to load.
+"
+  (let ((curr-preset-file "/tmp/curr-preset.lisp")
+        (slynk::*emacs-connection* (or slynk::*emacs-connection* *emcs-conn*)))
+    (uiop:run-program "/usr/bin/touch /tmp/curr-preset.lisp")
     (slynk::eval-in-emacs
      `(progn
         (setq poolplayer-preset-file ,curr-preset-file)
         (find-file ,curr-preset-file)
         (set-window-dedicated-p (get-buffer-window "curr-preset.lisp" t) t)
-        (load ,(namestring
-                (merge-pathnames
-                 "sly-edit-poolplayer-presets.el" elisp-basedir))))
+        (load ,elisp-file))
      t)
     (edit-preset-in-emacs 0)))
 
@@ -474,16 +477,16 @@ show-poolplayer-preset
      `(save-excursion
        (switch-to-buffer (get-buffer "curr-preset.lisp"))) t)))
 
-(defun init-poolplayer (presets-file &key (dir (pathname "/tmp/")))
+(defun init-poolplayer (&optional presets-file elisp-file)
   "Set <<*poolplayer-presets*>> by loading /presets-file/, digesting all
 presets and display the preset at index 0 in an emacs buffer linked to
-the file /pathname/​/​~curr-preset.lisp~.
+the file ~/tmp/curr-preset.lisp~. Load the elisp definitions for
+preset editing from /elisp-file/.
 
 @Arguments
-presets-file - Pathname or string denoting the presets file to load.
-dir - Pathname or string denoting the directory of ~curr-preset.lisp~.
+presets-file - Pathname or string denoting the presets file to load. The default copies cl-poolplayer/presets/cl-poolplayer-defaults-presets.lisp from the clamps packages directory to /tmp/poolplayer-presets.lisp and uses the latter file.
+elisp-file - Pathname or string denoting the Emacs lisp configuration file for the emacs preset editor. Defaults to cl-poolplayer/sly-edit-poolplayer-presets.el
 
-@See-also
 digest-form-to-preset
 edit-preset-in-emacs
 load-poolplayer-presets
@@ -495,16 +498,24 @@ save-poolplayer-presets
 show-poolplayer-preset
 "
   (setf *poolplayer-presets-file*
-        (namestring presets-file))
+        (namestring
+         (or presets-file
+             (let ((default-presets
+                     (merge-pathnames
+                      "packages/cl-poolplayer/presets/cl-poolplayer-default-presets.lisp"
+                      (asdf:system-source-directory :clamps))))
+               (uiop:run-program
+                (format nil "/usr/bin/cp ~A /tmp/poolplayer-presets.lisp"
+                        default-presets))
+               "/tmp/poolplayer-presets.lisp"))))
   (load-poolplayer-presets)
   (setf *curr-poolplayer-preset-no* 0)
-  (uiop:run-program "/usr/bin/touch /tmp/curr-preset.lisp")
-  (cl-poolplayer::define-poolplayer-elisp-code :elisp-basedir dir))
-
-;;; into init-file: (define-elisp-code)
-;;;
-
-;;; (edit-preset-in-emacs 0)
+  (init-poolplayer-elisp-code
+   (or elisp-file
+       (namestring
+        (merge-pathnames
+         "sly-edit-poolplayer-presets.el"
+         (asdf:system-source-directory :cl-poolplayer))))))
 
 (defun get-preset-form (idx)
   (cl-poolplayer::preset-form (elt *poolplayer-presets* idx)))

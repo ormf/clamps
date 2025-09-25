@@ -56,14 +56,17 @@ then reschedules itself in case the calculated time for the next event
 is before the end time of the player's life cycle or end is
 nil. Otherwise it just sets the 'playing slot of the player to nil and
 returns."
-  (with-slots (playing preset-no id start end dur) player
-    (let* ((x (normalize-x time end dur))
-           (prst (aref *poolplayer-presets* (if (= -1 preset-no) *curr-poolplayer-preset-no* preset-no))) ;;; if preset-no is -1 use *curr-preset*
-)
+  (with-slots (playing preset-no id start end idx dur) player
+    (let* ((effective-preset-no (if (= -1 preset-no) *curr-poolplayer-preset-no* preset-no))
+           (x (normalize-x time end dur))
+           (prst (aref *poolplayer-presets* effective-preset-no)))
+      (unless (dtime-fn prst) (error "dtime-fn of preset ~a undefined. Did you forget to digest the preset?" effective-preset-no))
+      (unless (params-fn prst) (error "params-fn of preset ~a undefined. Did you forget to digest the preset?" effective-preset-no))
       (when playing
         (let* ((dtime (apply (dtime-fn prst) x dur args))
                (next (+ time dtime))
-               (params (apply (params-fn prst) x dtime dur args)))
+               (params (apply (params-fn prst) x dtime dur idx args)))
+          (incf idx)
           (incf (getf params :amp) *master-amp-db*)
           (setf params (list* :buffer (lsample-buffer (getf params :lsample)) params))
           (incudine.util:msg :info "~S" params)
@@ -79,10 +82,8 @@ returns."
 (defun stop (p)
   (sv p :playing nil))
 
-(defun preset-play (&rest args)
-  (let ((time (getf args :time (now)))
-        (dur (getf args :dur))
-        (preset-no (getf args :preset-no 0))
+(defun preset-play (preset-no dur &rest args)
+  (let ((time (getf args :at (now)))
         (player (or (getf args :player) (make-eventplayer))))
     (cm::sv player
         :playing t

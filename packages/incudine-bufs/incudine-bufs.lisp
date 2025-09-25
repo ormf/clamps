@@ -326,8 +326,8 @@ buffer-id
 "
   (let ((loaded '()))
     (dolist (snd (uiop:directory-files dir filter))
-      (let ((new (incudine-bufs:clamps-buffer-load snd)))
-        (when new (push (incudine-bufs:buffer-id new) loaded))))
+      (let ((new (clamps-buffer-load snd)))
+        (when new (push (buffer-id new) loaded))))
     (reverse loaded)))
 
 ;;; (clamps-buffer-load "/home/orm/work/kompositionen/letzte-worte/snd/fl-s01-line01.wav")

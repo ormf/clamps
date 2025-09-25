@@ -14,6 +14,8 @@
    #:REDUCING
 ;;   #:WHILE
    #:ENSURE-PROP
+   #:PROPLIST-KEYS
+   #:PROPLIST-VALS
    #:EVERY-NTH
 ;;   #:FIRSTN
    #:RFIND

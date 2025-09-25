@@ -25,6 +25,7 @@
   (playing t)
   (id nil)
   (dur 3)
+  (idx 0)
   (end 0)
   (start-time 0)
   (preset-no 0)

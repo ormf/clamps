@@ -367,6 +367,8 @@
    ("preset-form" "clamps-dict/preset-form.html")
    ("preset-no" "clamps-dict/preset-no.html")
    ("previous-poolplayer-preset" "clamps-dict/previous-poolplayer-preset.html")
+   ("proplist-keys" "clamps-dict/proplist-keys.html")
+   ("proplist-vals" "clamps-dict/proplist-vals.html")
    ("pulse-off" "clamps-dict/pulse-off.html")
    ("pulse-on" "clamps-dict/pulse-on.html")
    ("push-if" "clamps-dict/push-if.html")
