@@ -776,7 +776,6 @@
   (:shadow #:buffer #:buffer-frames
            #:buffer-sample-rate
            #:node #:bus
-           #:envelope
            #:remove-all-responders #:recv-stop
            #:without-interrupts
            #:play
@@ -807,7 +806,8 @@
         #:incudine
         #:incudine.vug
         #:incudine.util
-        :incudine.analysis #:incudine-bufs
+        #:incudine.analysis
+        #:incudine-bufs
         #:cl-poolplayer
         #:cl-midictl
         #:of-incudine-dsps
