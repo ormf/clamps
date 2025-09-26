@@ -53,11 +53,8 @@
 ;;; to access the struct called node in incudine, we have to use
 ;;; incudine:node.
 
-(defvar node nil)
 (setf (fdefinition 'node) #'incudine:node)
-(defvar bus nil)
 (setf (fdefinition 'bus) #'incudine:bus)
-(defsetf bus incudine::set-bus)
 
 (defmacro imsg (type format-control &rest format-arguments)
   "Produce a formatted log message controlled by FORMAT-CONTROL and

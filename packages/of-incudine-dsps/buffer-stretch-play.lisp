@@ -513,7 +513,7 @@ play-lsample
 
 (define-ugen buffer-stretch-play* frame
     ((buffer buffer) rate wwidth start end stretch)  
-    "Buffer play Ugen with granular stretching working with any blocksize.
+  "Buffer play Ugen with granular stretching working with any blocksize.
 
 @Arguments
 buffer - Incudine buffer.
@@ -536,34 +536,34 @@ play-buffer-loop*
 play-buffer-stretch*
 play-buffer-stretch-env-pan-out*
 "  (with-samples ((rate (* rate (/ (buffer-sample-rate buffer) *sample-rate*)))
-                 (invrate (/ rate))
-                 (wsamps (* wwidth *sample-rate* 0.001d0))
-                 (phfreq (/ 1000.0d0 invrate wwidth)))    
-    (with ((frm (make-frame (block-size)))
-           (ph1 (phasor* phfreq 0))
-           (ph2 (phasor* phfreq 0.5))
-           (mainpt (line* (* start *sample-rate*)
-                          (*  end *sample-rate*)
-                          (* stretch (- end start))
-                          #'free)))
-      (maybe-expand ph1)
-      (maybe-expand ph2)
-      (maybe-expand mainpt)
-      (foreach-frame
-        (let ((p1 (frame-ref ph1 current-frame))
-              (p2 (frame-ref ph2 current-frame))
-              (mpt (frame-ref mainpt current-frame)))
-          (setf (frame-ref frm current-frame)
-                (+
-                 (* (buffer-read *hanning1024* (* p1 1024))
-                    (buffer-read buffer (+ (samphold mpt p1) (* p1 wsamps))))
-                 (* (buffer-read *hanning1024* (* p2 1024))
-                    (buffer-read buffer
-                                 (max 0.0d0
-                                      (+
-                                       (samphold mpt p2 (* -0.5 wsamps) -1)
-                                       (* p2 wsamps)))))))))
-      frm)))
+                  (invrate (/ rate))
+                  (wsamps (* wwidth *sample-rate* 0.001d0))
+                  (phfreq (/ 1000.0d0 invrate wwidth)))    
+     (with ((frm (make-frame (block-size)))
+            (ph1 (phasor* phfreq 0))
+            (ph2 (phasor* phfreq 0.5))
+            (mainpt (line* (* start *sample-rate*)
+                           (*  end *sample-rate*)
+                           (* stretch (- end start))
+                           #'free)))
+       (maybe-expand ph1)
+       (maybe-expand ph2)
+       (maybe-expand mainpt)
+       (foreach-frame
+         (let ((p1 (frame-ref ph1 current-frame))
+               (p2 (frame-ref ph2 current-frame))
+               (mpt (frame-ref mainpt current-frame)))
+           (setf (frame-ref frm current-frame)
+                 (+
+                  (* (buffer-read *hanning1024* (* p1 1024))
+                     (buffer-read buffer (+ (samphold mpt p1) (* p1 (samphold wsamps p1)))))
+                  (* (buffer-read *hanning1024* (* p2 1024))
+                     (buffer-read buffer
+                                  (max 0.0d0
+                                       (+
+                                        (samphold mpt p2 (* -0.5 wsamps) -1)
+                                        (* p2 (samphold wsamps p2))))))))))
+       frm)))
 
 (dsp! play-buffer-stretch* ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth)
   "Play /buffer/ using 2 window overlap add granular

@@ -124,11 +124,10 @@ by Tobias Kunze. Some cleanup done by Orm Finnendahl."
         (format t e)))
   (values))
 
-(defvar node nil)
 (setf (fdefinition 'node) #'incudine:node)
-(defvar bus nil)
 (setf (fdefinition 'bus) #'incudine:bus)
 (defsetf bus incudine::set-bus)
+(setf (fdefinition 'iline) #'incudine.vug:line)
 
 (defun set-page-dimensions (body width height &key (scale 1.0))
   "Set the page dimensions of the /body/ of a clog html page given its
