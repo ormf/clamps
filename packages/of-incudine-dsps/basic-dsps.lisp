@@ -56,11 +56,11 @@ FREQ, initial value INIT (0 by default) and AMP."
   (with-samples ((rate (* amp freq *sample-duration*)))
     (incudine.vug::%phasor rate init amp)))
 
-(dsp! osc~ (freq amp phase master (buf buffer))
+(dsp! osc~ (freq amp phase lagtime (buf buffer))
   "table lookup cosine oscillator."
-  (:defaults 440 0.1 0 1.0 *COSINE-TABLE*)
+  (:defaults 440 0.1 0 0.1 *COSINE-TABLE*)
   (foreach-frame
-    (let ((sig (* (lag amp 0.1) (osc buf freq master phase))))
+    (let ((sig (* (lag amp lagtime) (osc buf (lag freq lagtime) phase))))
       (out sig sig))))
 
 (define-vug input-bus ((channel channel-number))

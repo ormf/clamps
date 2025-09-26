@@ -52,7 +52,7 @@
        (list oa ob og x y z gx gy gz gyrox gyroy gyroz deltag) ))
     (otherwise val)))
 
-(defun add-sensor (id)
+(defun add-sensor (id &rest args)
 "Add an Accelerometer sensor with /id/ accessible from a Firefox
 Browser on a Mobile device at the URL http://<local-ip>:54619/id to
 the sensor registry.
@@ -63,6 +63,9 @@ keyword. An id of ~:sensor1~ will result in the URL
 
 @Arguments
 id - Keyword denoting the id of the sensor.
+:trigger-active - Positive Number denoting if the trigger is active. Defaults to t.
+:trigger-threshold - Positive Number denoting the trigger threshold. Defaults to 0.1.
+:trigger-timeout - Positive Number denoting the trigger timeout in ms. Defaults to 200.
 
 @See-also
 find-sensor
@@ -76,9 +79,9 @@ sensor-trig-timeout
 "
   (let* ((sensor-data (make-ref (make-sensor-data)))
          (trigger (make-bang (lambda ()) 0))
-         (trigger-active (make-ref t))
-         (trigger-threshold (make-ref 0.1))
-         (trigger-timeout (make-ref 200))
+         (trigger-active (make-ref (getf args :trigger-active t)))
+         (trigger-threshold (make-ref (getf args :trigger-threshold 0.1)))
+         (trigger-timeout (make-ref (getf args :trigger-timeout 200)))
          (path (format nil "/~a" id)))
     (labels ((new-sensor-window (body)
                "On-new-window handler."
