@@ -7,6 +7,7 @@
   (:shadow #:clip)
   (:export #:*STANDARD-OUTPUT-GROUP*
            #:BUFFER-RECORD
+           #:ILAG
            #:ENVELOPE*
            #:LINE*
            #:PHASOR*

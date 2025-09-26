@@ -74,16 +74,14 @@ The curvature CURVE defaults to -4."
              0 0 0 0 1 137)
   (with-samples ((rate (/ (* (buffer-sample-rate buffer) (keynum->hz transp))
                           (* *sample-rate* 8.175798915643707d0)))
-                 (lag-time 0)
-                 (ampl (db->lin (lag amp lag-time))))
+                 (ampl (db->lin (ilag amp 0.1))))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) *sample-rate*)
                              end))
                    (sig (* ampl
                            (envelope env 1 (* stretch (- ende start)) #'free)
                            (buffer-stretch-play buffer rate wwidth start ende stretch))))
-      (stereo sig)
-      (when (zerop lag-time) (setf lag-time 0.1d0)))))
+      (stereo sig))))
 
 
 (dsp! play-buffer-stretch-out ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth (out integer))
@@ -92,8 +90,7 @@ The curvature CURVE defaults to -4."
              0 0 0 0 1 137 0)
   (with-samples ((rate (/ (* (buffer-sample-rate buffer) (keynum->hz transp))
                           (* *sample-rate* 8.175798915643707d0)))
-                 (lag-time 0)
-                 (ampl (db->lin (lag amp lag-time))))
+                 (ampl (db->lin (ilag amp 0.1))))
     (with-samples ((ende (if (or (zerop end)
                                  (> end (/ (buffer-frames buffer) *sample-rate*)))
                              (/ (buffer-frames buffer) *sample-rate*)
@@ -101,24 +98,21 @@ The curvature CURVE defaults to -4."
                    (sig (* ampl
                            (envelope env 1 (* stretch (- ende start)) #'free)
                            (buffer-stretch-play buffer rate wwidth start ende stretch))))
-      (incf (audio-out out) sig)
-      (when (zerop lag-time) (setf lag-time 0.1d0)))))
+      (incf (audio-out out) sig))))
 
 
 (dsp! play-buffer-stretch-env-out ((buffer buffer) amp transp start end stretch wwidth attack release (out integer))
   (:defaults (incudine:incudine-missing-arg "BUFFER") 0 0 0 0 1 137 0 0.01 0)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
                                            8.175798915643707d0)))
-                 (lag-time 0)
-                 (ampl (db->lin (lag amp lag-time))))
+                 (ampl (db->lin (ilag amp 0.1))))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) *sample-rate*)
                              (min (/ (buffer-frames buffer) *sample-rate*) end)))
                    (sig (* (envelope (reduce-warnings (make-fasr attack ampl release (* stretch (- ende start))))
                                      1 1 #'free)
                            (buffer-stretch-play buffer rate wwidth start ende stretch))))
-      (incf (audio-out out) sig)
-      (when (zerop lag-time) (setf lag-time 0.1d0)))))
+      (incf (audio-out out) sig))))
 
 ;;; (format t "~a , ~a ~a ~a ~a ~a ~a~%" (* stretch (- ende start)) buffer rate wwidth start ende stretch)
 
@@ -131,8 +125,7 @@ The curvature CURVE defaults to -4."
                  (rate (reduce-warnings
                          (/ (* (buffer-sample-rate buffer) (keynum->hz transp))
                             (* *sample-rate* 8.175798915643707d0))))
-                 (lag-time 0)
-                 (ampl (db->lin (lag amp lag-time)))
+                 (ampl (db->lin (ilag amp lag-time)))
                  (ende (if (zerop end)
                            (/ (buffer-frames buffer) *sample-rate*)
                            (min (/ (buffer-frames buffer) *sample-rate*) end)))
@@ -141,8 +134,7 @@ The curvature CURVE defaults to -4."
                          (buffer-stretch-play buffer rate wwidth start ende stretch))))
     (foreach-frame
       (incf (audio-out out2) (* sig right))
-      (incf (audio-out out1) (* sig left))
-      (when (zerop lag-time) (setf lag-time 0.1d0)))))
+      (incf (audio-out out1) (* sig left)))))
 
 
 (define-vug phasor-loop (rate start-pos loopstart loopend)
@@ -387,8 +379,7 @@ play-lsample
              1 0 1 0.5 0 0 1)
   (with-samples (;;; (rate (* (/ (buffer-sample-rate buffer) *sample-rate*) rate))
                  (startframe (* startpos (buffer-sample-rate buffer)))
-                 (lag-time 0)
-                 (ampl (db->lin (lag amp lag-time)))                 
+                 (ampl (db->lin (ilag amp lag-time)))                 
                  (endpos (min (+ startpos dur) (/ (buffer-frames buffer) (buffer-sample-rate buffer))))
                  (endframe (* endpos (buffer-sample-rate buffer)))
                  (alpha (* +half-pi+ pan))
@@ -403,8 +394,7 @@ play-lsample
                       (frame-ref frm1 current-frame)
                       (frame-ref frm2 current-frame))))
           (incf (audio-out out1) (* sig left))
-          (incf (audio-out out2) (* sig right))
-          (when (zerop lag-time) (setf lag-time 0.1d0)))))))
+          (incf (audio-out out2) (* sig right)))))))
 
 (define-ugen buffer-loop-play* frame ((buffer buffer) rate start-pos
                                       loopstart loopend)
@@ -475,8 +465,7 @@ play-lsample
              (incudine:incudine-missing-arg "ENV")
              1 0 1 0.5 0 0 0 0 1)
   (with-samples ((startframe (* start (buffer-sample-rate buffer)))
-                 (setf lag-time 0)
-                 (ampl (db->lin (lag amp lag-time)))
+                 (ampl (db->lin (ilag amp lag-time)))
                  (loopend (if (zerop loopend) (incudine::sample (buffer-frames buffer)) (incudine::sample loopend)))
                  (alpha (* +half-pi+ pan))
                  (left (cos alpha))
@@ -490,8 +479,7 @@ play-lsample
                       (frame-ref frm1 current-frame)
                       (frame-ref frm2 current-frame))))
           (incf (audio-out out1) (* sig left))
-          (incf (audio-out out2) (* sig right)))
-        (when (zerop lag-time) (setf lag-time 0.1d0))))))
+          (incf (audio-out out2) (* sig right)))))))
 
 
 
@@ -612,8 +600,7 @@ play-lsample
              0 0 0 0 1 137 #'free)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
                                            8.175798915643707d0)))
-                 (lag-time 0)
-                 (ampl (db->lin (lag amp lag-time))))
+                 (ampl (db->lin (ilag amp lag-time))))
     (if (zerop lag-time) (setf lag-time 0.1d0))
     (with-samples ((ende (if (zerop end)
                              (/ (buffer-frames buffer) *sample-rate*)
@@ -626,8 +613,7 @@ play-lsample
         (maybe-expand frm2)
         (foreach-frame
           (stereo (* ampl (frame-ref frm1 current-frame)
-                     (frame-ref frm2 current-frame)))
-          (when (zerop lag-time) (setf lag-time 0.1d0)))))))
+                     (frame-ref frm2 current-frame))))))))
 
 (dsp! play-buffer-stretch-env-pan-out*
     ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum) (done-action function))
@@ -674,8 +660,7 @@ play-lsample
                  (right (sin alpha))
                  (rate (reduce-warnings (/ (* (buffer-sample-rate buffer) (keynum->hz transp))
                                            (* *sample-rate* 8.175798915643707d0))))
-                 (lag-time 0)
-                 (ampl (db->lin (lag amp lag-time)))
+                 (ampl (db->lin (ilag amp 0.1)))
                  (ende (if (zerop end)
                            (/ (buffer-frames buffer) *sample-rate*)
                            (min (/ (buffer-frames buffer) *sample-rate*) end))))
@@ -688,5 +673,5 @@ play-lsample
                      (frame-ref frm1 current-frame)
                      (frame-ref frm2 current-frame))))
             (incf (audio-out out2) (* sig right))
-            (incf (audio-out out1) (* sig left)))
-          (when (zerop lag-time) (setf lag-time 0.1d0))))))
+            (incf (audio-out out1) (* sig left)))))))
+

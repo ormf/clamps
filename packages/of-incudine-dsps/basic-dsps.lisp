@@ -38,6 +38,11 @@
 (defsetf aux set-aux)
 |#
 
+(define-vug ilag (in time)
+  "Scaled one pole filter with the coefficient calculated from
+a 60 dB lag TIME."
+  (pole* in (delay1 (t60->pole time))))
+
 (define-ugen phasor-amp* frame (freq init amp)
   "Incudine Ugen producing a normalized moving phase value with
 frequency FREQ, initial value INIT (0 by default) and AMP at k-rate."

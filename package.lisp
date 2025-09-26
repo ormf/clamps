@@ -256,6 +256,7 @@
            cl-midictl:find-controller clog-dsp-widgets:named-bus
            cl-midictl:midi-input cl-midictl:toggle-slot
            of-incudine-dsps:osc~
+           of-incudine-dsps:ilag
            of-incudine-dsps:env-synth
            orm-utils:spit clog-dsp-widgets:levelmeter-gui orm-utils:n-exp-fn
            make-cm-line
