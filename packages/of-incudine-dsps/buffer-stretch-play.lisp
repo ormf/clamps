@@ -565,7 +565,7 @@ play-buffer-stretch-env-pan-out*
                                         (* p2 (samphold wsamps p2))))))))))
        frm)))
 
-(dsp! play-buffer-stretch* ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth)
+(dsp! play-buffer-stretch* ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth (done-action function))
   "Play /buffer/ using 2 window overlap add granular
 stretching/transposition with /env/ between /start/ and /end/, /amp/
 in dB, transposition /transp/, /stretch/ and grain window size
@@ -598,7 +598,7 @@ play-lsample
 "
   (:defaults (incudine:incudine-missing-arg "BUFFER")
              (incudine:incudine-missing-arg "ENV")
-             0 0 0 0 1 137)
+             0 0 0 0 1 137 #'free)
   (with-samples ((rate (reduce-warnings (/ (keynum->hz transp)
                                            8.175798915643707d0)))
                  (ampl (db->lin amp)))
@@ -606,7 +606,7 @@ play-lsample
                              (/ (buffer-frames buffer) *sample-rate*)
                              end)))
       (with (
-             (frm1 (envelope* env 1 (* stretch (- ende start)) #'free))
+             (frm1 (envelope* env 1 (* stretch (- ende start)) done-action))
              (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch))
              )
         (maybe-expand frm1)
@@ -616,7 +616,7 @@ play-lsample
                      (frame-ref frm2 current-frame))))))))
 
 (dsp! play-buffer-stretch-env-pan-out*
-    ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum))
+    ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum) (done-action function))
   "Play /buffer/ using 2 window overlap add granular
 stretching/transposition with /env/ between /start/ and /end/, /amp/
 in dB, transposition /transp/, /stretch/ and grain window size
@@ -654,7 +654,7 @@ play-buffer-stretch*
 play-lsample
 "  (:defaults (incudine:incudine-missing-arg "BUFFER")
              *env1*
-             0 0 0 0 1 137 0 0.01 0 0 1)
+             0 0 0 0 1 137 0 0.01 0 0 1 #'free)
   (with-samples ((alpha (* +half-pi+ pan))
                  (left (cos alpha))
                  (right (sin alpha))
@@ -664,7 +664,7 @@ play-lsample
                  (ende (if (zerop end)
                            (/ (buffer-frames buffer) *sample-rate*)
                            (min (/ (buffer-frames buffer) *sample-rate*) end))))
-    (with ((frm1 (envelope* env 1 (* stretch (- ende start)) #'free))
+    (with ((frm1 (envelope* env 1 (* stretch (- ende start)) done-action))
            (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch)))
         (maybe-expand frm1)
         (maybe-expand frm2)
