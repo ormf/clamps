@@ -40,7 +40,7 @@
 
 (define-vug ilag (in time)
   "Scaled one pole filter with the coefficient calculated from
-a 60 dB lag TIME."
+a 60 dB lag TIME, intialized with the first received in value."
   (pole* in (delay1 (t60->pole time))))
 
 (define-ugen phasor-amp* frame (freq init amp)
