@@ -1,5 +1,11 @@
 (in-package :of-incudine-dsps)
 
+
+(define-vug ilag (in time)
+  "Scaled one pole filter with the coefficient calculated from
+a 60 dB lag TIME, intialized with the first received in value."
+  (pole* in (delay1 (t60->pole time))))
+
 (defun db->lin (value)
   "Convert VALUE dB to linear value."
   (expt (sample 10) (* value (sample 0.05))))
