@@ -102,7 +102,7 @@ The curvature CURVE defaults to -4."
                            (envelope env 1 (* stretch (- ende start)) #'free)
                            (buffer-stretch-play buffer rate wwidth start ende stretch))))
       (incf (audio-out out) sig)
-      (when (zerop lag-time) (setf lag-time 0.1)))))
+      (when (zerop lag-time) (setf lag-time 0.1d0)))))
 
 
 (dsp! play-buffer-stretch-env-out ((buffer buffer) amp transp start end stretch wwidth attack release (out integer))
@@ -118,7 +118,7 @@ The curvature CURVE defaults to -4."
                                      1 1 #'free)
                            (buffer-stretch-play buffer rate wwidth start ende stretch))))
       (incf (audio-out out) sig)
-      (when (zerop lag-time) (setf lag-time 0.1)))))
+      (when (zerop lag-time) (setf lag-time 0.1d0)))))
 
 ;;; (format t "~a , ~a ~a ~a ~a ~a ~a~%" (* stretch (- ende start)) buffer rate wwidth start ende stretch)
 
@@ -142,7 +142,7 @@ The curvature CURVE defaults to -4."
     (foreach-frame
       (incf (audio-out out2) (* sig right))
       (incf (audio-out out1) (* sig left))
-      (when (zerop lag-time) (setf lag-time 0.1)))))
+      (when (zerop lag-time) (setf lag-time 0.1d0)))))
 
 
 (define-vug phasor-loop (rate start-pos loopstart loopend)
@@ -627,7 +627,7 @@ play-lsample
         (foreach-frame
           (stereo (* ampl (frame-ref frm1 current-frame)
                      (frame-ref frm2 current-frame)))
-          (when (zerop lag-time) (setf lag-time 0.1)))))))
+          (when (zerop lag-time) (setf lag-time 0.1d0)))))))
 
 (dsp! play-buffer-stretch-env-pan-out*
     ((buffer buffer) (env incudine.vug:envelope) amp transp start end stretch wwidth attack release pan (out1 fixnum) (out2 fixnum) (done-action function))
@@ -679,7 +679,6 @@ play-lsample
                  (ende (if (zerop end)
                            (/ (buffer-frames buffer) *sample-rate*)
                            (min (/ (buffer-frames buffer) *sample-rate*) end))))
-;;;    (if (zerop lag-time) (setf lag-time 0.1d0))
     (with ((frm1 (envelope* env 1 (* stretch (- ende start)) done-action))
            (frm2 (buffer-stretch-play* buffer rate wwidth start ende stretch)))
         (maybe-expand frm1)
@@ -690,4 +689,4 @@ play-lsample
                      (frame-ref frm2 current-frame))))
             (incf (audio-out out2) (* sig right))
             (incf (audio-out out1) (* sig left)))
-          (when (zerop lag-time) (setf lag-time 0.1))))))
+          (when (zerop lag-time) (setf lag-time 0.1d0))))))
