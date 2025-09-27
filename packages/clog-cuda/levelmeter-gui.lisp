@@ -268,9 +268,10 @@ nil just create the levelmeter."
         (create-o-slider
          meter-container
          (bind-refs-to-attrs amp-slider "value")
-;;         :min min :max max
+         ;;         :min min :max max
+         :background "#999"
          :css '(:height "97%" :width "0.5em" :min-width "0.1em"
-                :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#999"))))))
+                :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black"))))))
 
 (defun master-amp-out-levelmeter-gui
     (id gui-parent &key (group 300)
@@ -317,8 +318,9 @@ nil just create the levelmeter."
          meter-container
          (bind-refs-to-attrs amp-slider "value")
 ;;         :min min :max max
+         :background "#999"
          :css '(:height "97%" :width "0.5em" :min-width "0.1em"
-                :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black" :background "#999"))))))
+                :margin "1.75% 1.75% 1.5% 1.5%" :border "0.05em solid black"))))))
 
 (defun levelmeter-full-gui (id gui-parent &key (group 300) (type :bus) refs (num 1) (audio-bus 0))
   (check-type type (member :bus :in :out))
