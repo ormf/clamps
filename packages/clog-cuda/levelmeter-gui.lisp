@@ -227,8 +227,14 @@ nil just create the levelmeter."
                      (max 12))
   (let* ((dsp (or (find-dsp id)
                   (let ((unwatch nil))
-                    (push (make-computed (lambda () (ou:n-lin (get-val amp-slider) -40 12))) unwatch)
-                    (push (make-computed (lambda () (db-slider->amp (get-val amp-slider)))) unwatch)
+                    (multiple-value-bind (ref unwatchfn)
+                        (make-computed (lambda () (ou:n-lin (get-val amp-slider) -40 12)))
+                      (declare (ignore ref))
+                      (push unwatchfn unwatch))
+                    (multiple-value-bind (ref unwatchfn)
+                        (make-computed (lambda () (db-slider->amp (get-val amp-slider))))
+                      (declare (ignore ref))
+                      (push unwatchfn unwatch))
                     (add-dsp 'master-amp-meter-bus
                              id :node-group group
                              :audio-bus audio-bus

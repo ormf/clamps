@@ -43,6 +43,27 @@
 a 60 dB lag TIME, intialized with the first received in value."
   (pole* in (delay1 (t60->pole time))))
 
+#|
+(define-vug pole* (in coef)
+  "Scaled one pole filter."
+  (with-samples ((g (- 1 (abs coef))))
+(pole (* g in) coef)))
+
+(define-vug pole (in coef)
+  "One pole filter."
+  (~ (+ in (* coef it))))
+|#
+
+(define-vug ilag (in time)
+  "Scaled one pole filter with the coefficient calculated from
+a 60 dB lag TIME, intialized with the first received in value."
+  (with-samples ((coef (init-only (t60->pole time)))
+                 (g (init-only (- 1 coef)))
+                 (out (init-only 0.0d0)))
+    (prog1
+        out
+      (setf out (+ (* g in) (* coef out))))))
+
 (define-ugen envelope* frame ((env incudine.vug:envelope) gate time-scale (done-action function))
   "Envelope Ugen working with any blocksize. The product of /time-scale/
 and the total duration of /env/ is the total duration of the envelope
