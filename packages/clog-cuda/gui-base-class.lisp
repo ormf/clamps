@@ -32,8 +32,8 @@ cuda-dsp")
                :documentation "Accessor for the node-group slot of dsp /object/.
 @See-also
 cuda-dsp")
-   (unwatch :initform nil :accessor unwatch
-                           :documentation "Accessor for the unwatch slot of dsp /object/.
+   (unwatch :initform nil :initarg :unwatch :accessor unwatch
+            :documentation "Accessor for the unwatch slot of dsp /object/.
 @See-also
 cuda-dsp
 clamps:cl-refs"))

@@ -43,6 +43,89 @@
 a 60 dB lag TIME, intialized with the first received in value."
   (pole* in (delay1 (t60->pole time))))
 
+(define-ugen envelope* frame ((env incudine.vug:envelope) gate time-scale (done-action function))
+  "Envelope Ugen working with any blocksize. The product of /time-scale/
+and the total duration of /env/ is the total duration of the envelope
+in seconds. /done-action/ is called when the total-duration has been
+reached or when /gate/ is zero and the release phase of the envelope
+has ended.
+
+envelope* returns an array of block-size samples.
+
+@Arguments
+env - incudine.vug:envelope instance to use.
+gate - Number functioning as a gate: If zero, start the release phase.
+time-scale - Number scaling the envelope x-values.
+done-action - Function to call on the dsp-node at end of release.
+
+@See-also
+buffer-loop-play*
+buffer-play*
+buffer-stretch-play*
+envelope*
+line*
+phasor*
+phasor-loop*
+play-buffer*
+play-buffer-loop*
+play-buffer-stretch*
+play-buffer-stretch-env-pan-out*
+"
+  (with ((frm (make-frame (block-size))))
+    (foreach-frame
+      (setf (frame-ref frm current-frame)
+            (envelope env gate time-scale done-action)))
+    frm))
+
+(define-ugen line* frame (start end duration (done-action function))
+  "Ugen of a line working with any block size.
+@Arguments
+start - Number denoting start value.
+end - Number denoting end value-
+duration - Number denoting duration in seconds.
+
+@See-also
+buffer-loop-play*
+buffer-play*
+buffer-stretch-play*
+envelope*
+phasor*
+phasor-loop*
+play-buffer*
+play-buffer-loop*
+play-buffer-stretch*
+play-buffer-stretch-env-pan-out*
+"
+  (with ((frm (make-frame (block-size))))
+    (foreach-frame
+      (setf (frame-ref frm current-frame)
+            (line start end duration done-action)))
+    frm))
+
+(define-ugen phasor* frame (freq init)
+  "Ugen of a phasor working with any block size.
+@Arguments
+freq - Number denoting frequency in Hz.
+init - Number denoting initial phase.
+
+@See-also
+buffer-loop-play*
+buffer-play*
+buffer-stretch-play*
+envelope*
+line*
+phasor-loop*
+play-buffer*
+play-buffer-loop*
+play-buffer-stretch*
+play-buffer-stretch-env-pan-out*
+"
+  (with ((frm (make-frame (block-size))))
+    (foreach-frame
+      (setf (frame-ref frm current-frame)
+            (phasor freq init)))
+    frm))
+
 (define-ugen phasor-amp* frame (freq init amp)
   "Incudine Ugen producing a normalized moving phase value with
 frequency FREQ, initial value INIT (0 by default) and AMP at k-rate."

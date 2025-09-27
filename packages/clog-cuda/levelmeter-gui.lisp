@@ -217,23 +217,25 @@ nil just create the levelmeter."
                      (out-chan 0)
                      (num-channels 1)
                      ;; (freq 10)
+                     (amp (make-ref 1))
+                     (nb-ampdb (make-ref 0))
                      (amp-slider (make-ref (amp->db-slider 1)))
-                     (meter-refs (vector (make-ref -100)))
+                     meter-refs
                      (meter-display (make-ref :post))
                      (bus-name "")
                      (min -40)
                      (max 12))
   (let* ((dsp (or (find-dsp id)
                   (let ((unwatch nil))
-                    (push (make-computed (lambda () (db-slider->amp (get-val amp-slider)))) unwatch)
                     (push (make-computed (lambda () (ou:n-lin (get-val amp-slider) -40 12))) unwatch)
+                    (push (make-computed (lambda () (db-slider->amp (get-val amp-slider)))) unwatch)
                     (add-dsp 'master-amp-meter-bus
                              id :node-group group
                              :audio-bus audio-bus
                              :out-chan out-chan
                              :num-channels num-channels
                              :amp amp
-                             :meter-refs meter-refs
+                             :meter-refs (or meter-refs (coerce (loop repeat num-channels collect (make-ref -100)) 'vector))
                              :meter-display meter-display
                              :bus-name bus-name
                              :unwatch unwatch

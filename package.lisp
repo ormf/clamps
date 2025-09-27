@@ -356,7 +356,8 @@
            cm:lookup cm:play-svg cm:io cm:map-subobjects cm:svg-lines->cm
            cm:midi-key-signature cm:cycle
            cm:poolevt-release cm:at cm:now cm:axis
-;;;           cm:install-standard-sly-hooks cm:jack-connect-qsynth cm:call-sly-connected-hooks cm:*mt-out01* cm:*sly-connected-hooks*
+           install-standard-sly-hooks
+           ;;; cm:jack-connect-qsynth cm:call-sly-connected-hooks cm:*mt-out01* cm:*sly-connected-hooks*
 
            cm:wait-until cm:plotter-close cm:seq cm:point cm:chan->color
            cm:scale-amp cm:poolevt-attack cm:output cm:player-mute cm:wait
