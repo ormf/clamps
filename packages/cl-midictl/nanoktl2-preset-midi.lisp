@@ -213,7 +213,7 @@ numbers with the value 0 or 1."
 ;;;                 (copy-structure (aref (aref presets player) src))
                  (aref (aref presets player) src))))))
 
-(defvar *nanoktl2-presets-file* "/tmp/nanokontrol2-presets.lisp")
+(defvar *nanoktl2-presets-file* "/tmp/nanoktl2-presets.lisp")
 (defvar *curr-nk2-controller* nil)
 
 (defun format-player-preset (preset stream)
@@ -241,7 +241,7 @@ numbers with the value 0 or 1."
 
 (defgeneric load-presets (instance &optional file)
     (:method ((controller nanoktl2-preset-midi) &optional (file *nanoktl2-presets-file*))
-    (incudine.util:msg :warn "loading nanoktl2 preset from ~S~%" file)
+    (incudine.util:msg :warn "loading nanoktl2 presets from ~S~%" file)
       (let ((*curr-nk2-controller* controller))
         (load file)
         (update-preset-buttons controller))))
