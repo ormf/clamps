@@ -561,3 +561,7 @@ remove-all-triggers
 ref - A <<ref-object>> or <<bang-object>>.
 "
   (lambda () (set-val ref (mod (1+ (get-val ref)) num-states))))
+
+;;; clamps forward declaration (gets declared in clamps-utils.lisp as it is dependant on at and now)
+(defun speedlim-watch (timeout fn)
+  (declare (ignore timeout fn)))

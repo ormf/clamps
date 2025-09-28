@@ -35,7 +35,6 @@
            get-keynum
            
            imsg
-
 ;;;           plot-envelope
            
            set-page-dimensions
@@ -221,6 +220,7 @@
            cl-refs:get-val
            cl-refs:getter
            cl-refs:setter
+           cl-refs:speedlim-watch
            orm-utils:n-lin-dev
            orm-utils:with-exp-midi-fn
            transform clog-dsp-widgets:node-group
