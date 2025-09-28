@@ -392,7 +392,7 @@ controller actions."))
   (with-slots (chan cc-fns cc-map keynum-map cc-state note-state pitch-bend-state after-touch-state
                note-fns pitch-bend-fns after-touch-fns last-note-on)
       instance
-    (incudine.util:msg :debug "midi-controller-handle-midi-in: ~a ~a ~a" opcode d1 d2)
+    (incudine.util:msg :info "midi-controller-handle-midi-in: ~a ~a ~a ~a" opcode channel d1 d2)
     (case opcode
       (:cc (if (and (= chan (1+ channel)) (aref cc-map d1))
                (progn
@@ -612,13 +612,12 @@ stop-midi-receive
                         (generic-midi-handler midi-port opcode d1 d2 chan)
                         (dolist (controller (gethash input *midi-controllers*))
                           (declare (type midi-controller controller))
-                          (handle-midi-in controller opcode chan d1 d2))
-                        )))
+                          (handle-midi-in controller opcode chan d1 d2)))))
     (recv-start input)
     (update-all-controllers midi-port)
     :midi-rcv-started))
 
-;;; (start-midi-receive *midi-in1*)
+;;; (stop-midi-receive *midi-in1*) (start-midi-receive *midi-in1*)(start-midi-receive *midi-in1*)
 
 (defun stop-midi-receive (midi-port)
   "Stop the clamps generic midi handler and remove all registered MIDI
