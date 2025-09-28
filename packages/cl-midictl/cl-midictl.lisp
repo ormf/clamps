@@ -357,10 +357,9 @@ remove-all-midi-controllers
         (progn
           (if (keywordp midi-port) (setf midi-port (find-midi-port midi-port)))
           (unless chan (setf chan *default-midi-channel*))
-          (incudine.util:msg :warn "midi-port-id: ~S~%" midi-port)
           (setf midi-port (or midi-port *default-midi-port*))
           (setf midi-input (or midi-input (midi-port-in midi-port)))
-          (incudine.util:msg :warn "adding midi controller ~S ~S~%" id midi-port)
+          (incudine.util:msg :warn "adding midi controller ~S~%" id)
           (setf midi-output (ensure-default-midi-out (or midi-output (midi-port-out midi-port))))
 
           (when id
