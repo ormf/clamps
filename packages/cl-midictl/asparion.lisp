@@ -285,24 +285,26 @@ d700ft
           (add-trigger-fn (aref (slot-value obj sym) i) (lambda () (toggle-slot (aref (slot-value obj sym) i)))))
         (push (watch (lambda ()
                        (when echo
-                         (d700-write-line-1 (format nil "~12a" (get-val (aref (aref strip-labels i) 0))) i midi-output))))
+                         (d700-write-line-1 (format nil "~7a" (get-val (aref (aref strip-labels i) 0))) i midi-output))))
               unwatch)
         (push (watch (lambda ()
                        (when echo
-                         (d700-write-line-2 (format nil "~12a" (get-val (aref (aref strip-labels i) 1))) i midi-output))))
+                         (d700-write-line-2 (format nil "~7,3f" (get-val (aref (aref strip-labels i) 1))) i midi-output))))
               unwatch)
         (push (watch (lambda ()
                        (when echo
-                         (d700-write-line-3 (format nil "~12a" (get-val (aref (aref strip-labels i) 2))) i midi-output))))
+                         (d700-write-line-3 (format nil "~7,3f" (get-val (aref (aref strip-labels i) 2))) i midi-output))))
               unwatch)
-        (push (watch (lambda ()
-                       (let ((val (get-val (aref rotary-a i))))
-                         (when (and echo rotary-ring)
-                           (osc-midi-write-short
-                            midi-output
-                            (+ 1 (get-val (aref rotary-led-modes i)) 176)
-                            (+ 48 i) (round (* 127 val))))
-                         (when rotary-labels (set-val (aref (aref strip-labels i) 2) (format nil "~,3f" val))))))
+        (push (speedlim-watch
+	       0.1
+	       (lambda ()
+                 (let ((val (get-val (aref rotary-a i))))
+                   (when (and echo rotary-ring)
+                     (osc-midi-write-short
+                      midi-output
+                      (+ 1 (get-val (aref rotary-led-modes i)) 176)
+                      (+ 48 i) (round (* 127 val))))
+                   (when rotary-labels (set-val (aref (aref strip-labels i) 2) (format nil "~,3f" val))))))
               unwatch)
         (push (watch (lambda ()
                        (when echo
@@ -311,16 +313,18 @@ d700ft
                           i
                           midi-output))))
               unwatch)
-        (push (watch (lambda ()
-                       (let* ((val (get-val (aref faders i)))
-                              (bendval (normalized->bendvalue val)))
-                         (when (and echo (not midi-in-active))
-                           (osc-midi-write-short
-                            midi-output
-                            (+ i #xe0)
-                            (logand bendval 127) (ash bendval -7)))
-                         (incudine.util:msg :info "setting Fader-idx: ~a" i)
-                         (when fader-labels (set-val (aref (aref strip-labels i) 1) (format nil "~,3f" val))))))
+        (push (speedlim-watch
+	       0.1
+	       (lambda ()
+                 (let* ((val (get-val (aref faders i)))
+                        (bendval (normalized->bendvalue val)))
+                   (when (and echo (not midi-in-active))
+                     (osc-midi-write-short
+                      midi-output
+                      (+ i #xe0)
+                      (logand bendval 127) (ash bendval -7)))
+                   (incudine.util:msg :info "setting Fader-idx: ~a" i)
+                   (when fader-labels (set-val (aref (aref strip-labels i) 1) (format nil "~,3f" val))))))
               unwatch)
         (push (watch (lambda ()
                        (when echo
@@ -424,9 +428,9 @@ state to all elements of the controller via midi."
     (let ((tmp echo))
       (setf echo t)
       (dotimes (i 8)
-        (d700-write-line-1 (format nil "~12a" (get-val (aref (aref strip-labels i) 0))) i midi-output)
-        (d700-write-line-2 (format nil "~12a" (get-val (aref (aref strip-labels i) 1))) i midi-output)  
-        (d700-write-line-3 (format nil "~12a" (get-val (aref (aref strip-labels i) 2))) i midi-output)
+        (d700-write-line-1 (format nil "~7a" (get-val (aref (aref strip-labels i) 0))) i midi-output)
+        (d700-write-line-2 (format nil "~7,3f" (get-val (aref (aref strip-labels i) 1))) i midi-output)  
+        (d700-write-line-3 (format nil "~7,3f" (get-val (aref (aref strip-labels i) 2))) i midi-output)
         (let ((val (get-val (aref rotary-a i))))
           (osc-midi-write-short
            midi-output

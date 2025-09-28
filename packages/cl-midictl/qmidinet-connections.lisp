@@ -102,13 +102,13 @@ list."
     (:d700-capture-1 "a2j:D 700.+capture.+D 700 MIDI 2")
     (:d700-playback-0 "a2j:D 700.+playback.+D 700 MIDI 1")
     (:d700-playback-1 "a2j:D 700.+playback.+D 700 MIDI 2")
-    (:qmidinet-capture-0 "a2j:QmidiNet.+capture.+port 0")
-    (:qmidinet-capture-1 "a2j:QmidiNet.+capture.+port 1")
-    (:qmidinet-playback-0 "a2j:QmidiNet.+playback.+port 0")
-    (:qmidinet-playback-1 "a2j:QmidiNet.+playback.+port 1")))
+    (:qmidinet-capture-0 "QmidiNet.+out_1")
+    (:qmidinet-capture-1 "QmidiNet.+out_2")
+    (:qmidinet-playback-0 "QmidiNet.+in_1")
+    (:qmidinet-playback-1 "QmidiNet.+in_2")))
 
 (defparameter *jack-strings-to-keep*
-  '("a2j:D 700" "incudine:midi-" "a2j:QmidiNet"))
+  '("a2j:D 700" "incudine:midi-" "QmidiNet"))
 
 (defun matching (a b)
   "test if beginning of a matches b."
