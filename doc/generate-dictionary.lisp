@@ -762,7 +762,7 @@ set-tempo
     cl-poolplayer:p-song-durfn cl-poolplayer:p-song-name
     cl-poolplayer:p-song-playfn cl-poolplayer:p1 cl-poolplayer:p2 cl-poolplayer:p3
     cl-poolplayer:p4 svg-import-export:pd-color->svg-color cl-poolplayer:perform
-    cl-poolplayer:play-song ats-cuda-display:play-watch cl-poolplayer:*pool-hash*
+    cl-poolplayer:play-song ats-cuda-display:play-watch
     cl-poolplayer:*poolplayer-events*
     ats-cuda-display:pos-watch cl-midictl:preset-buttons cl-poolplayer:preset-play
     cl-midictl:preset-state cl-midictl:presets

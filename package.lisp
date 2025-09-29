@@ -580,11 +580,15 @@
            cl-poolplayer:get-interp-vals
            cl-poolplayer:digest-interp-form
            cl-poolplayer:ip-idx cl-poolplayer:ip-num
-           cl-poolplayer:*pool-hash* cl-poolplayer:init-poolplayer
+           cl-poolplayer:init-poolplayer
            cl-poolplayer:preset-play cl-poolplayer:p2 cl-poolplayer:dtime
            cl-poolplayer:value-fn cl-poolplayer:*outseq8*
            cl-poolplayer:save-poolplayer-presets
+           cl-poolplayer:*pool-hash*
+           cl-poolplayer:*poolplayer-events*
            cl-poolplayer:*poolplayer-presets-file*
+           cl-poolplayer:*poolplayer-presets*
+           cl-poolplayer:*poolplayer-recording-p*
            cl-poolplayer:digest-form-to-preset
            cl-poolplayer:g4
            cl-poolplayer:idx
@@ -594,7 +598,7 @@
            cl-poolplayer:*outseq9* cl-poolplayer:collecting-cm
            cl-poolplayer:p-song-beforefn cl-poolplayer:perform
            cl-poolplayer:serialize-score cl-poolplayer:distributed-play
-           cl-poolplayer:*poolplayer-events* cl-poolplayer:collect-pool
+            cl-poolplayer:collect-pool
            cl-poolplayer:cm-collect cl-poolplayer:make-eventplayer
            cl-poolplayer:*outseq13*
            cl-poolplayer:load-poolplayer-presets cl-poolplayer:init-poolplayer

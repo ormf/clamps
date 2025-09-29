@@ -20,7 +20,13 @@
 
 (in-package :cl-poolplayer)
 ;;; Thomas S. Kuhn: Die Struktur wissenschaftlicher Revolutionen
-(defparameter *pool-hash* (make-hash-table)) ;;; snd-type-key -> seq of buffer-idxs
+(defparameter *pool-hash* (make-hash-table)
+  "Hashtable containing associations of keys with lists of lsamples.
+
+@See-also
+collect-pool
+load-all-lsamples
+")
 (defparameter *players* nil)
 (defparameter *master-amp-db* 0)
 ;;; (defparameter *remote-ip* "localhost")

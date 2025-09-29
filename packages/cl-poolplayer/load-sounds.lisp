@@ -47,6 +47,9 @@ of the number of files and return the array."
     do (setf (gethash buf idx-hash) idx)
     finally (return idx-hash)))
 
+#|
+;;; deprecated
+
 (defun load-poolplayer-sounds (dir sound-type-dirs)
   (setf *pool-buffers* #())
   (loop for (type subdir) on sound-type-dirs by #'cddr
@@ -58,6 +61,7 @@ of the number of files and return the array."
                      (loop for n from idx below curr-idx collect n))
                (setf idx curr-idx))))
   (setf *pool-buffer-idxs* (gen-poolplayer-buf-idxs *pool-buffers*)))
+|#
 
 #|
 ;;; old definition (deprecated)
@@ -71,7 +75,7 @@ of the number of files and return the array."
 |#
 
 (defun collect-pool (&rest keys)
-  "Return a vector of all lsamples of /keys/ in ~*pool-hash*~. Lsamples
+  "Return a vector of all lsamples of /keys/ in <<*pool-hash*>>. Lsamples
 can get loaded recursively from a directory using the
 <<load-all-lsamples>> function with ~:hashtable~ ~*pool-hash*~ as
 argument.
@@ -81,6 +85,7 @@ keys - Keyword of lsample pool in ~*pool-hash*~
 
 @See-also
 load-all-lsamples
+*pool-hash*
 "
   (coerce
    (loop

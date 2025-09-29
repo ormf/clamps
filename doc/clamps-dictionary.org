@@ -196,7 +196,7 @@
 ** add-sensor
    Function
    #+BEGIN_SRC lisp
-     (add-sensor id)
+     (add-sensor id &rest args)
    #+END_SRC
    Add an Accelerometer sensor with /id/ accessible from a Firefox
    Browser on a Mobile device at the URL http://<local-ip>:54619/id to
@@ -207,6 +207,9 @@
    ~http://<local-ip>:54619/sensor1~.
 *** Arguments
     | =id= | Keyword denoting the id of the sensor. |
+    | =:trigger-active= | Positive Number denoting if the trigger is active. Defaults to t. |
+    | =:trigger-threshold= | Positive Number denoting the trigger threshold. Defaults to 0.1. |
+    | =:trigger-timeout= | Positive Number denoting the trigger timeout in ms. Defaults to 200. |
 
 *** See also
     - [[find-sensor][find-sensor]]
@@ -1178,6 +1181,16 @@
    #+BEGIN_SRC lisp
      (collect-pool &rest keys)
    #+END_SRC
+   Return a vector of all lsamples of /keys/ in [[#pool-hash][*​​pool-hash​​*]]. Lsamples
+   can get loaded recursively from a directory using the
+   [[load-all-lsamples][load-all-lsamples]] function with ~:hashtable~ ~*​pool-hash​*~ as
+   argument.
+*** Arguments
+    | =keys= | Keyword of lsample pool in ~*​​pool-hash​​*~ |
+
+*** See also
+    - [[load-all-lsamples][load-all-lsamples]]
+    - [[#pool-hash][*​​pool-hash​​*]]
 ** color->midi-rgb
    Function
    #+BEGIN_SRC lisp
@@ -1560,11 +1573,6 @@
    Variable
 
    Defaults for the param fns of a poolplayer preset.
-** define-poolplayer-elisp-code
-   Function
-   #+BEGIN_SRC lisp
-     (define-poolplayer-elisp-code &key (elisp-basedir (asdf:system-source-directory :cl-poolplayer)) (curr-preset-file "/tmp/curr-preset.lisp"))
-   #+END_SRC
 ** define-watch
    Generic Function
    #+BEGIN_SRC lisp
@@ -2769,6 +2777,18 @@
 *** Note
     If calling idump doesn't produce any output although dsps are running,
     reset the logger-stream using [[reset-logger-stream][reset-logger-stream]].
+** idx
+   Function
+   #+BEGIN_SRC lisp
+     (idx instance)
+   #+END_SRC
+** ilag
+   Function
+   #+BEGIN_SRC lisp
+     (ilag in time)
+   #+END_SRC
+   Scaled one pole filter with the coefficient calculated from
+   a 60 dB lag TIME, intialized with the first received in value.
 ** *​in-refs​*
    :PROPERTIES:
    :CUSTOM_ID: in-refs
@@ -2793,25 +2813,25 @@
 ** init-poolplayer
    Function
    #+BEGIN_SRC lisp
-     (init-poolplayer presets-file &key (dir (pathname "/tmp/")))
+     (init-poolplayer &optional presets-file elisp-file)
    #+END_SRC
    Set [[#poolplayer-presets][*​​poolplayer-presets​​*]] by loading /presets-file/, digesting all
    presets and display the preset at index 0 in an emacs buffer linked to
-   the file /pathname/​/​~curr-preset.lisp~.
+   the file ~/tmp/curr-preset.lisp~. Load the elisp definitions for
+   preset editing from /elisp-file/.
 *** Arguments
-    | =presets-file= | Pathname or string denoting the presets file to load. |
-    | =dir= | Pathname or string denoting the directory of ~curr-preset.lisp~. |
+    | =presets-file= | Pathname or string denoting the presets file to load. The default copies cl-poolplayer/presets/cl-poolplayer-defaults-presets.lisp from the clamps packages directory to /tmp/poolplayer-presets.lisp and uses the latter file. |
+    | =elisp-file= | Pathname or string denoting the Emacs lisp configuration file for the emacs preset editor. Defaults to cl-poolplayer/sly-edit-poolplayer-presets.el  digest-form-to-preset edit-preset-in-emacs load-poolplayer-presets next-poolplayer-preset *​​poolplayer-presets​​* *​​poolplayer-presets-file​​* previous-poolplayer-preset save-poolplayer-presets show-poolplayer-preset |
 
-*** See also
-    - [[digest-form-to-preset][digest-form-to-preset]]
-    - [[edit-preset-in-emacs][edit-preset-in-emacs]]
-    - [[load-poolplayer-presets][load-poolplayer-presets]]
-    - [[next-poolplayer-preset][next-poolplayer-preset]]
-    - [[#poolplayer-presets][*​​poolplayer-presets​​*]]
-    - [[#poolplayer-presets-file][*​​poolplayer-presets-file​​*]]
-    - [[previous-poolplayer-preset][previous-poolplayer-preset]]
-    - [[save-poolplayer-presets][save-poolplayer-presets]]
-    - [[show-poolplayer-preset][show-poolplayer-preset]]
+** init-poolplayer-elisp-code
+   Function
+   #+BEGIN_SRC lisp
+     (init-poolplayer-elisp-code elisp-file)
+   #+END_SRC
+   Init the emacs interface for poolplayer preset editing using /elisp-file/.
+*** Arguments
+    | =elisp-file= | String denoting the elisp file to load. |
+
 ** init-vbap
    Function
    #+BEGIN_SRC lisp
@@ -3472,7 +3492,7 @@
 ** make-eventplayer
    Function
    #+BEGIN_SRC lisp
-     (make-eventplayer &key ((:playing #:playing) t) ((:id #:id) nil) ((:dur #:dur) 3) ((:end #:end) 0) ((:start-time #:start-time) 0) ((:preset-no #:preset-no) 0) ((:play-fn #:play-fn) nil))
+     (make-eventplayer &key ((:playing #:playing) t) ((:id #:id) nil) ((:dur #:dur) 3) ((:idx #:idx) 0) ((:end #:end) 0) ((:start-time #:start-time) 0) ((:preset-no #:preset-no) 0) ((:play-fn #:play-fn) nil))
    #+END_SRC
 ** make-keyword
    Function
@@ -3681,7 +3701,7 @@
 ** master-amp-bus-levelmeter-gui
    Function
    #+BEGIN_SRC lisp
-     (master-amp-bus-levelmeter-gui id gui-parent &key (group 300) (audio-bus 0) (out-chan 0) (num-channels 1) (amp-slider (make-ref (amp->db-slider 1))) (meter-refs (vector (make-ref -100))) (meter-display (make-ref :post)) (bus-name "") (min -40) (max 12))
+     (master-amp-bus-levelmeter-gui id gui-parent &key (group 300) (audio-bus 0) (out-chan 0) (num-channels 1) (amp (make-ref 1)) (nb-ampdb (make-ref 0)) (amp-slider (make-ref (amp->db-slider 1))) meter-refs (meter-display (make-ref :post)) (bus-name "") (min -40) (max 12))
    #+END_SRC
 ** master-amp-meter-bus
    Class
@@ -4515,7 +4535,7 @@
 ** osc~
    Function
    #+BEGIN_SRC lisp
-     (osc~ &rest optional-keywords &aux (#:lambda-list '((freq 440 (amp 0.1) (phase 0) (master 1.0) (buf *cosine-table*) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (osc~ &rest optional-keywords &aux (#:lambda-list '((freq 440 (amp 0.1) (phase 0) (lagtime 0.1) (buf *cosine-table*) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
    table lookup cosine oscillator.
 ** *​out-refs​*
@@ -4752,7 +4772,7 @@
    :END:
    Incudine DSP Function
    #+BEGIN_SRC lisp
-     (play-buffer-stretch* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer-stretch* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env (incudine-missing-arg "env")) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (done-action #'free) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
    Play /buffer/ using 2 window overlap add granular
    stretching/transposition with /env/ between /start/ and /end/, /amp/
@@ -4788,7 +4808,7 @@
    :END:
    Incudine DSP Function
    #+BEGIN_SRC lisp
-     (play-buffer-stretch-env-pan-out* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env *env1*) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
+     (play-buffer-stretch-env-pan-out* &rest optional-keywords &aux (#:lambda-list '((buffer (incudine-missing-arg "buffer") (env *env1*) (amp 0) (transp 0) (start 0) (end 0) (stretch 1) (wwidth 137) (attack 0) (release 0.01) (pan 0) (out1 0) (out2 1) (done-action #'free) id head tail before after replace action stop-hook free-hook fade-time fade-curve))))
    #+END_SRC
    Play /buffer/ using 2 window overlap add granular
    stretching/transposition with /env/ between /start/ and /end/, /amp/
@@ -4897,6 +4917,16 @@
    #+BEGIN_SRC lisp
      (points->svg list svg-file &key color opacity radius)
    #+END_SRC
+** *​pool-hash​*
+   :PROPERTIES:
+   :CUSTOM_ID: pool-hash
+   :END:
+   Variable
+
+   Hashtable containing associations of keys with lists of lsamples.
+*** See also
+    - [[collect-pool][collect-pool]]
+    - [[load-all-lsamples][load-all-lsamples]]
 ** poolevt
    Common Music Class
    #+BEGIN_SRC lisp
