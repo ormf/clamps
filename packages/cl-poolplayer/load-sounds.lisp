@@ -59,6 +59,8 @@ of the number of files and return the array."
                (setf idx curr-idx))))
   (setf *pool-buffer-idxs* (gen-poolplayer-buf-idxs *pool-buffers*)))
 
+#|
+;;; old definition (deprecated)
 (defun collect-pool (&rest keys)
   (coerce
    (loop
@@ -66,6 +68,27 @@ of the number of files and return the array."
      for idxs = (gethash key *snd-type-hash*)
      append (loop for idx in idxs collect (aref *buffers* idx) ))
    'vector))
+|#
 
+(defun collect-pool (&rest keys)
+  "Return a vector of all lsamples of /keys/ in ~*pool-hash*~. Lsamples
+can get loaded recursively from a directory using the
+<<load-all-lsamples>> function with ~:hashtable~ ~*pool-hash*~ as
+argument.
+
+@Arguments
+keys - Keyword of lsample pool in ~*pool-hash*~
+
+@See-also
+load-all-lsamples
+"
+  (coerce
+   (loop
+     for key in keys
+     for lsamples = (gethash key *pool-hash*)
+     append lsamples)
+   'vector))
+
+;;; deprecated:
 (defun buf-idx (buffer)
-  (gethash buffer *buffer-idxs*))
+  (buffer-id buffer))

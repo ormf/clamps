@@ -255,7 +255,8 @@ transformed into toggles.
                       (:scale
                        (progn
                          (unless hide-fader
-                           (set-val curr-slot-val (buchla-scale d2-norm last-cc (get-val curr-slot-val))))))
+                           ;;; (incudine.util:msg :warn "scale: ~a ~a ~a ~a" d2-norm last-cc (get-val curr-slot-val) (buchla-scale d2-norm last-cc (get-val curr-slot-val)))
+                           (set-val curr-slot-val (buchla-scale d2-norm last-cc (get-val curr-slot-val) :max 1)))))
                       (:jump (unless hide-fader (set-val curr-slot-val d2-norm)))
                       (:catch (unless hide-fader
                                 (if fn
