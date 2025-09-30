@@ -174,7 +174,7 @@ buffer - Incudine buffer to convert.
 :loopstart - Positive number denoting the loop start in seconds.
 :loopend - Positive number denoting the loop end in seconds.
 "
-  (make-lsample :buffer buffer :name (buffer-name buffer)
+  (make-lsample :buffer buffer :name (pathname-name (buffer-name buffer))
                 :keynum (float keynum 1.0d0)
                 :amp (float ampdb 1.0d0) :oneshot oneshot
                 :loopstart (float loopstart 1.0d0)

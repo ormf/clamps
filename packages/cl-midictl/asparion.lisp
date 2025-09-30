@@ -711,7 +711,7 @@ state to all elements of the controller via midi."
   ((midi-ports :initarg :midi-ports :initform nil :accessor midi-ports
             :documentation
             "The midi ports of the D700(FT) units of an asparion instance.")
-   (units :initform nil
+   (units :initform nil :accessor units
             :documentation
             "Slot containing the instances of the D700(FT) units of an asparion
 instance."))
@@ -841,24 +841,32 @@ midi-controller"))
                      faders fadertouch sel-buttons s-buttons
                      m-buttons r-buttons vu-meters strip-labels))
         (setf (slot-value obj sym) (make-array num-faders))))
-    (loop ;;; map the arrays of the controller items of the asparion's
-          ;;; units to the reinitialized arrays from above.
-      for idx from 0
-      for unit in units
-      for startidx = (* idx 8)
-      do (loop
-           for sourceidx below 8
-           for i from startidx
-           do  (dolist (slot '(rotary-colors rotary-a rotary-led-modes
-                               rotary-scale rotary-buttons faders fadertouch
-                               sel-buttons s-buttons m-buttons r-buttons
-                               vu-meters strip-labels))
-                 (setf (aref (slot-value obj slot) i)
-                       (aref (slot-value unit slot) sourceidx)))))
+    (map-unit-arrays obj)
     (dotimes (i (* 8 (length midi-ports)))
       (set-val (aref (aref strip-labels i) 0) (format nil "~2,'0d" (1+ i))))
     (when echo
       (dolist (unit units) (update-hw-state unit)))))
+
+(defun map-unit-arrays (asparion)
+"Map the arrays of the controller items of the asparion's
+ units to the asparion arrays."
+  (loop 
+	for idx from 0
+	for unit in (units asparion)
+	for startidx = (* idx 8)
+	do (dolist (slot '(rotary-colors rotary-a rotary-led-modes
+			   rotary-scale rotary-buttons faders fadertouch
+			   sel-buttons s-buttons m-buttons r-buttons
+			   vu-meters strip-labels))
+	     (loop ;;; copy the array contents of the units to the asparion
+	       for sourceidx below 8
+	       for i from startidx
+	       do  (setf (aref (slot-value asparion slot) i)
+			 (aref (slot-value unit slot) sourceidx)))
+	     ;;; make unit's arrays share the exact same data as the asparion
+	     (setf (slot-value unit slot)
+		   (make-array 8 :displaced-to (slot-value asparion slot)
+			       :displaced-index-offset startidx)))))
 
 (defmethod cleanup ((instance asparion))
   (dolist (unit (slot-value instance 'units))
