@@ -125,7 +125,7 @@ state of tr-rec, recall, store or copy a preset."
   (with-slots (curr-bank cp-src tr-rec) instance
     (let ((preset-no (+ (* 16 (get-val curr-bank)) button-idx)))
       (incudine.util:msg
-       :warn
+       :info
        "preset-button-press ~a, tr-rec: ~a, preset-no: ~d, cp-src: ~a"
        button-idx tr-rec preset-no cp-src)
       (case (round (get-val tr-rec))
