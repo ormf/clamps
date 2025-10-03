@@ -57,7 +57,7 @@ nanokontrol2.
                                (loop for x below (length cc-nums) collect (make-ref 0))))
     (setf note-state (make-array (length cc-nums)
                                :initial-contents
-                               (loop for x below (length cc-nums) collect (make-ref 0))))
+                               (loop for x below (length cc-nums) collect (make-bang (lambda ()) 0))))
     (dotimes (idx 16)
       (push
        (watch
@@ -79,8 +79,9 @@ nanokontrol2.
   (with-slots (cc-fns cc-nums ff-fader-update-fns echo
                cc-map cc-state note-state note-fn last-note-on midi-output chan)
       instance
-    (incudine.util:msg :debug "faderfox ~S ~a ~a" opcode d1 d2)
-    (if (= chan (1+ channel))
+    (incudine.util:msg :info "faderfox ~S ~a ~a ~a ~a" opcode d1 d2 channel chan)
+    (when (= chan (1+ channel))
+	(incudine.util:msg :info "faderfox midiin ~S ~a ~a ~a" opcode channel d1 d2)
         (case opcode
           (:cc
            (cond
@@ -96,7 +97,7 @@ nanokontrol2.
            (let ((button-idx (aref cc-map d1)))
              (incudine.util:msg :debug "button-idx ~a" button-idx)
              (let ((button-slot (aref note-state button-idx)))
-               (toggle-slot button-slot))))))))
+               (trigger button-slot))))))))
 
 (defmethod update-hw-state ((instance faderfox-midi))
   (with-slots (chan cc-nums cc-map cc-state note-state midi-output) instance

@@ -106,7 +106,7 @@ ref-idx - Non Negative Integer denoting the index of the cc-nums array of the co
 (defmacro toggle-slot (slot)
   `(set-val ,slot
             (if (zerop (get-val ,slot))
-                127 0)))
+                1 0)))
 
 (defun buchla-scale (curr old target &key (max 127))
   "Set /target/ fader by interpolating between 0 and /max/, using

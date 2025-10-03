@@ -428,9 +428,13 @@ unwatch-all
 that both ref-cells will stay in sync. Push the created unwatch
 functions to /unwatch/.
 
+@Note
+After calling mirror-watch, both refs will
+contain the value of ref1, overwriting any previous value of ref2.
+
 @Arguments
-ref1 - Bang ref-cell.
-ref1 - Bang ref-cell.
+ref1 - Ref-cell.
+ref2 - Ref-cell.
 unwatch - List denoting the unwatch functions to push to.
 
 @See-also
@@ -439,19 +443,23 @@ watch
 ref-cell
 make-bang"
   `(progn
-     (push (watch (lambda () (set-val ,ref1 (get-val ,ref2)))) ,unwatch)
      (push (watch (lambda () (set-val ,ref2 (get-val ,ref1)))) ,unwatch)
+     (push (watch (lambda () (set-val ,ref1 (get-val ,ref2)))) ,unwatch)
      (values)))
 
 (defmacro mirror-watch-trigger (ref1 ref2 unwatch)
   "Define a bidirectional watch between bang ref-cells /ref1/ and /ref2/,
-so that both ref-cells will stay in sync and also copy the trigger
-function of ref1 to be invoked on triggerring ref2. Push the created
-unwatch functions to /unwatch/.
+so that both ref-cells will stay in sync and set the trigger function
+of ref2 to call trigger on ref1. Push the created unwatch functions to
+/unwatch/.
+
+@Note
+After calling mirror-watch-trigger, both refs will contain the value
+of ref1, overwriting any previous value of ref2.
 
 @Arguments
 ref1 - Bang ref-cell.
-ref1 - Bang ref-cell.
+ref2 - Bang ref-cell.
 unwatch - List denoting the unwatch functions to push to.
 
 @See-also
@@ -461,8 +469,8 @@ ref-cell
 make-bang
 "
   `(progn
-     (push (watch (lambda () (set-val ,ref1 (get-val ,ref2)))) ,unwatch)
      (push (watch (lambda () (set-val ,ref2 (get-val ,ref1)))) ,unwatch)
+     (push (watch (lambda () (set-val ,ref1 (get-val ,ref2)))) ,unwatch)
      (setf (trigger-fns ,ref2) (list (lambda () (trigger ,ref1))))
      (values)))
 #|
