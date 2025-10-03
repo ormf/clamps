@@ -257,6 +257,21 @@ d700ft
             (+ 32 strip-idx)
             rgb)))
 
+(defmacro pulsar-watch (button midi-num chan midi-output format-str unwatch &key (type :cc-num))
+  `(let* ((local-pulsar (make-led-pulsar ,midi-num ,chan ,midi-output :type ,type)))
+     (push (watch (lambda ()
+                    (incudine.util:msg :info "button-value changed: ~a" ,format-str)
+		    (let ((state (round (get-val ,button))))
+		      (when echo
+			(case state
+			  ((0 1) (funcall local-pulsar :stop)
+			   (osc-midi-write-short
+			    ,midi-output
+			    (+ (1- ,chan) #x90) ,midi-num (if (zerop state) 0 127)))
+			  (2 (funcall local-pulsar :start)))))))
+           ,unwatch)))
+
+
 (defmethod initialize-instance :after ((obj d700) &rest args)
   (declare (ignorable args))
     #|
@@ -326,35 +341,62 @@ d700ft
                    (incudine.util:msg :info "setting Fader-idx: ~a" i)
                    (when fader-labels (set-val (aref (aref strip-labels i) 1) (format nil "~,3f" val))))))
               unwatch)
-        (push (watch (lambda ()
-                       (when echo
-                         (osc-midi-write-short
-                          midi-output
-                          (+ (1- chan) 144)
-                          i (if (zerop (get-val (aref r-buttons i))) 0 127)))))
-              unwatch)
-        (push (watch (lambda ()
-                       (when echo
-                         (osc-midi-write-short
-                          midi-output
-                          (+ (1- chan) 144)
-                          (+ 8 i) (if (zerop (get-val (aref s-buttons i))) 0 127)))))
-              unwatch)
-        (push (watch (lambda ()
-                       (when echo
-                         (osc-midi-write-short
-                          midi-output
-                          (+ (1- chan) 144)
-                          (+ 16 i)
-                          (if (zerop (get-val (aref m-buttons i))) 0 127)))))
-              unwatch)
-        (push (watch (lambda ()
-                       (when echo
-                         (osc-midi-write-short
-                          midi-output
-                          (+ (1- chan) 144)
-                          (+ 24 i) (if (zerop (get-val (aref sel-buttons i))) 0 127)))))
-              unwatch)
+	;; (dolist (mapping '((r-buttons 0) (s-buttons 8) (m-buttons 16) (sel-buttons 24)))
+	;;   (destructuring-bind (slot keynum-offs) mapping
+	;;     (let ((format-str (format nil "~a ~a" slot i)))
+	;;       (pulsar-watch (aref r-buttons i) (+ i keynum-offs) chan midi-output format-str unwatch :type :note-on))))
+	(let* ((keynum i)
+	       (local-pulsar (make-led-pulsar keynum chan midi-output :type :note-on)))
+           (push (watch (lambda ()
+                          (incudine.util:msg :info "button-value changed: r-buttons ~a" i)
+			  (let ((state (round (get-val (aref r-buttons i)))))
+			    (when echo
+			      (case state
+				((0 1) (funcall local-pulsar :stop)
+				 (osc-midi-write-short
+				  midi-output
+				  (+ (1- chan) #x90) keynum (if (zerop state) 0 127)))
+				(2 (funcall local-pulsar :start)))))))
+                 unwatch))
+	(let* ((keynum (+ 8 i))
+	       (local-pulsar (make-led-pulsar keynum chan midi-output :type :note-on)))
+           (push (watch (lambda ()
+                          (incudine.util:msg :info "button-value changed: s-buttons ~a" i)
+			  (let ((state (round (get-val (aref s-buttons i)))))
+			    (when echo
+			      (case state
+				((0 1) (funcall local-pulsar :stop)
+				 (osc-midi-write-short
+				  midi-output
+				  (+ (1- chan) #x90) keynum (if (zerop state) 0 127)))
+				(2 (funcall local-pulsar :start)))))))
+                 unwatch))
+	(let* ((keynum (+ 16 i))
+	       (local-pulsar (make-led-pulsar keynum chan midi-output :type :note-on)))
+           (push (watch (lambda ()
+                          (incudine.util:msg :info "button-value changed: m-buttons ~a" i)
+			  (let ((state (round (get-val (aref m-buttons i)))))
+			    (when echo
+			      (case state
+				((0 1) (funcall local-pulsar :stop)
+				 (osc-midi-write-short
+				  midi-output
+				  (+ (1- chan) #x90) keynum (if (zerop state) 0 127)))
+				(2 (funcall local-pulsar :start)))))))
+                 unwatch))
+	(let* ((keynum (+ 24 i))
+	       (local-pulsar (make-led-pulsar keynum chan midi-output :type :note-on)))
+           (push (watch (lambda ()
+                          (incudine.util:msg :info "button-value changed: sel-buttons ~a")
+			  (let ((state (round (get-val (aref sel-buttons i)))))
+			    (when echo
+			      (case state
+				((0 1) (funcall local-pulsar :stop)
+				 (osc-midi-write-short
+				  midi-output
+				  (+ (1- chan) #x90) keynum (if (zerop state) 0 127)))
+				(2 (funcall local-pulsar :start)))))))
+                 unwatch))
         (push (watch (lambda ()
                        (when echo
                          (jackmidi:write-short
@@ -584,13 +626,18 @@ d700
       (incudine.util:msg :info "midi-out: ~a" midi-output)
       (destructuring-bind (button-sym keynum) mapping
         (add-trigger-fn (slot-value obj button-sym) (lambda () (toggle-slot (slot-value obj button-sym))))
-        (push (watch (lambda ()
-                       (when echo
-                         (osc-midi-write-short
-                          midi-output
-                          (+ (1- chan) #x90)
-                          keynum (if (zerop (get-val (slot-value obj button-sym))) 0 127)))))
-              unwatch))
+	(let* ((local-pulsar (make-led-pulsar keynum chan midi-output :type :note-on)))
+           (push (watch (lambda ()
+                          (incudine.util:msg :info "button-value changed: ~a" button-sym)
+			  (let ((state (round (get-val (slot-value obj button-sym)))))
+			    (when echo
+			      (case state
+				((0 1) (funcall local-pulsar :stop)
+				 (osc-midi-write-short
+				  midi-output
+				  (+ (1- chan) #x90) keynum (if (zerop state) 0 127)))
+				(2 (funcall local-pulsar :start)))))))
+                 unwatch)))
       (push (watch (lambda ()
                      (when echo
                        (set-val master-rotary-color
@@ -811,7 +858,8 @@ midi-controller"))
     (setf cc-fns nil)
     (setf cc-state nil)
     (setf note-state nil)
-    ;;; remove obj from midi-input hashtable
+    ;;; remove asparion from midi-input hashtable to handle midi-in in the
+    ;;; units only.
     (setf (gethash midi-input *midi-controllers*)
           (delete obj (gethash (midi-input obj) *midi-controllers*)))
     (setf midi-input nil)

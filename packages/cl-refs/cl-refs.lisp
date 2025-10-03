@@ -422,6 +422,49 @@ unwatch-all
      (lambda () ;;; return the unwatch/cleanup fn
        (clear-dependencies new-ref update-callback)
        (makunbound 'new-ref))))
+
+(defmacro mirror-watch (ref1 ref2 unwatch)
+  "Define a bidirectional watch between ref-cells /ref1/ and /ref2/, so
+that both ref-cells will stay in sync. Push the created unwatch
+functions to /unwatch/.
+
+@Arguments
+ref1 - Bang ref-cell.
+ref1 - Bang ref-cell.
+unwatch - List denoting the unwatch functions to push to.
+
+@See-also
+mirror-watch-trigger
+watch
+ref-cell
+make-bang"
+  `(progn
+     (push (watch (lambda () (set-val ,ref1 (get-val ,ref2)))) ,unwatch)
+     (push (watch (lambda () (set-val ,ref2 (get-val ,ref1)))) ,unwatch)
+     (values)))
+
+(defmacro mirror-watch-trigger (ref1 ref2 unwatch)
+  "Define a bidirectional watch between bang ref-cells /ref1/ and /ref2/,
+so that both ref-cells will stay in sync and also copy the trigger
+function of ref1 to be invoked on triggerring ref2. Push the created
+unwatch functions to /unwatch/.
+
+@Arguments
+ref1 - Bang ref-cell.
+ref1 - Bang ref-cell.
+unwatch - List denoting the unwatch functions to push to.
+
+@See-also
+mirror-watch
+watch
+ref-cell
+make-bang
+"
+  `(progn
+     (push (watch (lambda () (set-val ,ref1 (get-val ,ref2)))) ,unwatch)
+     (push (watch (lambda () (set-val ,ref2 (get-val ,ref1)))) ,unwatch)
+     (setf (trigger-fns ,ref2) (list (lambda () (trigger ,ref1))))
+     (values)))
 #|
 (defun remove-watch (ref)
   (when (ref-cleanup ref) (funcall (ref-cleanup ref))))

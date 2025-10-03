@@ -122,12 +122,19 @@ buttons."
 (defun handle-preset-button-press (instance button-idx)
   "Handling of button press of s-buttons and m-buttons: Depending on the
 state of tr-rec, recall, store or copy a preset."
-  (incudine.util:msg :info "preset-button-press ~a" button-idx)
   (with-slots (curr-bank cp-src tr-rec) instance
     (let ((preset-no (+ (* 16 (get-val curr-bank)) button-idx)))
-      (case (get-val tr-rec)
-        (0 (unless (zerop (get-val (aref (slot-value instance (if (< button-idx 8) 's-buttons 'm-buttons))
-                                         (mod button-idx 8))))
+      (incudine.util:msg
+       :warn
+       "preset-button-press ~a, tr-rec: ~a, preset-no: ~d, cp-src: ~a"
+       button-idx tr-rec preset-no cp-src)
+      (case (round (get-val tr-rec))
+        (0 (unless (zerop (get-val (aref
+				    (slot-value
+				     instance
+				     (if (< button-idx 8)
+					 's-buttons 'm-buttons))
+                                    (mod button-idx 8))))
              (recall-preset instance preset-no)
              (update-preset-buttons instance)))
         (1

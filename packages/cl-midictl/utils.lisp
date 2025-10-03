@@ -159,7 +159,7 @@ body - Zero or more lisp forms.
     (pushnew fn (trigger-fns ref))
     (lambda () (setf (trigger-fns ref) (remove fn (trigger-fns ref))))))
 
-(defun make-led-pulsar (ccnum chan midi-output &key (freq 2) (pulse-width 0.5))
+(defun make-led-pulsar (ccnum chan midi-output &key (freq 2) (pulse-width 0.5) (type :cc))
   "Return an \"instance\" (closure) of a pulse generator flashing a LED
 on an external MIDI Harware device by sending the values 0/127 using
 /ccnum/, /chan/ and /midi-output/. Use the /:freq/ and /:pulse-width/
@@ -182,7 +182,8 @@ the respective values.
 
 (funcall *my-pulsar* :stop)
 "
-  (let (node-id running (freq freq) (pulse-width pulse-width))
+  (let (node-id running (freq freq) (pulse-width pulse-width)
+		(status (case type (:cc 176) (:note-on 144))))
     (lambda (cmd &rest args)
       (case cmd
         (:start (unless running
@@ -191,6 +192,7 @@ the respective values.
                    :midi-out midi-output
                    :freq freq
                    :pulse-width pulse-width
+		   :status status
                    :tail 100
                    :action (lambda (id) (setf node-id id)))
                   (setf running t)))
@@ -199,7 +201,7 @@ the respective values.
            (setf running nil)
            (cl-midictl:osc-midi-write-short
             midi-output
-            (+ (1- chan) 176) ccnum 0)))
+            (+ (1- chan) status) ccnum 0)))
         (:freq
          (setf freq (first args))
          (when node-id
@@ -217,15 +219,15 @@ between 0 and 1."
   (:defaults 4 .5)
   (if (< (phasor freq 0) width) 1 0))
 
-(dsp! pulse-midi-led ((chan channel-number) (cc-num channel-number) freq pulse-width (midi-out jackmidi:output-stream))
+(dsp! pulse-midi-led ((chan channel-number) (cc-num channel-number) freq pulse-width (midi-out jackmidi:output-stream) (status fixnum))
   "Pulse an LED on an external MIDI Hardware controller with freq and
 pulse-width by sending  0/127 to /ccnum/ on /chan/ using /midi-out/ ."
-  (:defaults 0 0 0.5 0.5 (incudine:incudine-missing-arg "MIDI-OUTPUT"))
+  (:defaults 0 0 0.5 0.5 (incudine:incudine-missing-arg "MIDI-OUTPUT") 176)
   (with ((state 0))
     (foreach-frame
       (let ((new-state (round (pulse-0-1 freq pulse-width))))
         (when (/= new-state state)
-            (cl-midictl:osc-midi-write-short
-             midi-out
-             (+ (1- chan) 176) cc-num (if (zerop state) 127 0))
-            (setf state new-state))))))
+	  (nrt-funcall (lambda () (cl-midictl:osc-midi-write-short
+			      midi-out
+			      (reduce-warnings (+ (1- chan) status)) cc-num (if (zerop state) 127 0))))
+	  (setf state new-state))))))

@@ -275,7 +275,10 @@
            cl-sfz:sf-table-get-range
            cl-midictl:add-midi-cc-fn orm-utils:map-indexed
            orm-utils:with-shadowed-variable clog-dsp-widgets:create-o-knob
-           clamps-restart-gui cl-refs:watch common-lisp-user:clamps
+           clamps-restart-gui cl-refs:watch
+	   cl-refs:mirror-watch
+	   cl-refs:mirror-watch-trigger
+	   common-lisp-user:clamps
            cl-midictl:remove-midi-controller orm-utils:rotate
            orm-utils:make-adjustable-string 
            cl-midictl:remove-all-channel-midi-cc-fns
