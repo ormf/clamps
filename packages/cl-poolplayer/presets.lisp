@@ -114,7 +114,7 @@ show-poolplayer-preset
                          (intern (format nil "~:@(~afn~)" key))
                          key ))
           '(:lsample :transp :amp :dy :start :end :stretch
-            :wwidth :attack :release :pan :out1 :out2))
+            :wwidth :attack :release :pan :out1 :out2 :playfn))
   "List of all param-fn keywords, param-fn symbols and param keywords of a poolplayer preset.")
 
 (defparameter *default-param-fns*
@@ -133,7 +133,8 @@ show-poolplayer-preset
             :releasefn 0.01
             :panfn 0.5
             :out1fn 0
-            :out2fn 1)
+            :out2fn 1
+	    :playfn #'of-incudine-dsps::play-buffer-stretch-env-pan-bus-out*)
           by #'cddr
           do (setf (gethash key hash-table) val))
     hash-table)
