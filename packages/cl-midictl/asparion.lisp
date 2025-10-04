@@ -319,7 +319,7 @@ d700ft
                       midi-output
                       (+ 1 (get-val (aref rotary-led-modes i)) 176)
                       (+ 48 i) (round (* 127 val))))
-                   (when rotary-labels (set-val (aref (aref strip-labels i) 2) (format nil "~,3f" val))))))
+                   (when rotary-labels (set-val (aref (aref strip-labels i) 1) (format nil "~,3f" val))))))
               unwatch)
         (push (watch (lambda ()
                        (when echo
@@ -339,7 +339,7 @@ d700ft
                       (+ i #xe0)
                       (logand bendval 127) (ash bendval -7)))
                    (incudine.util:msg :info "setting Fader-idx: ~a" i)
-                   (when fader-labels (set-val (aref (aref strip-labels i) 1) (format nil "~,3f" val))))))
+                   (when fader-labels (set-val (aref (aref strip-labels i) 2) (format nil "~,3f" val))))))
               unwatch)
 	;; (dolist (mapping '((r-buttons 0) (s-buttons 8) (m-buttons 16) (sel-buttons 24)))
 	;;   (destructuring-bind (slot keynum-offs) mapping
@@ -884,12 +884,14 @@ midi-controller"))
                       (t
                        (add-midi-controller 'd700 (make-keyword (format nil "~@:(~a-d700-~d~)" (mctl-id obj) module-idx))
                                             :midi-port midi-port)))))
+;;    (loop until (first units))
     (let ((num-faders (* 8 (length midi-ports)))) ;;; reinit arrays with the size of all faders.
       (dolist (sym '(rotary-colors rotary-a rotary-led-modes rotary-scale rotary-buttons
                      faders fadertouch sel-buttons s-buttons
                      m-buttons r-buttons vu-meters strip-labels))
         (setf (slot-value obj sym) (make-array num-faders))))
     (map-unit-arrays obj)
+    (map-button-slots obj)
     (dotimes (i (* 8 (length midi-ports)))
       (set-val (aref (aref strip-labels i) 0) (format nil "~2,'0d" (1+ i))))
     (when echo
@@ -914,7 +916,15 @@ midi-controller"))
 	     ;;; make unit's arrays share the exact same data as the asparion
 	     (setf (slot-value unit slot)
 		   (make-array 8 :displaced-to (slot-value asparion slot)
-			       :displaced-index-offset startidx)))))
+				 :displaced-index-offset startidx)))))
+
+(defun map-button-slots (asparion)
+  (let ((d700ft (first (units asparion))))
+    (dolist (sym '(pan-button eq-button send-button fx-button star-button
+		   metronome-button loop-button rec-button play-button
+		   stop-button prev-page-button next-page-button
+		   master-rotary master-rotary-scale master-rotary-color))
+      (setf (slot-value asparion sym) (slot-value d700ft sym)))))
 
 (defmethod cleanup ((instance asparion))
   (dolist (unit (slot-value instance 'units))
