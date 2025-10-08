@@ -204,6 +204,20 @@ function sensors(elem) {
         updateFieldIfNotNull('Trigger_timeout', triggerTimeout);
     }
 
+    function iOS() {
+        return [
+            'iPad Simulator',
+            'iPhone Simulator',
+            'iPod Simulator',
+            'iPad',
+            'iPhone',
+            'iPod'
+        ].includes(navigator.platform)
+        // iPad on iOS 13 detection
+            || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+    }
+
+    
     function setId(value) {
         id = value;
     }
@@ -213,7 +227,7 @@ function sensors(elem) {
 
     var gAccScalar = 1.0;
 
-    if(os == "iPhone") {
+    if( iOS ) {
         gAccScalar = 2.0;
     } else if(os == "Android") {
         gAccScalar = 20.0;
@@ -355,13 +369,11 @@ function sensors(elem) {
 //        alert("click, is_running: " + is_running);
         e.preventDefault();
         
-//        Request permission for iOS 13+ devices
-        if (
-            DeviceMotionEvent &&
-                typeof DeviceMotionEvent.requestPermission === "function"
-        ) {
-            DeviceMotionEvent.requestPermission();
-        }
+        //        Request permission for iOS 13+ devices
+
+        
+
+
 
 //        alert("click, is_running: " + is_running);
         
@@ -376,9 +388,21 @@ function sensors(elem) {
             internalValueChange = true;
             is_running = false;
         }else{
-//            alert("start");
-            window.addEventListener("devicemotion", handleMotion);
-            window.addEventListener("deviceorientation", handleOrientation);
+            //            alert("start");
+            if ( os == "iPhone") {
+                DeviceOrientationEvent.requestPermission().then(response => {
+                    if (response === "granted") {
+                        window.addEventListener('deviceorientation', handleOrientation);
+                        window.addEventListener("devicemotion", handleMotion);
+                        console.log("DeviceOrientationEvent permission granted.");
+                    } else {
+                        console.error("DeviceOrientationEvent permission denied.");
+                    };
+                });
+            } else {
+                window.addEventListener("devicemotion", handleMotion);
+                window.addEventListener("deviceorientation", handleOrientation);
+            }
             button.innerHTML = "Running";
             button.style.backgroundColor = "#cfc";
             button.classList.remove('btn-success');
