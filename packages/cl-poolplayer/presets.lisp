@@ -114,7 +114,7 @@ show-poolplayer-preset
                          (intern (format nil "~:@(~afn~)" key))
                          key ))
           '(:lsample :transp :amp :dy :start :end :stretch
-            :wwidth :attack :release :pan :out1 :out2 :playfn))
+            :wwidth :attack :release :pan :out1 :out2 :play))
   "List of all param-fn keywords, param-fn symbols and param keywords of a poolplayer preset.")
 
 (defparameter *default-param-fns*
@@ -148,14 +148,14 @@ for labels bindings. If /form/ doesn't contain an entry for the
 param-fn, it is retrieved from *default-param-fns*."
   (loop for (fnkey fnsym key) in *param-lookup*
         collect `(,fnsym ()
-                         (let ((outer-form (getf args ,fnkey)))
+                         (let ((outer-form (getf inits ,fnkey)))
                            (if outer-form
                                (funcall
                                 (eval
-                                 `(lambda (x &optional dtime dur idx &rest args)
-                                    (declare (ignorable x dtime dur args))
+                                 `(lambda (x &optional dtime dur idx &rest inits)
+                                    (declare (ignorable x dtime dur inits))
                                     ,outer-form))
-                                x dtime dur idx args)
+                                x dtime dur idx inits)
                                ,(getf form fnkey (gethash fnkey *default-param-fns*)))))))
 
 ;;; (get-param-fns '(:transpfn 0 :ampfn (n-lin x 0 -12)))
@@ -168,31 +168,31 @@ same syntax as an argument of let."
 
 (defun dtime-fn-form (form)
   "Return the lambda form for the dtime-fn from /form/ as a quoted list."
-  `(lambda (x &optional dur idx &rest args)
-     (declare (ignorable x dur idx args)
+  `(lambda (x &optional dur idx &rest inits)
+     (declare (ignorable x dur idx inits)
               (type (or null number) dur))
      (let* ,(getf form :bindings)
        (declare (ignorable ,@(binding-syms (getf form :bindings)))
                 (type (or null number) dur))
-       (let ((outer-form (getf args :dtimefn)))
+       (let ((outer-form (getf inits :dtimefn)))
                            (if outer-form
                                (funcall
                                 (eval
-                                 `(lambda (x &optional dur idx args)
-                                    (declare (ignorable x dur idx args))
+                                 `(lambda (x &optional dur idx inits)
+                                    (declare (ignorable x dur idx inits))
                                     ,outer-form))
-                                x dur args)
+                                x dur inits)
                                ,(getf form :dtimefn (gethash :dtimefn *default-param-fns*)))))))
 
 
 #|
 (defun params-fn-form (form)
   "Return the lambda form for the params-fn from /form/ as a quoted list."
-  `(lambda (x dur &rest args)
+  `(lambda (x dur &rest inits)
      (let* ,(getf form :bindings)
        (declare (ignorable ,@(binding-syms (getf form :bindings))))
        (labels ,(get-param-fns form)
-         (let ((lsample (lsamplefn x dur args)))
+         (let ((lsample (lsamplefn x dur inits)))
            (append `(:lsample ,lsample :buffer ,(lsample-buffer lsample))
                    (list
                     ,@(loop
@@ -200,13 +200,13 @@ same syntax as an argument of let."
                                                           *param-lookup*
                                                           :key #'third)
 
-                      append `(,key (,fnsym x dur args))))))))))
+                      append `(,key (,fnsym x dur inits))))))))))
 |#
 
 (defun params-fn-form (form)
   "Return the lambda form for the params-fn from /form/ as a quoted list."
-  `(lambda (x dtime dur idx &rest args)
-     (declare (ignorable x dtime dur idx args)
+  `(lambda (x dtime dur idx &rest inits)
+     (declare (ignorable x dtime dur idx inits)
               (type (or null number) dur))
      (let* ,(getf form :bindings)
        (labels ,(get-param-fns form)
@@ -240,8 +240,8 @@ show-poolplayer-preset
      (setf (preset-form (aref *poolplayer-presets* ,preset-no)) ',form)
      (setf (dtime-fn (aref *poolplayer-presets* ,preset-no))
            ,(dtime-fn-form form))
-     (setf (params-fn (aref *poolplayer-presets* ,preset-no))
-           ,(params-fn-form form))
+     ;; (setf (params-fn (aref *poolplayer-presets* ,preset-no))
+     ;;       ,(params-fn-form form))
      (aref *poolplayer-presets* ,preset-no)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

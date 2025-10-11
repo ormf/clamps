@@ -66,14 +66,14 @@ returns."
         (let* ((dtime (apply (dtime-fn prst) x dur args))
                (next (+ time dtime))
                (params (apply (params-fn prst) x dtime dur idx args))
-	       (playfn (getf params :playfn)))
+	       (playfn (getf params :play)))
           (incf idx)
           (incf (getf params :amp) *master-amp-db*)
           (setf params (list* :buffer (lsample-buffer (getf params :lsample)) params))
           (incudine.util:msg :info "~S" params)
           (dolist (key '(:adjust-stretch :dy)) (remf params key))
           (when *poolplayer-recording-p* (push (cons time (copy-seq params)) *poolplayer-events*))
-          (dolist (key '(:lsample :keynum :adjust-stretch :playfn)) (remf params key))
+          (dolist (key '(:lsample :keynum :adjust-stretch :play)) (remf params key))
           (incudine.util:msg :info "~S" params)
           (apply playfn :head 200 params)
           (if (and dur (> next end))
@@ -82,6 +82,11 @@ returns."
 
 (defun stop (p)
   (sv p :playing nil))
+
+(defun calc-inits (inits)
+  (loop
+    for (key val) on inits by #'cddr
+    append (list key (eval val))))
 
 (defun preset-play (preset-no dur &rest args)
   (let ((time (getf args :at (now)))
@@ -92,5 +97,6 @@ returns."
       :end (if dur (+ time dur))
       :dur dur
       :preset-no preset-no)
-    (funcall #'perform player time args)
+    (let* ((inits (calc-inits (getf (get-preset-form preset-no) :inits))))
+      (funcall #'perform player time (append inits args)))
     nil))

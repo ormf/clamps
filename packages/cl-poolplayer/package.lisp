@@ -13,6 +13,7 @@
   (:shadowing-import-from #:orm-utils #:group #:clip)
   (:shadowing-import-from #:cl-midictl #:ccin)
   (:export
+   #:INITS
    #:*POOL-HASH*
    #:DTIME-DEV #:DTIME #:PRESET-PLAY #:EVENTPLAYER #:EVENTPLOTTER #:R-ELT
    #:NPRESET-PLAY
