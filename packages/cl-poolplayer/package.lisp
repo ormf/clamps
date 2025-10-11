@@ -14,6 +14,7 @@
   (:shadowing-import-from #:cl-midictl #:ccin)
   (:export
    #:INITS
+   #:NODE-IDS
    #:*POOL-HASH*
    #:DTIME-DEV #:DTIME #:PRESET-PLAY #:EVENTPLAYER #:EVENTPLOTTER #:R-ELT
    #:NPRESET-PLAY

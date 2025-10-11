@@ -595,7 +595,8 @@
            cl-poolplayer:digest-form-to-preset
            cl-poolplayer:g4
            cl-poolplayer:idx
-           cl-poolplayer:*circle-cw* cl-poolplayer:make-p-song
+           cl-poolplayer:node-ids
+	   cl-poolplayer:*circle-cw* cl-poolplayer:make-p-song
            cl-poolplayer:npreset-play cl-poolplayer:set-poolplayer-preset-form
            cl-poolplayer:stereo-out cl-poolplayer:dtime-dev
            cl-poolplayer:*outseq9* cl-poolplayer:collecting-cm

@@ -98,5 +98,5 @@ returns."
       :dur dur
       :preset-no preset-no)
     (let* ((inits (calc-inits (getf (get-preset-form preset-no) :inits))))
-      (funcall #'perform player time (append inits args)))
+      (funcall #'perform player time (append inits (list :player player) args)))
     nil))

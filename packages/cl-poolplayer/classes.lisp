@@ -27,6 +27,7 @@
   (dur 3)
   (idx 0)
   (end 0)
+  (node-ids nil)
   (start-time 0)
   (preset-no 0)
   (play-fn nil))
