@@ -79,7 +79,7 @@ sensor-trig-timeout
 "
   (let* ((sensor-data (make-ref (make-sensor-data)))
          (trigger (make-bang (lambda ()) 0))
-         (trigger-active (make-ref (getf args :trigger-active t)))
+         (trigger-active (make-ref (getf args :trigger-active nil)))
          (trigger-threshold (make-ref (getf args :trigger-threshold 0.1)))
          (trigger-timeout (make-ref (getf args :trigger-timeout 200)))
          (path (format nil "/~a" id)))
