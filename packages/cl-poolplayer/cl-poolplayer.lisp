@@ -89,14 +89,20 @@ returns."
     append (list key (eval val))))
 
 (defun preset-play (preset-no dur &rest args)
-  (let ((time (getf args :at (now)))
-        (player (or (getf args :player) (make-eventplayer))))
+  (let* ((time (getf args :at (now)))
+	 (player (or (getf args :player) (make-eventplayer)))
+	 (preset-form (get-preset-form preset-no))
+	 (dur (or dur (eval (getf preset-form :dur)))))
     (cm::sv player
-        :playing t
       :start-time time
       :end (if dur (+ time dur))
       :dur dur
       :preset-no preset-no)
-    (let* ((inits (calc-inits (getf (get-preset-form preset-no) :inits))))
+    (typecase (playing player)
+      (cl-refs:ref-object nil)
+      (otherwise
+       (cm:sv player :playing t))
+      )
+    (let* ((inits (calc-inits (getf preset-form :inits))))
       (funcall #'perform player time (append inits (list :player player) args)))
     nil))

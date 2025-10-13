@@ -198,12 +198,13 @@ will replace any previously added entries of that directory name in
 the hashtable.
 "
   (dolist (dir (uiop:subdirectories parent-dir))
-    (format t "~&checking: ~a  ~%~a" dir (uiop:directory-files dir "*.wav"))
-    (when (and (uiop:directory-files dir "*.wav")
-               (not (member (relative-directory-name dir) exclude :test #'string=))) ;;; only register non-empty dirs which aren't excluded.
-      (setf (gethash (relative-directory-keyword dir) hashtable)
-            (loop for file in (uiop:directory-files dir "*.wav")
-                  do (format t "~&adding: ~A" file)
-                  collect (buffer->lsample (clamps-buffer-load file)))))
-    (load-all-lsamples dir :hashtable hashtable :exclude exclude))
+    ;; (format t "~&checking: ~a  ~%~a" dir (uiop:directory-files dir "*.wav"))
+    (unless (member (relative-directory-name dir) exclude :test #'string=)
+      (when (and (uiop:directory-files dir "*.wav")
+		 ) ;;; only register non-empty dirs which aren't excluded.
+	(setf (gethash (relative-directory-keyword dir) hashtable)
+	      (loop for file in (uiop:directory-files dir "*.wav")
+		    do (format t "~&adding: ~A" file)
+		    collect (buffer->lsample (clamps-buffer-load file)))))
+      (load-all-lsamples dir :hashtable hashtable :exclude exclude)))
   hashtable)
