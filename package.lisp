@@ -751,6 +751,15 @@
            cl-midictl:track-left cl-midictl:nk2-fader-update-fns
            cl-midictl:add-midi-cc-fn cl-midictl:start-osc-midi-receive
            cl-midictl:hide-fader cl-midictl:*midi-cc-fns* cl-midictl:tr-rec
+           cl-midictl:pan-button cl-midictl:star-button cl-midictl:master-rotary
+           cl-midictl:loop-button cl-midictl:eq-button cl-midictl:fx-button
+           cl-midictl:metronome-button cl-midictl:fadertouch cl-midictl:faders
+           cl-midictl:fader-labels cl-midictl:rotary-a cl-midictl:play-button
+           cl-midictl:prev-page-button cl-midictl:next-page-button
+           cl-midictl:send-button cl-midictl:stop-button cl-midictl:strip-labels
+           cl-midictl:units cl-midictl:vu-meters
+
+           cl-midictl:master-rotary-color cl-midictl:master-rotary-scale
            clog-midi-controller:gui-set-marker clog-midi-controller:gui-rewind
            clog-midi-controller:gui-play clog-midi-controller:gui-ffwd
            clog-midi-controller:gui-container clog-midi-controller:gui-s-buttons
