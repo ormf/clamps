@@ -256,9 +256,9 @@ numbers with the value 0 or 1."
 (defgeneric init-nk2 (instance &optional file)
   (:method ((controller nanoktl2-preset-midi) &optional (file *nanoktl2-presets-file*))
     (set-player-buttons controller '(1 1 1 1))
-    (incudine.util:msg :warn "loading nl2-presets...")
+    (incudine.util:msg :info "loading nk2-presets...")
     (load-presets controller file)
-    (incudine.util:msg :warn "done")
+    (incudine.util:msg :info "done")
     (handle-preset-button-press controller 0)))
 
 #|
