@@ -578,6 +578,7 @@
            cl-sfz:remove-sfz-preset
 
            cl-poolplayer:init-poolplayer-elisp-code
+           cl-poolplayer:inits
            cl-poolplayer:edit-preset-in-emacs
            cl-poolplayer:p-song-afterfn
            cl-poolplayer:get-interp-vals
