@@ -103,6 +103,7 @@ returns."
       (otherwise
        (cm:sv player :playing t))
       )
+    (setf (getf args :player) player)
     (let* ((inits (calc-inits (getf preset-form :inits))))
-      (funcall #'perform player time (append inits (list :player player) args)))
+      (funcall #'perform player time (append inits args)))
     nil))

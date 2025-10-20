@@ -22,6 +22,7 @@
            #:PLAY-BUFFER-STRETCH-ENV-OUT
            #:PLAY-BUFFER-STRETCH-ENV-PAN-OUT
            #:PLAY-BUFFER-STRETCH-ENV-PAN-OUT*
+           #:PLAY-BUFFER-STRETCH-ENV-PAN-BUS-OUT*
            #:PLAY-BUFFER*
            #:*HANNING1024*
            #:*SINE1024*

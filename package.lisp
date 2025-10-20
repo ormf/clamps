@@ -269,7 +269,6 @@
 
            clog-dsp-widgets:*bindings*
 
-
            orm-utils:get-duplicates clog-dsp-widgets:create-o-bang
            orm-utils:n-exp-zero clog-dsp-widgets:db-slider->amp
            cl-sfz:sf-table-get-range
@@ -450,6 +449,7 @@
            of-incudine-dsps:create-lsample
            of-incudine-dsps:play-buffer-stretch-env-pan-out
            of-incudine-dsps:play-buffer-stretch-env-pan-out*
+           of-incudine-dsps:play-buffer-stretch-env-pan-bus-out*
            of-incudine-dsps:lsample-pathname
            of-incudine-dsps:lsample-dur
            of-incudine-dsps:lsample-name of-incudine-dsps:lsample-loopstart
