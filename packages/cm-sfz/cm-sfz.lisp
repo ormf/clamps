@@ -42,18 +42,13 @@
        (amplitude :initform 0 :accessor sfz-amplitude)
        (duration :initform 1 :accessor sfz-duration)     
        (preset :initform :flute-nv :accessor sfz-preset)
-       (oneshot :initform nil :accessor sfz-oneshot)
+       (oneshot :initform :unprovided :accessor sfz-oneshot)
        (pan :initform 0.5 :accessor sfz-pan)
        (startpos :initform 0 :accessor sfz-startpos)
        (chan :initform 100 :accessor sfz-chan)
        )
     (:parameters time keynum amplitude duration preset oneshot pan startpos chan)
     (:event-streams)))
-
-(defmethod initialize-instance :after ((obj sfz) &rest initargs)
-  (format t "initialize sfz")
-  (with-slots (keynum oneshot preset) obj
-    (setf oneshot (getf initargs :oneshot :unprovided))))
 
 (defmethod schedule-object ((obj sfz) start sched)
   (ensure-sfz-preset (sfz-preset obj))
