@@ -282,7 +282,6 @@ h1.title {
 }
 
 #text-table-of-contents {
-    margin-left: -1.5em;
     line-height: 1.3em;
     overflow: hidden;
     white-space: nowrap;
@@ -470,7 +469,7 @@ code {
 .toc-level-2 .toc-active {
     color: var(--anchor-active);
     pointer-events: auto;
-    text-overflow: hidden;
+    overflow: hidden;
     text-overflow: ellipsis;
     width: 15em;
 }

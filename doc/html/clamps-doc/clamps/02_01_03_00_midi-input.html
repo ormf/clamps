@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-09-29 Mo 14:33 -->
+<!-- 2025-10-24 Fr 11:32 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Packages</title>
@@ -139,13 +139,13 @@
 <header>
 <h1 class="title">Clamps Packages</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="02_01_02_00_midi-output.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-orgcd4e33f" class="outline-4">
-<h4 id="orgcd4e33f">MIDI Input</h4>
-<div class="outline-text-4" id="text-orgcd4e33f">
+<div id="page-text-body"><div id="outline-container-org0d33ab0" class="outline-4">
+<h4 id="org0d33ab0">MIDI Input</h4>
+<div class="outline-text-4" id="text-org0d33ab0">
 </div>
-<div id="outline-container-orged8aeb4" class="outline-5">
-<h5 id="orged8aeb4">Receiving and handling MIDI Input</h5>
-<div class="outline-text-5" id="text-orged8aeb4">
+<div id="outline-container-orgc70e3ed" class="outline-5">
+<h5 id="orgc70e3ed">Receiving and handling MIDI Input</h5>
+<div class="outline-text-5" id="text-orgc70e3ed">
 <p>
 After the Ports have been opened, MIDI input handling is started
 using the function <a href="../clamps-dict/start-midi-receive.html">start-midi-receive</a>, which gets called
@@ -164,7 +164,7 @@ A <a href="../clamps-dict/midi-port-1.html">midi-port</a> in Clamps handles MIDI
 <ul class="org-ul">
 <li>All note and cc input is captured in the <i>cc-state</i> and
 <i>note-state</i> arrays of the port struct. Both contain a
-2-dimensional array of 16x128 <a href="07_02_02_00_the-ref-object-class.html#org212286e">ref-objects</a> which capture the
+2-dimensional array of 16x128 <a href="07_02_02_00_the-ref-object-class.html#org49a96fd">ref-objects</a> which capture the
 last received values of the 128 controller numbers or note
 numbers of all 16 MIDI channels. <a href="../overview/04_04_code-inspection.html">Inspect</a> this value to see the
 current state of the MIDI input of Clamps.</li>

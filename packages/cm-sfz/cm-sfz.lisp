@@ -50,6 +50,11 @@
     (:parameters time keynum amplitude duration preset oneshot pan startpos chan)
     (:event-streams)))
 
+(defmethod initialize-instance :after ((obj sfz) &rest initargs)
+  (format t "initialize sfz")
+  (with-slots (keynum oneshot preset) obj
+    (setf oneshot (getf initargs :oneshot :unprovided))))
+
 (defmethod schedule-object ((obj sfz) start sched)
   (ensure-sfz-preset (sfz-preset obj))
   (enqueue *qentry-object* obj (+ start (object-time obj))
