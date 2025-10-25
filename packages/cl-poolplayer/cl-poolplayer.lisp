@@ -97,6 +97,7 @@ returns."
       :start-time time
       :end (if dur (+ time dur))
       :dur dur
+      :idx 0
       :preset-no preset-no)
     (typecase (playing player)
       (cl-refs:ref-object nil)

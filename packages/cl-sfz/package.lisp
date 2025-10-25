@@ -25,5 +25,6 @@
    #:sfz->lsample
    #:get-keynum
    #:abs-path
+   #:write-sfz
    ))
 

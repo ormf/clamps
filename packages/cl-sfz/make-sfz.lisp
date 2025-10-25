@@ -1,6 +1,8 @@
 ;;; 
 ;;; make-sfz.lisp
 ;;;
+;;; utilities to help creating sfz files from sample names.
+;;;
 ;;; **********************************************************************
 ;;; Copyright (c) 2022 Orm Finnendahl <orm.finnendahl@selma.hfmdk-frankfurt.de>
 ;;;
@@ -21,20 +23,22 @@
 (in-package :cl-sfz)
 
 (defun parse-pitch (str)
+  "Return MIDI keynum of /str/ of the form \"C4\" \"C#5\" \"Ab3\". The
+string can be in upper or lower case letters. \"C4\" returns 60."
   (let ((alteration
           (if (= 3 (length str))
               (if (eql (aref str 1) #\#) 1 -1)
               0)))
     (+ 12
        alteration
-       (elt
-        '(0 2 4 5 7 9 11)
-        (position (aref str 0)
-                  '(#\C #\D #\E #\F #\G #\A #\B)))
+       (getf
+        '(#\C 0 #\D 2 #\E 4 #\F 5 #\G 7 #\A 9 #\B 11
+          #\c 0 #\d 2 #\e 4 #\f 5 #\g 7 #\a 9 #\b 11)
+        (aref str 0))
        (* 12 (read-from-string (subseq str (1- (length str))))))))
 
 (defun prepend-pitch-num (stream dir template)
-  "create shell commands to prepend the pitch number in front of
+  "Create shell commands to prepend the pitch number in front of
 sample files by parsing the pitch name."
   (loop for file in (uiop:directory-files dir)
         for name = (file-namestring file)
@@ -91,7 +95,27 @@ pitch_keycenter=~a~%~%" name lokey hikey key))))))
 
 |#
 
-(defun write-sfz (dir name template)
+(defun write-sfz (dir name template &key (volume 0))
+  "Generate and write an sfz file using all samples in the samples subdir
+of /dir/ with /name/ using /template/ with optional /volume/ in
+dB. The names of samplefiles have to start with 3 digits denoting the
+midi keynum.
+
+@Arguments
+dir - String or Pathname denoting the parent dir of the soundfont to create.
+name - String denoting the basename of the sfz file.
+template - String denoting a template for samples to match
+:volume - Number denoting the volume in dB (0dB = unit gain) in each sample region of the sfz.
+
+@Example
+
+;;; generate a sfz file named ~/work/snd/sfz/bd/bd.sfz from all samples in the
+;;; ~/work/snd/sfz/bd/samples/ subdirectory named 001-bd.wav,
+;;; 002-bd.wav,...
+
+(write-sfz \"~/work/snd/sfz/bd/\" \"bd\" \"bd\")
+
+"
   (with-open-file (out (format nil "~a/~a.sfz" dir name)
                        :direction :output :if-exists :supersede)
     (let* ((seq
@@ -109,11 +133,11 @@ pitch_keycenter=~a~%~%" name lokey hikey key))))))
         for hikey = (third (assoc key range-assoc))
         do (format out "<region>
 sample=samples/~a
-volume=6
+volume=~a
 lokey=~a
 hikey=~a
 tune=0
-pitch_keycenter=~a~%~%" name lokey hikey key)))))
+pitch_keycenter=~a~%~%" volume name lokey hikey key)))))
 
 
 (defun normalize-files (dir)

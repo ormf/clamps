@@ -50,7 +50,8 @@
            cl-sfz:sfz-preset-lsamples
            cl-sfz:sfz-preset-buffers
            cl-sfz:get-sfz-preset
-           
+	   cl-sfz:write-sfz
+	   
            orm-utils:bool
            orm-utils:dolist-db
            orm-utils:ftom orm-utils:mtof
