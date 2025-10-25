@@ -98,6 +98,9 @@
            cl-refs:copy-ref
            cl-refs:add-watch
            cl-refs:unwatch-all
+           cl-refs:make-computed
+           cl-refs:mirror-watch
+           cl-refs:mirror-watch-trigger
            
            cl-midictl:set-marker orm-utils:combinations export-svg
            orm-utils:with-curr-dir plot-2d
@@ -143,7 +146,7 @@
            clog-dsp-widgets:add-dsp orm-utils:do-proplist
            cl-sfz:ensure-sfz-preset get-dtime-fn input-stream
            export-svg-file incudine-bufs:remove-all-buffers
-           cl-refs:make-computed *gnuplot-program* cl-sfz:add-sfz-preset
+           *gnuplot-program* cl-sfz:add-sfz-preset
            format-with-slots cl-refs:on-deps-update
            clog-dsp-widgets:create-o-scope orm-utils:n-exp text-anchor
            orm-utils:n-lin-fn cl-midictl:add-midi-controller
