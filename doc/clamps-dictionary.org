@@ -1467,6 +1467,51 @@
     - [[midi-controller][midi-controller]]
     - [[asparion][asparion]]
     - [[d700ft][d700ft]]
+** d700-write-line-1
+   Function
+   #+BEGIN_SRC lisp
+     (d700-write-line-1 text idx stream)
+   #+END_SRC
+   Set text of the first line at strip /idx/ of the Display of an
+   Asparion [[D700][D700]] or [[D700FT][D700FT]] Controller connected to /stream/ to /text/.
+*** Arguments
+    | =/text/= | String of maximum 12 Characters. |
+    | =/idx/= | Integer in the range [0..7] indicating the Channel strip of the display. |
+    | =/stream/= | Jackmidi output stream connected to an Asparion Controller. |
+
+*** See also
+    - [[d700-write-line2][d700-write-line2]]
+    - [[d700-write-line3][d700-write-line3]]
+** d700-write-line-2
+   Function
+   #+BEGIN_SRC lisp
+     (d700-write-line-2 text idx stream)
+   #+END_SRC
+   Set text of the second line at strip /idx/ of the Display of an
+   Asparion [[D700][D700]] or [[D700FT][D700FT]] Controller connected to /stream/ to /text/.
+*** Arguments
+    | =/text/= | String of maximum 12 Characters. |
+    | =/idx/= | Integer in the range [0..7] indicating the Channel strip of the display. |
+    | =/stream/= | Jackmidi output stream connected to an Asparion Controller. |
+
+*** See also
+    - [[d700-write-line1][d700-write-line1]]
+    - [[d700-write-line3][d700-write-line3]]
+** d700-write-line-3
+   Function
+   #+BEGIN_SRC lisp
+     (d700-write-line-3 text idx stream)
+   #+END_SRC
+   Set text of the third line at strip /idx/ of the Display of an
+   Asparion [[D700][D700]] or [[D700FT][D700FT]] Controller connected to /stream/ to /text/.
+*** Arguments
+    | =/text/= | String of maximum 12 Characters. |
+    | =/idx/= | Integer in the range [0..7] indicating the Channel strip of the display. |
+    | =/stream/= | Jackmidi output stream connected to an Asparion Controller. |
+
+*** See also
+    - [[d700-write-line1][d700-write-line1]]
+    - [[d700-write-line2][d700-write-line2]]
 ** d700ft
    Class
 
@@ -2189,6 +2234,12 @@
      (export-svg-file svg-file &key (fname "/tmp/test.svg" fname-supplied-p) (inverse nil) (showgrid t) (gridtype "4x4") width (zoom 1.4) (cx 350) (cy 360) (w-width 1920) (w-height 1080) (w-x 0) (w-y 0))
    #+END_SRC
 * F
+** fader-labels
+   Generic Function
+   #+BEGIN_SRC lisp
+     (fader-labels object)
+   #+END_SRC
+   flag indicating whether to echo the fader values in line 2 of the display.
 ** faderfox-gui
    Function
    #+BEGIN_SRC lisp
@@ -3492,7 +3543,7 @@
 ** make-eventplayer
    Function
    #+BEGIN_SRC lisp
-     (make-eventplayer &key ((:playing #:playing) t) ((:id #:id) nil) ((:dur #:dur) 3) ((:idx #:idx) 0) ((:end #:end) 0) ((:start-time #:start-time) 0) ((:preset-no #:preset-no) 0) ((:play-fn #:play-fn) nil))
+     (make-eventplayer &key ((:playing #:playing) t) ((:id #:id) nil) ((:dur #:dur) 3) ((:idx #:idx) 0) ((:end #:end) 0) ((:node-ids #:node-ids) nil) ((:start-time #:start-time) 0) ((:preset-no #:preset-no) 0) ((:play-fn #:play-fn) nil))
    #+END_SRC
 ** make-keyword
    Function
@@ -3510,7 +3561,7 @@
 ** make-led-pulsar
    Function
    #+BEGIN_SRC lisp
-     (make-led-pulsar ccnum chan midi-output &key (freq 2) (pulse-width 0.5))
+     (make-led-pulsar ccnum chan midi-output &key (freq 2) (pulse-width 0.5) (type :cc))
    #+END_SRC
    Return an "instance" (closure) of a pulse generator flashing a LED
    on an external MIDI Harware device by sending the values 0/127 using
@@ -3836,6 +3887,12 @@
    :END:
    Variable
 
+** midi-in-active
+   Generic Function
+   #+BEGIN_SRC lisp
+     (midi-in-active object)
+   #+END_SRC
+   flag indicating that midi-input is occuring.
 ** *​midi-in1​*
    :PROPERTIES:
    :CUSTOM_ID: midi-in1
@@ -3986,6 +4043,51 @@
    #+BEGIN_SRC lisp
      (midi-port-pitch-bend-state instance)
    #+END_SRC
+** mirror-watch
+   Macro
+   #+BEGIN_SRC lisp
+     (mirror-watch ref1 ref2 unwatch)
+   #+END_SRC
+   Define a bidirectional watch between ref-cells /ref1/ and /ref2/, so
+   that both ref-cells will stay in sync. Push the created unwatch
+   functions to /unwatch/.
+*** Note
+    After calling mirror-watch, both refs will
+    contain the value of ref1, overwriting any previous value of ref2.
+    
+*** Arguments
+    | =ref1= | Ref-cell. |
+    | =ref2= | Ref-cell. |
+    | =unwatch= | List denoting the unwatch functions to push to. |
+
+*** See also
+    - [[mirror-watch-trigger][mirror-watch-trigger]]
+    - [[watch][watch]]
+    - [[ref-cell][ref-cell]]
+    - [[make-bang][make-bang]]
+** mirror-watch-trigger
+   Macro
+   #+BEGIN_SRC lisp
+     (mirror-watch-trigger ref1 ref2 unwatch)
+   #+END_SRC
+   Define a bidirectional watch between bang ref-cells /ref1/ and /ref2/,
+   so that both ref-cells will stay in sync and set the trigger function
+   of ref2 to call trigger on ref1. Push the created unwatch functions to
+   /unwatch/.
+*** Note
+    After calling mirror-watch-trigger, both refs will contain the value
+    of ref1, overwriting any previous value of ref2.
+    
+*** Arguments
+    | =ref1= | Bang ref-cell. |
+    | =ref2= | Bang ref-cell. |
+    | =unwatch= | List denoting the unwatch functions to push to. |
+
+*** See also
+    - [[mirror-watch][mirror-watch]]
+    - [[watch][watch]]
+    - [[ref-cell][ref-cell]]
+    - [[make-bang][make-bang]]
 ** mix-bus-to-out
    Function
    #+BEGIN_SRC lisp
@@ -4413,6 +4515,11 @@
    Accessor for the node-group slot of dsp /object/.
 *** See also
     - [[cuda-dsp][cuda-dsp]]
+** node-ids
+   Function
+   #+BEGIN_SRC lisp
+     (node-ids instance)
+   #+END_SRC
 ** normalize-x
    Function
    #+BEGIN_SRC lisp
@@ -5668,12 +5775,24 @@
      (rotary-colors object)
    #+END_SRC
    RGB colors of the 8 rotary buttons.
+** rotary-labels
+   Generic Function
+   #+BEGIN_SRC lisp
+     (rotary-labels object)
+   #+END_SRC
+   flag indicating whether to echo the rotary values in line 3 of the display.
 ** rotary-led-modes
    Generic Function
    #+BEGIN_SRC lisp
      (rotary-led-modes object)
    #+END_SRC
    automatically generated reader method
+** rotary-ring
+   Generic Function
+   #+BEGIN_SRC lisp
+     (rotary-ring object)
+   #+END_SRC
+   flag indicating whether to echo the rotary values in rotary ring leds.
 ** rotary-scale
    Generic Function
    #+BEGIN_SRC lisp
@@ -7032,6 +7151,13 @@
      (ucopy sym)
    #+END_SRC
    Copy an instance of a class recursively.
+** units
+   Generic Function
+   #+BEGIN_SRC lisp
+     (units object)
+   #+END_SRC
+   Slot containing the instances of the D700(FT) units of an asparion
+   instance.
 ** unregister-element
    Function
    #+BEGIN_SRC lisp

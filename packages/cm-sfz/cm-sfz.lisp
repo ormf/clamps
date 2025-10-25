@@ -42,7 +42,7 @@
        (amplitude :initform 0 :accessor sfz-amplitude)
        (duration :initform 1 :accessor sfz-duration)     
        (preset :initform :flute-nv :accessor sfz-preset)
-       (oneshot :initform nil :accessor sfz-oneshot)
+       (oneshot :initform :unprovided :accessor sfz-oneshot)
        (pan :initform 0.5 :accessor sfz-pan)
        (startpos :initform 0 :accessor sfz-startpos)
        (chan :initform 100 :accessor sfz-chan)

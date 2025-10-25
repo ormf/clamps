@@ -23,7 +23,34 @@
 
 (aref *presets* 0)
 
+(params-fn-form
+ '(:bindings ((pool *poolbo0*)
+             (lsample (elt pool 0))
+             (transp
+              (float
+               (- (* 127 (+ (ccin 9)
+                            (- (/ (ccin 10) 2)
+                               (r-lin 0 (ccin 10)))))
+                  (lsample-keynum lsample))
+               1.0)))
+  :dur (+ 3 (random 5))
+  :dtimefn (n-exp x 0.05 0.8)
+  :lsamplefn lsample
+  :ampfn (+ -6 (n-lin (ccin 16) -40 0))
+  :transpfn (+ transp 0)
+  :startfn 0
+  :endfn 0
+  :stretchfn (* (n-exp-dev (ccin 13) 10)
+                (expt 2 (/ transp -12)))
+  :wwidthfn 123
+  :attackfn 0
+  :panfn 0.5
+  :releasefn 0.01
+  :outfn (stereo-out)
+  :labels (()()()()()() :dtime :dt-dev :pitch :pch-dev ()() :attack
+             ()() :amp)))
 
+(perform)
 
 (digest-bo-preset
  97

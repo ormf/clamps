@@ -470,7 +470,7 @@ sfz-preset-loaded?
 
 (setf (fdefinition 'ensure-sfz-preset) #'get-sfz-preset)
 
-(defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2 (oneshot nil osp))
+(defun play-sfz (pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2 oneshot)
   "Play a sfz preset with stereo panning to incudine's audio outputs
 with index /out1/ and /out2/, not looping if /oneshot/ is non-nil or
 set in the lsample.
@@ -498,7 +498,7 @@ The setting of <<standard-pitch>> is taken into account!
         (let* ((lsample (random-elem (aref map (round pitch)))))
           (play-lsample lsample pitch db dur
                         :pan pan :startpos startpos
-                        :oneshot (if osp oneshot (lsample-oneshot lsample))
+                        :oneshot (if (eq oneshot :unprovided) (lsample-oneshot lsample) oneshot)
                         :out1 out1 :out2 out2))
         (error (if map
                    (format nil "pitch ~d of preset ~S not present!" (round pitch) preset)

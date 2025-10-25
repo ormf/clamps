@@ -470,7 +470,7 @@ code {
 .toc-level-2 .toc-active {
     color: var(--anchor-active);
     pointer-events: auto;
-    text-overflow: hidden;
+    overflow: hidden;
     text-overflow: ellipsis;
     width: 15em;
 }
