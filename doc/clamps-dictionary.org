@@ -315,6 +315,7 @@
       ;; No Output in REPL.
     #+END_SRC
 *** See also
+    - [[ref-object][ref-object]]
     - [[unwatch-all][unwatch-all]]
     - [[speedlim-watch][speedlim-watch]]
     - [[watch][watch]]
@@ -1480,8 +1481,8 @@
     | =/stream/= | Jackmidi output stream connected to an Asparion Controller. |
 
 *** See also
-    - [[d700-write-line2][d700-write-line2]]
-    - [[d700-write-line3][d700-write-line3]]
+    - [[d700-write-line-2][d700-write-line-2]]
+    - [[d700-write-line-3][d700-write-line-3]]
 ** d700-write-line-2
    Function
    #+BEGIN_SRC lisp
@@ -1495,8 +1496,8 @@
     | =/stream/= | Jackmidi output stream connected to an Asparion Controller. |
 
 *** See also
-    - [[d700-write-line1][d700-write-line1]]
-    - [[d700-write-line3][d700-write-line3]]
+    - [[d700-write-line-1][d700-write-line-1]]
+    - [[d700-write-line-3][d700-write-line-3]]
 ** d700-write-line-3
    Function
    #+BEGIN_SRC lisp
@@ -1510,8 +1511,8 @@
     | =/stream/= | Jackmidi output stream connected to an Asparion Controller. |
 
 *** See also
-    - [[d700-write-line1][d700-write-line1]]
-    - [[d700-write-line2][d700-write-line2]]
+    - [[d700-write-line-1][d700-write-line-1]]
+    - [[d700-write-line-2][d700-write-line-2]]
 ** d700ft
    Class
 
@@ -4063,7 +4064,7 @@
 *** See also
     - [[mirror-watch-trigger][mirror-watch-trigger]]
     - [[watch][watch]]
-    - [[ref-cell][ref-cell]]
+    - [[ref-object][ref-object]]
     - [[make-bang][make-bang]]
 ** mirror-watch-trigger
    Macro
@@ -4086,7 +4087,7 @@
 *** See also
     - [[mirror-watch][mirror-watch]]
     - [[watch][watch]]
-    - [[ref-cell][ref-cell]]
+    - [[ref-object][ref-object]]
     - [[make-bang][make-bang]]
 ** mix-bus-to-out
    Function
@@ -4978,7 +4979,7 @@
 ** play-sfz
    Function
    #+BEGIN_SRC lisp
-     (play-sfz pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2 (oneshot nil osp))
+     (play-sfz pitch db dur &key (pan 0.5) (preset :flute-nv) (startpos 0) (out1 0) out2 oneshot)
    #+END_SRC
    Play a sfz preset with stereo panning to incudine's audio outputs
    with index /out1/ and /out2/, not looping if /oneshot/ is non-nil or
@@ -7595,6 +7596,29 @@
      (with-unwatched bindings &body body)
    #+END_SRC
    all #'get-val forms contained in bindings are not watched.
+** write-sfz
+   Function
+   #+BEGIN_SRC lisp
+     (write-sfz dir name template &key (volume 0))
+   #+END_SRC
+   Generate and write an sfz file using all samples in the samples subdir
+   of /dir/ with /name/ using /template/ with optional /volume/ in
+   dB. The names of samplefiles have to start with 3 digits denoting the
+   midi keynum.
+*** Arguments
+    | =dir= | String or Pathname denoting the parent dir of the soundfont to create. |
+    | =name= | String denoting the basename of the sfz file. |
+    | =template= | String denoting a template for samples to match |
+    | =:volume= | Number denoting the volume in dB (0dB = unit gain) in each sample region of the sfz. |
+
+*** Example
+    #+BEGIN_SRC lisp
+      ;;; generate a sfz file named ~/work/snd/sfz/bd/bd.sfz from all samples in the
+      ;;; ~/work/snd/sfz/bd/samples/ subdirectory named 001-bd.wav,
+      ;;; 002-bd.wav,...
+      
+      (write-sfz "~/work/snd/sfz/bd/" "bd" "bd")
+    #+END_SRC
 * Z
 ** zoom
    Generic Function

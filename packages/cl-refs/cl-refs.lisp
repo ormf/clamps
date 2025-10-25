@@ -440,7 +440,7 @@ unwatch - List denoting the unwatch functions to push to.
 @See-also
 mirror-watch-trigger
 watch
-ref-cell
+ref-object
 make-bang"
   `(progn
      (push (watch (lambda () (set-val ,ref2 (get-val ,ref1)))) ,unwatch)
@@ -465,7 +465,7 @@ unwatch - List denoting the unwatch functions to push to.
 @See-also
 mirror-watch
 watch
-ref-cell
+ref-object
 make-bang
 "
   `(progn
@@ -529,6 +529,7 @@ forms - Zero or more function bodies supplied to the #'watch function.
 ;; No Output in REPL.
 
 @See-also
+ref-object
 unwatch-all
 speedlim-watch
 watch

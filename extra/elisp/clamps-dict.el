@@ -571,5 +571,6 @@
    ("with-shadowed-variable" "clamps-dict/with-shadowed-variable.html")
    ("with-svg-file" "clamps-dict/with-svg-file.html")
    ("with-unwatched" "clamps-dict/with-unwatched.html")
+   ("write-sfz" "clamps-dict/write-sfz.html")
    ("zoom" "clamps-dict/z.html")
 ))

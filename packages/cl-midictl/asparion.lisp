@@ -173,8 +173,8 @@ Asparion <<D700>> or <<D700FT>> Controller connected to /stream/ to /text/.
 /stream/ - Jackmidi output stream connected to an Asparion Controller.
 
 @See-also
-d700-write-line2
-d700-write-line3
+d700-write-line-2
+d700-write-line-3
 "
   (midiout-sysex (append *asparion-sysex-header* `(#x1a ,(* 12 (mod idx 8)) 1) (map 'list #'char-code text) '(#xF7))
                  stream))
@@ -191,8 +191,8 @@ Asparion <<D700>> or <<D700FT>> Controller connected to /stream/ to /text/.
 /stream/ - Jackmidi output stream connected to an Asparion Controller.
 
 @See-also
-d700-write-line1
-d700-write-line3
+d700-write-line-1
+d700-write-line-3
 "
   (midiout-sysex (append *asparion-sysex-header* `(#x1a ,(* 12 (mod idx 8)) 2) (map 'list #'char-code text) '(#xF7))
                  stream))
@@ -209,8 +209,8 @@ Asparion <<D700>> or <<D700FT>> Controller connected to /stream/ to /text/.
 /stream/ - Jackmidi output stream connected to an Asparion Controller.
 
 @See-also
-d700-write-line1
-d700-write-line2
+d700-write-line-1
+d700-write-line-2
 "
 
   (midiout-sysex (append *asparion-sysex-header* `(#x19 ,(* 8 (mod idx 8))) (map 'list #'char-code text) '(#xF7))

@@ -82,6 +82,9 @@
            cl-midictl:midi-port-note-fns
            cl-midictl:midi-port-pitch-bend-fns
            cl-midictl:midi-port-after-touch-fns
+           cl-midictl:d700-write-line-1
+           cl-midictl:d700-write-line-2
+           cl-midictl:d700-write-line-3
 
            incudine.vug:with
 

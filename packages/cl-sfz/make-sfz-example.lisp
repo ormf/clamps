@@ -62,6 +62,25 @@
            (dolist (string '("1c" "2c" "3c" "4c"))
              (write-sfz dir (format nil "~(~a-~a~)" template string) string))))
 
+(write-sfz "~/work/snd/sfz/bd/" "bd" "bd")
+
+(cdr (assoc #\C '((#\C . 0) (#\D . 2))))
+
+(defun parse-pitch (str)
+  "Return MIDI keynum of /str/ of the form \"C4\" \"C#5\" \"Ab3\". \"C4\"
+equals 60."
+  (let ((alteration
+          (if (= 3 (length str))
+              (if (eql (aref str 1) #\#) 1 -1)
+              0)))
+    (+ 12
+       alteration
+       (getf
+        '(#\C 0 #\D 2 #\E 4 #\F 5 #\G 7 #\A 9 #\B 11)
+        (aref str 0))
+       (* 12 (read-from-string (subseq str (1- (length str))))))))
+
+
 #|
 
 - einen Ordner mit Instrumentennamen vorbereiten, in dem sich
