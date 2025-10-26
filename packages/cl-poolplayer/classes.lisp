@@ -22,11 +22,12 @@
 
 (defstruct (eventplayer (:conc-name nil))
   "struct containing the state of an eventplayer."
-  (playing t)
+  (playing (cl-refs:make-ref 1))
   (id nil)
   (dur 3)
   (idx 0)
   (end 0)
+  (subplayers nil)
   (node-ids nil)
   (start-time 0)
   (preset-no 0)

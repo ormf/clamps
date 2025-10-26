@@ -88,19 +88,22 @@ returns."
     for (key val) on inits by #'cddr
     append (list key (eval val))))
 
-(defun preset-play (preset-no dur &rest args)
+(defun preset-play (preset-no &rest args)
   (let* ((time (getf args :at (now)))
 	 (player (or (getf args :player) (make-eventplayer)))
 	 (preset-form (get-preset-form preset-no))
-	 (dur (or dur (eval (getf preset-form :dur)))))
+	 (dur (getf args :dur (eval (getf preset-form :dur)))))
     (cm::sv player
       :start-time time
       :end (if dur (+ time dur))
+      :id (getf args :id (cl-poolplayer::id player))
       :dur dur
       :idx 0
       :preset-no preset-no)
+    (push player (cl-poolplayer::subplayers player))
     (typecase (playing player)
-      (cl-refs:ref-object nil)
+      (cl-refs:ref-object
+       (cl-refs:set-val (cl-poolplayer::playing player) 1))
       (otherwise
        (cm:sv player :playing t))
       )
