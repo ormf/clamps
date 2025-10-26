@@ -100,7 +100,6 @@ returns."
       :dur dur
       :idx 0
       :preset-no preset-no)
-    (push player (cl-poolplayer::subplayers player))
     (typecase (playing player)
       (cl-refs:ref-object
        (cl-refs:set-val (cl-poolplayer::playing player) 1))
@@ -108,6 +107,7 @@ returns."
        (cm:sv player :playing t))
       )
     (setf (getf args :player) player)
+;;;    (break "~a" player)
     (let* ((inits (calc-inits (getf preset-form :inits))))
       (funcall #'perform player time (append inits args)))
     nil))
