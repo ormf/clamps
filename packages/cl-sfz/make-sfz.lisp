@@ -137,7 +137,7 @@ volume=~a
 lokey=~a
 hikey=~a
 tune=0
-pitch_keycenter=~a~%~%" volume name lokey hikey key)))))
+pitch_keycenter=~a~%~%" name volume lokey hikey key)))))
 
 
 (defun normalize-files (dir)

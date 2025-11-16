@@ -452,7 +452,7 @@ evt-time
                                  &body body)
   "Wrapper around incudine:bounce-to-disk, temporarily setting clamps'
 *​standard-output-group​* to 0."
-  `(let ((of-incudine-dsps::*standard-output-group* 0))
+  `(let ((of-incudine-dsps:*standard-output-group* 0))
      (bounce-to-disk (,output-filename
                       :input-filename ,input-filename
                       :channels ,channels

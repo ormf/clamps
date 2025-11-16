@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-10-24 Fr 11:32 -->
+<!-- 2025-11-14 Fr 18:03 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Clamps Packages</title>
@@ -139,9 +139,9 @@
 <header>
 <h1 class="title">Clamps Packages</h1>
 </header><div id="page-main-body"><nav id="nav-left"><a href="07_02_01_00_a-short-example.html" class="nav-left"><i class="angle-left"></i></a></nav>
-<div id="page-text-body"><div id="outline-container-org49a96fd" class="outline-4">
-<h4 id="org49a96fd">The ref-object class</h4>
-<div class="outline-text-4" id="text-org49a96fd">
+<div id="page-text-body"><div id="outline-container-org32e8e44" class="outline-4">
+<h4 id="org32e8e44">The ref-object class</h4>
+<div class="outline-text-4" id="text-org32e8e44">
 <p>
 To make this task less challenging, <i>cl-refs</i> separates the
 definition of the variables and the application logic into
@@ -154,7 +154,7 @@ easier<sup><a id="fnr.1" class="footref" href="#fn.1" role="doc-backlink">1</a><
 For a variable with possible relations to other variables,
 <i>cl-ref</i> uses a special class called <i>ref-object</i>. Three main
 functions are defined to create and access a ref-object:
-A <a href="07_02_04_00_the-bang-object-class.html#org7dab559">creation function</a>, a <a href="07_02_02_00_the-ref-object-class.html#orga257c34">reader function</a> and a <a href="07_02_02_00_the-ref-object-class.html#orgdc4a69f">setter function</a>. These
+A <a href="07_02_04_00_the-bang-object-class.html#org1ddcd51">creation function</a>, a <a href="07_02_02_00_the-ref-object-class.html#org192f99b">reader function</a> and a <a href="07_02_02_00_the-ref-object-class.html#orgb841baa">setter function</a>. These
 functions are always the same, regardless of the variable they
 apply to, so there is no need to define a new function for setting
 any of the variables as in the example in the previous section.
@@ -162,7 +162,7 @@ any of the variables as in the example in the previous section.
 
 <h5>creation function</h5>
 <p>
-<a id="07_02_02_00_the-ref-object-class.html#orgc6b2ef4"></a>
+<a id="07_02_02_00_the-ref-object-class.html#orgd9cb767"></a>
 </p>
 
 <p>
@@ -178,7 +178,7 @@ v1 <span class="org-comment">; =&gt; #&lt;ref 1.0&gt;</span>
 
 <h5>reader function</h5>
 <p>
-<a id="07_02_02_00_the-ref-object-class.html#orga257c34"></a>
+<a id="07_02_02_00_the-ref-object-class.html#org192f99b"></a>
 </p>
 
 <p>
@@ -190,7 +190,7 @@ To read the value of a ref-object, use the function <i>get-val</i>:
 </div>
 <h5>setter function</h5>
 <p>
-<a id="07_02_02_00_the-ref-object-class.html#orgdc4a69f"></a>
+<a id="07_02_02_00_the-ref-object-class.html#orgb841baa"></a>
 To set the value of a ref-object, use the function <i>set-val</i>:
 </p>
 <div class="org-src-container">
